@@ -1,0 +1,224 @@
+.layout-container {
+  user-select: none;
+}
+
+.content-container {
+  display: flex;
+  justify-content: space-between;
+  min-width: 97.8vw;
+  max-width: 97.8vw;
+}
+
+/*
+#########################
+******** Modal **********
+#########################
+*/
+
+.modal-center {
+  /* align-self: center; */
+  text-align: center;
+  position: absolute;
+  width: 50vw;
+  height: 10vh;
+  font-size: 5vh;
+}
+
+.modal-inner-container {
+  background: #e8e8e8;
+  padding: 0vw 2vw 2vw 2vw;
+  display: flex;
+  flex-direction: column;
+  min-height: 55vh;
+  max-height: 55vh;
+  min-width: 46vw;
+  max-width: 46vw;
+  margin-top: 11vh;
+  border-radius: 1vw;
+  box-shadow: 0 0 0.3vw #000000;
+}
+
+.new-project-container {
+  position: absolute;
+  margin-top: 30vh;
+}
+
+select {
+  /* appearance: none; */
+  font-size: 0.5vw;
+  line-height: 1;
+  min-width: 1vw;
+  max-width: 1vw;
+  min-height: 3vh;
+  max-height: 3vh;
+}
+
+.existing-container {
+  margin-top: 4vh;
+}
+
+.button-style {
+  box-shadow: inset 0 0 0.3vw #000000;
+  border-radius: none;
+  border: none;
+  border-radius: 10vw;
+  cursor: pointer;
+  font-size: 1.8vh;
+  max-width: 4.5vw;
+  min-width: 4.5vw;
+  max-height: 3.5vh;
+  min-height: 3.5vh;
+  position: absolute;
+  padding: 0;
+  outline: none;
+}
+
+.button-style:hover {
+  box-shadow: 0 0 0.3vw #000000;
+  border-radius: none;
+  border: none;
+  border-radius: 10vw;
+  cursor: pointer;
+  font-size: 1.8vh;
+  max-width: 4.5vw;
+  min-width: 4.5vw;
+  max-height: 3.5vh;
+  min-height: 3.5vh;
+  position: absolute;
+}
+
+.submit-btn-style {
+  margin-top: 3.5vh;
+}
+
+.new-project-style {
+  font-size: 2.8vh;
+}
+
+.label-list-container {
+  display: flex;
+  flex-direction: row;
+  max-width: 50vw;
+  min-width: 50vw;
+  max-height: 5vh;
+  min-height: 5vh;
+  position: absolute;
+  margin-top: 3vh;
+}
+
+.label-list-style {
+  font-size: 2.8vh;
+}
+
+.input-file-style {
+  font-size: 2vh;
+  outline: none;
+  max-width: 15vw;
+  min-width: 15vw;
+  max-height: 3vh;
+  min-height: 3vh;
+  margin-top: 0.3vh;
+  margin-left: 0.3vw;
+}
+
+.input-btn-style {
+  margin-top: 8vh;
+}
+
+.project-id-style {
+  border-radius: 10vw;
+  border: none;
+  outline: none;
+  padding: 0.3vw 0 0.3vw 1vw;
+  box-shadow: 0 0 0.3vw;
+  margin-left: 1vh;
+  min-height: 2vh;
+  max-height: 2vh;
+  min-width: 16vw;
+  max-width: 16vw;
+  font-size: 2vh;
+  margin-top: 0.2vh;
+}
+
+.select-style {
+  border: none;
+  border-radius: 10vw;
+  outline: none;
+  box-shadow: 0 0 0.3vw black;
+  font-size: 2vh;
+  margin-left: 0.5vw;
+  max-width: 25vw;
+  min-width: 25vw;
+  margin-top: 0.4vh;
+  -webkit-appearance: none;
+  padding-left: 0.5vw;
+  text-overflow: ellipsis;
+}
+
+.h2-styling {
+  font-size: 4vh;
+  margin-top: 2vh;
+  margin-bottom: 1vh;
+}
+
+.hr-container {
+  position: absolute;
+  min-height: 0.3vh;
+  max-height: 0.3vh;
+  margin-top: 14.5vh;
+}
+
+hr {
+  border: 0;
+  clear: both;
+  display: block;
+  width: 46vw;
+  max-height: 0.3vh;
+  min-height: 0.3vh;
+  border-top: 0.3vh dashed #bbb;
+  margin-top: 13vh;
+}
+
+.project-name-style {
+  display: flex;
+  flex-direction: row;
+  max-width: 50vw;
+  min-width: 50vw;
+  max-height: 3vh;
+  min-height: 3vh;
+  position: absolute;
+  margin-top: 1vh;
+}
+
+.project-name-font-size {
+  font-size: 2.8vh;
+}
+
+.new-project-name-style {
+  display: flex;
+  flex-direction: row;
+  max-width: 50vw;
+  min-width: 50vw;
+  max-height: 3vh;
+  min-height: 3vh;
+  position: absolute;
+  margin-top: 1vh;
+}
+
+.validation {
+  clear: both;
+  margin-top: 5.5vh;
+  margin-left: 13.5vw;
+  font-size: 2.5vh;
+  color: red;
+  margin-bottom: -1.5vh;
+}
+
+.existing-validation {
+  clear: both;
+  margin-top: 5.5vh;
+  margin-left: 10.5vw;
+  font-size: 2.5vh;
+  color: red;
+  margin-bottom: -1.5vh;
+}

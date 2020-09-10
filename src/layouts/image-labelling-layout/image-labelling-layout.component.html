@@ -1,0 +1,112 @@
+<div class="layout-container">
+  <div>
+    <image-labelling-header
+      [_onChange]="onChangeSchema"
+      (_navigate)="navigate($event)"
+    ></image-labelling-header>
+    <image-labelling-info [_onChange]="onChangeSchema"></image-labelling-info>
+  </div>
+
+  <div class="content-container">
+    <image-labelling-left-sidebar
+      [_onChange]="onChangeSchema"
+    ></image-labelling-left-sidebar>
+    <image-labelling-image
+      [_thumbnail]="selectedThumbnail"
+    ></image-labelling-image>
+
+    <image-labelling-project
+      [_thumbnailList]="thumbnailList"
+      [_tabStatus]="tabStatus"
+      (_onClose)="onToggleTab($event)"
+      (_onClick)="showBase64Image($event)"
+    ></image-labelling-project>
+
+    <image-labelling-right-sidebar
+      [_onChange]="onChangeSchema"
+      (_onClick)="onToggleTab($event)"
+    ></image-labelling-right-sidebar>
+  </div>
+  <image-labelling-footer></image-labelling-footer>
+</div>
+
+<!-- <modal id="custom-modal-1">
+  <h1 class="modal-center">Classifai Image Labelling Tools</h1>
+  <form [formGroup]="form">
+    <div class="modal-inner-container">
+      <div class="existing-container">
+        <div>
+          <h2 class="h2-styling">From Existing Project</h2>
+        </div>
+        <div class="project-name-style">
+          <label class="project-name-font-size">Project Name : </label>
+          <select class="select-style" formControlName="selectExistProject">
+            <option value="">None</option>
+            <ng-container *ngFor="let project of projects">
+              <option value="{{ project }}">{{ project }}</option>
+            </ng-container>
+          </select>
+        </div>
+        <div class="existing-validation">
+          <ng-container *ngIf="form.get('selectExistProject').touched">
+            <span *ngIf="form.get('selectExistProject').getError('required')">
+              <small> * Project is required </small>
+            </span>
+          </ng-container>
+        </div>
+        <div>
+          <button
+            class="button-style submit-btn-style"
+            type="button"
+            (click)="onSubmit(false)"
+          >
+            Submit
+          </button>
+        </div>
+      </div>
+      <div class="hr-container"><hr /></div>
+      <div class="new-project-container">
+        <h2 class="h2-styling">Create New Project</h2>
+        <div class="new-project-name-style">
+          <label class="new-project-style">New Project Name : </label>
+          <input
+            class="project-id-style"
+            type="text"
+            formControlName="inputProjectName"
+            [value]="inputProjectName"
+            (input)="onChange($event.target.value)"
+            placeholder="Your new ID"
+          />
+        </div>
+        <div class="validation">
+          <ng-container *ngIf="form.get('inputProjectName').touched">
+            <span *ngIf="form.get('inputProjectName').getError('exist')">
+              <small> * Project name already exist! Try other name </small>
+            </span>
+            <span *ngIf="form.get('inputProjectName').getError('required')">
+              <small> * Project name is required </small>
+            </span>
+          </ng-container>
+        </div>
+        <div class="label-list-container">
+          <label class="label-list-style">Label List File (*.txt) : </label>
+          <input
+            class="input-file-style"
+            type="file"
+            accept=".txt"
+            (change)="onFileChange($event)"
+          />
+        </div>
+        <div>
+          <button
+            class="button-style input-btn-style"
+            type="submit"
+            (click)="onSubmit(true)"
+          >
+            Create
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</modal> -->

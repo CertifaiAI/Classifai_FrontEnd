@@ -1,0 +1,62 @@
+<div id="dataset-container">
+  <div class="new-project-container">
+    <div (click)="navigate({ enabled: true, isclick: true })" class="new-project-btn">
+      <img
+        class="add-icon"
+        src="../../../assets/classifai-image-labelling-layout/light-theme/add.png"
+      />
+      <button class="new-project-txt">New Project</button>
+    </div>
+  </div>
+  <div class="current-project-container">
+    <div class="current-project-btn">
+      <img
+      class="project-icon"
+      src="../../../assets/classifai-image-labelling-layout/light-theme/project.png"
+    />
+    <label class="current-project-txt">My Project</label>
+    </div>
+    <div class="current-project-btn">
+      <img
+      class="project-icon"
+      src="../../../assets/classifai-image-labelling-layout/light-theme/starred.png"
+    />
+    <label class="current-project-txt">Starred</label>
+    </div>
+    <div class="current-project-btn">
+      <img
+      class="project-icon"
+      src="../../../assets/classifai-image-labelling-layout/light-theme/history.png"
+    />
+    <label class="current-project-txt">Recent</label>
+    </div>
+    <div class="current-project-btn">
+      <img
+      class="project-icon"
+      src="../../../assets/classifai-image-labelling-layout/light-theme/trash.png"
+    />
+    <label class="current-project-txt">Trash</label>
+    </div>
+  </div>
+</div>
+<div
+  id="model"
+  style="
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+  "
+>
+  <div id="model-content">
+    <div>
+      <button
+        class="close-modal"
+      >
+        x
+      </button>
+    </div>
+    <div class="img-flex">
+
+  </div>
+</div>

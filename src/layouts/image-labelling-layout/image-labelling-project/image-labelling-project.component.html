@@ -1,0 +1,46 @@
+<div class="tab-container">
+  <ng-container *ngFor="let tab of _tabStatus; index as i">
+    <ng-container
+      *ngIf="_thumbnailList.length > 0 && i === 0; else nonThumbnailTab"
+    >
+      <div
+        class="utility-right-project-container tab flex-fill-remaining"
+        [ngClass]="checkCloseToggle(tab)"
+        [attr.data-index]="i"
+      >
+        <label class="label">{{ tab.name }}</label>
+        <span class="tab-close"
+          ><div class="div-close" (click)="onClose(tab)">x</div></span
+        >
+        <div class="utility-inner-container" id="inner-container">
+          <!-- <section *ngFor="let thumbnail of _thumbnailList" #section> -->
+          <section *ngFor="let thumbnail of _thumbnailList">
+            <div class="img-container" (click)="onClick(thumbnail.uuid)">
+              <div>
+                <img class="img-style" [src]="thumbnail.img_thumbnail" />
+              </div>
+              <div class="img-name">
+                <label>{{ thumbnail.img_path | fileNameSlice }} </label>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #nonThumbnailTab>
+      <div
+        class="utility-right-project-container tab flex-fill-remaining"
+        [attr.data-index]="i"
+        [ngClass]="checkCloseToggle(tab)"
+      >
+        <label class="label">{{ tab.name }}</label>
+        <span class="tab-close"
+          ><div class="div-close" (click)="onClose(tab)">x</div></span
+        >
+        <section class="inner-content"></section>
+        <div class="utility-inner-container"></div>
+      </div>
+    </ng-template>
+  </ng-container>
+</div>

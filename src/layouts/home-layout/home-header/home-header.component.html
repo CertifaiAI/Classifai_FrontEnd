@@ -1,0 +1,17 @@
+<header class="flex-header header-container">
+  <div class="div-header-container">
+    <img class="header-img" [src]="headerImage" />
+  </div>
+</header>
+<select
+  #langSelect
+  (change)="setLanguage(langSelect.value)"
+  class="select-padding"
+>
+  <option
+    *ngFor="let lang of languageArr"
+    [value]="lang"
+    [selected]="lang === _translate.currentLang"
+    >{{ lang | languageSlice }}</option
+  >
+</select>

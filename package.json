@@ -1,0 +1,73 @@
+{
+  "name": "intellabel",
+  "version": "0.0.0",
+  "scripts": {
+    "format:prettier": "./node_modules/.bin/prettier --write src/**/*.{js,ts,json,css,scss,md}",
+    "start:dev": "nodemon -w ./webpack.config.js --exec \"ng s -o --extra-webpack-config webpack.config.js\"",
+    "start:prod": "node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng s -o --extra-webpack-config webpack.config.js",
+    "build:normal": "node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng build --prod --extra-webpack-config webpack.config.js",
+    "build:analyze": "node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng build --prod --extra-webpack-config webpack.config.js --stats-json && webpack-bundle-analyzer dist/intellabel/stats-es2015.json",
+    "build:lighthouse": "ng s -o --extra-webpack-config webpack.config.js --prod",
+    "analyze:stats": "npm run analyze",
+    "test": "ng test",
+    "lint": "ng lint",
+    "e2e": "ng e2e"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "~9.1.0",
+    "@angular/common": "~9.1.0",
+    "@angular/compiler": "~9.1.0",
+    "@angular/core": "~9.1.0",
+    "@angular/forms": "~9.1.0",
+    "@angular/platform-browser": "~9.1.0",
+    "@angular/platform-browser-dynamic": "~9.1.0",
+    "@angular/router": "~9.1.0",
+    "@ngx-translate/core": "^12.1.2",
+    "@ngx-translate/http-loader": "^4.0.0",
+    "@types/lodash-es": "^4.17.3",
+    "file-saver": "^2.0.2",
+    "husky": "^4.2.5",
+    "jszip": "^3.5.0",
+    "lint-staged": "^10.2.13",
+    "lodash-es": "^4.17.15",
+    "ngx-build-plus": "^10.1.1",
+    "prettier": "^2.1.1",
+    "rxjs": "~6.5.4",
+    "streamsaver": "^2.0.4",
+    "tslib": "^1.10.0",
+    "zone.js": "~0.10.2"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "~0.901.0",
+    "@angular/cli": "^9.1.0",
+    "@angular/compiler-cli": "~9.1.0",
+    "@angular/language-service": "~9.1.0",
+    "@types/jasmine": "~3.5.0",
+    "@types/jasminewd2": "~2.0.3",
+    "@types/node": "^12.11.1",
+    "codelyzer": "^5.1.2",
+    "jasmine-core": "~3.5.0",
+    "jasmine-spec-reporter": "~4.2.1",
+    "karma": "^5.0.5",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage-istanbul-reporter": "~2.1.0",
+    "karma-jasmine": "~3.0.1",
+    "karma-jasmine-html-reporter": "^1.4.2",
+    "protractor": "^7.0.0",
+    "ts-node": "~8.3.0",
+    "tslint": "~6.1.0",
+    "typescript": "~3.8.3",
+    "webpack-bundle-analyzer": "^3.8.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npx lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,html,ts,json,css,scss,md}": [
+      "prettier --write"
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+<div class="header-container">
+  <div class="container-flex-start">
+    <div class="indicator"></div>
+    <p class="imageTitle">Image Title</p>
+  </div>
+  <div class="container-flex-center">
+    <ng-container *ngFor="let logo of jsonSchema.logoCenter; index as i">
+      <div class="utility-icon-container">
+        <img
+          [ngClass]="conditionalIconTheme()"
+          [attr.data-index]="i + logo.alt"
+          [src]="logo.imgPath"
+          [alt]="logo.alt"
+          [title]="logo.hoverLabel"
+        />
+      </div>
+    </ng-container>
+  </div>
+  <div class="container-flex-end">
+    <ng-container *ngFor="let logo of jsonSchema.logoEnd; index as i">
+      <div class="utility-icon-container">
+        <img
+          [ngClass]="conditionalIconTheme()"
+          [attr.data-index]="i + logo.alt"
+          [src]="logo.imgPath"
+          [alt]="logo.alt"
+          [title]="logo.hoverLabel"
+        />
+      </div>
+    </ng-container>
+  </div>
+</div>

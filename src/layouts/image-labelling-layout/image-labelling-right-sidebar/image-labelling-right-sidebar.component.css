@@ -1,0 +1,46 @@
+.utility-right-sidebar-container {
+  position: absolute;
+  min-width: 2.2vw;
+  max-width: 2.2vw;
+  min-height: 95.5vh;
+  max-height: 95.5vh;
+  background: #525353;
+  outline: 0.0625vw inset white;
+  z-index: 1000;
+}
+
+.utility-inner-container {
+  min-height: 5vh;
+  max-height: 5vh;
+  min-width: 2.2vw;
+  max-width: 2.2vw;
+  position: absolute;
+}
+
+.utility-icon-container {
+  min-height: 5vh;
+  max-height: 5vh;
+}
+
+.utility-icon-light,
+.utility-icon-dark {
+  min-width: 1.5vw;
+  max-width: 1.5vw;
+  min-height: 3vh;
+  max-height: 3vh;
+  padding: 0.3vw;
+  position: absolute;
+  cursor: pointer;
+}
+
+.utility-icon-light:active {
+  background: rgb(105, 105, 105);
+}
+
+.utility-icon-dark:active {
+  background: darkgray;
+}
+
+.input-none {
+  display: none;
+}

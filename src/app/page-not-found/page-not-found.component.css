@@ -1,0 +1,21 @@
+h2 {
+  font-weight: bold;
+  font-size: 4em;
+  text-align: center;
+  color: white;
+}
+
+h1 {
+  margin-top: 10%;
+  font-weight: bold;
+  font-size: 10em;
+  text-align: center;
+  color: white;
+}
+
+p {
+  font-weight: bold;
+  font-size: 1em;
+  text-align: center;
+  color: white;
+}
