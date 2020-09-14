@@ -10,18 +10,18 @@ export type Boundingbox = {
   id: number;
 };
 export type Metadata = {
-  imgpath: string;
-  projectname: string;
+  img_path: string;
+  project_name: string;
   uuid: number;
-  imgX: number;
-  imgY: number;
-  imgW: number;
-  imgH: number;
-  imgOriW: number;
-  imgOriH: number;
-  imgthumbnail: string;
-  imgDepth: number;
-  bndbox: Boundingbox[];
+  img_x: number;
+  img_y: number;
+  img_w: number;
+  img_h: number;
+  img_ori_w: number;
+  img_ori_h: number;
+  img_thumbnail: string;
+  img_depth: number;
+  bnd_box: Boundingbox[];
 };
 export type Globalloc = { scale: number; offset: { x: number; y: number } };
 export type Panloc = {
@@ -30,3 +30,4 @@ export type Panloc = {
 };
 export type progressTuple = { url: string; data: Metadata };
 export type stages = { stage: Metadata; method: string };
+export type rules = { scroll: boolean };

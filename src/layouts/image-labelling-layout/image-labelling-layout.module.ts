@@ -4,6 +4,7 @@ import { ImageLabellingHeaderComponent } from './image-labelling-header/image-la
 import { ImageLabellingImageComponent } from './image-labelling-image/image-labelling-image.component';
 import { ImageLabellingInfoComponent } from './image-labelling-info/image-labelling-info.component';
 import { ImageLabellingLayoutComponent } from './image-labelling-layout.component';
+import { ImageLabellingObjectDetectionComponent } from './image-labelling-object-detection/image-labelling-object-detection.component';
 import { ImageLabellingLeftSidebarComponent } from './image-labelling-left-sidebar/image-labelling-left-sidebar.component';
 import { ImageLabellingProjectComponent } from './image-labelling-project/image-labelling-project.component';
 import { ImageLabellingRightSidebarComponent } from './image-labelling-right-sidebar/image-labelling-right-sidebar.component';
@@ -18,6 +19,7 @@ import { SharedModule } from 'src/shared/shared.module';
     ImageLabellingHeaderComponent,
     ImageLabellingInfoComponent,
     ImageLabellingLeftSidebarComponent,
+    ImageLabellingObjectDetectionComponent,
     ImageLabellingImageComponent,
     ImageLabellingProjectComponent,
     ImageLabellingRightSidebarComponent,

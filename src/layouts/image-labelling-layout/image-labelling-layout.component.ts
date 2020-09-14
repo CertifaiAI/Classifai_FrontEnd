@@ -1,3 +1,4 @@
+import { Metadata } from './../../classes/CustomType';
 import { catchError, first, flatMap, map, mergeMap } from 'rxjs/operators';
 import { ClassifaiModalService } from 'src/shared/classifai-modal/classifai-modal.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -25,6 +26,7 @@ import {
   OnInit,
   ChangeDetectorRef,
 } from '@angular/core';
+import { Meta } from '@angular/platform-browser';
 
 @Component({
   selector: 'image-labelling-layout',
@@ -51,6 +53,7 @@ export class ImageLabellingLayoutComponent implements OnInit {
   selectedProjectName: string = '';
   thumbnailList: IThumbnailMetadata[] = [];
   selectedThumbnail: string = '';
+  selectedMeta: Metadata = null;
   tabStatus: TabsProps[] = [
     {
       name: 'Project',
@@ -291,18 +294,18 @@ export class ImageLabellingLayoutComponent implements OnInit {
   };
 
   showBase64Image = (
-    uuid: number,
+    thumnail: Metadata,
     projectName: string = this.selectedProjectName || this.inputProjectName
   ): void => {
     const getImage$ = this._imgLabelService.getBase64Thumbnail(
       projectName,
-      uuid
+      thumnail.uuid
     );
 
     getImage$.pipe(first()).subscribe(
       ({ message, img_src, errormessage }) => {
         message === 1
-          ? (this.selectedThumbnail = img_src)
+          ? ((this.selectedThumbnail = img_src), (this.selectedMeta = thumnail))
           : console.error(errormessage);
       },
       (err: Error) => console.error(err),

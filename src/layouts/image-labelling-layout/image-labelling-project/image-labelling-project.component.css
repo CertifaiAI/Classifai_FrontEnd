@@ -179,6 +179,7 @@
   min-height: 4vh;
   min-width: 3vw;
   max-width: 3vw;
+  object-fit: scale-down;
 }
 
 .img-name {

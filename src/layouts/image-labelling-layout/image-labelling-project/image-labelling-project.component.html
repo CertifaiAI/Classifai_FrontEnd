@@ -15,7 +15,8 @@
         <div class="utility-inner-container" id="inner-container">
           <!-- <section *ngFor="let thumbnail of _thumbnailList" #section> -->
           <section *ngFor="let thumbnail of _thumbnailList">
-            <div class="img-container" (click)="onClick(thumbnail.uuid)">
+            <!-- <div class="img-container" (click)="onClick(thumbnail.uuid)"> -->
+            <div class="img-container" (click)="onClick(thumbnail)">
               <div>
                 <img class="img-style" [src]="thumbnail.img_thumbnail" />
               </div>

@@ -1,3 +1,4 @@
+import { Metadata } from './../../../classes/CustomType';
 import { isEqual } from 'lodash-es';
 import {
   Props,
@@ -26,7 +27,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
   @Input() _thumbnailList: Props<IThumbnailMetadata[]> = null;
   @Input() _tabStatus: TabsProps[] = [];
   @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
-  @Output() _onClick: EventEmitter<number> = new EventEmitter();
+  @Output() _onClick: EventEmitter<Metadata> = new EventEmitter();
 
   constructor() {}
 
@@ -53,8 +54,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
     // console.log(this._tabStatus);
   };
 
-  onClick = (uuid: number): void => {
-    this._onClick.emit(uuid);
+  onClick = (Meta: Metadata): void => {
+    this._onClick.emit(Meta);
   };
 
   checkCloseToggle = <T extends TabsProps>({ closed }: T): string =>
