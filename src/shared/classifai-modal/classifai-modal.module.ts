@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 
 @NgModule({
-  imports: [CommonModule],
-  declarations: [ClassifaiModalComponent],
-  exports: [ClassifaiModalComponent],
+    imports: [CommonModule],
+    declarations: [ClassifaiModalComponent],
+    exports: [ClassifaiModalComponent],
 })
 export class ClassifaiModalModule {}

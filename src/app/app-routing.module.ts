@@ -5,27 +5,25 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
-  { path: '', component: HomeLayoutComponent },
-  {
-    path: 'imglabel',
-    loadChildren: () =>
-      import(
-        '../layouts/image-labelling-layout/image-labelling-layout.module'
-      ).then((m) => m.ImageLabellingLayoutModule),
-  },
-  {
-    path: 'dataset',
-    loadChildren: () =>
-      import('../layouts/data-set-layout/data-set-layout.module').then(
-        (m) => m.DataSetLayoutModule
-      ),
-  },
-  { path: '500', component: InternalServerErrorComponent },
-  { path: '404', component: PageNotFoundComponent },
+    { path: '', component: HomeLayoutComponent },
+    {
+        path: 'imglabel',
+        loadChildren: () =>
+            import('../layouts/image-labelling-layout/image-labelling-layout.module').then(
+                (m) => m.ImageLabellingLayoutModule,
+            ),
+    },
+    {
+        path: 'dataset',
+        loadChildren: () =>
+            import('../layouts/data-set-layout/data-set-layout.module').then((m) => m.DataSetLayoutModule),
+    },
+    { path: '500', component: InternalServerErrorComponent },
+    { path: '404', component: PageNotFoundComponent },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule],
+    imports: [RouterModule.forRoot(routes)],
+    exports: [RouterModule],
 })
 export class AppRoutingModule {}

@@ -6,23 +6,22 @@ import { DebugElement } from '@angular/core';
 import { DataSetHeaderComponent } from './data-set-header.component';
 
 describe('DataSetHeaderComponent', () => {
-  let component: DataSetHeaderComponent;
-  let fixture: ComponentFixture<DataSetHeaderComponent>;
+    let component: DataSetHeaderComponent;
+    let fixture: ComponentFixture<DataSetHeaderComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ DataSetHeaderComponent ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            declarations: [DataSetHeaderComponent],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DataSetHeaderComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(DataSetHeaderComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

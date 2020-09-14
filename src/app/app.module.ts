@@ -9,30 +9,12 @@ import { NgModule } from '@angular/core';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { SharedModule } from 'src/shared/shared.module';
 
-import {
-  HashLocationStrategy,
-  LocationStrategy,
-  CommonModule,
-} from '@angular/common';
+import { HashLocationStrategy, LocationStrategy, CommonModule } from '@angular/common';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    InternalServerErrorComponent,
-    PageNotFoundComponent,
-  ],
-  imports: [
-    BrowserModule,
-    CommonModule,
-    AppRoutingModule,
-    SharedModule,
-    HttpClientModule,
-    HomeLayoutModule,
-  ],
-  providers: [
-    LanguageService,
-    { provide: LocationStrategy, useClass: HashLocationStrategy },
-  ],
-  bootstrap: [AppComponent],
+    declarations: [AppComponent, InternalServerErrorComponent, PageNotFoundComponent],
+    imports: [BrowserModule, CommonModule, AppRoutingModule, SharedModule, HttpClientModule, HomeLayoutModule],
+    providers: [LanguageService, { provide: LocationStrategy, useClass: HashLocationStrategy }],
+    bootstrap: [AppComponent],
 })
 export class AppModule {}

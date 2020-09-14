@@ -1,94 +1,93 @@
 .new-project-btn {
-  padding: 0.7vw 1vw;
-  border-radius: 5vh;
-  background-color: #525353;
-  border: none;
-  color: white;
-  outline: none;
-  cursor: pointer;
-  position: absolute;
-  display: flex;
-  flex-direction: inherit;
+    padding: 0.7vw 1vw;
+    border-radius: 5vh;
+    background-color: #525353;
+    border: none;
+    color: white;
+    outline: none;
+    cursor: pointer;
+    position: absolute;
+    display: flex;
+    flex-direction: inherit;
 }
 
 .new-project-btn:hover {
-  padding: 0.7vw 1vw;
-  border-radius: 5vh;
-  background-color: #393838;
-  border: none;
-  color: white;
-  outline: none;
-  cursor: pointer;
-  position: absolute;
-  display: flex;
-  flex-direction: inherit;
+    padding: 0.7vw 1vw;
+    border-radius: 5vh;
+    background-color: #393838;
+    border: none;
+    color: white;
+    outline: none;
+    cursor: pointer;
+    position: absolute;
+    display: flex;
+    flex-direction: inherit;
 }
 
 .new-project-container {
-  margin-top: 5vh;
-  margin-left: 2vw;
+    margin-top: 5vh;
+    margin-left: 2vw;
 }
 
 .new-project-txt {
-  border: none;
-  background: none;
-  outline: none;
-  cursor: pointer;
-  font-size: 2vh;
-  color: white;
-  padding: 0;
-  margin-left: 0.3vw;
-  padding-right: 0.5vw;
+    border: none;
+    background: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 2vh;
+    color: white;
+    padding: 0;
+    margin-left: 0.3vw;
+    padding-right: 0.5vw;
 }
 
 .add-icon {
-  max-width: 2vw;
-  min-width: 2vw;
-  min-height: 4vh;
-  max-height: 4vh;
+    max-width: 2vw;
+    min-width: 2vw;
+    min-height: 4vh;
+    max-height: 4vh;
 }
 
 .current-project-container {
-  padding-left: 3vw;
-  display: flex;
-  padding-top: 11vh;
-  flex-direction: column;
+    padding-left: 3vw;
+    display: flex;
+    padding-top: 11vh;
+    flex-direction: column;
 }
 
 .project-icon {
-  min-width: 2vw;
-  max-width: 2vw;
-  min-height: 4vh;
-  max-height: 4vh;
+    min-width: 2vw;
+    max-width: 2vw;
+    min-height: 4vh;
+    max-height: 4vh;
 }
 
 .current-project-txt {
-  color: white;
-  align-self: center;
-  margin-left: 0.5vw;
-  font-size: 2.2vh;
-  cursor: pointer;
-  padding-right: 0.62vw;
-
+    color: white;
+    align-self: center;
+    margin-left: 0.5vw;
+    font-size: 2.2vh;
+    cursor: pointer;
+    padding-right: 0.62vw;
 }
 
-.current-project-btn{
-  display: flex;
-  padding: 0.7vw 1vw;
-  margin-left: -1vw;
-  border-radius: 5vh;
-  flex-direction: row;
+.current-project-btn {
+    display: flex;
+    padding: 0.7vw 1vw;
+    margin-left: -1vw;
+    border-radius: 5vh;
+    flex-direction: row;
 }
 
-.current-project-btn:hover{
-  padding: 0.7vw 1vw;
-  margin-left: -1vw;
-  border-radius: 5vh;
-  background-color: #525353;
-  border: none;
-  color: white;
-  outline: none;
-  cursor: pointer;
-  display: flex;
-  flex-direction: row;
+.current-project-btn:hover {
+    padding: 0.7vw 1vw;
+    margin-left: -1vw;
+    border-radius: 5vh;
+    background-color: #525353;
+    border: none;
+    color: white;
+    outline: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
 }

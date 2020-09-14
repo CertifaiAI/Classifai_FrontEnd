@@ -12,18 +12,18 @@ import { NgModule } from '@angular/core';
 import { SharedModule } from 'src/shared/shared.module';
 
 @NgModule({
-  imports: [CommonModule, SharedModule, ImageLabellingRoutingModule],
-  declarations: [
-    ImageLabellingLayoutComponent,
-    ImageLabellingHeaderComponent,
-    ImageLabellingInfoComponent,
-    ImageLabellingLeftSidebarComponent,
-    ImageLabellingImageComponent,
-    ImageLabellingProjectComponent,
-    ImageLabellingRightSidebarComponent,
-    // ImageLabellingLabelComponent,
-    ImageLabellingFooterComponent,
-    // ImageLabellingBoxComponent,
-  ],
+    imports: [CommonModule, SharedModule, ImageLabellingRoutingModule],
+    declarations: [
+        ImageLabellingLayoutComponent,
+        ImageLabellingHeaderComponent,
+        ImageLabellingInfoComponent,
+        ImageLabellingLeftSidebarComponent,
+        ImageLabellingImageComponent,
+        ImageLabellingProjectComponent,
+        ImageLabellingRightSidebarComponent,
+        // ImageLabellingLabelComponent,
+        ImageLabellingFooterComponent,
+        // ImageLabellingBoxComponent,
+    ],
 })
 export class ImageLabellingLayoutModule {}

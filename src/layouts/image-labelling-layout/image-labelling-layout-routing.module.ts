@@ -3,13 +3,13 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 const imageLabellingRoutes: Routes = [
-  {
-    path: '',
-    component: ImageLabellingLayoutComponent,
-  },
+    {
+        path: '',
+        component: ImageLabellingLayoutComponent,
+    },
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(imageLabellingRoutes)],
+    imports: [RouterModule.forChild(imageLabellingRoutes)],
 })
 export class ImageLabellingRoutingModule {}
