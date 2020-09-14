@@ -1,4 +1,4 @@
-import { IimageLabellingSchema, Props } from '../image-labelling-layout.model';
+import { EvenEmitterUrlProps, IimageLabellingSchema, Props } from '../image-labelling-layout.model';
 import {
     Component,
     EventEmitter,
@@ -19,7 +19,7 @@ import {
 export class ImageLabellingHeaderComponent implements OnInit, OnChanges {
     // @Input() _theme: string;
     @Input() _onChange!: Props;
-    @Output() _navigate: EventEmitter<string> = new EventEmitter();
+    @Output() _navigate: EventEmitter<EvenEmitterUrlProps> = new EventEmitter();
     imgRelativePath: string = `../../../assets/classifai-image-labelling-layout/`;
     logoSrc: string = `../../../assets/classifai-image-labelling-layout/Classifai_Favicon_Dark_512px.png`;
     jsonSchema!: IimageLabellingSchema;
@@ -52,9 +52,9 @@ export class ImageLabellingHeaderComponent implements OnInit, OnChanges {
         };
     };
 
-    emitParentUrl(url: string): void {
-        url ? this._navigate.emit(url) : null;
-    }
+    emitParentUrl = <T extends EvenEmitterUrlProps>({ url }: T): void => {
+        url ? this._navigate.emit({ url }) : null;
+    };
 
     ngOnChanges(changes: SimpleChanges): void {
         // console.log(changes);

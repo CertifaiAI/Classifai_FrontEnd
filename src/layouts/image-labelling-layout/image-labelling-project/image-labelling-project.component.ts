@@ -1,5 +1,5 @@
 import { isEqual } from 'lodash-es';
-import { Props, IThumbnailMetadata, TabsProps } from '../image-labelling-layout.model';
+import { Props, IThumbnailMetadata, TabsProps, SelectedThumbnailProps } from '../image-labelling-layout.model';
 import {
     Component,
     OnInit,
@@ -22,7 +22,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
     @Input() _thumbnailList!: Props<IThumbnailMetadata[]>;
     @Input() _tabStatus: TabsProps[] = [];
     @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
-    @Output() _onClick: EventEmitter<number> = new EventEmitter();
+    @Output() _onClick: EventEmitter<SelectedThumbnailProps> = new EventEmitter();
 
     constructor() {}
 
@@ -49,8 +49,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
         // console.log(this._tabStatus);
     };
 
-    onClick = (uuid: number): void => {
-        this._onClick.emit(uuid);
+    onClick = <T extends Omit<SelectedThumbnailProps, 'img_src'>>({ uuid }: T): void => {
+        this._onClick.emit({ uuid, img_src: '' });
     };
 
     checkCloseToggle = <T extends TabsProps>({ closed }: T): string | null => (closed ? 'closed' : null);

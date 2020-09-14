@@ -8,7 +8,7 @@ import { Component, ElementRef, Input, OnDestroy, OnInit, ViewEncapsulation } fr
     encapsulation: ViewEncapsulation.None,
 })
 export class ClassifaiModalComponent implements OnInit, OnDestroy {
-    @Input() id!: string;
+    @Input() id: string = '';
     private element: any;
 
     constructor(private _modalService: ClassifaiModalService, private _el: ElementRef) {

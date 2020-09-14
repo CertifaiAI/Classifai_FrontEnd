@@ -18,7 +18,7 @@ import { AfterViewInit, Directive, ElementRef, HostBinding, Input } from '@angul
 })
 export class LazyImgDirective implements AfterViewInit {
     @HostBinding('attr.src') srcAttr = '';
-    @Input() src!: string;
+    @Input() src: string = '';
 
     constructor(private el: ElementRef) {}
 

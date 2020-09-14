@@ -107,3 +107,17 @@ export type TabsProps = {
     name: string;
     closed: boolean;
 };
+
+export type EvenEmitterUrlProps = {
+    url: string;
+};
+
+export type EventEmitter_Info = {
+    thumbnailAction?: 1 | -1;
+} & Partial<EvenEmitterUrlProps>;
+
+export type EventEmitter_Layout = EventEmitter_Info;
+
+export type SelectedThumbnailProps = {
+    uuid: number;
+} & Pick<IBase64Img, 'img_src'>;

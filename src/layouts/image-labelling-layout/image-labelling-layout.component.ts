@@ -5,7 +5,15 @@ import { ImageLabellingService } from './image-labelling-layout.service';
 import { Router } from '@angular/router';
 import { ThemeService } from 'src/shared/services/theme.service';
 import { forkJoin, interval, Subject, Subscription, Observable, throwError } from 'rxjs';
-import { ILabelList, IThumbnailMetadata, Props, IMessage, TabsProps } from './image-labelling-layout.model';
+import {
+    ILabelList,
+    IThumbnailMetadata,
+    Props,
+    IMessage,
+    TabsProps,
+    EventEmitter_Layout,
+    SelectedThumbnailProps,
+} from './image-labelling-layout.model';
 import { Component, HostListener, OnInit, ChangeDetectorRef } from '@angular/core';
 
 @Component({
@@ -30,7 +38,10 @@ export class ImageLabellingLayoutComponent implements OnInit {
     // labelList: ILabelList;
     selectedProjectName: string = '';
     thumbnailList: IThumbnailMetadata[] = [];
-    selectedThumbnail: string = '';
+    selectedThumbnail: SelectedThumbnailProps = {
+        img_src: '',
+        uuid: 0,
+    };
     tabStatus: TabsProps[] = [
         {
             name: 'Project',
@@ -265,12 +276,27 @@ export class ImageLabellingLayoutComponent implements OnInit {
         // console.log(filteredFiles);
     };
 
-    showBase64Image = (uuid: number, projectName: string = this.selectedProjectName || this.inputProjectName): void => {
+    navigate = <T extends EventEmitter_Layout>({ url, thumbnailAction }: T): void => {
+        // console.log(url);
+        if (url) {
+            this._router.navigate([url]);
+        }
+        if (thumbnailAction) {
+            const { uuid } = this.selectedThumbnail;
+            console.log(uuid);
+            this.showBase64Image({ uuid });
+        }
+    };
+
+    showBase64Image = <T extends Omit<SelectedThumbnailProps, 'img_src'>>(
+        { uuid }: T,
+        projectName: string = this.selectedProjectName || this.inputProjectName,
+    ): void => {
         const getImage$ = this._imgLabelService.getBase64Thumbnail(projectName, uuid);
 
         getImage$.pipe(first()).subscribe(
             ({ message, img_src, errormessage }) => {
-                message === 1 ? (this.selectedThumbnail = img_src) : console.error(errormessage);
+                message === 1 ? (this.selectedThumbnail.img_src = img_src) : console.error(errormessage);
             },
             (err: Error) => console.error(err),
             () => {},
@@ -328,11 +354,6 @@ export class ImageLabellingLayoutComponent implements OnInit {
     // };
 
     //#endregion
-
-    navigate(url: string): void {
-        // console.log(url);
-        this._router.navigate([url]);
-    }
 
     detectBrowserTheme = (e: any): void => {
         this.onChangeSchema = {
