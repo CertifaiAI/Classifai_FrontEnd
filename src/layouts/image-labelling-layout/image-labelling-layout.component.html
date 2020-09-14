@@ -1,7 +1,7 @@
 <div class="layout-container">
     <div>
         <image-labelling-header [_onChange]="onChangeSchema" (_navigate)="navigate($event)"></image-labelling-header>
-        <image-labelling-info [_onChange]="onChangeSchema" (_navigate)="showBase64Image($event)"></image-labelling-info>
+        <image-labelling-info [_onChange]="onChangeSchema" (_onClick)="navigate($event)"></image-labelling-info>
     </div>
 
     <div class="content-container">

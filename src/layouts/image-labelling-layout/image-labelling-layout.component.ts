@@ -282,9 +282,8 @@ export class ImageLabellingLayoutComponent implements OnInit {
             this._router.navigate([url]);
         }
         if (thumbnailAction) {
-            const { uuid } = this.selectedThumbnail;
-            console.log(uuid);
-            this.showBase64Image({ uuid });
+            let { uuid } = this.selectedThumbnail;
+            this.showBase64Image({ uuid: thumbnailAction === 1 ? (uuid += 1) : (uuid -= 1) });
         }
     };
 
@@ -292,15 +291,21 @@ export class ImageLabellingLayoutComponent implements OnInit {
         { uuid }: T,
         projectName: string = this.selectedProjectName || this.inputProjectName,
     ): void => {
-        const getImage$ = this._imgLabelService.getBase64Thumbnail(projectName, uuid);
+        if (uuid && this.validateUuid(uuid)) {
+            const getImage$ = this._imgLabelService.getBase64Thumbnail(projectName, uuid);
 
-        getImage$.pipe(first()).subscribe(
-            ({ message, img_src, errormessage }) => {
-                message === 1 ? (this.selectedThumbnail.img_src = img_src) : console.error(errormessage);
-            },
-            (err: Error) => console.error(err),
-            () => {},
-        );
+            getImage$.pipe(first()).subscribe(
+                ({ message, img_src, errormessage }) => {
+                    message === 1 ? (this.selectedThumbnail = { img_src, uuid }) : console.error(errormessage);
+                },
+                (err: Error) => console.error(err),
+                () => {},
+            );
+        }
+    };
+
+    validateUuid = (uuid: number): IThumbnailMetadata | undefined => {
+        return this.thumbnailList.find((thumbnail) => thumbnail.uuid === uuid);
     };
 
     setLabelListLocalStorage = (labelList: ILabelList): void => {

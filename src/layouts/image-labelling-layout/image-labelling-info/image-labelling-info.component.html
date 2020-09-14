@@ -13,7 +13,7 @@
                         [src]="logo.imgPath"
                         [alt]="logo.alt"
                         [title]="logo.hoverLabel"
-                        (click)="(logo.onClick)"
+                        (click)="logo.onClick()"
                     />
                 </div>
                 <div class="totalThumbnail">
@@ -28,7 +28,7 @@
                         [src]="logo.imgPath"
                         [alt]="logo.alt"
                         [title]="logo.hoverLabel"
-                        (click)="(logo.onClick)"
+                        (click)="logo.onClick()"
                     />
                 </div>
             </ng-template>
@@ -43,6 +43,7 @@
                     [src]="logo.imgPath"
                     [alt]="logo.alt"
                     [title]="logo.hoverLabel"
+                    (click)="logo.onClick()"
                 />
             </div>
         </ng-container>

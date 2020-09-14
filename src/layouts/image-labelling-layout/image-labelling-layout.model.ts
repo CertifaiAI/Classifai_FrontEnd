@@ -81,7 +81,8 @@ type imageLabellingConfigs = {
     // inputType?: string;
     // accept?: 'image/x-png,image/jpeg';
     /** @function responsible for toggling function */
-    onClick?: (...args: any[]) => any;
+    onClick?: any;
+    // onClick?: (...args: any[]) => any;
     /** @function responsible for uploading thumbnail(s) */
     // onUpload?();
 };

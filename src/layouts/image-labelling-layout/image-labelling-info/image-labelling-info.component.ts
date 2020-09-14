@@ -19,7 +19,7 @@ import {
 export class ImageLabellingInfoComponent implements OnInit, OnChanges {
     // @Input() _selectedThumbnail: string;
     @Input() _onChange!: Props;
-    @Output() _navigate: EventEmitter<EventEmitter_Info> = new EventEmitter();
+    @Output() _onClick: EventEmitter<EventEmitter_Info> = new EventEmitter();
     imgRelativePath: string = `../../../assets/classifai-image-labelling-layout/`;
     jsonSchema!: IimageLabellingSchema;
     constructor() {}
@@ -35,7 +35,7 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
                     imgPath: `${this.imgRelativePath}${this._onChange.theme}/previous.png`,
                     hoverLabel: `Pervious`,
                     alt: `Previous`,
-                    onClick: () => (this.emitParentEvent({ thumbnailAction: -1 }), console.log('xx')),
+                    onClick: () => this.emitParentEvent({ thumbnailAction: -1 }),
                 },
                 {
                     imgPath: `${this.imgRelativePath}${this._onChange.theme}/next.png`,
@@ -70,8 +70,8 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
     };
 
     emitParentEvent = <T extends EventEmitter_Info>({ url, thumbnailAction }: T): void => {
-        console.log(thumbnailAction);
-        url ? this._navigate.emit({ url, thumbnailAction }) : null;
+        // console.log(url, thumbnailAction);
+        this._onClick.emit({ url, thumbnailAction });
     };
 
     ngOnChanges(changes: SimpleChanges): void {
