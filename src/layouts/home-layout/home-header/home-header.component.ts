@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
     styleUrls: ['./home-header.component.css'],
 })
 export class HomeHeaderComponent implements OnInit {
-    languageArr: (string | RegExpMatchArray)[] = [];
+    languageArr: (string | null)[] = [];
     headerImage: string = '../../assets/classifai-home-layout/Classifai_PoweredBy_Horizontal_light.png';
 
     constructor(public _translate: TranslateService, private _languageService: LanguageService) {

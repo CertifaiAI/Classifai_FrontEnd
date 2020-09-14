@@ -97,9 +97,9 @@ export class ImageLabellingService {
     };
 
     getThumbnailList = (projectName: string, uuid: number): Observable<IThumbnailMetadata> => {
-        return projectName && uuid
-            ? this.http.get<IThumbnailMetadata>(`${this.hostPort}bndbox/projects/${projectName}/uuid/${uuid}/thumbnail`)
-            : null;
+        return this.http.get<IThumbnailMetadata>(
+            `${this.hostPort}bndbox/projects/${projectName}/uuid/${uuid}/thumbnail`,
+        );
     };
 
     localUploadThumbnail = (projectName: string, fileType: string = 'folder'): Observable<IMessage> => {
