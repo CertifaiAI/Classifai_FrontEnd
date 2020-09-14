@@ -176,11 +176,14 @@ export class ImageLabellingLayoutComponent implements OnInit {
                 flatMap((data) => data),
             )
             .subscribe(
-                (res) => (this.thumbnailList = [...this.thumbnailList, res]),
+                (res) => {
+                    this.thumbnailList = [...this.thumbnailList, res];
+                    this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: this.thumbnailList.length };
+                },
                 (error: Error) => console.error(error),
                 () => {
                     this._modalService.close();
-                    console.log(this.thumbnailList);
+                    // console.log(this.thumbnailList);
                 },
             );
 

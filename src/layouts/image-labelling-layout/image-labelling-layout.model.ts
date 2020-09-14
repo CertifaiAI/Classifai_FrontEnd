@@ -92,7 +92,9 @@ export interface IimageLabellingSchema {
 }
 
 /** @type mainly used for passing props with generic type while ability to allow conditional of generic type usage */
-export type Props<T = undefined> = {} & (T extends undefined ? { theme: string; status?: boolean } : T);
+export type Props<T = undefined> = {} & (T extends undefined
+    ? { theme: string; status?: boolean; totalNumThumbnail: number }
+    : T);
 
 // export type TabsProps = {
 //   [tab: string]: {

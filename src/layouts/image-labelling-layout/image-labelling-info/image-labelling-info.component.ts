@@ -72,9 +72,10 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        const { theme } = changes._onChange.currentValue;
+        const { theme, totalNumThumbnail } = changes._onChange.currentValue;
         // console.log(currentValue);
         this._onChange.theme = theme;
+        this._onChange.totalNumThumbnail = totalNumThumbnail;
         this.bindImagePath();
     }
 

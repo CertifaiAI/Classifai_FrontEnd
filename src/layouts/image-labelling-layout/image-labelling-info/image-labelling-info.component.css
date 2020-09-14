@@ -25,11 +25,12 @@
     display: flex;
     margin-right: 19vw;
 }
-div.utility-icon-container:nth-last-child(3) {
+
+/* div.utility-icon-container:nth-last-child(3) {
     border-right: 0.1vw solid;
     border-right-color: darkgray;
     max-height: 4.2vh;
-}
+} */
 
 .logo-container {
     min-width: 2.2vw;
@@ -63,6 +64,13 @@ div.utility-icon-container:nth-last-child(3) {
     display: flex;
     min-height: 3.5vh;
     max-height: 3.5vh;
+}
+
+.totalThumbnail {
+    font-size: 1.7vh;
+    padding: 0.4vw 1vw 0 1vw;
+    display: inline-block;
+    color: white;
 }
 
 .img-container:hover .img-description {
