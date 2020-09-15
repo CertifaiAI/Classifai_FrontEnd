@@ -83,7 +83,7 @@ type imageLabellingConfigs = {
   /** @function responsible for toggling function */
   onClick?();
   /** @function responsible for uploading thumbnail(s) */
-  // onUpload?();
+  //  onUpload?();
 };
 
 /** @interface backbone of icons' object schema */

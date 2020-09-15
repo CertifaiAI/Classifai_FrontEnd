@@ -30,4 +30,5 @@ export type Panloc = {
 };
 export type progressTuple = { url: string; data: Metadata };
 export type stages = { stage: Metadata; method: string };
-export type rules = { scroll: boolean };
+export type rules = { scroll: boolean; drag: boolean; draw: boolean };
+export type xycoordinate = { x: number; y: number };
