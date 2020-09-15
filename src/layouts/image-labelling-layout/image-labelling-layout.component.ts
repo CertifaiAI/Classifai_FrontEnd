@@ -203,6 +203,7 @@ export class ImageLabellingLayoutComponent implements OnInit {
     };
 
     onToggleTab = <T extends TabsProps>({ name, closed }: T): void => {
+        console.log(name, closed);
         this.tabStatus = this.tabStatus.map((tab) =>
             tab.name.toLowerCase() === name.toLowerCase() ? { ...tab, closed } : { ...tab },
         );

@@ -1,4 +1,4 @@
-import { EventEmitter_Info, IimageLabellingSchema, Props } from '../image-labelling-layout.model';
+import { ThumbnailProps, IimageLabellingSchema, Props } from '../image-labelling-layout.model';
 import {
     Component,
     EventEmitter,
@@ -19,7 +19,7 @@ import {
 export class ImageLabellingInfoComponent implements OnInit, OnChanges {
     // @Input() _selectedThumbnail: string;
     @Input() _onChange!: Props;
-    @Output() _onClick: EventEmitter<EventEmitter_Info> = new EventEmitter();
+    @Output() _onClick: EventEmitter<ThumbnailProps> = new EventEmitter();
     imgRelativePath: string = `../../../assets/classifai-image-labelling-layout/`;
     jsonSchema!: IimageLabellingSchema;
     constructor() {}
@@ -69,7 +69,7 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
         };
     };
 
-    emitParentEvent = <T extends EventEmitter_Info>({ url, thumbnailAction }: T): void => {
+    emitParentEvent = <T extends ThumbnailProps>({ url, thumbnailAction }: T): void => {
         // console.log(url, thumbnailAction);
         this._onClick.emit({ url, thumbnailAction });
     };

@@ -15,7 +15,7 @@
     min-width: 16.3vw;
     max-width: 16.3vw;
     /* min-height: 40vh;
-  max-height: 40vh; */
+max-height: 40vh; */
     background: rgb(105, 105, 105);
     outline: 0.0625vw inset white;
     border: none;
@@ -31,28 +31,16 @@
     flex: 1 1 auto;
 }
 
-.flex-content {
-    display: flex;
-    flex-flow: column;
-    height: 100%;
-}
-
-.content-height {
-    max-height: 100vh;
-    min-height: 40vh;
-    height: auto;
-}
-
 .closed {
     display: none;
 }
 
 .utility-inner-container {
-    /* max-height: 33.5vh; */
+    max-height: 33.5vh;
     padding: 2.5vh 0 0 0.2vw;
     scroll-behavior: smooth;
     overflow: hidden auto;
-    z-index: 100;
+    z-index: -1;
     min-width: 16vw;
     max-width: 16vw;
 }
@@ -182,7 +170,7 @@
     justify-content: flex-start;
     align-items: center;
     /* justify-content: center;
-  align-items: baseline; */
+align-items: baseline; */
 }
 
 .img-style {

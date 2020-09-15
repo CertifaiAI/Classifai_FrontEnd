@@ -1,5 +1,5 @@
 import { isEqual } from 'lodash-es';
-import { Props, IThumbnailMetadata, TabsProps, SelectedThumbnailProps } from '../image-labelling-layout.model';
+import { IThumbnailMetadata, Props, SelectedThumbnailProps, TabsProps } from '../image-labelling-layout.model';
 import {
     Component,
     OnInit,
@@ -58,7 +58,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
     checkStateEqual = (currObj: object, prevObj: object): boolean => !isEqual(currObj, prevObj);
 
     ngOnChanges(changes: SimpleChanges): void {
-        // console.log(changes);
+        console.log(changes);
         if (changes._thumbnailList) {
             const { currentValue }: { currentValue: Props<IThumbnailMetadata[]> } = changes._thumbnailList;
             // console.log(currentValue);

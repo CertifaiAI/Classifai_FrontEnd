@@ -109,15 +109,15 @@ export type TabsProps = {
     closed: boolean;
 };
 
-export type EvenEmitterUrlProps = {
+export type UrlProps = {
     url: string;
 };
 
-export type EventEmitter_Info = {
+export type ThumbnailProps = {
     thumbnailAction?: 1 | -1;
-} & Partial<EvenEmitterUrlProps>;
+} & Partial<UrlProps>;
 
-export type EventEmitter_Layout = EventEmitter_Info;
+export type EventEmitter_Layout = ThumbnailProps;
 
 export type SelectedThumbnailProps = {
     uuid: number;

@@ -20,10 +20,10 @@ import { SharedModule } from 'src/shared/shared.module';
         ImageLabellingLeftSidebarComponent,
         ImageLabellingImageComponent,
         ImageLabellingProjectComponent,
-        ImageLabellingRightSidebarComponent,
         // ImageLabellingLabelComponent,
+        // ImageLabellingAnnotationComponent,
+        ImageLabellingRightSidebarComponent,
         ImageLabellingFooterComponent,
-        // ImageLabellingBoxComponent,
     ],
 })
 export class ImageLabellingLayoutModule {}
