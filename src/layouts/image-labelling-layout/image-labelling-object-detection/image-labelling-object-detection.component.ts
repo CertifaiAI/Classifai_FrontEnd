@@ -61,9 +61,22 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
   @HostListener('mousedown', ['$event'])
   MouseDown(event: MouseEvent) {
     try {
-      this.mousedown = true;
-      if (this.rules.drag) {
-        this.OD.setPanXY(event.offsetX, event.offsetY);
+      if (
+        this.OD.mouseClickWithinPointPath(
+          this.SelectMetadata.img_x,
+          this.SelectMetadata.img_y,
+          this.SelectMetadata.img_w,
+          this.SelectMetadata.img_h,
+          event.offsetX,
+          event.offsetY
+        )
+      ) {
+        this.mousedown = true;
+        if (this.rules.drag) {
+          this.OD.setPanXY(event.offsetX, event.offsetY);
+        }
+        if (this.rules.draw) {
+        }
       }
     } catch (err) {}
   }
@@ -71,32 +84,54 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
   @HostListener('mouseup', ['$event'])
   MouseUp(event: MouseEvent) {
     try {
-      if (this.rules.drag && this.mousedown) {
-        this.OD.SetGlobalXY(
+      if (
+        this.OD.mouseClickWithinPointPath(
           this.SelectMetadata.img_x,
-          this.SelectMetadata.img_y
-        );
+          this.SelectMetadata.img_y,
+          this.SelectMetadata.img_w,
+          this.SelectMetadata.img_h,
+          event.offsetX,
+          event.offsetY
+        )
+      ) {
+        if (this.rules.drag && this.mousedown) {
+          this.OD.SetGlobalXY(
+            this.SelectMetadata.img_x,
+            this.SelectMetadata.img_y
+          );
+        }
+        this.mousedown = false;
       }
-      this.mousedown = false;
     } catch (err) {}
   }
 
   @HostListener('mousemove', ['$event'])
   MouseMove(event: MouseEvent) {
     try {
-      if (this.rules.drag && this.mousedown) {
-        let diff: { diffX: number; diffY: number } = this.OD.GetdiffXY(
-          event.offsetX,
-          event.offsetY
-        );
-        this.SelectMetadata.img_x = diff.diffX;
-        this.SelectMetadata.img_y = diff.diffY;
-        this.redrawImages(
+      if (
+        this.OD.mouseClickWithinPointPath(
           this.SelectMetadata.img_x,
           this.SelectMetadata.img_y,
           this.SelectMetadata.img_w,
-          this.SelectMetadata.img_h
-        );
+          this.SelectMetadata.img_h,
+          event.offsetX,
+          event.offsetY
+        )
+      ) {
+        if (this.rules.drag && this.mousedown) {
+          let diff: { diffX: number; diffY: number } = this.OD.GetdiffXY(
+            event.offsetX,
+            event.offsetY
+          );
+          this.SelectMetadata.img_x = diff.diffX;
+          this.SelectMetadata.img_y = diff.diffY;
+          this.redrawImages(
+            this.SelectMetadata.img_x,
+            this.SelectMetadata.img_y,
+            this.SelectMetadata.img_w,
+            this.SelectMetadata.img_h
+          );
+        }
       }
     } catch (err) {}
   }
@@ -160,8 +195,6 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
   redrawImages(newX: number, newY: number, newW: number, newH: number) {
     try {
       this.clearcanvas();
-      console.log(this.img);
-      console.log(newX, newY, newW, newH);
       this.context.drawImage(this.img, newX, newY, newW, newH);
     } catch (err) {}
   }
