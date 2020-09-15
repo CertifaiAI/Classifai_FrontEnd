@@ -12,6 +12,7 @@
 .utility-right-project-container {
     /* position: relative; */
     /* top: 4.6vh; */
+    height: 100%;
     min-width: 16.3vw;
     max-width: 16.3vw;
     /* min-height: 40vh;
@@ -40,7 +41,6 @@
 .content-height {
     max-height: 100vh;
     min-height: 40vh;
-    height: auto;
 }
 
 .closed {
@@ -105,7 +105,7 @@
     overflow: hidden;
 }
 
-.tab:before {
+.tab::before {
     position: absolute;
     content: '';
     top: 4vh;
@@ -117,14 +117,14 @@
     z-index: -1;
 }
 
-.utility-right-project-container:after {
+.utility-right-project-container::after {
     position: absolute;
     content: '';
     top: 0;
     min-width: 8.5vw;
     max-width: 8.5vw;
-    min-height: 10vh;
-    max-height: 10vh;
+    min-height: 4vh;
+    max-height: 4vh;
     background: #383535;
     z-index: -1;
     font-size: 1.5vh;
@@ -168,6 +168,8 @@
     color: white;
     /* background: grey; */
     text-align: center;
+    /* float is needed due to flex direction column would glitch the close button to left side permanently */
+    float: right;
 }
 
 .div-close:active {
