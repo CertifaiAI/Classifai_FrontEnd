@@ -76,6 +76,18 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
           this.OD.setPanXY(event.offsetX, event.offsetY);
         }
         if (this.rules.draw) {
+          this.rules.scroll = false;
+
+          if (
+            this.OD.GetCurrentClickBox(
+              event.offsetX,
+              event.offsetY,
+              this.SelectMetadata.bnd_box
+            ).box !== -1
+          ) {
+            //draw new box
+          } else {
+          }
         }
       }
     } catch (err) {}
