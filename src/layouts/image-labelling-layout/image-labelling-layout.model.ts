@@ -2,7 +2,7 @@ type errormessage = string;
 type content = string[];
 type message = boolean | number;
 type progress = any;
-type labellist = string[];
+type label_list = string[];
 type uuid_list = number;
 type img_src = string;
 
@@ -30,7 +30,7 @@ export interface IBase64Img {
 }
 
 export interface ILabelList {
-    labellist: labellist;
+    label_list: label_list;
     message: message;
     progress: progress;
     uuid_list: uuid_list[];
@@ -107,7 +107,16 @@ export type Props<T = undefined> = {} & (T extends undefined
 export type TabsProps = {
     name: string;
     closed: boolean;
+    label_list?: string[];
 };
+
+// export type TabsProps = {
+//   [key: string]: {
+//       name: string;
+//       closed: boolean;
+//       label_list?: string[];
+//   };
+// };
 
 export type UrlProps = {
     url: string;

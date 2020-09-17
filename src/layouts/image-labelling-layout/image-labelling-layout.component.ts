@@ -50,6 +50,7 @@ export class ImageLabellingLayoutComponent implements OnInit {
         {
             name: 'Label',
             closed: false,
+            label_list: [],
         },
         {
             name: 'Annotation',
@@ -169,8 +170,11 @@ export class ImageLabellingLayoutComponent implements OnInit {
             .pipe(
                 first(),
                 flatMap(() => forkJoin([streamProj$, streamProjStatus$])),
-                mergeMap(([resExist, { message, uuid_list }]) => {
+                mergeMap(([resExist, { message, uuid_list, label_list }]) => {
                     if (message === 2) {
+                        this.tabStatus = this.tabStatus.map((tab) =>
+                            tab.label_list ? (tab.label_list = label_list) && tab : tab,
+                        );
                         return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
                     } else {
                         const ThumbnailResponse = interval(500).pipe(
@@ -190,6 +194,7 @@ export class ImageLabellingLayoutComponent implements OnInit {
                 (res) => {
                     this.thumbnailList = [...this.thumbnailList, res];
                     this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: this.thumbnailList.length };
+                    // this.tabStatus = [...this.tabStatus, { name: 'Label', closed, label_list: [] }];
                 },
                 (error: Error) => console.error(error),
                 () => {
