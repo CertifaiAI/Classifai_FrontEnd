@@ -50,6 +50,7 @@ export class ImageLabellingLayoutComponent implements OnInit {
         {
             name: 'Label',
             closed: false,
+            // label_list: ['default', 'dsa'],
             label_list: [],
         },
         {

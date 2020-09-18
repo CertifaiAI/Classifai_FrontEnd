@@ -147,8 +147,13 @@
     color: white;
 }
 
-.tab-close {
-    float: right;
+.flex-tab-icons {
+    display: flex;
+    width: 100%;
+}
+
+.tab-close-thumbnail {
+    /* float: right;
     vertical-align: middle;
     margin-right: 6vw;
     min-height: 4vh;
@@ -158,6 +163,33 @@
     line-height: 4vh;
     cursor: pointer;
     text-align: center;
+    flex: 1 1; */
+
+    float: right;
+    vertical-align: middle;
+    min-height: 4vh;
+    max-height: 4vh;
+    color: rgb(105, 105, 105);
+    font-size: 2vh;
+    line-height: 4vh;
+    text-align: center;
+    margin-left: 3vw;
+    justify-content: center;
+    display: inline-grid;
+}
+
+.tab-close-thumbnailless {
+    float: right;
+    vertical-align: middle;
+    min-height: 4vh;
+    max-height: 4vh;
+    color: rgb(105, 105, 105);
+    font-size: 2vh;
+    line-height: 4vh;
+    text-align: center;
+    flex: 1 0 60%;
+    justify-content: right;
+    display: inline-grid;
 }
 
 .div-close {
@@ -166,6 +198,7 @@
     min-height: 4vh;
     max-height: 4vh;
     color: white;
+    cursor: pointer;
     /* background: grey; */
     text-align: center;
     /* float is needed due to flex direction column would glitch the close button to left side permanently */
@@ -174,6 +207,25 @@
 
 .div-close:active {
     background: grey;
+}
+
+.extra-icons {
+    cursor: pointer;
+}
+
+.extra-icons:active {
+    background: grey;
+}
+
+.tab-extra-icons {
+    float: right;
+    vertical-align: middle;
+    font-size: 2vh;
+    line-height: 4vh;
+    cursor: pointer;
+    text-align: center;
+    color: white;
+    flex: 1 0 15%;
 }
 
 .img-container {
