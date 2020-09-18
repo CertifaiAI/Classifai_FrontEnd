@@ -6,7 +6,7 @@
                 [ngClass]="checkCloseToggle(tab)"
                 [attr.data-index]="i"
             >
-                <label class="label">{{ tab.name }}</label>
+                <label class="tab-name">{{ tab.name }}</label>
                 <span class="tab-close-thumbnail"><div class="div-close" (click)="onClose(tab)">x</div></span>
                 <div class="utility-inner-container" id="inner-container">
                     <!-- <section *ngFor="let thumbnail of _thumbnailList" #section> -->
@@ -31,7 +31,7 @@
                     [attr.data-index]="i"
                     [ngClass]="checkCloseToggle(tab)"
                 >
-                    <label class="label">{{ tab.name }}</label>
+                    <label class="tab-name">{{ tab.name }}</label>
                     <div class="flex-tab-icons">
                         <span class="tab-close-thumbnailless"
                             ><div class="div-close" (click)="onClose(tab)">x</div></span
@@ -51,11 +51,11 @@
                     <div class="utility-inner-container">
                         <div class="flex-item">
                             <ng-container *ngFor="let label of tab.label_list">
-                                <div style="display: flex; justify-content: center; width: 100%">
-                                    <label style="flex: 1 1 80%; display: flex; justify-content: center">
+                                <div class="flex-center-width">
+                                    <label class="label">
                                         {{ label }}
                                     </label>
-                                    <label style="flex: 1 1 20%"
+                                    <label class="action"
                                         ><ng-container *ngIf="!action"
                                             ><span (click)="onDleteLabel(label)">Delete</span></ng-container
                                         ></label
@@ -72,7 +72,7 @@
                     [attr.data-index]="i"
                     [ngClass]="checkCloseToggle(tab)"
                 >
-                    <label class="label">{{ tab.name }}</label>
+                    <label class="tab-name">{{ tab.name }}</label>
                     <div class="flex-tab-icons">
                         <span class="tab-close-thumbnailless"
                             ><div class="div-close" (click)="onClose(tab)">x</div></span
