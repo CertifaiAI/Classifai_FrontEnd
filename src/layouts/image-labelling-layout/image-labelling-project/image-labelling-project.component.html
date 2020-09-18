@@ -51,11 +51,16 @@
                     <div class="utility-inner-container">
                         <div class="flex-item">
                             <ng-container *ngFor="let label of tab.label_list">
-                                <!-- <div> -->
-                                <label>
-                                    {{ label }}
-                                </label>
-                                <!-- </div> -->
+                                <div style="display: flex; justify-content: center; width: 100%">
+                                    <label style="flex: 1 1 80%; display: flex; justify-content: center">
+                                        {{ label }}
+                                    </label>
+                                    <label style="flex: 1 1 20%"
+                                        ><ng-container *ngIf="!action"
+                                            ><span (click)="onDleteLabel(label)">Delete</span></ng-container
+                                        ></label
+                                    >
+                                </div>
                             </ng-container>
                         </div>
                     </div>

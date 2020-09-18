@@ -29,7 +29,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
     @Input() _tabStatus: TabsProps[] = [];
     @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
     @Output() _onClick: EventEmitter<SelectedThumbnailProps> = new EventEmitter();
-
+    action: number = -1;
     constructor() {}
 
     ngOnInit(): void {}
@@ -61,13 +61,18 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
 
     onIconClick = <T extends ActionTabProps>({ tabType, action }: T): void => {
         console.log(tabType, action);
+        this.action = action;
+    };
+
+    onDleteLabel = (label: string): void => {
+        console.log(label);
     };
 
     checkCloseToggle = <T extends TabsProps>({ closed }: T): string | null => (closed ? 'closed' : null);
 
     checkStateEqual = (currObj: object, prevObj: object): boolean => !isEqual(currObj, prevObj);
 
-    ngOnChanges(changes: SimpleChanges): void {
+    ngOnChanges = (changes: SimpleChanges): void => {
         console.log(changes);
         if (changes._thumbnailList) {
             const { currentValue }: { currentValue: Props<IThumbnailMetadata[]> } = changes._thumbnailList;
@@ -82,5 +87,5 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
             const { currentValue }: { currentValue: TabsProps[] } = changes._tabStatus;
             this._tabStatus = [...currentValue];
         }
-    }
+    };
 }
