@@ -1,5 +1,11 @@
 import { isEqual } from 'lodash-es';
-import { IThumbnailMetadata, Props, SelectedThumbnailProps, TabsProps } from '../image-labelling-layout.model';
+import {
+    IThumbnailMetadata,
+    Props,
+    SelectedThumbnailProps,
+    TabsProps,
+    ActionTabProps,
+} from '../image-labelling-layout.model';
 import {
     Component,
     OnInit,
@@ -51,6 +57,10 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
 
     onClick = <T extends Omit<SelectedThumbnailProps, 'img_src'>>({ uuid }: T): void => {
         this._onClick.emit({ uuid, img_src: '' });
+    };
+
+    onIconClick = <T extends ActionTabProps>({ tabType, action }: T): void => {
+        console.log(tabType, action);
     };
 
     checkCloseToggle = <T extends TabsProps>({ closed }: T): string | null => (closed ? 'closed' : null);

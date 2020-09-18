@@ -123,6 +123,7 @@ export type UrlProps = {
 };
 
 export type ThumbnailProps = {
+    /** @property {number} 1 represents next photo, whereas -1 represent previous photo */
     thumbnailAction?: 1 | -1;
 } & Partial<UrlProps>;
 
@@ -131,3 +132,9 @@ export type EventEmitter_Layout = ThumbnailProps;
 export type SelectedThumbnailProps = {
     uuid: number;
 } & Pick<IBase64Img, 'img_src'>;
+
+export type ActionTabProps = {
+    tabType: string;
+    /** @property {number} 1 represents add, whereas 0 represent remove */
+    action: 1 | 0;
+};

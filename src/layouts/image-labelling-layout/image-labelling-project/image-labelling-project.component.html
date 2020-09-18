@@ -36,8 +36,16 @@
                         <span class="tab-close-thumbnailless"
                             ><div class="div-close" (click)="onClose(tab)">x</div></span
                         >
-                        <span class="tab-extra-icons"><div class="extra-icons">+</div></span>
-                        <span class="tab-extra-icons"><div class="extra-icons">-</div></span>
+                        <span class="tab-extra-icons"
+                            ><div class="extra-icons" (click)="onIconClick({ tabType: 'label', action: 1 })">
+                                +
+                            </div></span
+                        >
+                        <span class="tab-extra-icons"
+                            ><div class="extra-icons" (click)="onIconClick({ tabType: 'label', action: 0 })">
+                                -
+                            </div></span
+                        >
                     </div>
                     <!-- <section class="inner-content"></section> -->
                     <div class="utility-inner-container">
