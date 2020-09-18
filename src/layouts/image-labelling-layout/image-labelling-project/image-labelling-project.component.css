@@ -89,6 +89,18 @@
     position: absolute;
 }
 
+.flex-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1.5vh;
+    color: white;
+}
+
 .label {
     /* line-height: 4vh; */
     font-size: 1.7vh;

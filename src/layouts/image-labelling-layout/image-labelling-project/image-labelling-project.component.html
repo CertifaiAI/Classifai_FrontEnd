@@ -41,11 +41,15 @@
                     </div>
                     <!-- <section class="inner-content"></section> -->
                     <div class="utility-inner-container">
-                        <ng-container *ngFor="let label of tab.label_list">
-                            <div>
-                                {{ label }}
-                            </div>
-                        </ng-container>
+                        <div class="flex-item">
+                            <ng-container *ngFor="let label of tab.label_list">
+                                <!-- <div> -->
+                                <label>
+                                    {{ label }}
+                                </label>
+                                <!-- </div> -->
+                            </ng-container>
+                        </div>
                     </div>
                 </div>
             </ng-container>
