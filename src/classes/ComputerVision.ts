@@ -1,4 +1,4 @@
-import { xycoordinate, Boundingbox } from './CustomType';
+import { xycoordinate, Boundingbox, Metadata } from './CustomType';
 import { utils } from './utils';
 
 export class ObjectDetection {
@@ -39,11 +39,90 @@ export class ObjectDetection {
       return rtobj;
     } catch (err) {
       console.log(
-        'ObjectDetection public GetdiffXY(offsetX: number,offsetY: number): { diffX: number; diffY: number }',
+        'ObjectDetection GetdiffXY(offsetX: number,offsetY: number): { diffX: number; diffY: number }',
         err.name + ': ',
         err.message
       );
       return null;
+    }
+  }
+
+  public setCurrentX1Y1(MouseX: number, MouseY: number): void {
+    try {
+      if (
+        MouseX !== null &&
+        MouseY !== null &&
+        MouseX !== undefined &&
+        MouseY !== undefined
+      ) {
+        this.CurrentDrawing.x1 = MouseX;
+        this.CurrentDrawing.y1 = MouseY;
+      }
+    } catch (err) {
+      console.log(
+        'ObjectDetection setCurrentX1Y1(MouseX:number, MouseY:number):void',
+        err.name + ': ',
+        err.message
+      );
+    }
+  }
+
+  public setCurrentX2Y2(MouseX: number, MouseY: number): void {
+    try {
+      if (
+        MouseX !== null &&
+        MouseY !== null &&
+        MouseX !== undefined &&
+        MouseY !== undefined
+      ) {
+        this.CurrentDrawing.x2 = MouseX;
+        this.CurrentDrawing.y2 = MouseY;
+      }
+    } catch (err) {
+      console.log(
+        'ObjectDetection setCurrentX2Y2(MouseX:number, MouseY:number):void',
+        err.name + ': ',
+        err.message
+      );
+    }
+  }
+
+  private mouseMoveBox() {
+    try {
+    } catch (err) {}
+  }
+
+  public MouseMoveDrawEnable(
+    MouseX: number,
+    MouseY: number,
+    SelectedMeta: Metadata
+  ): void {
+    try {
+      if (this.CurrentClickedBox.box === -1) {
+        this.setCurrentX2Y2(MouseX, MouseY);
+      }
+
+      //TODO:continue here
+    } catch (err) {}
+  }
+
+  public MouseDownDrawEnable(
+    MouseX: number,
+    MouseY: number,
+    BBox: Boundingbox[]
+  ): number {
+    try {
+      this.GetCurrentClickBox(MouseX, MouseY, BBox);
+      this.setCurrentX1Y1(MouseX, MouseY);
+      this.setCurrentX2Y2(MouseX, MouseY);
+      if (this.CurrentClickedBox.box !== -1) {
+        this.CurrentSelectedBndBox = this.CurrentClickedBox.box;
+      } else {
+        this.CurrentSelectedBndBox = undefined;
+      }
+      return this.CurrentClickedBox.box;
+    } catch (err) {
+      return -1;
     }
   }
 

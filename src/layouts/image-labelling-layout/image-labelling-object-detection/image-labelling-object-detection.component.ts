@@ -26,6 +26,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     scroll: true,
     drag: true,
     draw: true,
+    selectedBox: -1,
   };
   @Input() imgInput: string = '';
   @Input() SelectMetadata: Metadata = null;
@@ -77,17 +78,17 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
         }
         if (this.rules.draw) {
           this.rules.scroll = false;
-
-          if (
-            this.OD.GetCurrentClickBox(
-              event.offsetX,
-              event.offsetY,
-              this.SelectMetadata.bnd_box
-            ).box !== -1
-          ) {
-            //draw new box
-          } else {
-          }
+          this.rules.selectedBox = this.OD.MouseDownDrawEnable(
+            event.offsetX,
+            event.offsetY,
+            this.SelectMetadata.bnd_box
+          );
+          this.redrawImages(
+            this.SelectMetadata.img_x,
+            this.SelectMetadata.img_y,
+            this.SelectMetadata.img_w,
+            this.SelectMetadata.img_h
+          );
         }
       }
     } catch (err) {}
@@ -137,6 +138,19 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
           );
           this.SelectMetadata.img_x = diff.diffX;
           this.SelectMetadata.img_y = diff.diffY;
+          this.redrawImages(
+            this.SelectMetadata.img_x,
+            this.SelectMetadata.img_y,
+            this.SelectMetadata.img_w,
+            this.SelectMetadata.img_h
+          );
+        }
+        if (this.rules.draw && this.mousedown) {
+          this.OD.MouseMoveDrawEnable(
+            event.offsetX,
+            event.offsetY,
+            this.SelectMetadata
+          );
           this.redrawImages(
             this.SelectMetadata.img_x,
             this.SelectMetadata.img_y,
@@ -208,6 +222,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     try {
       this.clearcanvas();
       this.context.drawImage(this.img, newX, newY, newW, newH);
+      this.mycanvas.nativeElement.focus();
     } catch (err) {}
   }
 
