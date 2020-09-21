@@ -133,8 +133,16 @@ export type SelectedThumbnailProps = {
     uuid: number;
 } & Pick<IBase64Img, 'img_src'>;
 
-export type ActionTabProps = {
-    tabType: string;
+type TabAction = {
     /** @property {number} 1 represents add, whereas 0 represent remove */
     action: 1 | 0;
 };
+
+export type ActionTabProps = {
+    tabType: string;
+} & TabAction;
+
+export type SelectedLabelProps = {
+    selectedLabel: string;
+    label_list: string[];
+} & TabAction;

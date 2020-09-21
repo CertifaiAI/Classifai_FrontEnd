@@ -13,6 +13,7 @@ import {
     TabsProps,
     EventEmitter_Layout,
     SelectedThumbnailProps,
+    SelectedLabelProps,
 } from './image-labelling-layout.model';
 import { Component, HostListener, OnInit, ChangeDetectorRef } from '@angular/core';
 
@@ -199,6 +200,10 @@ export class ImageLabellingLayoutComponent implements OnInit {
                 },
                 (error: Error) => console.error(error),
                 () => {
+                    const [{ label_list }] = this.tabStatus;
+                    label_list && label_list.length < 1
+                        ? this.onProcessLabel({ selectedLabel: '', label_list: [], action: 1 })
+                        : null;
                     this._modalService.close();
                     // console.log(this.thumbnailList);
                 },
@@ -315,13 +320,39 @@ export class ImageLabellingLayoutComponent implements OnInit {
         return this.thumbnailList.find((thumbnail) => thumbnail.uuid === uuid);
     };
 
+    onProcessLabel = <T extends SelectedLabelProps>({ selectedLabel, label_list, action }: T) => {
+        console.log(selectedLabel, label_list, action);
+        const newLabelList: string[] =
+            selectedLabel && !action ? label_list.filter((label) => label !== selectedLabel) : label_list;
+        const projectName: string = this.selectedProjectName || this.inputProjectName;
+        const updateLabel$ = this._imgLabelService.updateLabelList(
+            projectName,
+            newLabelList.length > 0 ? newLabelList : [],
+        );
+
+        updateLabel$.pipe(first()).subscribe(({ message }) => {
+            message === 1
+                ? (this.tabStatus = this.tabStatus.map((tab) => {
+                      if (tab.label_list) {
+                          // const newLabelList = tab.label_list.filter((label) => label !== selectedLabel);
+                          return {
+                              ...tab,
+                              label_list: newLabelList,
+                          };
+                      }
+                      return tab;
+                  }))
+                : console.error(`Error while updating label`);
+        });
+    };
+
     setLabelListLocalStorage = (labelList: ILabelList): void => {
         console.log(labelList);
     };
 
     createProject = (projectName: string): void => {
         const createProj$ = this._imgLabelService.createNewProject(projectName);
-        const updateLabel$ = this._imgLabelService.updateLabel(projectName, this.labelArr);
+        const updateLabel$ = this._imgLabelService.updateLabelList(projectName, this.labelArr);
 
         createProj$
             .pipe(

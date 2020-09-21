@@ -5,6 +5,7 @@ import {
     SelectedThumbnailProps,
     TabsProps,
     ActionTabProps,
+    SelectedLabelProps,
 } from '../image-labelling-layout.model';
 import {
     Component,
@@ -16,11 +17,12 @@ import {
     Output,
     EventEmitter,
 } from '@angular/core';
+import { HTMLElementEvent } from 'src/shared/type-casting/interfaces/field.model';
 
 @Component({
     selector: 'image-labelling-project',
     templateUrl: './image-labelling-project.component.html',
-    styleUrls: ['./image-labelling-project.component.css'],
+    styleUrls: ['./image-labelling-project.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingProjectComponent implements OnInit, OnChanges {
@@ -28,8 +30,13 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
     @Input() _thumbnailList!: Props<IThumbnailMetadata[]>;
     @Input() _tabStatus: TabsProps[] = [];
     @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
-    @Output() _onClick: EventEmitter<SelectedThumbnailProps> = new EventEmitter();
+    @Output() _onClickThumbNail: EventEmitter<SelectedThumbnailProps> = new EventEmitter();
+    @Output() _onClickLabel: EventEmitter<SelectedLabelProps> = new EventEmitter();
+    @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
     action: number = -1;
+    displayInputLabel: boolean = false;
+    inputLabel: string = '';
+
     constructor() {}
 
     ngOnInit(): void {}
@@ -56,16 +63,47 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
     };
 
     onClick = <T extends Omit<SelectedThumbnailProps, 'img_src'>>({ uuid }: T): void => {
-        this._onClick.emit({ uuid, img_src: '' });
+        this._onClickThumbNail.emit({ uuid, img_src: '' });
+    };
+
+    onDisplayInputModal = (isDisplay: boolean): void => {
+        isDisplay ? (this.displayInputLabel = isDisplay) : (this.inputLabel = ''), (this.displayInputLabel = isDisplay);
+    };
+
+    validateInputLabel = (event: HTMLElementEvent<HTMLTextAreaElement>): void => {
+        const { value } = event.target;
+        const isValidLabel: boolean = this._tabStatus.some(({ label_list }) =>
+            label_list ? label_list.some((label) => (label === value ? false : true)) : false,
+        );
+
+        if (isValidLabel) {
+            this.inputLabel = '';
+            this.displayInputLabel = false;
+            const label_list = this._tabStatus
+                .map(({ label_list }) => (label_list ? label_list : []))
+                .filter((tab) => tab.length > 0)[0];
+            this._onEnterLabel.emit({ action: 1, label_list: [...label_list, value] });
+        } else {
+            console.error(`Invalid Existing Label Input`);
+        }
     };
 
     onIconClick = <T extends ActionTabProps>({ tabType, action }: T): void => {
-        console.log(tabType, action);
         this.action = action;
     };
 
-    onDleteLabel = (label: string): void => {
-        console.log(label);
+    onChangeInputLabel = (event: HTMLElementEvent<HTMLTextAreaElement>) => {
+        const { value } = event.target;
+        this.inputLabel = value;
+    };
+
+    onDeleteLabel = (selectedLabel: string): void => {
+        const [{ label_list }] = this._tabStatus.filter((tab) => tab.label_list);
+        this._onClickLabel.emit({
+            selectedLabel,
+            label_list: label_list && label_list.length > 0 ? label_list : [],
+            action: 0,
+        });
     };
 
     checkCloseToggle = <T extends TabsProps>({ closed }: T): string | null => (closed ? 'closed' : null);

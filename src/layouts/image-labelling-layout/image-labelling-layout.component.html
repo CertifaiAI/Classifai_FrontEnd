@@ -12,7 +12,9 @@
             [_thumbnailList]="thumbnailList"
             [_tabStatus]="tabStatus"
             (_onClose)="onToggleTab($event)"
-            (_onClick)="showBase64Image($event)"
+            (_onClickThumbNail)="showBase64Image($event)"
+            (_onClickLabel)="onProcessLabel($event)"
+            (_onEnterLabel)="onProcessLabel($event)"
         ></image-labelling-project>
         <!-- <image-labelling-label [_tabStatus]="tabStatus[1]" (_onClose)="onToggleTab($event)"></image-labelling-label> -->
         <image-labelling-right-sidebar

@@ -82,12 +82,6 @@ export class ImageLabellingService {
         });
     };
 
-    updateLabel = (projectName: string, labellist: string[] = ['default']): Observable<IMessage> => {
-        return this.http.put<IMessage>(`${this.hostPort}bndbox/projects/${projectName}/newlabels`, {
-            label_list: [...labellist],
-        });
-    };
-
     checkExistProject = (projectName: string): Observable<IMessage> => {
         return this.http.get<IMessage>(`${this.hostPort}bndbox/projects/${projectName}`);
     };
@@ -112,5 +106,13 @@ export class ImageLabellingService {
 
     getBase64Thumbnail = (projectName: string, uuid: number): Observable<IBase64Img> => {
         return this.http.get<IBase64Img>(`${this.hostPort}bndbox/projects/${projectName}/uuid/${uuid}/imgsrc`);
+    };
+
+    updateLabelList = (projectName: string, label_list: string[]): Observable<IMessage> => {
+        console.log(label_list);
+        const checkLabelList: string[] = label_list.length > 0 ? label_list : ['default'];
+        return this.http.put<IMessage>(`${this.hostPort}bndbox/projects/${projectName}/newlabels`, {
+            label_list: checkLabelList,
+        });
     };
 }

@@ -37,12 +37,27 @@
                             ><div class="div-close" (click)="onClose(tab)">x</div></span
                         >
                         <span class="tab-extra-icons"
-                            ><div class="extra-icons" (click)="onIconClick({ tabType: 'label', action: 1 })">
+                            ><div
+                                class="extra-icons"
+                                (click)="onDisplayInputModal(true); onIconClick({ tabType: 'label', action: 1 })"
+                            >
                                 +
-                            </div></span
-                        >
+                            </div>
+                            <ng-container *ngIf="displayInputLabel">
+                                <div class="label-input">
+                                    <input
+                                        class="input"
+                                        [value]="inputLabel"
+                                        (change)="onChangeInputLabel($event)"
+                                        (keydown.enter)="validateInputLabel($event)"
+                                    /></div
+                            ></ng-container>
+                        </span>
                         <span class="tab-extra-icons"
-                            ><div class="extra-icons" (click)="onIconClick({ tabType: 'label', action: 0 })">
+                            ><div
+                                class="extra-icons"
+                                (click)="onDisplayInputModal(false); onIconClick({ tabType: 'label', action: 0 })"
+                            >
                                 -
                             </div></span
                         >
@@ -50,14 +65,14 @@
                     <!-- <section class="inner-content"></section> -->
                     <div class="utility-inner-container">
                         <div class="flex-item">
-                            <ng-container *ngFor="let label of tab.label_list">
+                            <ng-container *ngFor="let label of tab.label_list; index as i">
                                 <div class="flex-center-width">
                                     <label class="label">
                                         {{ label }}
                                     </label>
                                     <label class="action"
-                                        ><ng-container *ngIf="!action"
-                                            ><span (click)="onDleteLabel(label)">Delete</span></ng-container
+                                        ><ng-container *ngIf="!action && i > 0"
+                                            ><span (click)="onDeleteLabel(label)">Delete</span></ng-container
                                         ></label
                                     >
                                 </div>
@@ -80,7 +95,13 @@
                         <span class="tab-extra-icons"></span>
                         <span class="tab-extra-icons"><div class="extra-icons">-</div></span>
                     </div>
-                    <div class="utility-inner-container">default</div>
+                    <div class="utility-inner-container">
+                        <div class="flex-item">
+                            <div class="flex-center-width">
+                                <label class="label"> default </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </ng-template>
         </ng-template>
