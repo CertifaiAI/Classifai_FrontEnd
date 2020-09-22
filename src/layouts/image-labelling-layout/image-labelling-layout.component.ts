@@ -321,7 +321,7 @@ export class ImageLabellingLayoutComponent implements OnInit {
     };
 
     onProcessLabel = <T extends SelectedLabelProps>({ selectedLabel, label_list, action }: T) => {
-        console.log(selectedLabel, label_list, action);
+        // console.log(selectedLabel, label_list, action);
         const newLabelList: string[] =
             selectedLabel && !action ? label_list.filter((label) => label !== selectedLabel) : label_list;
         const projectName: string = this.selectedProjectName || this.inputProjectName;

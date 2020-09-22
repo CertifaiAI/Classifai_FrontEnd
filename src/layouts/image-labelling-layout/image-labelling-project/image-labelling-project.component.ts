@@ -77,19 +77,25 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
 
     validateInputLabel = (event: HTMLElementEvent<HTMLTextAreaElement>): void => {
         const { value } = event.target;
-        const isValidLabel: boolean = this._tabStatus.some(({ label_list }) =>
-            label_list ? label_list.some((label) => (label === value ? false : true)) : false,
-        );
+        const valTrimmed = value.trim();
+        if (valTrimmed) {
+            console.log(this._tabStatus);
+            const isInvalidLabel: boolean = this._tabStatus.some(({ label_list }) =>
+                label_list && label_list.length ? label_list.some((label) => label === valTrimmed) : null,
+            );
 
-        if (isValidLabel) {
-            this.inputLabel = '';
-            this.displayInputLabel = false;
-            const label_list = this._tabStatus
-                .map(({ label_list }) => (label_list ? label_list : []))
-                .filter((tab) => tab.length > 0)[0];
-            this._onEnterLabel.emit({ action: 1, label_list: [...label_list, value] });
+            if (!isInvalidLabel) {
+                this.displayInputLabel = false;
+                this.inputLabel = '';
+                const label_list = this._tabStatus
+                    .map(({ label_list }) => (label_list ? label_list : []))
+                    .filter((tab) => tab.length > 0)[0];
+                this._onEnterLabel.emit({ action: 1, label_list: [...label_list, value] });
+            } else {
+                console.error(`Invalid Existing Label Input`);
+            }
         } else {
-            console.error(`Invalid Existing Label Input`);
+            console.error(`Invalid input value`);
         }
     };
 

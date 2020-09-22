@@ -26,7 +26,7 @@
         <ng-template #nonThumbnailTab>
             <ng-container *ngIf="i === 1; else annotationTab">
                 <div
-                    class="utility-right-project-container tab flex-fill-remaining"
+                    class="utility-right-project-container tab flex-fill-remaining content-height flex-content"
                     [attr.data-index]="i"
                     [ngClass]="checkCloseToggle(tab)"
                 >
@@ -62,7 +62,7 @@
                         >
                     </div>
 
-                    <div class="utility-inner-container">
+                    <div class="utility-inner-container" id="inner-container">
                         <div class="flex-item">
                             <ng-container *ngFor="let label of tab.label_list; index as i">
                                 <div class="flex-center-width">
@@ -94,7 +94,7 @@
                         <span class="tab-extra-icons"></span>
                         <span class="tab-extra-icons"><div class="extra-icons">-</div></span>
                     </div>
-                    <div class="utility-inner-container">
+                    <div class="utility-inner-container" id="inner-container">
                         <div class="flex-item">
                             <div class="flex-center-width">
                                 <label class="label"> default </label>

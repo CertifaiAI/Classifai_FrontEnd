@@ -26,6 +26,11 @@
     background-color: black;
 }
 
+@mixin calHeight($height) {
+    max-height: $height;
+    min-height: calc(#{$height} - 60vh);
+}
+
 .tab-container {
     display: flex;
     flex-flow: column;
@@ -81,10 +86,13 @@
     flex: 1 1 auto;
 }
 
-.content-height {
-    max-height: 100vh;
-    min-height: 40vh;
-}
+// .content-height:first {
+//     @include calHeight(100vh);
+// }
+
+// .content-height:not(:first) {
+//     @include calHeight(80vh);
+// }
 
 .flex-content {
     display: flex;
@@ -283,6 +291,7 @@
 
 .label-input {
     position: absolute;
+    z-index: 1000;
 }
 
 .input {

@@ -109,7 +109,7 @@ export class ImageLabellingService {
     };
 
     updateLabelList = (projectName: string, label_list: string[]): Observable<IMessage> => {
-        console.log(label_list);
+        // console.log(label_list);
         const checkLabelList: string[] = label_list.length > 0 ? label_list : ['default'];
         return this.http.put<IMessage>(`${this.hostPort}bndbox/projects/${projectName}/newlabels`, {
             label_list: checkLabelList,
