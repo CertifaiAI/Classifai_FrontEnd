@@ -37,6 +37,11 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
     displayInputLabel: boolean = false;
     inputLabel: string = '';
 
+    /** @function responsible to force type inference */
+    // toTabStatus(value: any): TabsProps {
+    //     return value as TabsProps;
+    // }
+
     constructor() {}
 
     ngOnInit(): void {}
