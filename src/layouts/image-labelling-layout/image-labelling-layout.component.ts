@@ -93,7 +93,7 @@ export class ImageLabellingLayoutComponent implements OnInit {
 
     createFormControls = (): void => {
         this.form = this._fb.group({
-            inputProjectName: [''],
+            projectName: [''],
             selectExistProject: [''],
             label: [''],
         });
@@ -153,12 +153,12 @@ export class ImageLabellingLayoutComponent implements OnInit {
                     ? this.projects.find((project) => (project ? project === this.inputProjectName : null))
                     : null;
                 checkExistProject
-                    ? this.form.get('inputProjectName')?.setErrors({ exist: true })
+                    ? this.form.get('projectName')?.setErrors({ exist: true })
                     : (this.createProject(this.inputProjectName),
-                      (this.selectedProjectName = this.form.get('inputProjectName')?.value));
+                      (this.selectedProjectName = this.form.get('projectName')?.value));
                 // null;
             } else {
-                this.form.get('inputProjectName')?.setErrors({ required: true });
+                this.form.get('projectName')?.setErrors({ required: true });
             }
         }
     };
