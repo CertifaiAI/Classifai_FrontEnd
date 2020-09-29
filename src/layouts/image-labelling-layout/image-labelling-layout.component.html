@@ -1,7 +1,10 @@
 <div class="layout-container">
     <div>
-        <image-labelling-header [_onChange]="onChangeSchema" (_navigate)="navigate($event)"></image-labelling-header>
-        <image-labelling-info [_onChange]="onChangeSchema" (_onClick)="navigate($event)"></image-labelling-info>
+        <image-labelling-header
+            [_onChange]="onChangeSchema"
+            (_navigate)="navigateByUrl($event)"
+        ></image-labelling-header>
+        <image-labelling-info [_onChange]="onChangeSchema" (_onClick)="navigateByAction($event)"></image-labelling-info>
     </div>
 
     <div class="content-container">
@@ -22,7 +25,7 @@
             (_onClick)="onToggleTab($event)"
         ></image-labelling-right-sidebar>
     </div>
-    <image-labelling-footer></image-labelling-footer>
+    <image-labelling-footer [_thumbnailInfo]="selectedThumbnail"></image-labelling-footer>
 </div>
 
 <modal id="custom-modal-1">

@@ -54,18 +54,20 @@ export interface IBoundingbox {
 }
 
 export interface IThumbnailMetadata {
+    bnd_box: IBoundingbox[];
+    file_size: number;
+    img_depth: number;
+    img_h: number;
+    img_ori_h: number;
+    img_ori_w: number;
     img_path: string;
-    project_name: string;
-    uuid: number;
+    img_thumbnail: string;
+    img_w: number;
     img_x: number;
     img_y: number;
-    img_w: number;
-    img_h: number;
-    img_oriW: number;
-    img_oriH: number;
-    img_thumbnail: string;
-    img_depth: number;
-    bnd_box: IBoundingbox[];
+    message: boolean;
+    project_name: string;
+    uuid: number;
 }
 
 // export interface ILoading {
@@ -127,11 +129,18 @@ export type ThumbnailProps = {
     thumbnailAction?: 1 | -1;
 } & Partial<UrlProps>;
 
-export type EventEmitter_Layout = ThumbnailProps;
+export type EventEmitter_Url = UrlProps;
+
+export type EventEmitter_Action = {
+    /** @property {number} 1 represents next photo, whereas -1 represent previous photo */
+    thumbnailAction?: 1 | -1;
+};
 
 export type SelectedThumbnailProps = {
     uuid: number;
 } & Pick<IBase64Img, 'img_src'>;
+
+export type ThumbnailMetadataProps = IThumbnailMetadata;
 
 type TabAction = {
     /** @property {number} 1 represents add, whereas 0 represent remove */

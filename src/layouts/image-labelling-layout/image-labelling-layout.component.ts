@@ -1,21 +1,22 @@
+import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
 import { ClassifaiModalService } from 'src/shared/classifai-modal/classifai-modal.service';
 import { first, flatMap, map, mergeMap } from 'rxjs/operators';
+import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ImageLabellingService } from './image-labelling-layout.service';
 import { Router } from '@angular/router';
 import { ThemeService } from 'src/shared/services/theme.service';
-import { forkJoin, interval, Subject, Subscription, Observable, throwError } from 'rxjs';
 import {
     ILabelList,
     IThumbnailMetadata,
     Props,
     IMessage,
     TabsProps,
-    EventEmitter_Layout,
-    SelectedThumbnailProps,
     SelectedLabelProps,
+    EventEmitter_Action,
+    EventEmitter_Url,
+    ThumbnailMetadataProps,
 } from './image-labelling-layout.model';
-import { Component, HostListener, OnInit, ChangeDetectorRef } from '@angular/core';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -39,10 +40,11 @@ export class ImageLabellingLayoutComponent implements OnInit {
     // labelList: ILabelList;
     selectedProjectName: string = '';
     thumbnailList: IThumbnailMetadata[] = [];
-    selectedThumbnail: SelectedThumbnailProps = {
-        img_src: '',
-        uuid: 0,
-    };
+    // selectedThumbnail: SelectedThumbnailProps = {
+    //     img_src: '',
+    //     uuid: 0,
+    // };
+    selectedThumbnail!: Partial<IThumbnailMetadata>;
     tabStatus: TabsProps[] = [
         {
             name: 'Project',
@@ -288,27 +290,38 @@ export class ImageLabellingLayoutComponent implements OnInit {
         // console.log(filteredFiles);
     };
 
-    navigate = <T extends EventEmitter_Layout>({ url, thumbnailAction }: T): void => {
+    navigateByUrl = <T extends EventEmitter_Url>({ url }: T): void => {
         // console.log(url);
-        if (url) {
-            this._router.navigate([url]);
-        }
+        url ? this._router.navigate([url]) : console.error(`No url received from child component`);
+    };
+
+    navigateByAction = <T extends EventEmitter_Action>({ thumbnailAction }: T): void => {
         if (thumbnailAction) {
             let { uuid } = this.selectedThumbnail;
-            this.showBase64Image({ uuid: thumbnailAction === 1 ? (uuid += 1) : (uuid -= 1) });
+            uuid
+                ? this.showBase64Image({ uuid: thumbnailAction === 1 ? (uuid += 1) : (uuid -= 1) })
+                : console.error(`uuid value is invalud`);
         }
     };
 
-    showBase64Image = <T extends Omit<SelectedThumbnailProps, 'img_src'>>(
-        { uuid }: T,
+    /** @function responsible for calling API to acquire thumbnail in original size
+     *  @type optional ThumbnailMetadataProps
+     *        which allows navigateByAction function to send only needed props due to optional type
+     */
+    showBase64Image = <T extends ThumbnailMetadataProps | Partial<ThumbnailMetadataProps>>(
+        thumbnail: T,
         projectName: string = this.selectedProjectName || this.inputProjectName,
     ): void => {
+        const { uuid } = thumbnail;
         if (uuid && this.validateUuid(uuid)) {
             const getImage$ = this._imgLabelService.getBase64Thumbnail(projectName, uuid);
 
             getImage$.pipe(first()).subscribe(
                 ({ message, img_src, errormessage }) => {
-                    message === 1 ? (this.selectedThumbnail = { img_src, uuid }) : console.error(errormessage);
+                    message === 1 && thumbnail
+                        ? (this.selectedThumbnail = { ...thumbnail, img_src })
+                        : console.error(errormessage);
+                    console.log(this.selectedThumbnail);
                 },
                 (err: Error) => console.error(err),
                 () => {},

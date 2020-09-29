@@ -1,11 +1,12 @@
+import { HTMLElementEvent } from 'src/shared/type-casting/interfaces/field.model';
 import { isEqual } from 'lodash-es';
 import {
     IThumbnailMetadata,
     Props,
-    SelectedThumbnailProps,
     TabsProps,
     ActionTabProps,
     SelectedLabelProps,
+    ThumbnailMetadataProps,
 } from '../image-labelling-layout.model';
 import {
     Component,
@@ -17,7 +18,6 @@ import {
     Output,
     EventEmitter,
 } from '@angular/core';
-import { HTMLElementEvent } from 'src/shared/type-casting/interfaces/field.model';
 
 @Component({
     selector: 'image-labelling-project',
@@ -30,7 +30,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
     @Input() _thumbnailList!: Props<IThumbnailMetadata[]>;
     @Input() _tabStatus: TabsProps[] = [];
     @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
-    @Output() _onClickThumbNail: EventEmitter<SelectedThumbnailProps> = new EventEmitter();
+    @Output() _onClickThumbNail: EventEmitter<ThumbnailMetadataProps> = new EventEmitter();
     @Output() _onClickLabel: EventEmitter<SelectedLabelProps> = new EventEmitter();
     @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
     action: number = -1;
@@ -67,8 +67,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
         // console.log(this._tabStatus);
     };
 
-    onClick = <T extends Omit<SelectedThumbnailProps, 'img_src'>>({ uuid }: T): void => {
-        this._onClickThumbNail.emit({ uuid, img_src: '' });
+    onClick = <T extends Omit<ThumbnailMetadataProps, 'img_src'>>(thumbnail: T): void => {
+        this._onClickThumbNail.emit(thumbnail);
     };
 
     onDisplayInputModal = (isDisplay: boolean): void => {
