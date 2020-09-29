@@ -297,10 +297,13 @@ export class ImageLabellingLayoutComponent implements OnInit {
 
     navigateByAction = <T extends EventEmitter_Action>({ thumbnailAction }: T): void => {
         if (thumbnailAction) {
-            let { uuid } = this.selectedThumbnail;
-            uuid
-                ? this.showBase64Image({ uuid: thumbnailAction === 1 ? (uuid += 1) : (uuid -= 1) })
-                : console.error(`uuid value is invalud`);
+            let { uuid } = this.selectedThumbnail || false;
+            if (uuid) {
+                this.showBase64Image({ uuid: thumbnailAction === 1 ? (uuid += 1) : (uuid -= 1) });
+            } else {
+                const firstThumbnail = this.thumbnailList.find((thumb) => thumb.uuid);
+                firstThumbnail ? this.showBase64Image({ uuid: firstThumbnail.uuid }) : null;
+            }
         }
     };
 
