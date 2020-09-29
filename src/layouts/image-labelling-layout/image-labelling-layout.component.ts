@@ -302,7 +302,9 @@ export class ImageLabellingLayoutComponent implements OnInit {
                 this.showBase64Image({ uuid: thumbnailAction === 1 ? (uuid += 1) : (uuid -= 1) });
             } else {
                 const firstThumbnail = this.thumbnailList.find((thumb) => thumb.uuid);
-                firstThumbnail ? this.showBase64Image({ uuid: firstThumbnail.uuid }) : null;
+                firstThumbnail
+                    ? this.showBase64Image({ uuid: firstThumbnail.uuid })
+                    : this.showBase64Image({ uuid: 1 });
             }
         }
     };
@@ -318,13 +320,12 @@ export class ImageLabellingLayoutComponent implements OnInit {
         const { uuid } = thumbnail;
         if (uuid && this.validateUuid(uuid)) {
             const getImage$ = this._imgLabelService.getBase64Thumbnail(projectName, uuid);
-
+            const filteredThumbInfo = this.thumbnailList.find((f) => f.uuid === uuid);
             getImage$.pipe(first()).subscribe(
                 ({ message, img_src, errormessage }) => {
                     message === 1 && thumbnail
-                        ? (this.selectedThumbnail = { ...thumbnail, img_src })
+                        ? (this.selectedThumbnail = { ...thumbnail, ...filteredThumbInfo, img_src })
                         : console.error(errormessage);
-                    console.log(this.selectedThumbnail);
                 },
                 (err: Error) => console.error(err),
                 () => {},
