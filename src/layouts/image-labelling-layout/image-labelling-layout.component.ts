@@ -17,6 +17,7 @@ import {
     EventEmitter_Url,
     ThumbnailMetadataProps,
 } from './image-labelling-layout.model';
+import { isEqual } from 'lodash-es';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -217,9 +218,16 @@ export class ImageLabellingLayoutComponent implements OnInit {
 
     onToggleTab = <T extends TabsProps>({ name, closed }: T): void => {
         console.log(name, closed);
-        this.tabStatus = this.tabStatus.map((tab) =>
-            tab.name.toLowerCase() === name.toLowerCase() ? { ...tab, closed } : { ...tab },
+
+        const isExactTabState: boolean = this.tabStatus.some(
+            (tab) => tab.name.toLowerCase() === name.toLowerCase() && tab.closed === closed,
         );
+        isExactTabState
+            ? null
+            : (this.tabStatus = this.tabStatus.map((tab) =>
+                  tab.name.toLowerCase() === name.toLowerCase() ? { ...tab, closed } : { ...tab },
+              ));
+        console.log(isExactTabState);
     };
 
     uploadThumbnail = (projectName: string = this.selectedProjectName || this.inputProjectName): void => {
