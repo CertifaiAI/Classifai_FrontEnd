@@ -1,15 +1,6 @@
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { HTMLElementEvent } from 'src/shared/type-casting/interfaces/field.model';
 import { isEqual } from 'lodash-es';
-import {
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Input,
-    OnChanges,
-    OnInit,
-    Output,
-    SimpleChanges,
-} from '@angular/core';
 import {
     IThumbnailMetadata,
     Props,
@@ -41,7 +32,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
     //     return value as TabsProps;
     // }
 
-    constructor(private cdr: ChangeDetectorRef) {}
+    constructor() {}
 
     ngOnInit(): void {}
 
