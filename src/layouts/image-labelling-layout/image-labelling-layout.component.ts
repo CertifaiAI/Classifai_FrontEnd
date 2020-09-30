@@ -318,7 +318,7 @@ export class ImageLabellingLayoutComponent implements OnInit {
         projectName: string = this.selectedProjectName || this.inputProjectName,
     ): void => {
         const { uuid } = thumbnail;
-        if (uuid && this.validateUuid(uuid)) {
+        if (uuid && this.validateUuid(uuid)(this.selectedThumbnail?.uuid)) {
             const getImage$ = this._imgLabelService.getBase64Thumbnail(projectName, uuid);
             const filteredThumbInfo = this.thumbnailList.find((f) => f.uuid === uuid);
             getImage$.pipe(first()).subscribe(
@@ -333,8 +333,17 @@ export class ImageLabellingLayoutComponent implements OnInit {
         }
     };
 
-    validateUuid = (uuid: number): IThumbnailMetadata | undefined => {
-        return this.thumbnailList.find((thumbnail) => thumbnail.uuid === uuid);
+    /** @function curry function responsible for reusability of the function logic across layout comp. with minimal codebase
+     *            also responsible to check whether uuid exist in state and whether same uuid as current selected thumbnail state
+     *            this behavior helps to prevent unnecessary API calls, thus maintain the health of performances for front & backend
+     */
+    validateUuid = (uuid: number) => {
+        return (currentThumbnailUuid?: number): boolean => {
+            return (
+                (this.thumbnailList.find((thumbnail) => thumbnail.uuid === uuid) || false) &&
+                currentThumbnailUuid !== uuid
+            );
+        };
     };
 
     onProcessLabel = <T extends SelectedLabelProps>({ selectedLabel, label_list, action }: T) => {
