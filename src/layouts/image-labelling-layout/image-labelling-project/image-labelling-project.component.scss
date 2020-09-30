@@ -171,14 +171,17 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+    min-height: 5vh;
+    max-height: 5vh;
 }
 
-.img-style {
-    border-radius: 1vh;
+.img {
+    // border-radius: 1vh;
     max-height: 4.3vh;
-    min-height: 4vh;
+    min-height: 4.3vh;
     min-width: 3vw;
     max-width: 3vw;
+    outline: 0.0625vw inset white;
 }
 
 .img-name {

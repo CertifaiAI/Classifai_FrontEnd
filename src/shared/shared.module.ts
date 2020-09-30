@@ -6,7 +6,7 @@ import { FormatLanguagePipe } from './pipe/format-language.pipe';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 import { LanguageService } from './services/language.service';
-import { LazyImgDirective } from './directives/lazy-image.directive';
+import { LazyLoadImgDirective } from './directives/lazy-image.directive';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ThemeService } from './services/theme.service';
@@ -17,9 +17,8 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 export function HttpLoaderFactory(httpClient: HttpClient) {
     return new TranslateHttpLoader(httpClient, `../assets/i18n/`, `.json`);
 }
-
 @NgModule({
-    declarations: [FormatLanguagePipe, FileNamePipe, LazyImgDirective],
+    declarations: [FormatLanguagePipe, FileNamePipe, LazyLoadImgDirective],
     imports: [
         RouterModule,
         CommonModule,
@@ -37,11 +36,11 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     exports: [
         FormatLanguagePipe,
         FileNamePipe,
-        LazyImgDirective,
         ClassifaiModalModule,
         FormsModule,
         ReactiveFormsModule,
         TranslateModule,
+        LazyLoadImgDirective,
     ],
     providers: [
         LanguageService,

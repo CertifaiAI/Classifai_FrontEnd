@@ -2,31 +2,31 @@
     <ng-container *ngFor="let tab of _tabStatus; index as i">
         <ng-container *ngIf="_thumbnailList.length > 0 && i === 0; else nonThumbnailTab">
             <div
-                class="utility-right-project-container tab flex-fill-remaining content-height flex-content"
+                class="utility-right-project-container tab flex-fill-remaining flex-content"
                 [ngClass]="checkCloseToggle(tab)"
                 [attr.data-index]="i"
             >
                 <label class="tab-name">{{ tab.name }}</label>
                 <span class="tab-close-thumbnail"><div class="div-close" (click)="onClose(tab)">x</div></span>
-                <div class="utility-inner-container" id="inner-container">
-                    <section *ngFor="let thumbnail of _thumbnailList">
+                <section class="utility-inner-container" id="inner-container">
+                    <ng-container *ngFor="let thumbnail of _thumbnailList; let idx = index; let even = even">
                         <div class="img-container" (click)="onClick(thumbnail)">
                             <div>
-                                <img class="img-style" [src]="thumbnail.img_thumbnail" />
+                                <img imgLazyLoad class="img" [src]="thumbnail.img_thumbnail" />
                             </div>
                             <div class="img-name">
                                 <label>{{ thumbnail.img_path | fileNameSlice }} </label>
                             </div>
                         </div>
-                    </section>
-                </div>
+                    </ng-container>
+                </section>
             </div>
         </ng-container>
 
         <ng-template #nonThumbnailTab>
             <ng-container *ngIf="i === 1; else annotationTab">
                 <div
-                    class="utility-right-project-container tab flex-fill-remaining content-height flex-content"
+                    class="utility-right-project-container tab flex-fill-remaining flex-content"
                     [attr.data-index]="i"
                     [ngClass]="checkCloseToggle(tab)"
                 >

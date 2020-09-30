@@ -1,48 +1,33 @@
-// import { Directive, ElementRef } from '@angular/core';
-
-// @Directive({ selector: 'img' })
-// export class LazyImgDirective {
-//   constructor({ nativeElement }: ElementRef<HTMLImageElement>) {
-//     const supports = 'loading' in HTMLImageElement.prototype;
-
-//     if (supports) {
-//       nativeElement.setAttribute('loading', 'lazy');
-//     }
-//   }
-// }
-
 import { AfterViewInit, Directive, ElementRef, HostBinding, Input } from '@angular/core';
 
 @Directive({
-    selector: 'img[appLazyLoad]',
+    selector: 'img[imgLazyLoad]',
 })
-export class LazyImgDirective implements AfterViewInit {
-    @HostBinding('attr.src') srcAttr = '';
-    @Input() src: string = '';
+export class LazyLoadImgDirective implements AfterViewInit {
+    // set hostbinding property to input property
+    @HostBinding('attr.src') srcAttr: any = null;
+    @Input() src!: string;
 
     constructor(private el: ElementRef) {}
 
-    ngAfterViewInit() {
+    ngAfterViewInit(): void {
         this.canLazyLoad() ? this.lazyLoadImage() : this.loadImage();
     }
 
-    private canLazyLoad() {
+    private canLazyLoad = (): boolean => {
         return window && 'IntersectionObserver' in window;
-    }
+    };
 
-    private lazyLoadImage() {
+    private lazyLoadImage = (): void => {
         const obs = new IntersectionObserver((entries) => {
             entries.forEach(({ isIntersecting }) => {
-                if (isIntersecting) {
-                    this.loadImage();
-                    obs.unobserve(this.el.nativeElement);
-                }
+                isIntersecting ? (this.loadImage(), obs.unobserve(this.el.nativeElement)) : null;
             });
         });
         obs.observe(this.el.nativeElement);
-    }
+    };
 
-    private loadImage() {
+    private loadImage = (): void => {
         this.srcAttr = this.src;
-    }
+    };
 }
