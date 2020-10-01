@@ -217,8 +217,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
   loadImages(bit64STR: string) {
     try {
       let self = this;
-      self.clearcanvas();
       self.img.src = bit64STR;
+      self.clearcanvas();
       self.img.onload = function () {
         self.SelectMetadata.img_w =
           self.SelectMetadata.img_w < 1
