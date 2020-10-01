@@ -87,7 +87,121 @@ export class ObjectDetection {
     }
   }
 
-  private mouseMoveBox() {
+  private mouseMoveBox(
+    MouseX: number,
+    MouseY: number,
+    CurrMeta: Metadata
+  ): void {
+    try {
+      let tmpOffsetX: number = MouseX - this.CurrentDrawing.x1;
+      let tmpOffsetY: number = MouseY - this.CurrentDrawing.y1;
+      if (
+        this.moveBoxWithinPointPath(
+          CurrMeta.img_x,
+          CurrMeta.img_y,
+          CurrMeta.img_w,
+          CurrMeta.img_h,
+          tmpOffsetX,
+          tmpOffsetY,
+          CurrMeta.bnd_box[this.CurrentSelectedBndBox]
+        )
+      ) {
+        this.setCurrentX2Y2(MouseX, MouseY);
+        let xOffset: number = this.CurrentDrawing.x2 - this.CurrentDrawing.x1;
+        let yOffset: number = this.CurrentDrawing.y2 - this.CurrentDrawing.y1;
+        this.setCurrentX1Y1(this.CurrentDrawing.x2, this.CurrentDrawing.y2);
+        if (
+          this.CurrentClickedBox.pos === 'i' ||
+          this.CurrentClickedBox.pos === 'tl' ||
+          this.CurrentClickedBox.pos === 'l' ||
+          this.CurrentClickedBox.pos === 'bl'
+        ) {
+          CurrMeta.bnd_box[this.CurrentSelectedBndBox].x1 += xOffset;
+        }
+        if (
+          this.CurrentClickedBox.pos === 'i' ||
+          this.CurrentClickedBox.pos === 'tl' ||
+          this.CurrentClickedBox.pos === 't' ||
+          this.CurrentClickedBox.pos === 'tr'
+        ) {
+          CurrMeta.bnd_box[this.CurrentSelectedBndBox].y1 += yOffset;
+        }
+        if (
+          this.CurrentClickedBox.pos === 'i' ||
+          this.CurrentClickedBox.pos === 'tr' ||
+          this.CurrentClickedBox.pos === 'r' ||
+          this.CurrentClickedBox.pos === 'br'
+        ) {
+          CurrMeta.bnd_box[this.CurrentSelectedBndBox].x2 += xOffset;
+        }
+        if (
+          this.CurrentClickedBox.pos === 'i' ||
+          this.CurrentClickedBox.pos === 'bl' ||
+          this.CurrentClickedBox.pos === 'b' ||
+          this.CurrentClickedBox.pos === 'br'
+        ) {
+          CurrMeta.bnd_box[this.CurrentSelectedBndBox].y2 += yOffset;
+        }
+      }
+    } catch (err) {
+      console.log(
+        'ObjectDetection mouseMoveBox(MouseX:number, MouseY:number, CurrMeta:Metadata):void',
+        err.name + ': ',
+        err.message
+      );
+    }
+  }
+
+  public MouseUpDrawEnable(CurrMeta: Metadata): number {
+    try {
+      let drawcode: number = -1;
+      if (this.CurrentClickedBox.box === -1 && this.tmpbox !== null) {
+        CurrMeta.bnd_box.push(this.tmpbox);
+        this.CurrentSelectedBndBox = CurrMeta.bnd_box.length - 1;
+        CurrMeta.bnd_box[this.CurrentSelectedBndBox].label = 'default';
+        drawcode = 1;
+      } else {
+        if (
+          CurrMeta.bnd_box[this.CurrentSelectedBndBox].x1 >
+          CurrMeta.bnd_box[this.CurrentSelectedBndBox].x2
+        ) {
+          var previousX1: number = this.utility.DeepCloneVariable(
+            CurrMeta.bnd_box[this.CurrentSelectedBndBox].x1
+          );
+          CurrMeta.bnd_box[
+            this.CurrentSelectedBndBox
+          ].x1 = this.utility.DeepCloneVariable(
+            CurrMeta.bnd_box[this.CurrentSelectedBndBox].x2
+          );
+          CurrMeta.bnd_box[this.CurrentSelectedBndBox].x2 = previousX1;
+        }
+        if (
+          CurrMeta.bnd_box[this.CurrentSelectedBndBox].y1 >
+          CurrMeta.bnd_box[this.CurrentSelectedBndBox].y2
+        ) {
+          var previousY1: number = this.utility.DeepCloneVariable(
+            CurrMeta.bnd_box[this.CurrentSelectedBndBox].y1
+          );
+          CurrMeta.bnd_box[
+            this.CurrentSelectedBndBox
+          ].y1 = this.utility.DeepCloneVariable(
+            CurrMeta.bnd_box[this.CurrentSelectedBndBox].y2
+          );
+          CurrMeta.bnd_box[this.CurrentSelectedBndBox].y2 = previousY1;
+        }
+        drawcode = 0;
+      }
+      this.CurrentClickedBox = { box: -1, pos: 'o' };
+      this.setCurrentX1Y1(0, 0);
+      this.setCurrentX2Y2(0, 0);
+      this.tmpbox = null;
+      return drawcode;
+    } catch (err) {
+      return -1;
+    }
+  }
+
+  public scaleAllBoxes(scalefactor: number) {
     try {
     } catch (err) {}
   }
@@ -100,10 +214,16 @@ export class ObjectDetection {
     try {
       if (this.CurrentClickedBox.box === -1) {
         this.setCurrentX2Y2(MouseX, MouseY);
+      } else {
+        this.mouseMoveBox(MouseX, MouseY, SelectedMeta);
       }
-
-      //TODO:continue here
-    } catch (err) {}
+    } catch (err) {
+      console.log(
+        'ObjectDetection MouseMoveDrawEnable(MouseX: number,MouseY: number,SelectedMeta: Metadata): void',
+        err.name + ': ',
+        err.message
+      );
+    }
   }
 
   public MouseDownDrawEnable(
@@ -258,8 +378,8 @@ export class ObjectDetection {
         }
         this.tmpbox = this.GenerateNewBox(
           this.CurrentDrawing.x1,
-          this.CurrentDrawing.y1,
           this.CurrentDrawing.x2,
+          this.CurrentDrawing.y1,
           this.CurrentDrawing.y2
         );
         if (this.tmpbox != null) {
@@ -358,10 +478,10 @@ export class ObjectDetection {
     y2: number
   ): Boundingbox {
     try {
-      let boxX1 = x1 < x2 ? x1 : x2;
-      let boxY1 = y1 < y2 ? y1 : y2;
-      let boxX2 = x1 > x2 ? x1 : x2;
-      let boxY2 = y1 > y2 ? y1 : y2;
+      let boxX1: number = x1 < x2 ? x1 : x2;
+      let boxY1: number = y1 < y2 ? y1 : y2;
+      let boxX2: number = x1 > x2 ? x1 : x2;
+      let boxY2: number = y1 > y2 ? y1 : y2;
       if (boxX2 - boxX1 > this.lineOffset && boxY2 - boxY1 > this.lineOffset) {
         let newID: number = this.utility.GenerateUniquesID();
         return {
