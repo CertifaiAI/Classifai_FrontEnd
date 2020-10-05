@@ -197,13 +197,65 @@ export class ObjectDetection {
       this.tmpbox = null;
       return drawcode;
     } catch (err) {
+      console.log(
+        'ObjectDetection MouseUpDrawEnable(CurrMeta: Metadata): number',
+        err.name + ': ',
+        err.message
+      );
       return -1;
     }
   }
 
-  public scaleAllBoxes(scalefactor: number) {
+  public panRectangle(bbox: Boundingbox[], img_X: number, img_Y: number) {
     try {
-    } catch (err) {}
+      for (var i = 0; i < bbox.length; ++i) {
+        let temrectW: number = bbox[i].x2 - bbox[i].x1;
+        let temrectH: number = bbox[i].y2 - bbox[i].y1;
+        bbox[i].x1 = img_X + bbox[i].distancetoImg.x;
+        bbox[i].y1 = img_Y + bbox[i].distancetoImg.y;
+        bbox[i].x2 = bbox[i].x1 + temrectW;
+        bbox[i].y2 = bbox[i].y1 + temrectH;
+      }
+    } catch (err) {
+      console.log(
+        'ObjectDetection panRectangle(bbox:Boundingbox[], img_X:number, img_Y:number)',
+        err.name + ': ',
+        err.message
+      );
+    }
+  }
+
+  public scaleAllBoxes(
+    scalefactor: number,
+    boxes: Boundingbox[],
+    imgX: number,
+    imgY: number
+  ) {
+    try {
+      for (var i = 0; i < boxes.length; ++i) {
+        console.log(boxes[i]);
+        let newW: number = (boxes[i].x2 - boxes[i].x1) * scalefactor;
+        let newH: number = (boxes[i].y2 - boxes[i].y1) * scalefactor;
+        let X1: number = boxes[i].distancetoImg.x * scalefactor + imgX;
+        let Y1: number = boxes[i].distancetoImg.y * scalefactor + imgY;
+        let X2: number = X1 + newW;
+        let Y2: number = Y1 + newH;
+        boxes[i].x1 = this.utility.DeepCloneVariable(X1);
+        boxes[i].y1 = this.utility.DeepCloneVariable(Y1);
+        boxes[i].x2 = this.utility.DeepCloneVariable(X2);
+        boxes[i].y2 = this.utility.DeepCloneVariable(Y2);
+        let newdistancex: number = boxes[i].x1 - imgX;
+        let newdistanceY: number = boxes[i].y1 - imgY;
+        boxes[i].distancetoImg.x = this.utility.DeepCloneVariable(newdistancex);
+        boxes[i].distancetoImg.y = this.utility.DeepCloneVariable(newdistanceY);
+      }
+    } catch (err) {
+      console.log(
+        'ObjectDetection scaleAllBoxes(scalefactor: number,boxes:Boundingbox[],imgX:number,imgY:number)',
+        err.name + ': ',
+        err.message
+      );
+    }
   }
 
   public MouseMoveDrawEnable(
@@ -242,6 +294,11 @@ export class ObjectDetection {
       }
       return this.CurrentClickedBox.box;
     } catch (err) {
+      console.log(
+        'ObjectDetection MouseDownDrawEnable(MouseX:number,MouseY:number,BBox:Boundingbox[]):number',
+        err.name + ': ',
+        err.message
+      );
       return -1;
     }
   }
@@ -504,6 +561,23 @@ export class ObjectDetection {
         err.message
       );
       return null;
+    }
+  }
+
+  public GetBBoxDistfromImg(bbox: Boundingbox[], imgX: number, imgY: number) {
+    try {
+      for (var i = 0; i < bbox.length; ++i) {
+        let DistX: number = bbox[i].x1 - imgX;
+        let DistY: number = bbox[i].y1 - imgY;
+        bbox[i].distancetoImg.x = this.utility.DeepCloneVariable(DistX);
+        bbox[i].distancetoImg.y = this.utility.DeepCloneVariable(DistY);
+      }
+    } catch (err) {
+      console.log(
+        'ObjectDetection GetBBoxDistfromImg(bbox:Boundingbox[],imgX:number,imgY:number)',
+        err.name + ': ',
+        err.message
+      );
     }
   }
 

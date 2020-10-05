@@ -52,6 +52,24 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     } catch (err) {}
   }
 
+  // @HostListener('dblclick', ['$event'])
+  // Toggleevent(event: MouseEvent){
+  //   try{
+  //         if(!this.rules.draw){
+  //           this.rules.draw = true;
+  //           this.rules.drag = false;
+  //         }
+  //         else{
+  //           this.rules.drag = true;
+  //           this.rules.draw = false;
+  //         }
+  //         console.log("this.rules.drag : ",this.rules.drag, " this.rules.draw : ", this.rules.draw);
+  //     }
+  //   catch(err){
+
+  //   }
+  // }
+
   @HostListener('mousewheel', ['$event'])
   MouseScroll(event: WheelEvent) {
     try {
@@ -125,6 +143,11 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
         }
         this.mousedown = false;
         this.rules.scroll = true;
+        this.OD.GetBBoxDistfromImg(
+          this.SelectMetadata.bnd_box,
+          this.SelectMetadata.img_x,
+          this.SelectMetadata.img_y
+        );
       }
     } catch (err) {}
   }
@@ -149,6 +172,11 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
           );
           this.SelectMetadata.img_x = diff.diffX;
           this.SelectMetadata.img_y = diff.diffY;
+          this.OD.panRectangle(
+            this.SelectMetadata.bnd_box,
+            this.SelectMetadata.img_x,
+            this.SelectMetadata.img_y
+          );
           this.redrawImages(
             this.SelectMetadata.img_x,
             this.SelectMetadata.img_y,
@@ -269,7 +297,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
         //zoom up
         this.SelectMetadata.img_w *= 1.1;
         this.SelectMetadata.img_h *= 1.1;
-        this.OD.scaleAllBoxes(1.1);
+        this.OD.scaleAllBoxes(
+          1.1,
+          this.SelectMetadata.bnd_box,
+          this.SelectMetadata.img_x,
+          this.SelectMetadata.img_y
+        );
       } else {
         //zoom down
         if (
@@ -278,7 +311,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
         ) {
           this.SelectMetadata.img_w *= 0.9;
           this.SelectMetadata.img_h *= 0.9;
-          this.OD.scaleAllBoxes(0.9);
+          this.OD.scaleAllBoxes(
+            0.9,
+            this.SelectMetadata.bnd_box,
+            this.SelectMetadata.img_x,
+            this.SelectMetadata.img_y
+          );
         }
       }
       this.redrawImages(
