@@ -1,5 +1,5 @@
+import { BoundingboxService } from './../../../shared/services/boundingbox.service';
 import { Metadata, rules } from './../../../classes/CustomType';
-import { ObjectDetection } from './../../../classes/ComputerVision';
 import {
   Component,
   OnInit,
@@ -23,7 +23,6 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
   @ViewChild('crossv')
   crossv: ElementRef<HTMLDivElement>;
   private context: CanvasRenderingContext2D;
-  private OD: ObjectDetection = new ObjectDetection();
   private img: HTMLImageElement = new Image();
   private mousedown: boolean = false;
   private rules: rules = {
@@ -34,7 +33,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
   };
   @Input() imgInput: string = '';
   @Input() SelectMetadata: Metadata = null;
-  constructor() {}
+  constructor(private _Boundingbox: BoundingboxService) {}
 
   ngOnInit() {}
 
@@ -52,23 +51,24 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     } catch (err) {}
   }
 
-  // @HostListener('dblclick', ['$event'])
-  // Toggleevent(event: MouseEvent){
-  //   try{
-  //         if(!this.rules.draw){
-  //           this.rules.draw = true;
-  //           this.rules.drag = false;
-  //         }
-  //         else{
-  //           this.rules.drag = true;
-  //           this.rules.draw = false;
-  //         }
-  //         console.log("this.rules.drag : ",this.rules.drag, " this.rules.draw : ", this.rules.draw);
-  //     }
-  //   catch(err){
-
-  //   }
-  // }
+  @HostListener('dblclick', ['$event'])
+  Toggleevent(event: MouseEvent) {
+    try {
+      if (!this.rules.draw) {
+        this.rules.draw = true;
+        this.rules.drag = false;
+      } else {
+        this.rules.drag = true;
+        this.rules.draw = false;
+      }
+      console.log(
+        'this.rules.drag : ',
+        this.rules.drag,
+        ' this.rules.draw : ',
+        this.rules.draw
+      );
+    } catch (err) {}
+  }
 
   @HostListener('mousewheel', ['$event'])
   MouseScroll(event: WheelEvent) {
@@ -85,7 +85,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
   MouseDown(event: MouseEvent) {
     try {
       if (
-        this.OD.mouseClickWithinPointPath(
+        this._Boundingbox.mouseClickWithinPointPath(
           this.SelectMetadata.img_x,
           this.SelectMetadata.img_y,
           this.SelectMetadata.img_w,
@@ -97,10 +97,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
         this.mousedown = true;
         this.rules.scroll = false;
         if (this.rules.drag) {
-          this.OD.setPanXY(event.offsetX, event.offsetY);
+          this._Boundingbox.setPanXY(event.offsetX, event.offsetY);
         }
         if (this.rules.draw) {
-          this.rules.selectedBox = this.OD.MouseDownDrawEnable(
+          this.rules.selectedBox = this._Boundingbox.MouseDownDrawEnable(
             event.offsetX,
             event.offsetY,
             this.SelectMetadata.bnd_box
@@ -120,7 +120,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
   MouseUp(event: MouseEvent) {
     try {
       if (
-        this.OD.mouseClickWithinPointPath(
+        this._Boundingbox.mouseClickWithinPointPath(
           this.SelectMetadata.img_x,
           this.SelectMetadata.img_y,
           this.SelectMetadata.img_w,
@@ -130,20 +130,20 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
         )
       ) {
         if (this.rules.drag && this.mousedown) {
-          this.OD.SetGlobalXY(
+          this._Boundingbox.SetGlobalXY(
             this.SelectMetadata.img_x,
             this.SelectMetadata.img_y
           );
         }
         if (this.rules.draw) {
           // valuecode = 1, drawing new box; valuecode = 0, drawing existing box
-          var valuecode: number = this.OD.MouseUpDrawEnable(
+          var valuecode: number = this._Boundingbox.MouseUpDrawEnable(
             this.SelectMetadata
           );
         }
         this.mousedown = false;
         this.rules.scroll = true;
-        this.OD.GetBBoxDistfromImg(
+        this._Boundingbox.GetBBoxDistfromImg(
           this.SelectMetadata.bnd_box,
           this.SelectMetadata.img_x,
           this.SelectMetadata.img_y
@@ -156,7 +156,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
   MouseMove(event: MouseEvent) {
     try {
       if (
-        this.OD.mouseClickWithinPointPath(
+        this._Boundingbox.mouseClickWithinPointPath(
           this.SelectMetadata.img_x,
           this.SelectMetadata.img_y,
           this.SelectMetadata.img_w,
@@ -166,13 +166,13 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
         )
       ) {
         if (this.rules.drag && this.mousedown) {
-          let diff: { diffX: number; diffY: number } = this.OD.GetdiffXY(
-            event.offsetX,
-            event.offsetY
-          );
+          let diff: {
+            diffX: number;
+            diffY: number;
+          } = this._Boundingbox.GetdiffXY(event.offsetX, event.offsetY);
           this.SelectMetadata.img_x = diff.diffX;
           this.SelectMetadata.img_y = diff.diffY;
-          this.OD.panRectangle(
+          this._Boundingbox.panRectangle(
             this.SelectMetadata.bnd_box,
             this.SelectMetadata.img_x,
             this.SelectMetadata.img_y
@@ -185,7 +185,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
           );
         }
         if (this.rules.draw && this.mousedown) {
-          this.OD.MouseMoveDrawEnable(
+          this._Boundingbox.MouseMoveDrawEnable(
             event.offsetX,
             event.offsetY,
             this.SelectMetadata
@@ -219,7 +219,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
   MouseOut(event: MouseEvent) {
     try {
       if (this.rules.drag && this.mousedown) {
-        this.OD.SetGlobalXY(
+        this._Boundingbox.SetGlobalXY(
           this.SelectMetadata.img_x,
           this.SelectMetadata.img_y
         );
@@ -256,7 +256,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
           self.SelectMetadata.img_h < 1
             ? self.SelectMetadata.img_ori_h
             : self.SelectMetadata.img_h;
-        self.OD.SetGlobalXY(
+        self._Boundingbox.SetGlobalXY(
           self.SelectMetadata.img_x,
           self.SelectMetadata.img_y
         );
@@ -275,7 +275,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     try {
       this.clearcanvas();
       this.context.drawImage(this.img, newX, newY, newW, newH);
-      this.OD.DrawAllBoxOn(this.SelectMetadata.bnd_box, this.context);
+      this._Boundingbox.DrawAllBoxOn(this.SelectMetadata.bnd_box, this.context);
       this.mycanvas.nativeElement.focus();
     } catch (err) {}
   }
@@ -297,7 +297,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
         //zoom up
         this.SelectMetadata.img_w *= 1.1;
         this.SelectMetadata.img_h *= 1.1;
-        this.OD.scaleAllBoxes(
+        this._Boundingbox.scaleAllBoxes(
           1.1,
           this.SelectMetadata.bnd_box,
           this.SelectMetadata.img_x,
@@ -311,7 +311,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
         ) {
           this.SelectMetadata.img_w *= 0.9;
           this.SelectMetadata.img_h *= 0.9;
-          this.OD.scaleAllBoxes(
+          this._Boundingbox.scaleAllBoxes(
             0.9,
             this.SelectMetadata.bnd_box,
             this.SelectMetadata.img_x,

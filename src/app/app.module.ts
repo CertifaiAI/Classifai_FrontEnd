@@ -1,3 +1,4 @@
+import { BoundingboxService } from './../shared/services/boundingbox.service';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserModule } from '@angular/platform-browser';
@@ -32,6 +33,7 @@ import {
   providers: [
     LanguageService,
     { provide: LocationStrategy, useClass: HashLocationStrategy },
+    BoundingboxService,
   ],
   bootstrap: [AppComponent],
 })

@@ -1,7 +1,11 @@
-import { xycoordinate, Boundingbox, Metadata } from './CustomType';
-import { utils } from './utils';
+import { Injectable } from '@angular/core';
+import { xycoordinate, Boundingbox, Metadata } from '../../classes/CustomType';
+import { utils } from '../../classes/utils';
 
-export class ObjectDetection {
+@Injectable({
+  providedIn: 'any',
+})
+export class BoundingboxService {
   private globalXY: xycoordinate = { x: 0, y: 0 };
   private panXY: xycoordinate = { x: 0, y: 0 };
   private CurrentClickedBox: { box: number; pos: string } = {
