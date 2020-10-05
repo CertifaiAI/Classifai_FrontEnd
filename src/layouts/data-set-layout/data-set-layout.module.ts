@@ -8,7 +8,7 @@ import { DataSetSideMenuComponent } from './data-set-side-menu/data-set-side-men
 import { DataSetCardComponent } from './data-set-card/data-set-card.component';
 
 @NgModule({
-  imports: [CommonModule, SharedModule, DataSetRoutingModule],
-  declarations: [DataSetLayoutComponent, DataSetSideMenuComponent, DataSetHeaderComponent, DataSetCardComponent],
+    imports: [CommonModule, SharedModule, DataSetRoutingModule],
+    declarations: [DataSetLayoutComponent, DataSetSideMenuComponent, DataSetHeaderComponent, DataSetCardComponent],
 })
 export class DataSetLayoutModule {}

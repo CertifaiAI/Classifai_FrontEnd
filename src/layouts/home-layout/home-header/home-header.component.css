@@ -1,74 +1,73 @@
 .flex-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .header-container {
-  background: #262a2e;
-  color: snow;
-  height: 21vh;
+    background: #262a2e;
+    color: snow;
+    height: 21vh;
 }
 
 .div-header-container {
-  display: flex;
-  justify-content: space-around;
-  width: 90vw;
-  align-items: center;
+    display: flex;
+    justify-content: space-around;
+    width: 90vw;
+    align-items: center;
 }
 
 .flex-grow {
-  flex-grow: 1;
+    flex-grow: 1;
 }
 
 .header-img {
-  height: 18vh;
-  user-select: none;
+    height: 18vh;
+    user-select: none;
 }
 
 .header {
-  text-shadow: 0 0 1.875rem #888;
+    text-shadow: 0 0 1.875rem #888;
 }
 
 .sub-header {
-  font-size: 1rem;
-  margin: 0 0 0 5rem;
+    font-size: 1rem;
+    margin: 0 0 0 5rem;
 }
 
 .absolute {
-  position: absolute;
-  right: 5rem;
+    position: absolute;
+    right: 5rem;
 }
 
 select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
 .select-padding {
-  position: absolute;
-  height: 4vh;
-  font-size: 1.5vh;
-  top: 10%;
-  right: 3%;
-  border-radius: 5vh;
-  width: 8vh;
-  margin: 0rem;
-  -moz-text-align-last: center;
-  text-align-last: center;
-  background: #262a2e;
-  color: white;
-  box-shadow: inset -0.5vw 6.25vw 1vw 0 rgba(0, 0, 0, 0.2),
-    inset -0.5vw -0.5vw 1vw 0 rgba(255, 255, 255, 0.4);
+    position: absolute;
+    height: 4vh;
+    font-size: 1.5vh;
+    top: 10%;
+    right: 3%;
+    border-radius: 5vh;
+    width: 8vh;
+    margin: 0rem;
+    -moz-text-align-last: center;
+    text-align-last: center;
+    background: #262a2e;
+    color: white;
+    box-shadow: inset -0.5vw 6.25vw 1vw 0 rgba(0, 0, 0, 0.2), inset -0.5vw -0.5vw 1vw 0 rgba(255, 255, 255, 0.4);
 }
 
 .select-padding:hover {
-  box-shadow: inset -0.375rem -0.375rem 0.625rem 0 rgba(0, 0, 0, 0.2),
-    inset 0.375rem 0.375rem 0.625rem 0 rgba(255, 255, 255, 0.5);
+    box-shadow: inset -0.375rem -0.375rem 0.625rem 0 rgba(0, 0, 0, 0.2),
+        inset 0.375rem 0.375rem 0.625rem 0 rgba(255, 255, 255, 0.5);
 }
 
 .select-padding:active {
-  box-shadow: inset 0.375rem 0.375rem 0.625rem 0 rgba(0, 0, 0, 0.2),
-    inset -0.375rem -0.375rem 0.625rem 0 rgba(255, 255, 255, 0.5);
+    box-shadow: inset 0.375rem 0.375rem 0.625rem 0 rgba(0, 0, 0, 0.2),
+        inset -0.375rem -0.375rem 0.625rem 0 rgba(255, 255, 255, 0.5);
 }

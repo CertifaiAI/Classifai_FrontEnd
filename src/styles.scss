@@ -1,0 +1,29 @@
+/* You can add global styles to this file, and also import other style files */
+
+@font-face {
+    font-family: FuturaHeavy;
+    src: url('./assets/font/futura/Futura Heavy font.ttf');
+}
+
+* {
+    font-family: FuturaHeavy;
+}
+
+body {
+    margin: 0;
+
+    scrollbar-width: none;
+
+    background: black;
+}
+
+/** @select - applies to all select element in this app */
+select:active,
+select:focus {
+    border: none;
+    outline: none;
+}
+
+select {
+    border: none;
+}

@@ -6,23 +6,22 @@ import { DebugElement } from '@angular/core';
 import { DataSetCardComponent } from './data-set-card.component';
 
 describe('DataSetCardComponent', () => {
-  let component: DataSetCardComponent;
-  let fixture: ComponentFixture<DataSetCardComponent>;
+    let component: DataSetCardComponent;
+    let fixture: ComponentFixture<DataSetCardComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ DataSetCardComponent ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            declarations: [DataSetCardComponent],
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DataSetCardComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(DataSetCardComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

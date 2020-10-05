@@ -8,13 +8,8 @@ import { SharedModule } from 'src/shared/shared.module';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  imports: [CommonModule, SharedModule, TranslateModule],
-  declarations: [
-    HomeLayoutComponent,
-    HomeHeaderComponent,
-    HomeCardComponent,
-    HomeContentComponent,
-  ],
-  // providers: [TranslateService],
+    imports: [CommonModule, SharedModule, TranslateModule],
+    declarations: [HomeLayoutComponent, HomeHeaderComponent, HomeCardComponent, HomeContentComponent],
+    // providers: [TranslateService],
 })
 export class HomeLayoutModule {}

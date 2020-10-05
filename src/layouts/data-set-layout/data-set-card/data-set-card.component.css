@@ -1,83 +1,83 @@
 .card-container {
-  width: 11vw;
-  height: 30vh;
-  border-style: solid;
-  margin-top: 18vh;
-  margin-left: -11vw;
-  font-size: 2.2vh;
-  background: #404040;
+    width: 11vw;
+    height: 30vh;
+    border-style: solid;
+    margin-top: 18vh;
+    margin-left: -11vw;
+    font-size: 2.2vh;
+    background: #404040;
 }
 
 .project-status {
-  color: white;
-  background-color: #fe447d;
-  padding-left: 1vw;
-  padding-right: 1vw;
-  font-size: 1.5vh;
-  padding-top: 0.3vh;
-  padding-bottom: 0.6vh;
+    color: white;
+    background-color: #fe447d;
+    padding-left: 1vw;
+    padding-right: 1vw;
+    font-size: 1.5vh;
+    padding-top: 0.3vh;
+    padding-bottom: 0.6vh;
 }
 
 .card-icon-style {
-  min-width: 1.5vw;
-  max-width: 1.5vw;
-  min-height: 3vh;
-  max-height: 3vh;
-  cursor: pointer;
+    min-width: 1.5vw;
+    max-width: 1.5vw;
+    min-height: 3vh;
+    max-height: 3vh;
+    cursor: pointer;
 }
 
 .card-header-style {
-  margin-top: 1vh;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+    margin-top: 1vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .card-title-style {
-  margin-top: -0.5vh;
-  margin-left: 1vw;
+    margin-top: -0.5vh;
+    margin-left: 1vw;
 }
 
 .card-title-txt {
-  font-size: 1.3vh;
-  color: #656667;
+    font-size: 1.3vh;
+    color: #656667;
 }
 
 .project-name-style {
-  margin-left: 1vw;
+    margin-left: 1vw;
 }
 
 .project-name {
-  color: #dbdbda;
-  font-size: 1.8vh;
+    color: #dbdbda;
+    font-size: 1.8vh;
 }
 
 .tag-container {
-  display: flex;
-  flex-direction: row;
-  margin-top: 0.8vh;
-  border-radius: 10vw;
-  background: #363636;
-  width: 4.5vw;
-  padding: 0.2vw 0.3vh;
-  margin-left: 1vw;
-  cursor: pointer;
-  outline: none;
-  border: none;
+    display: flex;
+    flex-direction: row;
+    margin-top: 0.8vh;
+    border-radius: 10vw;
+    background: #363636;
+    width: 4.5vw;
+    padding: 0.2vw 0.3vh;
+    margin-left: 1vw;
+    cursor: pointer;
+    outline: none;
+    border: none;
 }
 
 .tag-img {
-  min-height: 2vh;
-  max-height: 2vh;
-  min-width: 1vw;
-  max-width: 1vw;
-  margin-left: 0.35vw;
+    min-height: 2vh;
+    max-height: 2vh;
+    min-width: 1vw;
+    max-width: 1vw;
+    margin-left: 0.35vw;
 }
 
 .tag-txt {
-  font-size: 1.2vh;
-  margin-left: 0.3vw;
-  color: white;
-  padding-top: 0.2vh;
-  cursor: pointer;
+    font-size: 1.2vh;
+    margin-left: 0.3vw;
+    color: white;
+    padding-top: 0.2vh;
+    cursor: pointer;
 }
