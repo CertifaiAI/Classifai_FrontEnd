@@ -17,7 +17,6 @@ import {
     EventEmitter_Url,
     ThumbnailMetadataProps,
 } from './image-labelling-layout.model';
-import { Metadata } from 'src/classes/CustomType';
 
 @Component({
     selector: 'image-labelling-layout',

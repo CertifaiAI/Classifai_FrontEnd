@@ -1,12 +1,24 @@
+import { utils } from './../../../classes/utils';
+import { BboxDataService } from './../../../shared/services/bbox-data.service';
+import { ActionRules } from './../image-labelling-layout.model';
 import { BoundingboxService } from './../../../shared/services/boundingbox.service';
-import { Metadata, rules } from './../../../classes/CustomType';
-import { Component, OnInit, Input, SimpleChanges, ViewChild, ElementRef, HostListener } from '@angular/core';
-import { IThumbnailMetadata } from '../image-labelling-layout.model';
+import { Metadata } from './../../../classes/CustomType';
+import {
+    Component,
+    OnInit,
+    Input,
+    SimpleChanges,
+    ViewChild,
+    ElementRef,
+    HostListener,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 
 @Component({
     selector: 'image-labelling-object-detection',
     templateUrl: './image-labelling-object-detection.component.html',
     styleUrls: ['./image-labelling-object-detection.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingObjectDetectionComponent implements OnInit {
     @ViewChild('canvasdrawing')
@@ -18,18 +30,25 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     private context!: CanvasRenderingContext2D | null;
     private img: HTMLImageElement = new Image();
     private mousedown: boolean = false;
-    private rules: rules = {
-        scroll: true,
-        drag: false,
-        draw: true,
-        selectedBox: -1,
-    };
+    private rules!: ActionRules;
+    private utility: utils = new utils();
     @Input() SelectMetadata!: Metadata;
     @Input() imgSrc: any;
 
-    constructor(private _Boundingbox: BoundingboxService) {}
+    constructor(private _Boundingbox: BoundingboxService, private IncomeRules: BboxDataService) {}
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.IncomeRules.currentValue.subscribe((val) => (this.rules = val));
+    }
+
+    rulesOnChange(scroll: boolean, selectbox: number) {
+        try {
+            var tempRules: ActionRules = this.utility.DeepCloneVariable(this.rules);
+            tempRules.scroll = scroll;
+            tempRules.selectedBox = selectbox;
+            this.IncomeRules.ValueChange(tempRules);
+        } catch (err) {}
+    }
 
     ngOnChanges(changes: SimpleChanges): void {
         try {
@@ -58,7 +77,6 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                 this.rules.drag = true;
                 this.rules.draw = false;
             }
-            console.log('this.rules.drag : ', this.rules.drag, ' this.rules.draw : ', this.rules.draw);
         } catch (err) {}
     }
 
