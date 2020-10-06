@@ -1,27 +1,48 @@
-<div class="card-container">
-  <div class="card-header-style">
-    <div>
-      <label class="project-status">Uploading</label>
-    </div>
-    <div>
-      <img
-        class="card-icon-style"
-        src="../../../assets/classifai-image-labelling-layout/light-theme/starred.png"
-      />
-      <img
-        class="card-icon-style"
-        src="../../../assets/classifai-image-labelling-layout/light-theme/more.png"
-      />
-    </div>
-  </div>
-  <div class="card-title-style">
-    <label class="card-title-txt">Created: Sep 7, 2020</label>
-  </div>
-  <div class="project-name-style">
-    <label class="project-name"> Project Name </label>
-  </div>
-  <div class="tag-container">
-    <img class="tag-img" src="../../../assets/classifai-image-labelling-layout/light-theme/label.png">
-    <label class="tag-txt">Add tag</label>
-  </div>
+<div class="card-layout-container">
+    <ng-container *ngFor="let field of _jsonSchema">
+        <div id="card-container" class="card-container" (click)="navigate({ enabled: true, isclick: true })">
+            <div class="card-header-style">
+                <div>
+                    <label class="project-status">{{ field.status }}</label>
+                </div>
+                <div>
+                    <img
+                        class="card-icon-style"
+                        src="../../../assets/classifai-image-labelling-layout/light-theme/starred.png"
+                    />
+                    <img
+                        class="card-icon-style"
+                        src="../../../assets/classifai-image-labelling-layout/light-theme/more.png"
+                    />
+                </div>
+            </div>
+            <div class="card-title-style">
+                <label class="card-title-txt">Created: {{ field.createdDate }}</label>
+            </div>
+            <div class="project-name-style">
+                <label class="project-name"> {{ field.title }} </label>
+            </div>
+            <div class="tag-container">
+                <img class="tag-img" src="../../../assets/classifai-image-labelling-layout/light-theme/label.png" />
+                <label class="tag-txt">Add tag</label>
+            </div>
+        </div>
+    </ng-container>
 </div>
+
+<!-- <div id="card-model" class="model" style="position: fixed; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7)">
+    <div class="model-content" id="model-content">
+        <div class="close-modal">
+            <label style="cursor: pointer" (click)="navigate({ enabled: false, isclick: false })">x</label>
+        </div>
+        <div class="upload-img" style="margin-bottom: 1vh">
+            <label class="label">Local</label>
+        </div>
+        <div class="upload-img">
+            <label class="label">Cloud</label>
+        </div> -->
+<!-- <div class="import-img-btn-container">
+      <button class="img-btn-style" (click)="navigate({ enabled: false, isclick: false })">Close</button>
+    </div> -->
+<!-- </div>
+</div> -->

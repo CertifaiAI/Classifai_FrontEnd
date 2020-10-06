@@ -1,0 +1,113 @@
+$normalBackground: #525353;
+$hoveredBackground: #393838;
+
+.dataset-sidemenu-container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    width: 16vw;
+}
+
+.new-project-container {
+    // margin-top: 5vh;
+    margin-bottom: 5vh;
+    margin-left: 2vw;
+}
+
+.new-project-btn {
+    padding: 1vw;
+    border-radius: 5vh;
+    background-color: $normalBackground;
+    border: none;
+    color: white;
+    outline: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    min-width: 10vw;
+    max-width: 10vw;
+    min-height: 4vh;
+    max-height: 4vh;
+}
+
+.new-project-btn:hover {
+    background-color: $hoveredBackground;
+}
+
+.add-icon {
+    // max-width: 2vw;
+    // min-width: 2vw;
+    // min-height: 4vh;
+    // max-height: 4vh;
+    min-height: inherit;
+    max-height: inherit;
+}
+
+.new-project-txt {
+    border: none;
+    background: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 2vh;
+    color: white;
+    text-align: start;
+    white-space: nowrap;
+}
+
+.current-project-btn {
+    color: white;
+    cursor: pointer;
+    display: flex;
+    // justify-content: space-evenly;
+    align-items: center;
+    border-radius: 5vh;
+    padding: 1vh 1vw 1vh 1vw;
+    // margin: 0 0 3vh 3vw;
+    margin-left: 2vw;
+    min-width: 10vw;
+    max-width: 10vw;
+    min-height: 5vh;
+    max-height: 5vh;
+    flex: 1 1 100%;
+}
+
+.current-project-btn:hover {
+    background-color: $normalBackground;
+}
+
+.project-icon {
+    // min-width: 2vw;
+    // max-width: 2vw;
+    min-height: 4vh;
+    max-height: 4vh;
+    flex: 1 1 10%;
+}
+
+// .current-project-container {
+//     padding-left: 3vw;
+//     display: flex;
+//     padding-top: 11vh;
+//     flex-direction: column;
+// }
+
+.current-project-txt {
+    border: none;
+    background: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 2vh;
+    color: white;
+    white-space: nowrap;
+    flex: 1 1 90%;
+    text-align: center;
+}
+
+.horizontal-line {
+    width: 12vw;
+    background-color: $hoveredBackground;
+    min-height: 0.3vh;
+    max-height: 0.3vh;
+    margin: auto;
+    border: 0.0625rem solid black;
+}

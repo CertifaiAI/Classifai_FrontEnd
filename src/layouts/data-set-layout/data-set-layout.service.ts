@@ -3,22 +3,23 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
+    IBase64Img,
     IContent,
-    ILabelList,
     IMessage,
+    ILabelList,
     IThumbnailMetadata,
     IMessageUuidList,
-    IBase64Img,
-} from './image-labelling-layout.model';
+} from '../data-set-layout/data-set-layout.model';
 
 @Injectable({ providedIn: 'any' })
-export class ImageLabellingService {
+export class DataSetLayoutService {
     private hostPort: string = environment.baseURL;
 
     constructor(private http: HttpClient) {}
 
     getProjectList = (): Observable<IContent> => {
         return this.http.get<IContent>(`${this.hostPort}bndbox/projects`);
+        // .pipe(catchError(this.handleError));
     };
 
     createNewProject = (projectName: string): Observable<IMessage> => {

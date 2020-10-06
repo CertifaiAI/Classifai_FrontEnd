@@ -1,9 +1,10 @@
 <div class="layout-container">
     <div>
-        <image-labelling-header
+        <!-- <image-labelling-header
             [_onChange]="onChangeSchema"
             (_navigate)="navigateByUrl($event)"
-        ></image-labelling-header>
+        ></image-labelling-header> -->
+        <page-header [_onChange]="onChangeSchema"></page-header>
         <image-labelling-info [_onChange]="onChangeSchema" (_onClick)="navigateByAction($event)"></image-labelling-info>
     </div>
 
@@ -23,7 +24,6 @@
             (_onClickLabel)="onProcessLabel($event)"
             (_onEnterLabel)="onProcessLabel($event)"
         ></image-labelling-project>
-        <!-- <image-labelling-label [_tabStatus]="tabStatus[1]" (_onClose)="onToggleTab($event)"></image-labelling-label> -->
         <image-labelling-right-sidebar
             [_onChange]="onChangeSchema"
             (_onClick)="onToggleTab($event)"
@@ -32,7 +32,7 @@
     <image-labelling-footer [_thumbnailInfo]="selectedThumbnail"></image-labelling-footer>
 </div>
 
-<modal id="custom-modal-1">
+<!-- <modal id="custom-modal-1">
     <h1 class="modal-center">Classifai Image Labelling Tools</h1>
     <form [formGroup]="form">
         <div class="modal-inner-container">
@@ -96,4 +96,4 @@
             </div>
         </div>
     </form>
-</modal>
+</modal> -->

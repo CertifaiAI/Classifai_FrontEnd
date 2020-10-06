@@ -21,12 +21,9 @@ import {
 @Component({
     selector: 'image-labelling-layout',
     templateUrl: './image-labelling-layout.component.html',
-    styleUrls: ['./image-labelling-layout.component.css'],
+    styleUrls: ['./image-labelling-layout.component.scss'],
 })
 export class ImageLabellingLayoutComponent implements OnInit {
-    /** @prop default as 'dark-theme', prevent undefined prop pass to child comps.*/
-    // theme: string;
-    // status: boolean;
     mediaTheme: MediaQueryList = window.matchMedia('(prefers-color-scheme: light)');
     onChangeSchema!: Props;
     projects: string[] = [];
@@ -36,14 +33,8 @@ export class ImageLabellingLayoutComponent implements OnInit {
     form!: FormGroup;
     subject$: Subject<any> = new Subject();
     subjectSubscription!: Subscription;
-    // timerSubscription: Subscription;
-    // labelList: ILabelList;
     selectedProjectName: string = '';
     thumbnailList: IThumbnailMetadata[] = [];
-    // selectedThumbnail: SelectedThumbnailProps = {
-    //     img_src: '',
-    //     uuid: 0,
-    // };
     selectedThumbnail!: Partial<IThumbnailMetadata>;
     selectedMeta!: Partial<IThumbnailMetadata>;
     tabStatus: TabsProps[] = [
@@ -92,9 +83,9 @@ export class ImageLabellingLayoutComponent implements OnInit {
         });
     };
 
-    ngOnInit(): void {
+    ngOnInit = (): void => {
         this.mediaTheme.addEventListener('change', this.detectBrowserTheme, false);
-    }
+    };
 
     createFormControls = (): void => {
         this.form = this._fb.group({
@@ -480,10 +471,10 @@ export class ImageLabellingLayoutComponent implements OnInit {
     }
 
     /** @callback method used by Angular to clean up eventListener after comp. is destroyed */
-    ngOnDestroy(): void {
+    ngOnDestroy = (): void => {
         this.mediaTheme.removeEventListener('change', this.detectBrowserTheme, false);
         this._modalService.remove();
         this.subjectSubscription ? this.subjectSubscription.unsubscribe() : null;
         // this.timerSubscription ? this.timerSubscription.unsubscribe() : null;
-    }
+    };
 }

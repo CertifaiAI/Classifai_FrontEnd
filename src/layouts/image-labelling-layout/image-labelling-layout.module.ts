@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { ImageLabellingFooterComponent } from './image-labelling-footer/image-labelling-footer.component';
-import { ImageLabellingHeaderComponent } from './image-labelling-header/image-labelling-header.component';
 import { ImageLabellingImageComponent } from './image-labelling-image/image-labelling-image.component';
 import { ImageLabellingInfoComponent } from './image-labelling-info/image-labelling-info.component';
 import { ImageLabellingLayoutComponent } from './image-labelling-layout.component';
@@ -16,13 +15,10 @@ import { SharedModule } from 'src/shared/shared.module';
     imports: [CommonModule, SharedModule, ImageLabellingRoutingModule],
     declarations: [
         ImageLabellingLayoutComponent,
-        ImageLabellingHeaderComponent,
         ImageLabellingInfoComponent,
         ImageLabellingLeftSidebarComponent,
         ImageLabellingImageComponent,
         ImageLabellingProjectComponent,
-        // ImageLabellingLabelComponent,
-        // ImageLabellingAnnotationComponent,
         ImageLabellingRightSidebarComponent,
         ImageLabellingFooterComponent,
         ImageLabellingObjectDetectionComponent,

@@ -35,62 +35,62 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
         this.jsonSchema = {
             logos: [
                 {
-                    imgPath: `${this.imgRelativePath}${this._onChange.theme}/pointer.png`,
+                    imgPath: `${this.imgRelativePath}light-theme/pointer.png`,
                     hoverLabel: `Pointer`,
                     alt: `Pointer`,
                 },
                 {
-                    imgPath: `${this.imgRelativePath}${this._onChange.theme}/move.png`,
+                    imgPath: `${this.imgRelativePath}light-theme/move.png`,
                     hoverLabel: `Move Image`,
                     alt: `Move Image`,
                 },
                 {
-                    imgPath: `${this.imgRelativePath}${this._onChange.theme}/rec_bounding_box.png`,
+                    imgPath: `${this.imgRelativePath}light-theme/rec_bounding_box.png`,
                     hoverLabel: `Rectangular Bounding Box`,
                     alt: `RectangularBB`,
                 },
                 // {
-                //   imgPath: `${this.imgRelativePath}${this._onChange.theme}/bounding_box.png`,
+                //   imgPath: `${this.imgRelativePath}light-theme/bounding_box.png`,
                 //   hoverLabel: `Bounding Box`,
                 //   alt: `BoundingBox`,
                 // },
                 {
-                    imgPath: `${this.imgRelativePath}${this._onChange.theme}/polygon.png`,
+                    imgPath: `${this.imgRelativePath}light-theme/polygon.png`,
                     hoverLabel: `Polygon`,
                     alt: `Polygon`,
                 },
                 // {
-                //   imgPath: `${this.imgRelativePath}${this._onChange.theme}/auto_select.png`,
+                //   imgPath: `${this.imgRelativePath}light-theme/auto_select.png`,
                 //   hoverLabel: `Auto Select`,
                 //   alt: `AutoSelect`,
                 // },
                 // {
-                //   imgPath: `${this.imgRelativePath}${this._onChange.theme}/brush_segmentation.png`,
+                //   imgPath: `${this.imgRelativePath}light-theme/brush_segmentation.png`,
                 //   hoverLabel: `Brush Segmentation`,
                 //   alt: `BrushSeg`,
                 // },
                 // {
-                //   imgPath: `${this.imgRelativePath}${this._onChange.theme}/key_point.png`,
+                //   imgPath: `${this.imgRelativePath}light-theme/key_point.png`,
                 //   hoverLabel: `Key Point`,
                 //   alt: `KeyPoint`,
                 // },
                 {
-                    imgPath: `${this.imgRelativePath}${this._onChange.theme}/eraser.png`,
+                    imgPath: `${this.imgRelativePath}light-theme/eraser.png`,
                     hoverLabel: `Eraser`,
                     alt: `Eraser`,
                 },
                 {
-                    imgPath: `${this.imgRelativePath}${this._onChange.theme}/fit_center.png`,
+                    imgPath: `${this.imgRelativePath}light-theme/fit_center.png`,
                     hoverLabel: `Fit Center`,
                     alt: `Fit Center`,
                 },
                 // {
-                //   imgPath: `${this.imgRelativePath}${this._onChange.theme}/move_img_px.png`,
+                //   imgPath: `${this.imgRelativePath}light-theme/move_img_px.png`,
                 //   hoverLabel: `Move Image by Pixel`,
                 //   alt: `Move Image by Pixel`,
                 // },
                 {
-                    imgPath: `${this.imgRelativePath}${this._onChange.theme}/save.png`,
+                    imgPath: `${this.imgRelativePath}light-theme/save.png`,
                     hoverLabel: `Save`,
                     alt: `Save`,
                 },
@@ -110,7 +110,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
         this.iconIndex = index;
     };
 
-    conditionalIconTheme = (): string => `utility-icon-${this._onChange.theme}`;
+    conditionalIconTheme = (): string => `utility-icon-light-theme`;
 
     conditionalActiveIcon = (index: number): object | null =>
         index === this.iconIndex

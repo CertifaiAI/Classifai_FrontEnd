@@ -1,12 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-    selector: 'app-data-set-header',
+    selector: 'data-set-header',
     templateUrl: './data-set-header.component.html',
-    styleUrls: ['./data-set-header.component.css'],
+    styleUrls: ['./data-set-header.component.scss'],
 })
 export class DataSetHeaderComponent implements OnInit {
+    optionLists: string[] = ['status', 'name', 'date'];
     constructor() {}
 
-    ngOnInit() {}
+    ngOnInit = (): void => {};
+
+    onSelect = (value: string) => {
+        console.log(value);
+    };
 }
