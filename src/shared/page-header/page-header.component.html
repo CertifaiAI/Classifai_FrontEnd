@@ -3,24 +3,19 @@
         <div class="logo-container">
             <img [src]="logoSrc" class="logo position-absolute" alt="logo" title="Classifai" />
         </div>
-        <div class="btn-container">
-            <button class="btn" (click)="emitParentUrl({ url: '/' })">Home</button>
-        </div>
-        <div class="btn-container">
-            <button class="btn" (click)="emitParentUrl({ url: '/dataset' })">Dataset Management</button>
-        </div>
-        <div class="btn-container">
-            <button class="btn">Annotation</button>
-        </div>
-        <div class="btn-container">
-            <button class="btn">Revision</button>
-        </div>
+        <ng-container *ngFor="let label of headerLabels"
+            ><a class="link" [routerLink]="label.url">
+                <div class="btn-container" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
+                    <label class="label">{{ label.name }}</label>
+                </div></a
+            >
+        </ng-container>
     </div>
     <div class="container-flex-end">
         <ng-container *ngFor="let logo of jsonSchema.logos; index as i">
             <div class="utility-icon-container">
                 <img
-                    style="margin-left: 4.2vw"
+                    class="img"
                     [ngClass]="conditionalIconTheme()"
                     [attr.data-index]="i"
                     [src]="logo.imgPath"

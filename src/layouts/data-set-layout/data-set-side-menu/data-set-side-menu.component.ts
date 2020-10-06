@@ -1,29 +1,38 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { DataSetLayoutComponent } from '../data-set-layout.component';
+import { Component, OnInit } from '@angular/core';
 
+type MenuSchema = {
+    src: string;
+    name: string;
+};
 @Component({
-    selector: 'app-data-set-side-menu',
+    selector: 'data-set-side-menu',
     templateUrl: './data-set-side-menu.component.html',
-    styleUrls: ['./data-set-side-menu.component.css'],
+    styleUrls: ['./data-set-side-menu.component.scss'],
 })
 export class DataSetSideMenuComponent implements OnInit {
-    modeldiv!: HTMLDivElement;
-    datasetdiv!: HTMLDivElement;
-
+    menuSchema: MenuSchema[] = [
+        {
+            src: '../../../assets/classifai-image-labelling-layout/light-theme/add.png',
+            name: 'New Project',
+        },
+        {
+            src: '../../../assets/classifai-image-labelling-layout/light-theme/project.png',
+            name: 'My Project',
+        },
+        {
+            src: '../../../assets/classifai-image-labelling-layout/light-theme/starred.png',
+            name: 'Starred',
+        },
+        {
+            src: '../../../assets/classifai-image-labelling-layout/light-theme/history.png',
+            name: 'Recent',
+        },
+        {
+            src: '../../../assets/classifai-image-labelling-layout/light-theme/trash.png',
+            name: 'Trash',
+        },
+    ];
     constructor() {}
 
-    ngOnInit() {
-        this.modeldiv = document.getElementById('model') as HTMLDivElement;
-        this.datasetdiv = document.getElementById('dataset-container') as HTMLDivElement;
-        this.modeldiv.style.display = 'none';
-    }
-    navigate({ enabled, isclick }: { enabled: boolean; isclick: boolean }): void {
-        //TODO:
-        console.log(enabled, isclick);
-        if (enabled && isclick) {
-            this.modeldiv.style.display = 'block';
-        } else {
-            this.modeldiv.style.display = 'none';
-        }
-    }
+    ngOnInit = (): void => {};
 }

@@ -46,6 +46,10 @@
     background: darkgray;
 }
 
+.img {
+    margin-left: 4.2vw;
+}
+
 .position-absolute {
     position: absolute;
 }
@@ -61,22 +65,36 @@
     opacity: 1;
 }
 
-.btn-container,
-.btn {
+.btn-container {
     min-height: 4.5vh;
     max-height: 4.5vh;
     min-width: 9vw;
     max-width: 12vw;
     font-size: 1.7vh;
-    text-align: center;
-    white-space: nowrap;
     background: #525353;
     outline: 0.0625vw inset white;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.link {
+    text-decoration: none;
+    color: white;
+}
+
+.label {
+    white-space: nowrap;
     border: none;
     color: white;
     cursor: pointer;
 }
 
-.btn:hover {
+.btn-container:hover {
+    background: #383535;
+}
+
+.active-link {
     background: #383535;
 }

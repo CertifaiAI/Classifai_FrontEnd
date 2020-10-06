@@ -1,0 +1,56 @@
+$hoverBackground: #393838;
+
+.dataset-header-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 1vw;
+    min-width: 80vw;
+    max-width: 80vw;
+    // min-height: 4vh;
+    // max-height: 4vh;
+}
+
+.label {
+    flex: 1 1 80%;
+    background: none;
+    font-size: 2vh;
+    color: white;
+    white-space: nowrap;
+    min-height: inherit;
+    max-height: inherit;
+}
+
+.dataset-icon-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1 1 20%;
+}
+
+.dataset-icon {
+    flex: 1 1 3%;
+    min-width: 2vw;
+    max-width: 2vw;
+    cursor: pointer;
+}
+
+.dataset-icon:hover {
+    border-radius: 5vh;
+    background-color: $hoverBackground;
+}
+
+.dataset-select {
+    height: 4vh;
+    font-size: 2vh;
+    min-width: 5vw;
+    max-width: 5vw;
+    text-align-last: center;
+    background: black;
+    color: white;
+}
+
+.dataset-select:focus,
+.dataset-select:hover {
+    background: $hoverBackground;
+}

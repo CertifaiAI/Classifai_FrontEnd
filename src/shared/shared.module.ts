@@ -8,7 +8,7 @@ import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 import { LanguageService } from './services/language.service';
 import { LazyLoadImgDirective } from './directives/lazy-image.directive';
 import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { PageHeaderModule } from './page-header/page-header.module';
 import { ThemeService } from './services/theme.service';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -20,11 +20,11 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 @NgModule({
     declarations: [FormatLanguagePipe, FileNamePipe, LazyLoadImgDirective],
     imports: [
-        RouterModule,
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
         ClassifaiModalModule,
+        PageHeaderModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
@@ -37,6 +37,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
         FormatLanguagePipe,
         FileNamePipe,
         ClassifaiModalModule,
+        PageHeaderModule,
         FormsModule,
         ReactiveFormsModule,
         TranslateModule,

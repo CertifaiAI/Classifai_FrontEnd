@@ -33,7 +33,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
         this.jsonSchema = {
             logos: [
                 {
-                    imgPath: `${this.imgRelativePath}${this._onChange.theme}/folder.png`,
+                    imgPath: `${this.imgRelativePath}light-theme/folder.png`,
                     hoverLabel: `Folder / Files`,
                     alt: `Folder`,
                     // inputType: 'file',
@@ -42,19 +42,19 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     onClick: () => this._onClick.emit({ name: 'project', closed: false }),
                 },
                 {
-                    imgPath: `${this.imgRelativePath}${this._onChange.theme}/label.png`,
+                    imgPath: `${this.imgRelativePath}light-theme/label.png`,
                     hoverLabel: `Label`,
                     alt: `Label`,
                     onClick: () => this._onClick.emit({ name: 'label', closed: false }),
                 },
                 {
-                    imgPath: `${this.imgRelativePath}${this._onChange.theme}/bounding_box.png`,
+                    imgPath: `${this.imgRelativePath}light-theme/bounding_box.png`,
                     hoverLabel: `Annotation`,
                     alt: `Annotation`,
                     onClick: () => this._onClick.emit({ name: 'annotation', closed: false }),
                 },
                 {
-                    imgPath: `${this.imgRelativePath}${this._onChange.theme}/statistic.png`,
+                    imgPath: `${this.imgRelativePath}light-theme/statistic.png`,
                     hoverLabel: `Statistic`,
                     alt: `Statistic`,
                     // onClick: () => this._onClick.emit(null),

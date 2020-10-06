@@ -1,28 +1,41 @@
-import { UrlProps, IimageLabellingSchema, Props } from '../image-labelling-layout.model';
-import {
-    Component,
-    EventEmitter,
-    Input,
-    OnInit,
-    Output,
-    OnChanges,
-    SimpleChanges,
-    ChangeDetectionStrategy,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { IimageLabellingSchema, Props } from '../../layouts/image-labelling-layout/image-labelling-layout.model';
+
+type HeaderLabelSchema = {
+    name: string;
+    url: string;
+};
 
 @Component({
-    selector: 'image-labelling-header',
-    templateUrl: './image-labelling-header.component.html',
-    styleUrls: ['./image-labelling-header.component.css'],
+    selector: 'page-header',
+    templateUrl: './page-header.component.html',
+    styleUrls: ['./page-header.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ImageLabellingHeaderComponent implements OnInit, OnChanges {
-    // @Input() _theme: string;
+export class PageHeaderComponent implements OnInit, OnChanges {
     @Input() _onChange!: Props;
-    @Output() _navigate: EventEmitter<UrlProps> = new EventEmitter();
+    // @Output() _navigate: EventEmitter<UrlProps> = new EventEmitter();
     imgRelativePath: string = `../../../assets/classifai-image-labelling-layout/`;
     logoSrc: string = `../../../assets/classifai-image-labelling-layout/Classifai_Favicon_Dark_512px.png`;
     jsonSchema!: IimageLabellingSchema;
+    headerLabels: HeaderLabelSchema[] = [
+        {
+            name: 'Home',
+            url: '/',
+        },
+        {
+            name: 'Dataset Management',
+            url: '/dataset',
+        },
+        {
+            name: 'Annotation',
+            url: '/imglabel',
+        },
+        {
+            name: 'Revision',
+            url: '/',
+        },
+    ];
 
     constructor() {}
 
@@ -34,17 +47,17 @@ export class ImageLabellingHeaderComponent implements OnInit, OnChanges {
         this.jsonSchema = {
             logos: [
                 {
-                    imgPath: `${this.imgRelativePath}${this._onChange.theme}/add_user.png`,
+                    imgPath: `${this.imgRelativePath}light-theme/add_user.png`,
                     hoverLabel: `Add user to project`,
                     alt: `Add user`,
                 },
                 // {
-                //   imgPath: `${this.imgRelativePath}${this._onChange.theme}/workspaces.png`,
+                //   imgPath: `${this.imgRelativePath}light-theme/workspaces.png`,
                 //   hoverLabel: `Workspaces`,
                 //   alt: `Workspaces`,
                 // },
                 // {
-                //   imgPath: `${this.imgRelativePath}${this._onChange.theme}/upload.png`,
+                //   imgPath: `${this.imgRelativePath}light-theme/upload.png`,
                 //   hoverLabel: `Share / Upload`,
                 //   alt: `Upload`,
                 // },
@@ -52,9 +65,9 @@ export class ImageLabellingHeaderComponent implements OnInit, OnChanges {
         };
     };
 
-    emitParentUrl = <T extends UrlProps>({ url }: T): void => {
-        url ? this._navigate.emit({ url }) : null;
-    };
+    // emitParentUrl = <T extends UrlProps>({ url }: T): void => {
+    //     url ? this._navigate.emit({ url }) : null;
+    // };
 
     ngOnChanges(changes: SimpleChanges): void {
         // console.log(changes);

@@ -32,13 +32,13 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
         this.jsonSchema = {
             logoCenter: [
                 {
-                    imgPath: `${this.imgRelativePath}${this._onChange.theme}/previous.png`,
+                    imgPath: `${this.imgRelativePath}light-theme/previous.png`,
                     hoverLabel: `Pervious`,
                     alt: `Previous`,
                     onClick: () => this.emitParentEvent({ thumbnailAction: -1 }),
                 },
                 {
-                    imgPath: `${this.imgRelativePath}${this._onChange.theme}/next.png`,
+                    imgPath: `${this.imgRelativePath}light-theme/next.png`,
                     hoverLabel: `Next`,
                     alt: `Next`,
                     onClick: () => this.emitParentEvent({ thumbnailAction: 1 }),
@@ -46,22 +46,22 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
             ],
             logoEnd: [
                 {
-                    imgPath: `${this.imgRelativePath}${this._onChange.theme}/undo.png`,
+                    imgPath: `${this.imgRelativePath}light-theme/undo.png`,
                     hoverLabel: `Undo`,
                     alt: `Undo`,
                 },
                 {
-                    imgPath: `${this.imgRelativePath}${this._onChange.theme}/redo.png`,
+                    imgPath: `${this.imgRelativePath}light-theme/redo.png`,
                     hoverLabel: `Redo`,
                     alt: `Redo`,
                 },
                 {
-                    imgPath: `${this.imgRelativePath}${this._onChange.theme}/zoom_in.png`,
+                    imgPath: `${this.imgRelativePath}light-theme/zoom_in.png`,
                     hoverLabel: `Zoom In`,
                     alt: `Zoom In`,
                 },
                 {
-                    imgPath: `${this.imgRelativePath}${this._onChange.theme}/zoom_out.png`,
+                    imgPath: `${this.imgRelativePath}light-theme/zoom_out.png`,
                     hoverLabel: `Zoom Out`,
                     alt: `Zoom Out`,
                 },
