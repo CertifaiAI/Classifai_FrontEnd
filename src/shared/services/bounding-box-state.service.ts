@@ -7,7 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class BoundingBoxStateService {
     private Source = new BehaviorSubject<ActionRules>({
-        scroll: false,
+        scroll: true,
         drag: false,
         draw: true,
         selectedBox: -1,
