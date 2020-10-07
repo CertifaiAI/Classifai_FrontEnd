@@ -11,8 +11,8 @@
     <div class="content-container">
         <image-labelling-left-sidebar [_onChange]="onChangeSchema"></image-labelling-left-sidebar>
         <image-labelling-object-detection
-            [selectMetadata]="metas"
-            [imgSrc]="srcofimg"
+            [_selectMetadata]="selectedMetaData"
+            [_imgSrc]="srcofimg"
         ></image-labelling-object-detection>
         <!-- <image-labelling-image [_thumbnail]="selectedThumbnail"></image-labelling-image> -->
 
@@ -29,7 +29,7 @@
             (_onClick)="onToggleTab($event)"
         ></image-labelling-right-sidebar>
     </div>
-    <image-labelling-footer [_thumbnailInfo]="selectedThumbnail"></image-labelling-footer>
+    <image-labelling-footer [_thumbnailInfo]="selectedMetaData"></image-labelling-footer>
 </div>
 
 <modal id="custom-modal-1">

@@ -35,8 +35,8 @@ export class ImageLabellingLayoutComponent implements OnInit {
     subjectSubscription!: Subscription;
     selectedProjectName: string = '';
     thumbnailList: IThumbnailMetadata[] = [];
-    selectedThumbnail!: Partial<IThumbnailMetadata>;
-    selectedMeta!: Partial<IThumbnailMetadata>;
+    // selectedThumbnail!: Partial<IThumbnailMetadata>;
+    selectedMetaData!: Partial<IThumbnailMetadata>;
     tabStatus: TabsProps[] = [
         {
             name: 'Project',
@@ -53,7 +53,6 @@ export class ImageLabellingLayoutComponent implements OnInit {
             closed: false,
         },
     ];
-    metas: any;
     srcofimg: string = '';
 
     constructor(
@@ -298,7 +297,7 @@ export class ImageLabellingLayoutComponent implements OnInit {
 
     navigateByAction = <T extends EventEmitter_Action>({ thumbnailAction }: T): void => {
         if (thumbnailAction) {
-            let { uuid } = this.selectedThumbnail || false;
+            let { uuid } = this.selectedMetaData || false;
             if (uuid) {
                 this.showBase64Image({ uuid: thumbnailAction === 1 ? (uuid += 1) : (uuid -= 1) });
             } else {
@@ -319,15 +318,14 @@ export class ImageLabellingLayoutComponent implements OnInit {
         projectName: string = this.selectedProjectName || this.inputProjectName,
     ): void => {
         const { uuid } = thumbnail;
-        if (uuid && this.validateUuid(uuid)(this.selectedThumbnail?.uuid)) {
+        if (uuid && this.validateUuid(uuid)(this.selectedMetaData?.uuid)) {
             const getImage$ = this._imgLabelService.getBase64Thumbnail(projectName, uuid);
             const filteredThumbInfo = this.thumbnailList.find((f) => f.uuid === uuid);
             getImage$.pipe(first()).subscribe(
                 ({ message, img_src, errormessage }) => {
                     message === 1 && thumbnail
-                        ? ((this.selectedThumbnail = { ...thumbnail, ...filteredThumbInfo, img_src }),
-                          (this.metas = thumbnail),
-                          (this.srcofimg = img_src))
+                        ? // (this.selectedThumbnail = { ...thumbnail, ...filteredThumbInfo, img_src }),
+                          ((this.selectedMetaData = thumbnail), (this.srcofimg = img_src))
                         : console.error(errormessage);
                 },
                 (err: Error) => console.error(err),
