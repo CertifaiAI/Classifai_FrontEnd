@@ -17,7 +17,7 @@ import {
 @Component({
     selector: 'image-labelling-object-detection',
     templateUrl: './image-labelling-object-detection.component.html',
-    styleUrls: ['./image-labelling-object-detection.component.css'],
+    styleUrls: ['./image-labelling-object-detection.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingObjectDetectionComponent implements OnInit {

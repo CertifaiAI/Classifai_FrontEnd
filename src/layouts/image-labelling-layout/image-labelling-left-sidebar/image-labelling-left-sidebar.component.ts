@@ -13,7 +13,7 @@ import {
 @Component({
     selector: 'image-labelling-left-sidebar',
     templateUrl: './image-labelling-left-sidebar.component.html',
-    styleUrls: ['./image-labelling-left-sidebar.component.css'],
+    styleUrls: ['./image-labelling-left-sidebar.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
@@ -48,17 +48,20 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     imgPath: `${this.imgRelativePath}light-theme/rec_bounding_box.png`,
                     hoverLabel: `Rectangular Bounding Box`,
                     alt: `RectangularBB`,
+                    onClick: (): void => {
+                        console.log('12w34567');
+                    },
                 },
                 // {
                 //   imgPath: `${this.imgRelativePath}light-theme/bounding_box.png`,
                 //   hoverLabel: `Bounding Box`,
                 //   alt: `BoundingBox`,
                 // },
-                {
-                    imgPath: `${this.imgRelativePath}light-theme/polygon.png`,
-                    hoverLabel: `Polygon`,
-                    alt: `Polygon`,
-                },
+                // {
+                //     imgPath: `${this.imgRelativePath}light-theme/polygon.png`,
+                //     hoverLabel: `Polygon`,
+                //     alt: `Polygon`,
+                // },
                 // {
                 //   imgPath: `${this.imgRelativePath}light-theme/auto_select.png`,
                 //   hoverLabel: `Auto Select`,

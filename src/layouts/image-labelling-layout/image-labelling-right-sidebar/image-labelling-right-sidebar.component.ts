@@ -13,7 +13,7 @@ import {
 @Component({
     selector: 'image-labelling-right-sidebar',
     templateUrl: './image-labelling-right-sidebar.component.html',
-    styleUrls: ['./image-labelling-right-sidebar.component.css'],
+    styleUrls: ['./image-labelling-right-sidebar.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
