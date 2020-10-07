@@ -21,19 +21,16 @@ import {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingObjectDetectionComponent implements OnInit {
-    @ViewChild('canvasdrawing')
-    mycanvas!: ElementRef<HTMLCanvasElement>;
-    @ViewChild('crossh')
-    crossh!: ElementRef<HTMLDivElement>;
-    @ViewChild('crossv')
-    crossv!: ElementRef<HTMLDivElement>;
+    @ViewChild('canvasdrawing') mycanvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('crossh') crossh!: ElementRef<HTMLDivElement>;
+    @ViewChild('crossv') crossv!: ElementRef<HTMLDivElement>;
     private context!: CanvasRenderingContext2D | null;
     private img: HTMLImageElement = new Image();
     private mousedown: boolean = false;
     private rules!: ActionRules;
     private utility: utils = new utils();
     @Input() selectMetadata!: Metadata;
-    @Input() imgSrc: any;
+    @Input() imgSrc: string = '';
 
     constructor(private _boundingbox: BoundingboxService, private _incomeRules: BboxDataService) {}
 
@@ -43,7 +40,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
 
     rulesOnChange(scroll: boolean, selectbox: number) {
         try {
-            var tempRules: ActionRules = this.utility.deepCloneVariable(this.rules);
+            let tempRules: ActionRules = this.utility.deepCloneVariable(this.rules);
             tempRules.scroll = scroll;
             tempRules.selectedBox = selectbox;
             this._incomeRules.valueChange(tempRules);
@@ -148,7 +145,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                 }
                 if (this.rules.draw) {
                     // valuecode = 1, drawing new box; valuecode = 0, drawing existing box
-                    var valuecode: number = this._boundingbox.mouseUpDrawEnable(this.selectMetadata);
+                    const valuecode: number = this._boundingbox.mouseUpDrawEnable(this.selectMetadata);
                 }
                 this.mousedown = false;
                 this.rules.scroll = true;
@@ -250,21 +247,20 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
 
     loadImages(bit64STR: string) {
         try {
-            let self = this;
-            self.img.src = bit64STR;
-            self.clearcanvas();
-            self.img.onload = function () {
-                self.selectMetadata.img_w =
-                    self.selectMetadata.img_w < 1 ? self.selectMetadata.img_ori_w : self.selectMetadata.img_w;
-                self.selectMetadata.img_h =
-                    self.selectMetadata.img_h < 1 ? self.selectMetadata.img_ori_h : self.selectMetadata.img_h;
-                self._boundingbox.setGlobalXY(self.selectMetadata.img_x, self.selectMetadata.img_y);
-                self.context?.drawImage(
-                    self.img,
-                    self.selectMetadata.img_x,
-                    self.selectMetadata.img_y,
-                    self.selectMetadata.img_w,
-                    self.selectMetadata.img_h,
+            this.img.src = bit64STR;
+            this.clearcanvas();
+            this.img.onload = () => {
+                this.selectMetadata.img_w =
+                    this.selectMetadata.img_w < 1 ? this.selectMetadata.img_ori_w : this.selectMetadata.img_w;
+                this.selectMetadata.img_h =
+                    this.selectMetadata.img_h < 1 ? this.selectMetadata.img_ori_h : this.selectMetadata.img_h;
+                this._boundingbox.setGlobalXY(this.selectMetadata.img_x, this.selectMetadata.img_y);
+                this.context?.drawImage(
+                    this.img,
+                    this.selectMetadata.img_x,
+                    this.selectMetadata.img_y,
+                    this.selectMetadata.img_w,
+                    this.selectMetadata.img_h,
                 );
             };
         } catch (err) {}

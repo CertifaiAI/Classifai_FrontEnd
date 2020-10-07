@@ -9,7 +9,7 @@ export class BboxDataService {
     private Source = new BehaviorSubject<ActionRules>({
         scroll: false,
         drag: false,
-        draw: false,
+        draw: true,
         selectedBox: -1,
     });
 
