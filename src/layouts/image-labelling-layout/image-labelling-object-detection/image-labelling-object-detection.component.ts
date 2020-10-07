@@ -1,4 +1,4 @@
-import { ActionRules } from './../image-labelling-layout.model';
+import { BoundingBoxActionState } from './../image-labelling-layout.model';
 import { BoundingBoxService } from '../../../shared/services/bounding-box.service';
 import { BoundingBoxStateService } from '../../../shared/services/bounding-box-state.service';
 import { Metadata } from './../../../classes/CustomType';
@@ -27,7 +27,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     private context!: CanvasRenderingContext2D | null;
     private img: HTMLImageElement = new Image();
     private mousedown: boolean = false;
-    private rules!: ActionRules;
+    private rules!: BoundingBoxActionState;
     private utility: utils = new utils();
     @Input() _selectMetadata!: Metadata;
     @Input() _imgSrc: string = '';
@@ -40,10 +40,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
 
     rulesOnChange(scroll: boolean, selectbox: number) {
         try {
-            let tempRules: ActionRules = this.utility.deepCloneVariable(this.rules);
+            let tempRules: BoundingBoxActionState = this.utility.deepCloneVariable(this.rules);
             tempRules.scroll = scroll;
             tempRules.selectedBox = selectbox;
-            this._incomeRules.valueChange(tempRules);
+            this._incomeRules.setState(tempRules);
         } catch (err) {}
     }
 

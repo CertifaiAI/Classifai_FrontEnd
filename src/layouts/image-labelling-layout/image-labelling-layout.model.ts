@@ -156,7 +156,7 @@ export type SelectedLabelProps = {
     label_list: string[];
 } & TabAction;
 
-export type ActionRules = {
+export type BoundingBoxActionState = {
     scroll: boolean;
     drag: boolean;
     draw: boolean;

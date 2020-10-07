@@ -9,6 +9,7 @@ import {
     OnChanges,
     ChangeDetectionStrategy,
 } from '@angular/core';
+import { BoundingBoxStateService } from 'src/shared/services/bounding-box-state.service';
 
 @Component({
     selector: 'image-labelling-left-sidebar',
@@ -25,7 +26,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     jsonSchema!: IimageLabellingSchema;
     iconIndex!: number;
 
-    constructor() {}
+    constructor(private _boundingBoxState: BoundingBoxStateService) {}
 
     ngOnInit(): void {
         this.bindImagePath();
@@ -38,6 +39,9 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     imgPath: `${this.imgRelativePath}light-theme/pointer.png`,
                     hoverLabel: `Pointer`,
                     alt: `Pointer`,
+                    onClick: (): void => {
+                        this._boundingBoxState.setState({ draw: false });
+                    },
                 },
                 {
                     imgPath: `${this.imgRelativePath}light-theme/move.png`,
@@ -49,7 +53,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     hoverLabel: `Rectangular Bounding Box`,
                     alt: `RectangularBB`,
                     onClick: (): void => {
-                        console.log('12w34567');
+                        this._boundingBoxState.setState({ draw: true });
                     },
                 },
                 // {
