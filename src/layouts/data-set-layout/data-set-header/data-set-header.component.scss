@@ -41,7 +41,9 @@ $hoverBackground: #393838;
 }
 
 .dataset-select {
-    height: 4vh;
+    // height: 4vh;
+    min-height: 4vh;
+    max-height: 4vh;
     font-size: 2vh;
     min-width: 5vw;
     max-width: 5vw;
