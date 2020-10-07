@@ -40,7 +40,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     hoverLabel: `Pointer`,
                     alt: `Pointer`,
                     onClick: (): void => {
-                        this._boundingBoxState.setState({ draw: false });
+                        this._boundingBoxState.setState({ draw: false, drag: true });
                     },
                 },
                 {
@@ -53,7 +53,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     hoverLabel: `Rectangular Bounding Box`,
                     alt: `RectangularBB`,
                     onClick: (): void => {
-                        this._boundingBoxState.setState({ draw: true });
+                        this._boundingBoxState.setState({ draw: true, drag: false });
                     },
                 },
                 // {
