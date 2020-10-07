@@ -9,11 +9,12 @@ import {
     OnChanges,
     ChangeDetectionStrategy,
 } from '@angular/core';
+import { BoundingBoxStateService } from 'src/shared/services/bounding-box-state.service';
 
 @Component({
     selector: 'image-labelling-left-sidebar',
     templateUrl: './image-labelling-left-sidebar.component.html',
-    styleUrls: ['./image-labelling-left-sidebar.component.css'],
+    styleUrls: ['./image-labelling-left-sidebar.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
@@ -25,7 +26,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     jsonSchema!: IimageLabellingSchema;
     iconIndex!: number;
 
-    constructor() {}
+    constructor(private _boundingBoxState: BoundingBoxStateService) {}
 
     ngOnInit(): void {
         this.bindImagePath();
@@ -38,6 +39,9 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     imgPath: `${this.imgRelativePath}light-theme/pointer.png`,
                     hoverLabel: `Pointer`,
                     alt: `Pointer`,
+                    onClick: (): void => {
+                        this._boundingBoxState.setState({ draw: false, drag: true });
+                    },
                 },
                 {
                     imgPath: `${this.imgRelativePath}light-theme/move.png`,
@@ -48,17 +52,20 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     imgPath: `${this.imgRelativePath}light-theme/rec_bounding_box.png`,
                     hoverLabel: `Rectangular Bounding Box`,
                     alt: `RectangularBB`,
+                    onClick: (): void => {
+                        this._boundingBoxState.setState({ draw: true, drag: false });
+                    },
                 },
                 // {
                 //   imgPath: `${this.imgRelativePath}light-theme/bounding_box.png`,
                 //   hoverLabel: `Bounding Box`,
                 //   alt: `BoundingBox`,
                 // },
-                {
-                    imgPath: `${this.imgRelativePath}light-theme/polygon.png`,
-                    hoverLabel: `Polygon`,
-                    alt: `Polygon`,
-                },
+                // {
+                //     imgPath: `${this.imgRelativePath}light-theme/polygon.png`,
+                //     hoverLabel: `Polygon`,
+                //     alt: `Polygon`,
+                // },
                 // {
                 //   imgPath: `${this.imgRelativePath}light-theme/auto_select.png`,
                 //   hoverLabel: `Auto Select`,

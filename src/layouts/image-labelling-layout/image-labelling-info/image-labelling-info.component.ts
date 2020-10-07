@@ -13,7 +13,7 @@ import {
 @Component({
     selector: 'image-labelling-info',
     templateUrl: './image-labelling-info.component.html',
-    styleUrls: ['./image-labelling-info.component.css'],
+    styleUrls: ['./image-labelling-info.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingInfoComponent implements OnInit, OnChanges {

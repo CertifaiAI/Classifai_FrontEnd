@@ -40,11 +40,11 @@
 .logo,
 .utility-icon-light,
 .utility-icon-dark {
-    min-width: 1vw;
-    max-width: 1vw;
-    min-height: 2.2vh;
-    max-height: 2.2vh;
-    padding: 0.3vw;
+    min-width: 1.5vw;
+    max-width: 1.5vw;
+    min-height: 3vh;
+    max-height: 3vh;
+    padding: 0.1vw;
     cursor: pointer;
 }
 
@@ -98,4 +98,10 @@
     border-radius: 50%;
     position: absolute;
     top: 1.2vh;
+}
+
+.horizontal-line {
+    padding: 1vh 0 1vh 0;
+    margin: 0 1vw 0 1vw;
+    border: 0.0625rem solid #707070;
 }

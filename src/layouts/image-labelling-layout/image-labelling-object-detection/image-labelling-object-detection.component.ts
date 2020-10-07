@@ -1,4 +1,4 @@
-import { ActionRules } from './../image-labelling-layout.model';
+import { BoundingBoxActionState } from './../image-labelling-layout.model';
 import { BoundingBoxService } from '../../../shared/services/bounding-box.service';
 import { BoundingBoxStateService } from '../../../shared/services/bounding-box-state.service';
 import { Metadata } from './../../../classes/CustomType';
@@ -17,7 +17,7 @@ import {
 @Component({
     selector: 'image-labelling-object-detection',
     templateUrl: './image-labelling-object-detection.component.html',
-    styleUrls: ['./image-labelling-object-detection.component.css'],
+    styleUrls: ['./image-labelling-object-detection.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingObjectDetectionComponent implements OnInit {
@@ -27,7 +27,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     private context!: CanvasRenderingContext2D | null;
     private img: HTMLImageElement = new Image();
     private mousedown: boolean = false;
-    private rules!: ActionRules;
+    private boundingBoxState!: BoundingBoxActionState;
     private utility: utils = new utils();
     @Input() _selectMetadata!: Metadata;
     @Input() _imgSrc: string = '';
@@ -35,15 +35,15 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     constructor(private _boundingbox: BoundingBoxService, private _incomeRules: BoundingBoxStateService) {}
 
     ngOnInit() {
-        this._incomeRules.currentValue.subscribe((val) => (this.rules = val));
+        this._incomeRules.currentValue.subscribe((val) => (this.boundingBoxState = val));
     }
 
     rulesOnChange(scroll: boolean, selectbox: number) {
         try {
-            let tempRules: ActionRules = this.utility.deepCloneVariable(this.rules);
+            let tempRules: BoundingBoxActionState = this.utility.deepCloneVariable(this.boundingBoxState);
             tempRules.scroll = scroll;
             tempRules.selectedBox = selectbox;
-            this._incomeRules.valueChange(tempRules);
+            this._incomeRules.setState(tempRules);
         } catch (err) {}
     }
 
@@ -67,12 +67,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     @HostListener('dblclick', ['$event'])
     toggleEvent(event: MouseEvent) {
         try {
-            if (!this.rules.draw) {
-                this.rules.draw = true;
-                this.rules.drag = false;
+            if (!this.boundingBoxState.draw) {
+                this.boundingBoxState.draw = true;
+                this.boundingBoxState.drag = false;
             } else {
-                this.rules.drag = true;
-                this.rules.draw = false;
+                this.boundingBoxState.drag = true;
+                this.boundingBoxState.draw = false;
             }
         } catch (err) {}
     }
@@ -82,7 +82,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
         try {
             //positive value is scroll down, negative value is scroll up
             let delta = event.deltaY ? event.deltaY / 40 : 0;
-            if (delta && this.rules.scroll) {
+            if (delta && this.boundingBoxState.scroll) {
                 this.zoomImage(delta);
             }
         } catch (err) {
@@ -104,12 +104,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                 )
             ) {
                 this.mousedown = true;
-                this.rules.scroll = false;
-                if (this.rules.drag) {
+                this.boundingBoxState.scroll = false;
+                if (this.boundingBoxState.drag) {
                     this._boundingbox.setPanXY(event.offsetX, event.offsetY);
                 }
-                if (this.rules.draw) {
-                    this.rules.selectedBox = this._boundingbox.mouseDownDrawEnable(
+                if (this.boundingBoxState.draw) {
+                    this.boundingBoxState.selectedBox = this._boundingbox.mouseDownDrawEnable(
                         event.offsetX,
                         event.offsetY,
                         this._selectMetadata.bnd_box,
@@ -140,15 +140,15 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                     event.offsetY,
                 )
             ) {
-                if (this.rules.drag && this.mousedown) {
+                if (this.boundingBoxState.drag && this.mousedown) {
                     this._boundingbox.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
                 }
-                if (this.rules.draw) {
+                if (this.boundingBoxState.draw) {
                     // valuecode = 1, drawing new box; valuecode = 0, drawing existing box
                     const valuecode: number = this._boundingbox.mouseUpDrawEnable(this._selectMetadata);
                 }
                 this.mousedown = false;
-                this.rules.scroll = true;
+                this.boundingBoxState.scroll = true;
                 this._boundingbox.getBBoxDistfromImg(
                     this._selectMetadata.bnd_box,
                     this._selectMetadata.img_x,
@@ -173,7 +173,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                     event.offsetY,
                 )
             ) {
-                if (this.rules.drag && this.mousedown) {
+                if (this.boundingBoxState.drag && this.mousedown) {
                     let diff: {
                         diffX: number;
                         diffY: number;
@@ -192,7 +192,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                         this._selectMetadata.img_h,
                     );
                 }
-                if (this.rules.draw && this.mousedown) {
+                if (this.boundingBoxState.draw && this.mousedown) {
                     this._boundingbox.mouseMoveDrawEnable(event.offsetX, event.offsetY, this._selectMetadata);
                     this.redrawImages(
                         this._selectMetadata.img_x,
@@ -222,7 +222,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     @HostListener('mouseout', ['$event'])
     mouseOut(event: MouseEvent) {
         try {
-            if (this.rules.drag && this.mousedown) {
+            if (this.boundingBoxState.drag && this.mousedown) {
                 this._boundingbox.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
                 this.redrawImages(
                     this._selectMetadata.img_x,
