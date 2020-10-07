@@ -13,6 +13,7 @@ type ThumbnailProps = {
 })
 export class ImageLabellingFooterComponent implements OnInit, OnChanges {
     @Input() _thumbnailInfo!: ThumbnailProps;
+    @Input() _imgSrc: string = '';
     thumbnailSize: string = '';
     thumbnailType: string = '';
     constructor() {}
@@ -37,18 +38,17 @@ export class ImageLabellingFooterComponent implements OnInit, OnChanges {
     };
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes._thumbnailInfo) {
+        // console.log(changes);
+        if (changes._thumbnailInfo && changes._imgSrc) {
             const { currentValue }: { currentValue: Props<ThumbnailProps> } = changes._thumbnailInfo;
+            const { currentValue: imgSrcVal }: { currentValue: string } = changes._imgSrc;
             this._thumbnailInfo = { ...this._thumbnailInfo, ...currentValue };
-            if (this._thumbnailInfo?.img_src) {
-                const { img_src } = this._thumbnailInfo;
-                this.thumbnailSize = this.formatBytes(img_src.length);
+            this.thumbnailSize = this.formatBytes(imgSrcVal.length);
 
-                const mime = this._thumbnailInfo.img_src.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/);
-                if (mime && mime.length) {
-                    const mimeType = mime[1].split('/')[1];
-                    this.thumbnailType = mimeType;
-                }
+            const mime = imgSrcVal.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/);
+            if (mime && mime.length) {
+                const mimeType = mime[1].split('/')[1];
+                this.thumbnailType = mimeType;
             }
         }
     }

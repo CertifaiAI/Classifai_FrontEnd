@@ -53,7 +53,7 @@ export class ImageLabellingLayoutComponent implements OnInit {
             closed: false,
         },
     ];
-    srcofimg: string = '';
+    imgSrc: string = '';
 
     constructor(
         private _router: Router,
@@ -325,7 +325,7 @@ export class ImageLabellingLayoutComponent implements OnInit {
                 ({ message, img_src, errormessage }) => {
                     message === 1 && thumbnail
                         ? // (this.selectedThumbnail = { ...thumbnail, ...filteredThumbInfo, img_src }),
-                          ((this.selectedMetaData = thumbnail), (this.srcofimg = img_src))
+                          ((this.selectedMetaData = thumbnail), (this.imgSrc = img_src))
                         : console.error(errormessage);
                 },
                 (err: Error) => console.error(err),
