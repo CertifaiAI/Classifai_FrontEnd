@@ -320,7 +320,7 @@ export class ImageLabellingLayoutComponent implements OnInit {
         const { uuid } = thumbnail;
         if (uuid && this.validateUuid(uuid)(this.selectedMetaData?.uuid)) {
             const getImage$ = this._imgLabelService.getBase64Thumbnail(projectName, uuid);
-            const filteredThumbInfo = this.thumbnailList.find((f) => f.uuid === uuid);
+            // const filteredThumbInfo = this.thumbnailList.find((f) => f.uuid === uuid);
             getImage$.pipe(first()).subscribe(
                 ({ message, img_src, errormessage }) => {
                     message === 1 && thumbnail

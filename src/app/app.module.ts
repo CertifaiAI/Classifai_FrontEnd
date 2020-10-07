@@ -1,4 +1,3 @@
-import { BoundingboxService } from './../shared/services/boundingbox.service';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -23,7 +22,7 @@ import { SharedModule } from 'src/shared/shared.module';
         HttpClientModule,
         HomeLayoutModule,
     ],
-    providers: [LanguageService, { provide: LocationStrategy, useClass: HashLocationStrategy }, BoundingboxService],
+    providers: [LanguageService, { provide: LocationStrategy, useClass: HashLocationStrategy }],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -5,7 +5,7 @@ import { utils } from '../../classes/utils';
 @Injectable({
     providedIn: 'any',
 })
-export class BoundingboxService {
+export class BoundingBoxService {
     private globalXY: xycoordinate = { x: 0, y: 0 };
     private panXY: xycoordinate = { x: 0, y: 0 };
     private currentClickedBox: { box: number; pos: string } = {

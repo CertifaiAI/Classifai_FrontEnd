@@ -1,3 +1,4 @@
+import { BoundingBoxService } from './services/bounding-box.service';
 import { CacheBustingInterceptor } from './interceptors/cache-busting.interceptor';
 import { ClassifaiModalModule } from './classifai-modal/classifai-modal.module';
 import { CommonModule } from '@angular/common';
@@ -44,6 +45,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
         LazyLoadImgDirective,
     ],
     providers: [
+        BoundingBoxService,
         LanguageService,
         ThemeService,
         {

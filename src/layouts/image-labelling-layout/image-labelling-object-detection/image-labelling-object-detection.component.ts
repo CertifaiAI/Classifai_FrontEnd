@@ -1,6 +1,6 @@
 import { ActionRules } from './../image-labelling-layout.model';
-import { BboxDataService } from './../../../shared/services/bbox-data.service';
-import { BoundingboxService } from './../../../shared/services/boundingbox.service';
+import { BoundingBoxService } from '../../../shared/services/bounding-box.service';
+import { BoundingBoxStateService } from '../../../shared/services/bounding-box-state.service';
 import { Metadata } from './../../../classes/CustomType';
 import { utils } from './../../../classes/utils';
 import {
@@ -32,7 +32,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     @Input() _selectMetadata!: Metadata;
     @Input() _imgSrc: string = '';
 
-    constructor(private _boundingbox: BoundingboxService, private _incomeRules: BboxDataService) {}
+    constructor(private _boundingbox: BoundingBoxService, private _incomeRules: BoundingBoxStateService) {}
 
     ngOnInit() {
         this._incomeRules.currentValue.subscribe((val) => (this.rules = val));

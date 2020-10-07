@@ -1,11 +1,11 @@
-import { ActionRules } from './../../layouts/image-labelling-layout/image-labelling-layout.model';
+import { ActionRules } from '../../layouts/image-labelling-layout/image-labelling-layout.model';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
     providedIn: 'any',
 })
-export class BboxDataService {
+export class BoundingBoxStateService {
     private Source = new BehaviorSubject<ActionRules>({
         scroll: false,
         drag: false,
