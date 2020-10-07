@@ -155,3 +155,10 @@ export type SelectedLabelProps = {
     selectedLabel: string;
     label_list: string[];
 } & TabAction;
+
+export type ActionRules = {
+    scroll: boolean;
+    drag: boolean;
+    draw: boolean;
+    selectedBox: number;
+};

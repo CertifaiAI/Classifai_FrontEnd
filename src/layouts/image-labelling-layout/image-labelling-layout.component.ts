@@ -36,6 +36,7 @@ export class ImageLabellingLayoutComponent implements OnInit {
     selectedProjectName: string = '';
     thumbnailList: IThumbnailMetadata[] = [];
     selectedThumbnail!: Partial<IThumbnailMetadata>;
+    selectedMeta!: Partial<IThumbnailMetadata>;
     tabStatus: TabsProps[] = [
         {
             name: 'Project',
@@ -52,6 +53,8 @@ export class ImageLabellingLayoutComponent implements OnInit {
             closed: false,
         },
     ];
+    metas: any;
+    srcofimg: string = '';
 
     constructor(
         private _router: Router,
@@ -322,7 +325,9 @@ export class ImageLabellingLayoutComponent implements OnInit {
             getImage$.pipe(first()).subscribe(
                 ({ message, img_src, errormessage }) => {
                     message === 1 && thumbnail
-                        ? (this.selectedThumbnail = { ...thumbnail, ...filteredThumbInfo, img_src })
+                        ? ((this.selectedThumbnail = { ...thumbnail, ...filteredThumbInfo, img_src }),
+                          (this.metas = thumbnail),
+                          (this.srcofimg = img_src))
                         : console.error(errormessage);
                 },
                 (err: Error) => console.error(err),

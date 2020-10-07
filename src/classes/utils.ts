@@ -12,7 +12,7 @@ export class utils {
         }
     }
 
-    public DeepCloneObject(content) {
+    public DeepCloneObject(content: any) {
         try {
             return JSON.parse(JSON.stringify(content));
         } catch (err) {
@@ -21,7 +21,7 @@ export class utils {
         }
     }
 
-    public DeepCloneVariable(variable) {
+    public DeepCloneVariable(variable: any) {
         try {
             if (variable != undefined || variable != null) {
                 var ret = JSON.parse(JSON.stringify({ item: variable }));
@@ -48,7 +48,7 @@ export class utils {
             return parseInt(UniqueIDS, 10);
         } catch (err) {
             console.log('GenerateUniquesID() ----> ', err.name + ': ', err.message);
-            return null;
+            return -1;
         }
     }
 
@@ -81,8 +81,8 @@ export class utils {
 }
 
 export class imglblCopyPaste {
-    private MEMO: Boundingbox;
-    private utility: utils;
+    private MEMO!: Boundingbox | undefined;
+    private utility!: utils;
     constructor() {
         try {
             this.utility = new utils();
@@ -101,7 +101,7 @@ export class imglblCopyPaste {
         }
     }
 
-    public paste(): Boundingbox {
+    public paste(): Boundingbox | undefined {
         try {
             if (this.MEMO != undefined) {
                 let rtMEMO: Boundingbox = this.utility.DeepCloneObject(this.MEMO);

@@ -10,7 +10,11 @@
 
     <div class="content-container">
         <image-labelling-left-sidebar [_onChange]="onChangeSchema"></image-labelling-left-sidebar>
-        <image-labelling-image [_thumbnail]="selectedThumbnail"></image-labelling-image>
+        <image-labelling-object-detection
+            [SelectMetadata]="metas"
+            [imgSrc]="srcofimg"
+        ></image-labelling-object-detection>
+        <!-- <image-labelling-image [_thumbnail]="selectedThumbnail"></image-labelling-image> -->
 
         <image-labelling-project
             [_thumbnailList]="thumbnailList"
