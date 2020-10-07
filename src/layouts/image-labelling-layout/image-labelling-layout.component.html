@@ -11,10 +11,10 @@
     <div class="content-container">
         <image-labelling-left-sidebar [_onChange]="onChangeSchema"></image-labelling-left-sidebar>
         <image-labelling-object-detection
-            [SelectMetadata]="metas"
+            [selectMetadata]="metas"
             [imgSrc]="srcofimg"
         ></image-labelling-object-detection>
-        <!-- <image-labelling-image [_thumbnail]="selectedThumbnail"></image-labelling-image> -->
+        <image-labelling-image [_thumbnail]="selectedThumbnail"></image-labelling-image>
 
         <image-labelling-project
             [_thumbnailList]="thumbnailList"
@@ -32,7 +32,7 @@
     <image-labelling-footer [_thumbnailInfo]="selectedThumbnail"></image-labelling-footer>
 </div>
 
-<!-- <modal id="custom-modal-1">
+<modal id="custom-modal-1">
     <h1 class="modal-center">Classifai Image Labelling Tools</h1>
     <form [formGroup]="form">
         <div class="modal-inner-container">
@@ -96,4 +96,4 @@
             </div>
         </div>
     </form>
-</modal> -->
+</modal>

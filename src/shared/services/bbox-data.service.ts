@@ -17,7 +17,7 @@ export class BboxDataService {
 
     constructor() {}
 
-    public ValueChange(newValue: ActionRules): void {
+    public valueChange(newValue: ActionRules): void {
         try {
             this.Source.next(newValue);
         } catch (err) {

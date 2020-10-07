@@ -27,14 +27,9 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
     displayInputLabel: boolean = false;
     inputLabel: string = '';
 
-    /** @function responsible to force type inference */
-    // toTabStatus(value: any): TabsProps {
-    //     return value as TabsProps;
-    // }
-
     constructor() {}
 
-    ngOnInit(): void {}
+    ngOnInit = (): void => {};
 
     onClose = (tab: TabsProps): void => {
         this._onClose.emit({ name: tab.name, closed: true });
@@ -61,7 +56,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
                 const label_list = this._tabStatus
                     .map(({ label_list }) => (label_list ? label_list : []))
                     .filter((tab) => tab.length > 0)[0];
-                this._onEnterLabel.emit({ action: 1, label_list: [...label_list, value] });
+                this._onEnterLabel.emit({ action: 1, label_list: label_list ? [...label_list, value] : [value] });
                 this.displayInputLabel = false;
             } else {
                 console.error(`Invalid Existing Label Input`);

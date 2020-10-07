@@ -3,7 +3,7 @@ import { Boundingbox } from './CustomType';
 export class utils {
     constructor() {}
 
-    public StringifyObject(content: object) {
+    public stringifyObject(content: object) {
         try {
             return JSON.stringify(content);
         } catch (err) {
@@ -12,7 +12,7 @@ export class utils {
         }
     }
 
-    public DeepCloneObject(content: any) {
+    public deepCloneObject(content: any) {
         try {
             return JSON.parse(JSON.stringify(content));
         } catch (err) {
@@ -21,7 +21,7 @@ export class utils {
         }
     }
 
-    public DeepCloneVariable(variable: any) {
+    public deepCloneVariable(variable: any) {
         try {
             if (variable != undefined || variable != null) {
                 var ret = JSON.parse(JSON.stringify({ item: variable }));
@@ -34,7 +34,7 @@ export class utils {
         }
     }
 
-    public GenerateUniquesID(): number {
+    public generateUniquesID(): number {
         try {
             let UniqueIDS = '';
             let now = new Date();
@@ -52,10 +52,10 @@ export class utils {
         }
     }
 
-    public MatchStringHead(StrToMatch: string, oristr: string): boolean {
+    public matchStringHead(strToMatch: string, oristr: string): boolean {
         try {
-            let extractStr = oristr.substr(0, StrToMatch.length);
-            if (extractStr === StrToMatch) {
+            let extractStr = oristr.substr(0, strToMatch.length);
+            if (extractStr === strToMatch) {
                 return true;
             }
             return false;
@@ -65,9 +65,9 @@ export class utils {
         }
     }
 
-    public GetFilename(strs: string) {
+    public getFilename(strs: string) {
         try {
-            let temstr: string = this.DeepCloneVariable(strs);
+            let temstr: string = this.deepCloneVariable(strs);
             let temreplacestr = temstr.split('\\').join('/');
             let temparr = temreplacestr.split('/');
             let tempfilename = temparr[temparr.length - 1];
@@ -81,7 +81,7 @@ export class utils {
 }
 
 export class imglblCopyPaste {
-    private MEMO!: Boundingbox | undefined;
+    private memo!: Boundingbox | undefined;
     private utility!: utils;
     constructor() {
         try {
@@ -91,10 +91,10 @@ export class imglblCopyPaste {
         }
     }
 
-    public copy(BoundData: Boundingbox) {
+    public copy(boundData: Boundingbox) {
         try {
-            if (BoundData != undefined) {
-                this.MEMO = this.utility.DeepCloneObject(BoundData);
+            if (boundData != undefined) {
+                this.memo = this.utility.deepCloneObject(boundData);
             }
         } catch (err) {
             console.log('imglblCopyPaste  copy() ----> ', err.name + ': ', err.message);
@@ -103,16 +103,16 @@ export class imglblCopyPaste {
 
     public paste(): Boundingbox | undefined {
         try {
-            if (this.MEMO != undefined) {
-                let rtMEMO: Boundingbox = this.utility.DeepCloneObject(this.MEMO);
-                this.MEMO = undefined;
+            if (this.memo != undefined) {
+                let rtMEMO: Boundingbox = this.utility.deepCloneObject(this.memo);
+                this.memo = undefined;
                 let tempW = rtMEMO.x2 - rtMEMO.x1;
                 let tempH = rtMEMO.y2 - rtMEMO.y1;
                 rtMEMO.x1 += 8;
                 rtMEMO.y1 += 8;
                 rtMEMO.x2 = rtMEMO.x1 + tempW;
                 rtMEMO.y2 = rtMEMO.y1 + tempH;
-                let tempuuid: number = this.utility.GenerateUniquesID();
+                let tempuuid: number = this.utility.generateUniquesID();
                 rtMEMO.id = tempuuid;
                 rtMEMO.distancetoImg.x = 0;
                 rtMEMO.distancetoImg.y = 0;
@@ -127,7 +127,7 @@ export class imglblCopyPaste {
 
     public isAvailable(): boolean {
         try {
-            if (this.MEMO !== undefined) {
+            if (this.memo !== undefined) {
                 return true;
             }
             return false;
@@ -139,8 +139,8 @@ export class imglblCopyPaste {
 
     public clearMemo() {
         try {
-            if (this.MEMO !== undefined) {
-                this.MEMO = undefined;
+            if (this.memo !== undefined) {
+                this.memo = undefined;
             }
         } catch (err) {
             console.log('imglblCopyPaste  clearMemo() ----> ', err.name + ': ', err.message);

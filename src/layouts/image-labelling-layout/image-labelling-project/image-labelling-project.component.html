@@ -1,6 +1,7 @@
 <div class="tab-container">
     <ng-container *ngFor="let tab of _tabStatus; index as i">
-        <ng-container *ngIf="_thumbnailList.length > 0 && i === 0; else nonThumbnailTab">
+        <!-- <ng-container *ngIf="_thumbnailList.length > 0 && i === 0; else nonThumbnailTab"> -->
+        <ng-container *ngIf="i === 0; else nonThumbnailTab">
             <div
                 class="utility-right-project-container tab flex-fill-remaining flex-content"
                 [ngClass]="checkCloseToggle(tab)"
