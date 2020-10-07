@@ -6,20 +6,20 @@ import { BehaviorSubject } from 'rxjs';
     providedIn: 'any',
 })
 export class BoundingBoxStateService {
-    private Source = new BehaviorSubject<ActionRules>({
-        scroll: false,
+    private source = new BehaviorSubject<ActionRules>({
+        scroll: true,
         drag: false,
-        draw: true,
+        draw: false,
         selectedBox: -1,
     });
 
-    public currentValue = this.Source.asObservable();
+    public currentValue = this.source.asObservable();
 
     constructor() {}
 
     public valueChange(newValue: ActionRules): void {
         try {
-            this.Source.next(newValue);
+            this.source.next(newValue);
         } catch (err) {
             console.log('Bbox Data Service ValueChange(newValue:ActionRules):void', err.name + ': ', err.message);
         }
