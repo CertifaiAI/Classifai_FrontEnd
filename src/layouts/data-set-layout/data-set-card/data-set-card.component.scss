@@ -1,17 +1,33 @@
+@use '../../../shared/_variables.scss' as color;
+@use '../../../shared/_scrollbar.scss' as *;
+
 .card-layout-container {
-    width: 81vw;
-    /* height: 80vh; */
+    width: 80vw;
     display: flex;
     flex-wrap: wrap;
-    margin-top: 18vh;
-    margin-left: -11vw;
-    padding-right: 0.5vw;
-    padding-bottom: 0.5vh;
+    padding: 0 0 0 1vw;
+    overflow-y: scroll;
+    position: relative;
+    height: 80vh;
+}
+
+.card-layout-container::-webkit-scrollbar-track {
+    @include scrollbar-track(color.$blackColor);
+}
+
+.card-layout-container::-webkit-scrollbar {
+    @include scrollbar();
+}
+
+.card-layout-container::-webkit-scrollbar-thumb {
+    @include scrollbar-thumb(color.$greyColor);
 }
 
 .card-container {
-    width: 11vw;
-    height: 30vh;
+    min-width: 9.5vw;
+    max-width: 9.5vw;
+    min-height: 30vh;
+    max-height: 30vh;
     border-style: solid;
     font-size: 2.2vh;
     background: #404040;
@@ -21,11 +37,8 @@
 .project-status {
     color: white;
     background-color: #f59221;
-    padding-left: 1vw;
-    padding-right: 1vw;
     font-size: 1.5vh;
-    padding-top: 0.3vh;
-    padding-bottom: 0.6vh;
+    padding: 0.3vh 1vw 0.6vh 1vw;
 }
 
 .card-icon-style {
@@ -44,7 +57,6 @@
 }
 
 .card-title-style {
-    margin-top: -0.5vh;
     margin-left: 1vw;
 }
 
@@ -65,15 +77,14 @@
 .tag-container {
     display: flex;
     flex-direction: row;
-    margin-top: 0.8vh;
     border-radius: 10vw;
     background: #363636;
     width: 4.5vw;
     padding: 0.2vw 0.3vh;
-    margin-left: 1vw;
     cursor: pointer;
     outline: none;
     border: none;
+    margin: 0.8vh 0 0 1vw;
 }
 
 .tag-img {
@@ -86,9 +97,8 @@
 
 .tag-txt {
     font-size: 1.2vh;
-    margin-left: 0.3vw;
     color: white;
-    padding-top: 0.2vh;
+    padding: 0.2vh 0 0 0.3vw;
     cursor: pointer;
 }
 
