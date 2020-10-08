@@ -14,21 +14,16 @@ const initialValue = {
     providedIn: 'any',
 })
 export class BoundingBoxStateService {
-    private source = new BehaviorSubject<BoundingBoxActionState>(initialValue);
+    private boundingBoxSubject = new BehaviorSubject<BoundingBoxActionState>(initialValue);
 
-    public currentValue$ = this.source.asObservable();
+    public boundingBox$ = this.boundingBoxSubject.asObservable();
 
     constructor() {}
 
-    public setState = (newValue: Partial<BoundingBoxActionState>): void => {
-        try {
-            newValue ? this.source.next({ ...initialValue, ...newValue }) : this.source.next(initialValue);
-        } catch (err) {
-            console.log(
-                'Bbox Data Service setState(newValue:BoundingBoxActionState):void',
-                err.name + ': ',
-                err.message,
-            );
-        }
+    public setState = (newState: Partial<BoundingBoxActionState>): void => {
+        newState
+            ? this.boundingBoxSubject.next({ ...initialValue, ...newState })
+            : this.boundingBoxSubject.next(initialValue);
+        this.boundingBox$.subscribe((val) => console.log(val));
     };
 }
