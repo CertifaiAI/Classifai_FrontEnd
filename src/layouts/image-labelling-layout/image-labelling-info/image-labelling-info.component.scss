@@ -79,16 +79,17 @@
 }
 
 .imageTitle {
-    font-size: 1.6vh;
+    font-size: 1.7vh;
     color: white;
     align-items: center;
     margin-left: 1vw;
-    max-width: 9vw;
-    min-width: 9vw;
-    max-height: 4.5vh;
-    min-height: 4.5vh;
+    max-width: 20vw;
+    min-width: 20vw;
+    max-height: 1.5vh;
+    min-height: 1.5vh;
     position: absolute;
     margin-top: 0.5vh;
+    text-overflow: ellipsis;
 }
 
 .indicator {

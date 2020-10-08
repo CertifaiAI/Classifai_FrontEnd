@@ -1,7 +1,12 @@
 <div class="header-container">
     <div class="container-flex-start">
-        <div class="indicator"></div>
-        <p class="imageTitle">Image Title</p>
+        <ng-container *ngIf="_onChange.thumbnailName; else defaultName">
+            <div class="indicator"></div>
+            <p class="imageTitle">{{ _onChange.thumbnailName | fileNameSlice }}</p>
+        </ng-container>
+        <ng-template #defaultName>
+            <p class="imageTitle"></p>
+        </ng-template>
     </div>
     <div class="container-flex-center">
         <ng-container *ngFor="let logo of jsonSchema.logoCenter; index as i">
@@ -17,7 +22,7 @@
                     />
                 </div>
                 <div class="totalThumbnail">
-                    <label>{{ _onChange.totalNumThumbnail }}</label>
+                    <label>{{ _onChange.currentThumbnailIndex }} / {{ _onChange.totalNumThumbnail }}</label>
                 </div>
             </ng-container>
             <ng-template #renderOtherIcons>

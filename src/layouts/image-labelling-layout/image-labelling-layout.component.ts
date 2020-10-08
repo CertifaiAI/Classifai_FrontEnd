@@ -17,7 +17,6 @@ import {
     EventEmitter_Url,
     ThumbnailMetadataProps,
 } from './image-labelling-layout.model';
-import { isEqual } from 'lodash-es';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -191,7 +190,11 @@ export class ImageLabellingLayoutComponent implements OnInit {
             .subscribe(
                 (res) => {
                     this.thumbnailList = [...this.thumbnailList, res];
-                    this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: this.thumbnailList.length };
+                    this.onChangeSchema = {
+                        ...this.onChangeSchema,
+                        currentThumbnailIndex: 0,
+                        totalNumThumbnail: this.thumbnailList.length,
+                    };
                     // this.tabStatus = [...this.tabStatus, { name: 'Label', closed, label_list: [] }];
                 },
                 (error: Error) => console.error(error),
@@ -322,11 +325,18 @@ export class ImageLabellingLayoutComponent implements OnInit {
         if (uuid && this.validateUuid(uuid)(this.selectedMetaData?.uuid) && this.isExactCurrentImage(thumbnail)) {
             const getImage$ = this._imgLabelService.getBase64Thumbnail(projectName, uuid);
             const filteredThumbInfo = this.thumbnailList.find((f) => f.uuid === uuid);
+            const thumbIndex = this.thumbnailList.findIndex((f) => f.uuid === uuid);
             getImage$.pipe(first()).subscribe(
                 ({ message, img_src, errormessage }) => {
                     message === 1
                         ? // (this.selectedThumbnail = { ...thumbnail, ...filteredThumbInfo, img_src }),
-                          ((this.selectedMetaData = { ...filteredThumbInfo }), (this.imgSrc = img_src))
+                          ((this.selectedMetaData = { ...filteredThumbInfo }),
+                          (this.imgSrc = img_src),
+                          (this.onChangeSchema = {
+                              ...this.onChangeSchema,
+                              currentThumbnailIndex: thumbIndex + 1,
+                              thumbnailName: filteredThumbInfo?.img_path,
+                          }))
                         : console.error(errormessage);
                 },
                 (err: Error) => console.error(err),
