@@ -1,4 +1,4 @@
-import { Metadata, progressTuple } from './CustomType';
+import { Metadata, ProgressTuple } from './CustomType';
 import { utils } from './utils';
 
 export class HttpRequest {
@@ -147,7 +147,7 @@ export class HttpRequest {
         iter: number,
         max_iter: number,
         timeout: number,
-        arr_content: progressTuple[],
+        arr_content: ProgressTuple[],
         callbacks: Function,
     ) {
         try {
@@ -187,7 +187,7 @@ export class HttpRequest {
             http.send(Jobj);
         } catch (err) {
             console.log(
-                'RecursPutRequest(iter:number, max_iter:number, timeout:number, arr_content:progressTuple[]) ----> ',
+                'RecursPutRequest(iter:number, max_iter:number, timeout:number, arr_content:ProgressTuple[]) ----> ',
                 err.name + ': ',
                 err.message,
             );

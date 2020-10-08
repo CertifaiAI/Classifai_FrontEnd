@@ -71,6 +71,7 @@
     padding: 0.4vw 1vw 0 1vw;
     display: inline-block;
     color: white;
+    width: fit-content;
 }
 
 .img-container:hover .img-description {
@@ -79,16 +80,17 @@
 }
 
 .imageTitle {
-    font-size: 1.6vh;
+    font-size: 1.7vh;
     color: white;
     align-items: center;
     margin-left: 1vw;
-    max-width: 9vw;
-    min-width: 9vw;
-    max-height: 4.5vh;
-    min-height: 4.5vh;
+    max-width: 20vw;
+    min-width: 20vw;
+    max-height: 1.5vh;
+    min-height: 1.5vh;
     position: absolute;
     margin-top: 0.5vh;
+    text-overflow: ellipsis;
 }
 
 .indicator {
@@ -103,5 +105,5 @@
 .horizontal-line {
     padding: 1vh 0 1vh 0;
     margin: 0 1vw 0 1vw;
-    border: 0.0625rem solid #707070;
+    border: 0.01rem solid #707070;
 }

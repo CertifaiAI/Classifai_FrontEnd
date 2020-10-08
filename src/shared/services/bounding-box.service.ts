@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { xycoordinate, Boundingbox, Metadata } from '../../classes/CustomType';
+import { xyCoordinate, BoundingBox, Metadata } from '../../classes/CustomType';
 import { utils } from '../../classes/utils';
 
 @Injectable({
     providedIn: 'any',
 })
 export class BoundingBoxService {
-    private globalXY: xycoordinate = { x: 0, y: 0 };
-    private panXY: xycoordinate = { x: 0, y: 0 };
+    private globalXY: xyCoordinate = { x: 0, y: 0 };
+    private panXY: xyCoordinate = { x: 0, y: 0 };
     private currentClickedBox: { box: number; pos: string } = {
         box: -1,
         pos: 'o',
@@ -21,7 +21,7 @@ export class BoundingBoxService {
         y1: 0,
         y2: 0,
     };
-    private tmpbox!: Boundingbox | null;
+    private tmpbox!: BoundingBox | null;
     private currentSelectedBndBox: number = -1;
     constructor() {}
 
@@ -175,7 +175,7 @@ export class BoundingBoxService {
         }
     }
 
-    public panRectangle(bbox: Boundingbox[], img_X: number, img_Y: number) {
+    public panRectangle(bbox: BoundingBox[], img_X: number, img_Y: number) {
         try {
             for (let i = 0; i < bbox.length; ++i) {
                 let temrectW: number = bbox[i].x2 - bbox[i].x1;
@@ -194,7 +194,7 @@ export class BoundingBoxService {
         }
     }
 
-    public scaleAllBoxes(scalefactor: number, boxes: Boundingbox[], imgX: number, imgY: number) {
+    public scaleAllBoxes(scalefactor: number, boxes: BoundingBox[], imgX: number, imgY: number) {
         try {
             for (let i = 0; i < boxes.length; ++i) {
                 console.log(boxes[i]);
@@ -238,9 +238,9 @@ export class BoundingBoxService {
         }
     }
 
-    public mouseDownDrawEnable(mouseX: number, mouseY: number, bBox: Boundingbox[]): number {
+    public mouseDownDrawEnable(mouseX: number, mouseY: number, bBox: BoundingBox[]): number {
         try {
-            this.GetCurrentClickBox(mouseX, mouseY, bBox);
+            this.getCurrentClickBox(mouseX, mouseY, bBox);
             this.setCurrentX1Y1(mouseX, mouseY);
             this.setCurrentX2Y2(mouseX, mouseY);
             if (this.currentClickedBox.box !== -1) {
@@ -298,7 +298,7 @@ export class BoundingBoxService {
         imgh: number,
         addx: number,
         addy: number,
-        box: Boundingbox,
+        box: BoundingBox,
     ): Boolean {
         try {
             if (
@@ -343,7 +343,7 @@ export class BoundingBoxService {
         }
     }
 
-    public drawAllBoxOn(boundbox: Boundingbox[], context: CanvasRenderingContext2D | null) {
+    public drawAllBoxOn(boundbox: BoundingBox[], context: CanvasRenderingContext2D | null) {
         try {
             if (boundbox.length > 0) {
                 for (var i = 0; i < boundbox.length; i++) {
@@ -378,7 +378,7 @@ export class BoundingBoxService {
         }
     }
 
-    private drawEachBoxOn(box: Boundingbox, context: CanvasRenderingContext2D | null, isSelected: boolean): void {
+    private drawEachBoxOn(box: BoundingBox, context: CanvasRenderingContext2D | null, isSelected: boolean): void {
         try {
             let xCenter = box.x1 + (box.x2 - box.x1) / 2;
             let yCenter = box.y1 + (box.y2 - box.y1) / 2;
@@ -454,7 +454,7 @@ export class BoundingBoxService {
         }
     }
 
-    private generateNewBox(x1: number, x2: number, y1: number, y2: number): Boundingbox | null {
+    private generateNewBox(x1: number, x2: number, y1: number, y2: number): BoundingBox | null {
         try {
             let boxX1: number = x1 < x2 ? x1 : x2;
             let boxY1: number = y1 < y2 ? y1 : y2;
@@ -485,7 +485,7 @@ export class BoundingBoxService {
         }
     }
 
-    public getBBoxDistfromImg(bbox: Boundingbox[], imgX: number, imgY: number) {
+    public getBBoxDistfromImg(bbox: BoundingBox[], imgX: number, imgY: number) {
         try {
             for (var i = 0; i < bbox.length; ++i) {
                 let DistX: number = bbox[i].x1 - imgX;
@@ -502,13 +502,13 @@ export class BoundingBoxService {
         }
     }
 
-    public GetCurrentClickBox(mouseX: number, mouseY: number, box: Boundingbox[]): { box: number; pos: string } {
+    public getCurrentClickBox(mouseX: number, mouseY: number, box: BoundingBox[]): { box: number; pos: string } {
         try {
             this.currentClickedBox = this.mouseClickOnBoxeses(mouseX, mouseY, box);
             return this.currentClickedBox;
         } catch (err) {
             console.log(
-                'ObjectDetection GetCurrentClickBox(MouseX:number, MouseY:number, box:Boundingbox[]):{box:number,pos:string}',
+                'ObjectDetection getCurrentClickBox(MouseX:number, MouseY:number, box:Boundingbox[]):{box:number,pos:string}',
                 err.name + ': ',
                 err.message,
             );
@@ -516,7 +516,7 @@ export class BoundingBoxService {
         }
     }
 
-    private mouseClickOnBoxeses(mouseX: number, mouseY: number, box: Boundingbox[]): { box: number; pos: string } {
+    private mouseClickOnBoxeses(mouseX: number, mouseY: number, box: BoundingBox[]): { box: number; pos: string } {
         try {
             for (var i = 0; i < box.length; ++i) {
                 let xCenter: number = box[i].x1 + (box[i].x2 - box[i].x1) / 2;
