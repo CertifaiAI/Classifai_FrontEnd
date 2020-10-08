@@ -32,8 +32,8 @@
 .utility-icon-dark {
     min-width: 1.6vw;
     max-width: 1.6vw;
-    min-height: 3.6vh;
-    max-height: 3.6vh;
+    min-height: inherit;
+    max-height: inherit;
     padding: 0.32vw;
     cursor: pointer;
 }
@@ -56,8 +56,8 @@
 
 .utility-icon-container {
     display: flex;
-    min-height: 3vh;
-    max-height: 3vh;
+    min-height: 3.6vh;
+    max-height: 3.6vh;
 }
 
 .img-container:hover .img-description {

@@ -1,11 +1,11 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DataSetCardComponent } from './data-set-card/data-set-card.component';
 import { DataSetLayoutService } from './data-set-layout.service';
-import { first, flatMap, map, mergeMap } from 'rxjs/operators';
-import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
+import { first } from 'rxjs/operators';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ILabelList, IMessage, IThumbnailMetadata } from '../data-set-layout/data-set-layout.model';
+import { IThumbnailMetadata } from '../data-set-layout/data-set-layout.model';
 import { Props } from '../image-labelling-layout/image-labelling-layout.model';
+import { Subject, Subscription } from 'rxjs';
 import { ThemeService } from 'src/shared/services/theme.service';
 
 @Component({
@@ -19,7 +19,7 @@ export class DataSetLayoutComponent implements OnInit {
 
     modeldiv!: HTMLDivElement;
     reRender!: DataSetCardComponent;
-    projects: string[] = [];
+    projectSchema!: string[];
     inputProjectName: string = '';
     labelTextUpload!: FileList;
     labelArr: any[] = [];
@@ -32,12 +32,12 @@ export class DataSetLayoutComponent implements OnInit {
 
     constructor(
         private _fb: FormBuilder,
-        private _cd: ChangeDetectorRef,
         private _themeService: ThemeService,
         private _datasetLayoutService: DataSetLayoutService,
     ) {
         this.setState();
         this.createFormControls();
+        this.reRenderFunction();
     }
 
     setState = (): Props => {
@@ -50,9 +50,6 @@ export class DataSetLayoutComponent implements OnInit {
     ngOnInit = (): void => {
         // this.modeldiv = document.getElementById('model') as HTMLDivElement;
         // this.modeldiv.style.display = 'none';
-
-        this.reRenderFunction();
-
         this.mediaTheme.addEventListener('change', this.detectBrowserTheme, false);
     };
 
@@ -68,15 +65,15 @@ export class DataSetLayoutComponent implements OnInit {
         };
     };
 
-    reRenderFunction() {
+    reRenderFunction = (): void => {
         this._datasetLayoutService
             .getProjectList()
             .pipe(first())
-            .subscribe(({ content }) => (this.projects = content)),
+            .subscribe(({ content }) => (this.projectSchema = content)),
             (error: Error) => {
                 console.error(error);
             };
-    }
+    };
 
     createFormControls = (): void => {
         this.form = this._fb.group({

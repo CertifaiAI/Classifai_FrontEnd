@@ -2,9 +2,9 @@
     <label class="label">Dataset Management</label>
 
     <div class="dataset-icon-container">
-        <img class="dataset-icon" src="../../../assets/classifai-image-labelling-layout/light-theme/list_view.png" />
-        <img class="dataset-icon" src="../../../assets/classifai-image-labelling-layout/light-theme/starred.png" />
-        <img class="dataset-icon" src="../../../assets/classifai-image-labelling-layout/light-theme/more.png" />
+        <ng-container *ngFor="let icon of jsonSchema.icons">
+            <img class="dataset-icon" [src]="icon.imgPath" [title]="icon.hoverLabel" [alt]="icon.alt" />
+        </ng-container>
         <select class="dataset-select" #option (change)="onSelect(option.value)">
             <option *ngFor="let option of optionLists" [value]="option" [selected]="option">
                 {{ option | titlecase }}

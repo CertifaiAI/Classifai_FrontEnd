@@ -1,4 +1,4 @@
-import { ThumbnailProps, IimageLabellingSchema, Props } from '../image-labelling-layout.model';
+import { ThumbnailProps, IconSchema, Props } from '../image-labelling-layout.model';
 import {
     Component,
     EventEmitter,
@@ -21,7 +21,7 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
     @Input() _onChange!: Props;
     @Output() _onClick: EventEmitter<ThumbnailProps> = new EventEmitter();
     imgRelativePath: string = `../../../assets/classifai-image-labelling-layout/`;
-    jsonSchema!: IimageLabellingSchema;
+    jsonSchema!: IconSchema;
     constructor() {}
 
     ngOnInit(): void {
@@ -30,7 +30,7 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
 
     bindImagePath = () => {
         this.jsonSchema = {
-            logoCenter: [
+            logosCenter: [
                 {
                     imgPath: `${this.imgRelativePath}light-theme/previous.png`,
                     hoverLabel: `Pervious`,
@@ -44,7 +44,7 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
                     onClick: () => this.emitParentEvent({ thumbnailAction: 1 }),
                 },
             ],
-            logoEnd: [
+            logosEnd: [
                 {
                     imgPath: `${this.imgRelativePath}light-theme/undo.png`,
                     hoverLabel: `Undo`,

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { IimageLabellingSchema, Props } from '../../layouts/image-labelling-layout/image-labelling-layout.model';
+import { IconSchema, Props } from '../../layouts/image-labelling-layout/image-labelling-layout.model';
 
 type HeaderLabelSchema = {
     name: string;
@@ -17,7 +17,7 @@ export class PageHeaderComponent implements OnInit, OnChanges {
     // @Output() _navigate: EventEmitter<UrlProps> = new EventEmitter();
     imgRelativePath: string = `../../../assets/classifai-image-labelling-layout/`;
     logoSrc: string = `../../../assets/classifai-image-labelling-layout/Classifai_Favicon_Dark_512px.png`;
-    jsonSchema!: IimageLabellingSchema;
+    jsonSchema!: IconSchema;
     headerLabels: HeaderLabelSchema[] = [
         {
             name: 'Home',

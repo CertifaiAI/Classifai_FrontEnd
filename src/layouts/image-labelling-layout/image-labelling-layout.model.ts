@@ -76,7 +76,7 @@ export interface IThumbnailMetadata {
 // }
 
 /** @interface icons' object mapping */
-type imageLabellingConfigs = {
+type IconConfigs = {
     imgPath: string;
     hoverLabel: string;
     alt: string;
@@ -90,8 +90,8 @@ type imageLabellingConfigs = {
 };
 
 /** @interface backbone of icons' object schema */
-export interface IimageLabellingSchema {
-    [key: string]: Array<imageLabellingConfigs>;
+export interface IconSchema {
+    [key: string]: Array<IconConfigs>;
 }
 
 /** @type mainly used for passing props with generic type while ability to allow conditional of generic type usage */

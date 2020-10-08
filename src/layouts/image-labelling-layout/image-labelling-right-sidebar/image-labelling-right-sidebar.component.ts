@@ -1,4 +1,4 @@
-import { IimageLabellingSchema, Props, TabsProps } from '../image-labelling-layout.model';
+import { IconSchema, Props, TabsProps } from '../image-labelling-layout.model';
 import {
     Component,
     EventEmitter,
@@ -21,7 +21,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
     @Input() _onChange!: Props;
     @Output() _onClick: EventEmitter<TabsProps> = new EventEmitter();
     imgRelativePath: string = `../../../assets/classifai-image-labelling-layout/`;
-    jsonSchema!: IimageLabellingSchema;
+    jsonSchema!: IconSchema;
 
     constructor() {}
 
