@@ -24,21 +24,38 @@
 }
 
 .card-container {
-    min-width: 9.5vw;
-    max-width: 9.5vw;
+    min-width: 11vw;
+    max-width: 11vw;
     min-height: 30vh;
     max-height: 30vh;
     border-style: solid;
     font-size: 2.2vh;
-    background: #404040;
+    // background: #404040;
+    background: rgb(46, 45, 45);
     cursor: pointer;
+    position: relative;
+}
+
+.card-container:hover {
+    background: rgb(64, 64, 64);
+}
+
+.card-container::before {
+    content: '';
+    display: block;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0.2vw;
+    background-color: rgb(54, 54, 54);
 }
 
 .project-status {
     color: white;
     background-color: #f59221;
     font-size: 1.5vh;
-    padding: 0.3vh 1vw 0.6vh 1vw;
+    padding: 0.3vh 3.5vw 0.6vh 1vw;
 }
 
 .card-icon-style {
@@ -54,6 +71,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    position: relative;
 }
 
 .card-title-style {
