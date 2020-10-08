@@ -7,6 +7,7 @@ const initialValue = {
     drag: false,
     draw: false,
     selectedBox: -1,
+    fitCenter: false,
 };
 
 @Injectable({
@@ -15,7 +16,7 @@ const initialValue = {
 export class BoundingBoxStateService {
     private source = new BehaviorSubject<BoundingBoxActionState>(initialValue);
 
-    public currentValue = this.source.asObservable();
+    public currentValue$ = this.source.asObservable();
 
     constructor() {}
 

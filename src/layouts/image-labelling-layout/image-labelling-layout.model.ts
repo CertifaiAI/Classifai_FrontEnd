@@ -161,4 +161,5 @@ export type BoundingBoxActionState = {
     drag: boolean;
     draw: boolean;
     selectedBox: number;
+    fitCenter: boolean;
 };

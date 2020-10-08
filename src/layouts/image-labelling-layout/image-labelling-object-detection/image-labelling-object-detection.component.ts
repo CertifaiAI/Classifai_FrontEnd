@@ -35,7 +35,9 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     constructor(private _boundingbox: BoundingBoxService, private _incomeRules: BoundingBoxStateService) {}
 
     ngOnInit() {
-        this._incomeRules.currentValue.subscribe((val) => (this.boundingBoxState = val));
+        this._incomeRules.currentValue$.subscribe(
+            (val) => ((this.boundingBoxState = val), this.isFitCenter(this.boundingBoxState.fitCenter)),
+        );
     }
 
     rulesOnChange(scroll: boolean, selectbox: number) {
@@ -47,20 +49,27 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
         } catch (err) {}
     }
 
+    isFitCenter(isCalled: boolean) {
+        try {
+            isCalled ? this.imgFitToCenter() : null;
+        } catch (err) {}
+    }
+
+    imgFitToCenter() {
+        try {
+        } catch (err) {}
+    }
+
     ngOnChanges(changes: SimpleChanges): void {
         try {
-            if (
-                changes._imgSrc.currentValue !== '' ||
-                changes._imgSrc.currentValue !== undefined ||
-                changes._imgSrc.currentValue !== null
-            ) {
-                this.initCanvas();
-                this.context = this.mycanvas?.nativeElement?.getContext('2d')
-                    ? this.mycanvas.nativeElement.getContext('2d')
-                    : null;
-                console.log(this._selectMetadata);
-                this.loadImages(changes._imgSrc.currentValue);
-            }
+            changes._imgSrc.currentValue
+                ? (this.initCanvas(),
+                  (this.context = this.mycanvas?.nativeElement?.getContext('2d')
+                      ? this.mycanvas.nativeElement.getContext('2d')
+                      : null),
+                  console.log(this._selectMetadata),
+                  this.loadImages(changes._imgSrc.currentValue))
+                : null;
         } catch (err) {}
     }
 
