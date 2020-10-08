@@ -1,4 +1,4 @@
-import { Boundingbox } from './CustomType';
+import { BoundingBox } from './CustomType';
 
 export class utils {
     constructor() {}
@@ -81,7 +81,7 @@ export class utils {
 }
 
 export class imglblCopyPaste {
-    private memo!: Boundingbox | undefined;
+    private memo!: BoundingBox | undefined;
     private utility!: utils;
     constructor() {
         try {
@@ -91,7 +91,7 @@ export class imglblCopyPaste {
         }
     }
 
-    public copy(boundData: Boundingbox) {
+    public copy(boundData: BoundingBox) {
         try {
             if (boundData != undefined) {
                 this.memo = this.utility.deepCloneObject(boundData);
@@ -101,10 +101,10 @@ export class imglblCopyPaste {
         }
     }
 
-    public paste(): Boundingbox | undefined {
+    public paste(): BoundingBox | undefined {
         try {
             if (this.memo != undefined) {
-                let rtMEMO: Boundingbox = this.utility.deepCloneObject(this.memo);
+                let rtMEMO: BoundingBox = this.utility.deepCloneObject(this.memo);
                 this.memo = undefined;
                 let tempW = rtMEMO.x2 - rtMEMO.x1;
                 let tempH = rtMEMO.y2 - rtMEMO.y1;
