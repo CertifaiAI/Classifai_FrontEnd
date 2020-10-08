@@ -13,6 +13,7 @@
 
 .container-flex-start {
     display: flex;
+    align-items: baseline;
     margin-left: 3vw;
 }
 
@@ -86,10 +87,12 @@
     margin-left: 1vw;
     max-width: 20vw;
     min-width: 20vw;
-    max-height: 1.5vh;
-    min-height: 1.5vh;
+    max-height: 1.7vh;
+    min-height: 1.7vh;
     position: absolute;
     margin-top: 0.5vh;
+    white-space: nowrap;
+    overflow: hidden;
     text-overflow: ellipsis;
 }
 

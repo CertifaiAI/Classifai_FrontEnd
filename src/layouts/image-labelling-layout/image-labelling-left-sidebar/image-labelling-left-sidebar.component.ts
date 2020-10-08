@@ -26,7 +26,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     jsonSchema!: IconSchema;
     iconIndex!: number;
 
-    constructor(private _boundingBoxState: BoundingBoxStateService) {}
+    constructor(private _bbState: BoundingBoxStateService) {}
 
     ngOnInit(): void {
         this.bindImagePath();
@@ -39,21 +39,21 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     imgPath: `${this.imgRelativePath}light-theme/pointer.png`,
                     hoverLabel: `Pointer`,
                     alt: `Pointer`,
-                    onClick: (): void => {
-                        this._boundingBoxState.setState({ draw: false, drag: true });
-                    },
                 },
                 {
                     imgPath: `${this.imgRelativePath}light-theme/move.png`,
                     hoverLabel: `Move Image`,
                     alt: `Move Image`,
+                    onClick: (): void => {
+                        this._bbState.setState({ draw: false, drag: true });
+                    },
                 },
                 {
                     imgPath: `${this.imgRelativePath}light-theme/rec_bounding_box.png`,
                     hoverLabel: `Rectangular Bounding Box`,
                     alt: `RectangularBB`,
                     onClick: (): void => {
-                        this._boundingBoxState.setState({ draw: true, drag: false });
+                        this._bbState.setState({ draw: true, drag: false });
                     },
                 },
                 // {
