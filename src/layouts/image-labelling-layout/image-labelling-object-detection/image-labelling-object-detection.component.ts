@@ -87,6 +87,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     }
 
     @HostListener('mousewheel', ['$event'])
+    @HostListener('DOMMouseScroll', ['$event'])
     mouseScroll(event: WheelEvent) {
         try {
             //positive value is scroll down, negative value is scroll up
