@@ -1,4 +1,4 @@
-import { IimageLabellingSchema, Props } from '../image-labelling-layout.model';
+import { IconSchema, Props } from '../image-labelling-layout.model';
 import {
     Component,
     OnInit,
@@ -23,7 +23,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     @Input() _onChange!: Props;
     @Output() _navigate: EventEmitter<any> = new EventEmitter();
     imgRelativePath: string = `../../../assets/classifai-image-labelling-layout/`;
-    jsonSchema!: IimageLabellingSchema;
+    jsonSchema!: IconSchema;
     iconIndex!: number;
 
     constructor(private _boundingBoxState: BoundingBoxStateService) {}

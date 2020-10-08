@@ -1,4 +1,5 @@
 $hoverBackground: #393838;
+// $base64Arrow: url(data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0Ljk1IDEwIj48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2ZmZjt9LmNscy0ye2ZpbGw6IzQ0NDt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPmFycm93czwvdGl0bGU+PHJlY3QgY2xhc3M9ImNscy0xIiB3aWR0aD0iNC45NSIgaGVpZ2h0PSIxMCIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtMiIgcG9pbnRzPSIxLjQxIDQuNjcgMi40OCAzLjE4IDMuNTQgNC42NyAxLjQxIDQuNjciLz48cG9seWdvbiBjbGFzcz0iY2xzLTIiIHBvaW50cz0iMy41NCA1LjMzIDIuNDggNi44MiAxLjQxIDUuMzMgMy41NCA1LjMzIi8+PC9zdmc+);
 
 .dataset-header-container {
     display: flex;
@@ -41,18 +42,36 @@ $hoverBackground: #393838;
 }
 
 .dataset-select {
-    // height: 4vh;
     min-height: 4vh;
     max-height: 4vh;
     font-size: 2vh;
-    min-width: 5vw;
-    max-width: 5vw;
-    text-align-last: center;
+    min-width: 7vw;
+    max-width: 7vw;
+    -moz-text-align-last: center;
     background: black;
     color: white;
+    border: 0.1vw solid;
+    text-align-last: center;
 }
 
 .dataset-select:focus,
 .dataset-select:hover {
+    // background: $hoverBackground $base64Arrow no-repeat 10vw;
     background: $hoverBackground;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    // background-position: 100%;
+    // background-position: 12.1vh;
+}
+
+select {
+    // background: $base64Arrow no-repeat 10vw;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    // background-position: 12.1vh;
+}
+
+option {
+    background: black;
+    text-align: center;
 }

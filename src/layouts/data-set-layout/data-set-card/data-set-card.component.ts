@@ -1,5 +1,5 @@
 import { projectSchema } from './../data-set-layout.model';
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
     selector: 'data-set-card',

@@ -9,7 +9,7 @@
         </ng-template>
     </div>
     <div class="container-flex-center">
-        <ng-container *ngFor="let logo of jsonSchema.logoCenter; index as i">
+        <ng-container *ngFor="let logo of jsonSchema.logosCenter; index as i">
             <ng-container *ngIf="i === 0; else renderOtherIcons">
                 <div class="utility-icon-container">
                     <img
@@ -40,7 +40,7 @@
         </ng-container>
     </div>
     <div class="container-flex-end">
-        <ng-container *ngFor="let logo of jsonSchema.logoEnd; index as i">
+        <ng-container *ngFor="let logo of jsonSchema.logosEnd; index as i">
             <div class="utility-icon-container">
                 <img
                     [ngClass]="conditionalIconTheme()"

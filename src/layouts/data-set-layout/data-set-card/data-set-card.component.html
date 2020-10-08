@@ -1,9 +1,9 @@
 <div class="card-layout-container">
-    <ng-container *ngFor="let field of _jsonSchema">
-        <div id="card-container" class="card-container" (click)="navigate({ enabled: true, isclick: true })">
+    <ng-container *ngFor="let project of _jsonSchema">
+        <div class="card-container" (click)="navigate({ enabled: true, isclick: true })">
             <div class="card-header-style">
                 <div>
-                    <label class="project-status">{{ field.status }}</label>
+                    <label class="project-status"></label>
                 </div>
                 <div>
                     <img
@@ -17,10 +17,11 @@
                 </div>
             </div>
             <div class="card-title-style">
-                <label class="card-title-txt">Created: {{ field.createdDate }}</label>
+                <label class="card-title-txt">Created: </label>
+                <!-- <label class="card-title-txt">Created: {{ project.createdDate }}</label> -->
             </div>
             <div class="project-name-style">
-                <label class="project-name"> {{ field.title }} </label>
+                <label class="project-name"> {{ project }} </label>
             </div>
             <div class="tag-container">
                 <img class="tag-img" src="../../../assets/classifai-image-labelling-layout/light-theme/label.png" />

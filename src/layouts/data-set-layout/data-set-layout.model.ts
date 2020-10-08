@@ -57,6 +57,10 @@ export interface IProjectStatus {
     createdDate: string;
 }
 
+// export type projectSchema = {
+//     fields: Array<IProjectStatus>;
+// };
+
 export type projectSchema = {
-    fields: Array<IProjectStatus>;
+    projects: string[];
 };
