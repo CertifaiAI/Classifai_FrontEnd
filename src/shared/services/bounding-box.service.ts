@@ -73,6 +73,41 @@ export class BoundingBoxService {
         }
     }
 
+    public moveAllBbox(bbox: BoundingBox[], imgX: number, imgY: number) {
+        try {
+            for (var i = 0; i < bbox.length; ++i) {
+                let temRectWidth: number = bbox[i].x2 - bbox[i].x1;
+                let temRectHeight: number = bbox[i].y2 - bbox[i].y1;
+                bbox[i].x1 = this.utility.deepCloneVariable(imgX + bbox[i].distancetoImg.x);
+                bbox[i].y1 = this.utility.deepCloneVariable(imgY + bbox[i].distancetoImg.y);
+                bbox[i].x2 = this.utility.deepCloneVariable(bbox[i].x1 + temRectWidth);
+                bbox[i].y2 = this.utility.deepCloneVariable(bbox[i].y1 + temRectHeight);
+            }
+        } catch (err) {}
+    }
+
+    public calScaleTofitScreen(
+        imgW: number,
+        imgH: number,
+        canvasW: number,
+        canvasH: number,
+    ): {
+        factor: number;
+        newX: number;
+        newY: number;
+    } {
+        try {
+            let obj = { factor: -1, newX: -1, newY: -1 };
+            obj.factor = Math.min(canvasW / imgW, canvasH / imgH);
+            obj.factor = obj.factor - obj.factor * 0.05;
+            obj.newX = canvasW / 2 - (imgW / 2) * obj.factor;
+            obj.newY = canvasH / 2 - (imgH / 2) * obj.factor;
+            return obj;
+        } catch (err) {
+            return { factor: -1, newX: -1, newY: -1 };
+        }
+    }
+
     private mouseMoveBox(mouseX: number, mouseY: number, currMeta: Metadata): void {
         try {
             let tmpOffsetX: number = mouseX - this.currentDrawing.x1;
