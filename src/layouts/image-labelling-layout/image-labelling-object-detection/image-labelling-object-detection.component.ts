@@ -130,13 +130,6 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     toggleEvent(event: MouseEvent) {
         try {
             this.rulesOnChange(null, null, null, null, true);
-            // if (!this.boundingBoxState.draw) {
-            //     this.boundingBoxState.draw = true;
-            //     this.boundingBoxState.drag = false;
-            // } else {
-            //     this.boundingBoxState.drag = true;
-            //     this.boundingBoxState.draw = false;
-            // }
         } catch (err) {}
     }
 
