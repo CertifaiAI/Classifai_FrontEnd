@@ -12,8 +12,7 @@
         "moduleResolution": "node",
         "importHelpers": true,
         "target": "es2015",
-        "lib": ["es2018", "dom"],
-        "include": ["src/custom.d.ts"]
+        "lib": ["es2018", "dom"]
     },
     "angularCompilerOptions": {
         "fullTemplateTypeCheck": true,
