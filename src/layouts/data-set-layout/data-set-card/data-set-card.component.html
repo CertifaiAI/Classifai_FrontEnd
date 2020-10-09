@@ -1,6 +1,6 @@
 <div class="card-layout-container">
     <ng-container *ngFor="let project of _jsonSchema">
-        <div class="card-container" (click)="navigate({ enabled: true, isclick: true })">
+        <div class="card-container" (click)="onOpenProject(project)">
             <div class="card-header-style">
                 <div>
                     <label class="project-status">New</label>

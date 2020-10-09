@@ -1,9 +1,9 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { DataSetLayoutService } from './data-set-layout.service';
-import { first, map, mergeMap } from 'rxjs/operators';
+import { first, flatMap, map, mergeMap } from 'rxjs/operators';
+import { forkJoin, interval, Subject, Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Props } from '../image-labelling-layout/image-labelling-layout.model';
-import { Subject, Subscription } from 'rxjs';
 
 @Component({
     selector: 'data-set-layout',
@@ -113,58 +113,59 @@ export class DataSetLayoutComponent implements OnInit {
         }
     };
 
-    // startProject = (projectName: string): void => {
-    //     const streamProj$ = this._dataSetService.checkExistProject(projectName);
-    //     const streamProjStatus$ = this._dataSetService.checkExistProjectStatus(projectName);
-    //     const thumbnail$ = this._dataSetService.getThumbnailList;
+    startProject = (projectName: string): void => {
+        const streamProj$ = this._dataSetService.checkExistProject(projectName);
+        const streamProjStatus$ = this._dataSetService.checkExistProjectStatus(projectName);
+        const thumbnail$ = this._dataSetService.getThumbnailList;
 
-    //     this.subjectSubscription = this.subject$
-    //         .pipe(
-    //             first(),
-    //             flatMap(() => forkJoin([streamProj$, streamProjStatus$])),
-    //             mergeMap(([, { message, uuid_list, label_list }]) => {
-    //                 if (message === 2) {
-    //                     this.tabStatus = this.tabStatus.map((tab) =>
-    //                         tab.label_list ? (tab.label_list = label_list) && tab : tab,
-    //                     );
-    //                     return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
-    //                 } else {
-    //                     const ThumbnailResponse = interval(500).pipe(
-    //                         flatMap(() => streamProjStatus$),
-    //                         first(({ message }) => message === 2),
-    //                         mergeMap(({ uuid_list }) =>
-    //                             uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [],
-    //                         ),
-    //                     );
-    //                     return ThumbnailResponse;
-    //                 }
-    //             }),
-    //             // * this flatMap responsible for flaten all observable into one layer
-    //             flatMap((data) => data),
-    //         )
-    //         .subscribe(
-    //             (res) => {
-    //                 this.thumbnailList = [...this.thumbnailList, res];
-    //                 this.onChangeSchema = {
-    //                     ...this.onChangeSchema,
-    //                     currentThumbnailIndex: 0,
-    //                     totalNumThumbnail: this.thumbnailList.length,
-    //                 };
-    //                 // this.tabStatus = [...this.tabStatus, { name: 'Label', closed, label_list: [] }];
-    //             },
-    //             (error: Error) => console.error(error),
-    //             () => {
-    //                 const [{ label_list }] = this.tabStatus;
-    //                 label_list && label_list.length < 1
-    //                     ? this.onProcessLabel({ selectedLabel: '', label_list: [], action: 1 })
-    //                     : null;
-    //                 // console.log(this.thumbnailList);
-    //             },
-    //         );
+        this.subjectSubscription = this.subject$
+            .pipe(
+                first(),
+                flatMap(() => forkJoin([streamProj$, streamProjStatus$])),
+                mergeMap(([, { message, uuid_list }]) => {
+                    if (message === 2) {
+                        // this.tabStatus = this.tabStatus.map((tab) =>
+                        //     tab.label_list ? (tab.label_list = label_list) && tab : tab,
+                        // );
+                        return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
+                    } else {
+                        const ThumbnailResponse = interval(500).pipe(
+                            flatMap(() => streamProjStatus$),
+                            first(({ message }) => message === 2),
+                            mergeMap(({ uuid_list }) =>
+                                uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [],
+                            ),
+                        );
+                        return ThumbnailResponse;
+                    }
+                }),
+                // * this flatMap responsible for flaten all observable into one layer
+                flatMap((data) => data),
+            )
+            .subscribe(
+                (res) => {
+                    console.log(res);
+                    // this.thumbnailList = [...this.thumbnailList, res];
+                    // this.onChangeSchema = {
+                    //     ...this.onChangeSchema,
+                    //     currentThumbnailIndex: 0,
+                    //     totalNumThumbnail: this.thumbnailList.length,
 
-    //     // make initial call
-    //     this.subject$.next();
-    // };
+                    // this.tabStatus = [...this.tabStatus, { name: 'Label', closed, label_list: [] }];
+                },
+                (error: Error) => console.error(error),
+                () => {
+                    // const [{ label_list }] = this.tabStatus;
+                    // label_list && label_list.length < 1
+                    //     ? this.onProcessLabel({ selectedLabel: '', label_list: [], action: 1 })
+                    //     : null;
+                    // console.log(this.thumbnailList);
+                },
+            );
+
+        // make initial call
+        this.subject$.next();
+    };
 
     // uploadThumbnail = (projectName: string = this.selectedProjectName || this.inputProjectName): void => {
     //     const uploadType$ = this._imgLabelService.localUploadThumbnail(projectName);
