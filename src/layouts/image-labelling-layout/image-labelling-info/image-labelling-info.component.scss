@@ -15,6 +15,8 @@
     display: flex;
     align-items: baseline;
     margin-left: 3vw;
+    min-height: inherit;
+    max-height: inherit;
 }
 
 .container-flex-center {
@@ -81,14 +83,14 @@
 }
 
 .imageTitle {
-    font-size: 1.7vh;
+    font-size: 2vh;
     color: white;
     align-items: center;
     margin-left: 1vw;
     max-width: 20vw;
     min-width: 20vw;
-    max-height: 1.7vh;
-    min-height: 1.7vh;
+    min-height: inherit;
+    max-height: inherit;
     position: absolute;
     margin-top: 0.5vh;
     white-space: nowrap;

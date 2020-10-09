@@ -18,7 +18,12 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     return new TranslateHttpLoader(httpClient, `../assets/i18n/`, `.json`);
 }
 @NgModule({
-    declarations: [FormatLanguagePipe, FileNamePipe, LazyLoadImgDirective],
+    declarations: [
+        FormatLanguagePipe,
+        FileNamePipe,
+        // SanitizeSvgPipe,
+        LazyLoadImgDirective,
+    ],
     imports: [
         CommonModule,
         FormsModule,
@@ -36,6 +41,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     exports: [
         FormatLanguagePipe,
         FileNamePipe,
+        // SanitizeSvgPipe,
         ClassifaiModalModule,
         PageHeaderModule,
         FormsModule,

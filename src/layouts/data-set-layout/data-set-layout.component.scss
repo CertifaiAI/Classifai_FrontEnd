@@ -3,40 +3,19 @@
     margin-top: 5vh;
 }
 
-.header-container {
-    margin-top: 7.3vh;
-    margin-left: 5vw;
-    font-size: 2.3vh;
-}
-
-.layout-container {
-    display: flex;
-    flex-direction: row;
-}
-
-.validation {
-    margin-left: 1.5vw;
-}
-
-.container {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    padding-top: 100px;
+.model {
+    position: fixed; /* Stay in place */
+    z-index: 1000; /*Sit on top*/
+    padding-top: 10vh; /* Location of the box */
     left: 0;
     top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-}
-
-.content {
-    background-color: #fefefe;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: transparent;
+    scrollbar-width: none;
+    position: fixed;
+    background: rgba(0, 0, 0, 0.7);
 }
 
 .model-content {
@@ -55,21 +34,6 @@
     margin-left: 34vw;
 }
 
-.model {
-    position: fixed; /* Stay in place */
-    z-index: 2; /*Sit on top*/
-    padding-top: 10vh; /* Location of the box */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: transparent;
-    scrollbar-width: none;
-    position: fixed;
-    background: rgba(0, 0, 0, 0.7);
-}
-
 .content-header {
     color: white;
     margin-left: 1.3vw;
@@ -81,6 +45,11 @@
     flex-direction: row;
     margin-left: 1.3vw;
     margin-top: 3vh;
+}
+
+.label-color {
+    color: white;
+    font-size: 1.7vh;
 }
 
 .input-style {
@@ -97,6 +66,10 @@
     padding-right: 1vw;
     font-size: 1.7vh;
     color: white;
+}
+
+.validation {
+    margin-left: 1.5vw;
 }
 
 .select-folder-container {
@@ -146,16 +119,11 @@
     font-size: 1.7vh;
 }
 
-.cancel-btn {
-    background-color: #444444;
-    margin-right: 0.7vw;
-}
-
 .create-btn {
     background-color: #169887;
 }
 
-.label-color {
-    color: white;
-    font-size: 1.7vh;
+.cancel-btn {
+    background-color: #444444;
+    margin-right: 0.7vw;
 }

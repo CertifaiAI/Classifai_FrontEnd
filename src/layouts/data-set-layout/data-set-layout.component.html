@@ -1,56 +1,50 @@
 <page-header [_onChange]="onChangeSchema"></page-header>
-<!-- <div class="layout-container"> -->
 <div class="upper-container">
-    <data-set-side-menu></data-set-side-menu>
+    <data-set-side-menu (_onClick)="toggleModalDisplay($event)"></data-set-side-menu>
     <div>
         <data-set-header></data-set-header>
         <data-set-card [_jsonSchema]="projectSchema"></data-set-card>
     </div>
 </div>
-<!-- <div class="header-container">
-        <data-set-header></data-set-header>
-    </div>
-    <div>
-        <app-data-set-card [_jsonSchema]="projects"></app-data-set-card>
-    </div> -->
-<!-- </div> -->
 
-<!-- <form [formGroup]="form">
-    <div id="model" class="model" style="position: fixed; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7)">
-        <div class="model-content" id="model-content">
-            <label class="content-header">Create new Project</label>
-            <div class="new-project-container">
-                <label class="label-color">New Project Name: </label>
-                <input
-                    class="input-style"
-                    type="text"
-                    formControlName="inputProjectName"
-                    [value]="inputProjectName"
-                    (input)="onChange($event.target.value)"
-                    placeholder="Type project new id"
-                />
+<div [hidden]="!displayModal">
+    <div class="model">
+        <form [formGroup]="form">
+            <div class="model-content">
+                <label class="content-header">Create new Project</label>
+                <div class="new-project-container">
+                    <label class="label-color">New Project Name: </label>
+                    <input
+                        class="input-style"
+                        type="text"
+                        placeholder="Type project new id"
+                        formControlName="inputProjectName"
+                        [value]="inputProjectName"
+                        (input)="onChange($event.target.value)"
+                    />
+                </div>
+                <div class="validation">
+                    <ng-container *ngIf="form.get('inputProjectName')?.touched">
+                        <span *ngIf="form.get('inputProjectName')?.getError('exist')">
+                            <small> * Project name already exist! Try other name </small>
+                        </span>
+                        <span *ngIf="form.get('inputProjectName')?.getError('required')">
+                            <small> * Project name is required </small>
+                        </span>
+                    </ng-container>
+                </div>
+                <div class="select-folder-container">
+                    <label class="label-color">Label list file (*.txt): </label>
+                    <input class="file-style" type="file" accept=".txt" />
+                    <!-- <input class="file-style" type="file" accept=".txt" (change)="onFileChange($event)" /> -->
+                </div>
+                <hr class="hr-style" />
+                <div class="model-button-container">
+                    <button class="button-style create-btn" type="submit">Create</button>
+                    <!-- <button class="button-style create-btn" type="submit" (click)="onSubmit(true)">Create</button> -->
+                    <button (click)="toggleModalDisplay(false)" class="button-style cancel-btn">Cancel</button>
+                </div>
             </div>
-            <div class="validation">
-                <ng-container *ngIf="form.get('inputProjectName')?.touched">
-                    <span *ngIf="form.get('inputProjectName')?.getError('exist')">
-                        <small> * Project name already exist! Try other name </small>
-                    </span>
-                    <span *ngIf="form.get('inputProjectName')?.getError('required')">
-                        <small> * Project name is required </small>
-                    </span>
-                </ng-container>
-            </div>
-            <div class="select-folder-container">
-                <label class="label-color">Label list file (*.txt): </label>
-                <input class="file-style" type="file" accept=".txt" (change)="onFileChange($event)" />
-            </div>
-            <hr class="hr-style" />
-            <div class="model-button-container">
-                <button class="button-style create-btn" type="submit" (click)="onSubmit(true)">Create</button>
-                <button (click)="navigate({ enabled: false, isclick: false })" class="button-style cancel-btn">
-                    Cancel
-                </button>
-            </div>
-        </div>
+        </form>
     </div>
-</form> -->
+</div>

@@ -2,10 +2,10 @@
     <div class="container-flex-start">
         <ng-container *ngIf="_onChange.thumbnailName; else defaultName">
             <div class="indicator"></div>
-            <p class="imageTitle">{{ _onChange.thumbnailName | fileNameSlice }}</p>
+            <label class="imageTitle">{{ _onChange.thumbnailName | fileNameSlice }}</label>
         </ng-container>
         <ng-template #defaultName>
-            <p class="imageTitle"></p>
+            <label class="imageTitle"></label>
         </ng-template>
     </div>
     <div class="container-flex-center">
