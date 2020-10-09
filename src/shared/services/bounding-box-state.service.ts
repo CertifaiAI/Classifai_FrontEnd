@@ -2,12 +2,14 @@ import { BehaviorSubject } from 'rxjs';
 import { BoundingBoxActionState } from '../../layouts/image-labelling-layout/image-labelling-layout.model';
 import { Injectable } from '@angular/core';
 
-const initialValue = {
+const initialValue: BoundingBoxActionState = {
     scroll: true,
     drag: false,
     draw: false,
     selectedBox: -1,
     fitCenter: false,
+    clear: false,
+    dbclick: false,
 };
 
 @Injectable({

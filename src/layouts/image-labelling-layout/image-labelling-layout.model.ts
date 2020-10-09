@@ -168,4 +168,6 @@ export type BoundingBoxActionState = {
     draw: boolean;
     selectedBox: number;
     fitCenter: boolean;
+    clear: boolean;
+    dbclick: boolean;
 };

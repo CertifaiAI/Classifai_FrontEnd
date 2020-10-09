@@ -36,29 +36,46 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
 
     ngOnInit() {
         this._bbState.boundingBox$.subscribe(
-            (val) => ((this.boundingBoxState = val), this.isFitCenter(this.boundingBoxState.fitCenter)),
+            (val) => ((this.boundingBoxState = val), this.isFitCenter(), this.isClearCanvas()),
         );
     }
 
-    rulesOnChange(scroll: boolean | null, selectbox: number | null, isFitToscreen: boolean | null) {
+    rulesOnChange(
+        scroll: boolean | null,
+        selectbox: number | null,
+        FitToscreen: boolean | null,
+        clearScreen: boolean | null,
+        dbclick: boolean | null,
+    ) {
         try {
             let tempRules: BoundingBoxActionState = this.utility.deepCloneVariable(this.boundingBoxState);
-            if (scroll !== null) {
-                tempRules.scroll = scroll!;
-            }
-            if (selectbox !== null) {
-                tempRules.selectedBox = selectbox!;
-            }
-            if (isFitToscreen !== null) {
-                tempRules.fitCenter = isFitToscreen!;
-            }
+            scroll !== null ? (tempRules.scroll = scroll) : {};
+            selectbox !== null ? (tempRules.selectedBox = selectbox) : {};
+            FitToscreen !== null ? (tempRules.fitCenter = FitToscreen) : {};
+            clearScreen !== null ? (tempRules.clear = clearScreen) : {};
+            dbclick !== null ? (tempRules.dbclick = dbclick) : {};
             this._bbState.setState(tempRules);
         } catch (err) {}
     }
 
-    isFitCenter(isCalled: boolean) {
+    isClearCanvas() {
         try {
-            isCalled ? this.imgFitToCenter() : null;
+            this.boundingBoxState.clear
+                ? ((this._selectMetadata.bnd_box = []),
+                  this.redrawImages(
+                      this._selectMetadata.img_x,
+                      this._selectMetadata.img_y,
+                      this._selectMetadata.img_w,
+                      this._selectMetadata.img_h,
+                  ),
+                  this.rulesOnChange(null, null, null, false, null))
+                : {};
+        } catch (err) {}
+    }
+
+    isFitCenter() {
+        try {
+            this.boundingBoxState.fitCenter ? this.imgFitToCenter() : null;
         } catch (err) {}
     }
 
@@ -92,7 +109,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                 this._selectMetadata.img_w,
                 this._selectMetadata.img_h,
             );
-            this.rulesOnChange(null, null, false);
+            this.rulesOnChange(null, null, false, null, null);
         } catch (err) {}
     }
 
@@ -112,6 +129,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     @HostListener('dblclick', ['$event'])
     toggleEvent(event: MouseEvent) {
         try {
+            this.rulesOnChange(null, null, null, null, true);
             // if (!this.boundingBoxState.draw) {
             //     this.boundingBoxState.draw = true;
             //     this.boundingBoxState.drag = false;
@@ -150,7 +168,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                 )
             ) {
                 this.mousedown = true;
-                this.rulesOnChange(false, null, null);
+                this.rulesOnChange(false, null, null, null, null);
                 // this.boundingBoxState.scroll = false;
                 if (this.boundingBoxState.drag) {
                     this._boundingBox.setPanXY(event.offsetX, event.offsetY);
@@ -161,7 +179,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                         event.offsetY,
                         this._selectMetadata.bnd_box,
                     );
-                    this.rulesOnChange(null, tmpBox, null);
+                    this.rulesOnChange(null, tmpBox, null, null, null);
                     this.redrawImages(
                         this._selectMetadata.img_x,
                         this._selectMetadata.img_y,
@@ -197,7 +215,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                 }
                 this.mousedown = false;
                 // this.boundingBoxState.scroll = true;
-                this.rulesOnChange(true, null, null);
+                this.rulesOnChange(true, null, null, null, null);
                 this._boundingBox.getBBoxDistfromImg(
                     this._selectMetadata.bnd_box,
                     this._selectMetadata.img_x,
