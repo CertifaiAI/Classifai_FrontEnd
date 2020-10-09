@@ -36,8 +36,26 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
 
     ngOnInit() {
         this._bbState.boundingBox$.subscribe(
-            (val) => ((this.boundingBoxState = val), this.isFitCenter(), this.isClearCanvas()),
+            (val) => (
+                (this.boundingBoxState = val),
+                this._boundingBox.setCurrentSelectedbBox(this.boundingBoxState.selectedBox),
+                this.isFitCenter(),
+                this.isClearCanvas()
+            ),
         );
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        try {
+            changes._imgSrc.currentValue
+                ? (this.initCanvas(),
+                  (this.context = this.mycanvas?.nativeElement?.getContext('2d')
+                      ? this.mycanvas.nativeElement.getContext('2d')
+                      : null),
+                  console.log(this._selectMetadata),
+                  this.loadImages(changes._imgSrc.currentValue))
+                : null;
+        } catch (err) {}
     }
 
     rulesOnChange(
@@ -75,7 +93,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
 
     isFitCenter() {
         try {
-            this.boundingBoxState.fitCenter ? this.imgFitToCenter() : null;
+            this.boundingBoxState.fitCenter ? this.imgFitToCenter() : {};
         } catch (err) {}
     }
 
@@ -110,19 +128,6 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                 this._selectMetadata.img_h,
             );
             this.rulesOnChange(null, null, false, null, null);
-        } catch (err) {}
-    }
-
-    ngOnChanges(changes: SimpleChanges): void {
-        try {
-            changes._imgSrc.currentValue
-                ? (this.initCanvas(),
-                  (this.context = this.mycanvas?.nativeElement?.getContext('2d')
-                      ? this.mycanvas.nativeElement.getContext('2d')
-                      : null),
-                  console.log(this._selectMetadata),
-                  this.loadImages(changes._imgSrc.currentValue))
-                : null;
         } catch (err) {}
     }
 
@@ -322,6 +327,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                     this._selectMetadata.img_w,
                     this._selectMetadata.img_h,
                 );
+                this._boundingBox.drawAllBoxOn(this._selectMetadata.bnd_box, this.context);
+                this.mycanvas.nativeElement.focus();
             };
         } catch (err) {}
     }

@@ -17,6 +17,7 @@ import {
     EventEmitter_Url,
     ThumbnailMetadataProps,
 } from './image-labelling-layout.model';
+import { filter } from 'jszip';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -328,9 +329,9 @@ export class ImageLabellingLayoutComponent implements OnInit {
             const thumbIndex = this.thumbnailList.findIndex((f) => f.uuid === uuid);
             getImage$.pipe(first()).subscribe(
                 ({ message, img_src, errormessage }) => {
-                    message === 1
+                    message === 1 && filteredThumbInfo
                         ? // (this.selectedThumbnail = { ...thumbnail, ...filteredThumbInfo, img_src }),
-                          ((this.selectedMetaData = { ...filteredThumbInfo }),
+                          ((this.selectedMetaData = filteredThumbInfo),
                           (this.imgSrc = img_src),
                           (this.onChangeSchema = {
                               ...this.onChangeSchema,
