@@ -3,7 +3,7 @@
     <data-set-side-menu (_onClick)="toggleModalDisplay($event)"></data-set-side-menu>
     <div>
         <data-set-header></data-set-header>
-        <data-set-card [_jsonSchema]="projectSchema"></data-set-card>
+        <data-set-card [_jsonSchema]="projects"></data-set-card>
     </div>
 </div>
 
@@ -19,7 +19,7 @@
                             class="input-style"
                             type="text"
                             placeholder="Enter project name"
-                            formControlName="inputProjectName"
+                            formControlName="projectName"
                             [value]="inputProjectName"
                             (input)="onChange($event.target.value)"
                         />
@@ -38,11 +38,11 @@
 
                     <div class="select-folder-container">
                         <label class="label">Label list file (*.txt): </label>
-                        <input type="file" accept=".txt" />
+                        <input type="file" accept=".txt" (change)="onFileChange($event)" />
                     </div>
                     <div class="horizontal-line"></div>
                     <div class="model-button-container">
-                        <button class="button-style create-btn" type="submit">Create</button>
+                        <button class="button-style create-btn" type="submit" (click)="onSubmit(true)">Create</button>
                         <button (click)="toggleModalDisplay(false)" class="button-style cancel-btn">Cancel</button>
                     </div>
                 </div>

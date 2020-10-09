@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
-    IBase64Img,
     IContent,
     IMessage,
     ILabelList,
@@ -48,10 +47,6 @@ export class DataSetLayoutService {
 
     localUploadStatus = (projectName: string): Observable<IMessageUuidList> => {
         return this.http.get<IMessageUuidList>(`${this.hostPort}bndbox/projects/${projectName}/filesysstatus`);
-    };
-
-    getBase64Thumbnail = (projectName: string, uuid: number): Observable<IBase64Img> => {
-        return this.http.get<IBase64Img>(`${this.hostPort}bndbox/projects/${projectName}/uuid/${uuid}/imgsrc`);
     };
 
     updateLabelList = (projectName: string, label_list: string[]): Observable<IMessage> => {
