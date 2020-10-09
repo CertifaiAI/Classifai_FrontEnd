@@ -2,7 +2,7 @@
     <ng-container *ngFor="let menu of menuSchema; index as i">
         <ng-container *ngIf="i === 0; else otherMenu">
             <div [attr.data-index]="i" class="new-project-container">
-                <div class="new-project-btn">
+                <div class="new-project-btn" (click)="displayModal()">
                     <img class="add-icon" [src]="menu.src" />
                     <label class="new-project-txt">{{ menu.name }}</label>
                 </div>

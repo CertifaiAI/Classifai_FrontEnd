@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataSetCardComponent } from './data-set-card/data-set-card.component';
 import { DataSetLayoutService } from './data-set-layout.service';
 import { first } from 'rxjs/operators';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IThumbnailMetadata } from '../data-set-layout/data-set-layout.model';
 import { Props } from '../image-labelling-layout/image-labelling-layout.model';
 import { Subject, Subscription } from 'rxjs';
@@ -29,6 +29,7 @@ export class DataSetLayoutComponent implements OnInit {
     selectedProjectName: string = '';
     thumbnailList: IThumbnailMetadata[] = [];
     selectedThumbnail: string = '';
+    displayModal: boolean = false;
 
     constructor(
         private _fb: FormBuilder,
@@ -77,12 +78,16 @@ export class DataSetLayoutComponent implements OnInit {
 
     createFormControls = (): void => {
         this.form = this._fb.group({
-            inputProjectName: [''],
+            inputProjectName: ['', Validators.required],
         });
     };
 
     onChange = (val: string): void => {
         this.inputProjectName = val;
+    };
+
+    toggleModalDisplay = (shown: boolean): void => {
+        this.displayModal = shown;
     };
 
     // onFileChange = (event: any): void => {

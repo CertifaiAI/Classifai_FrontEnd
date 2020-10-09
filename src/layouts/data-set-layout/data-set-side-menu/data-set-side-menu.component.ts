@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 
 type MenuSchema = {
     src: string;
@@ -32,7 +32,13 @@ export class DataSetSideMenuComponent implements OnInit {
             name: 'Trash',
         },
     ];
+    @Output() _onClick: EventEmitter<boolean> = new EventEmitter();
+
     constructor() {}
 
     ngOnInit = (): void => {};
+
+    displayModal = (): void => {
+        this._onClick.emit(true);
+    };
 }
