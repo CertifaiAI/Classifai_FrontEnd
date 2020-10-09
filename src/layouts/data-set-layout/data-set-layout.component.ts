@@ -275,8 +275,7 @@ export class DataSetLayoutComponent implements OnInit {
                 mergeMap(() => updateLabel$),
             )
             .subscribe(({ message }) => {
-                console.log(message === 1);
-                message === 1 ? (this.displayModal = false) : null;
+                message === 1 ? ((this.projects = [projectName, ...this.projects]), (this.displayModal = false)) : null;
             });
     };
 }
