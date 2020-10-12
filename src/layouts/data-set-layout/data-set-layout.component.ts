@@ -3,7 +3,9 @@ import { DataSetLayoutService } from './data-set-layout.service';
 import { first, flatMap, map, mergeMap } from 'rxjs/operators';
 import { forkJoin, interval, Subject, Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { IThumbnailMetadata } from './data-set-layout.model';
 import { Props } from '../image-labelling-layout/image-labelling-layout.model';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'data-set-layout',
@@ -21,10 +23,12 @@ export class DataSetLayoutComponent implements OnInit {
     displayModal: boolean = false;
     subject$: Subject<any> = new Subject();
     subjectSubscription!: Subscription;
+    thumbnailList: IThumbnailMetadata[] = [];
 
     constructor(
         private _fb: FormBuilder,
         private _cd: ChangeDetectorRef,
+        private _router: Router,
         private _dataSetService: DataSetLayoutService,
     ) {
         this.createFormControls();
@@ -38,11 +42,11 @@ export class DataSetLayoutComponent implements OnInit {
             };
     }
 
-    ngOnInit = (): void => {};
+    ngOnInit(): void {}
 
     createFormControls = (): void => {
         this.form = this._fb.group({
-            projectName: ['', Validators.required],
+            inputProjectName: ['', Validators.required],
         });
     };
 
@@ -86,18 +90,18 @@ export class DataSetLayoutComponent implements OnInit {
         }
     };
 
-    onSubmit = (isNewProject: boolean): void => {
+    onSubmit = (isNewProject: boolean, projectName?: string): void => {
         this.form.markAllAsTouched();
 
         if (!isNewProject) {
-            if (this.form.get('selectExistProject')?.value) {
-                // this.startProject(this.form.get('selectExistProject')?.value);
-                this.selectedProjectName = this.form.get('selectExistProject')?.value;
-            } else {
-                this.form.get('selectExistProject')?.setErrors({ required: true });
-            }
-        }
-        if (isNewProject) {
+            projectName ? this.startProject(projectName) : null;
+            // if (this.form.get('selectExistProject')?.value) {
+            //     // this.startProject(this.form.get('selectExistProject')?.value);
+            //     this.selectedProjectName = this.form.get('selectExistProject')?.value;
+            // } else {
+            //     this.form.get('selectExistProject')?.setErrors({ required: true });
+            // }
+        } else {
             if (this.inputProjectName) {
                 const checkExistProject = this.projects
                     ? this.projects.find((project) => (project ? project === this.inputProjectName : null))
@@ -144,8 +148,7 @@ export class DataSetLayoutComponent implements OnInit {
             )
             .subscribe(
                 (res) => {
-                    console.log(res);
-                    // this.thumbnailList = [...this.thumbnailList, res];
+                    this.thumbnailList = [...this.thumbnailList, res];
                     // this.onChangeSchema = {
                     //     ...this.onChangeSchema,
                     //     currentThumbnailIndex: 0,
@@ -160,6 +163,9 @@ export class DataSetLayoutComponent implements OnInit {
                     //     ? this.onProcessLabel({ selectedLabel: '', label_list: [], action: 1 })
                     //     : null;
                     // console.log(this.thumbnailList);
+                    this._router.navigate(['imglabel'], {
+                        state: { thumbnailList: this.thumbnailList, projectName },
+                    });
                 },
             );
 

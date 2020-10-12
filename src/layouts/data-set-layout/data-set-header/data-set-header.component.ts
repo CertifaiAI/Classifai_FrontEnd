@@ -33,7 +33,7 @@ export class DataSetHeaderComponent implements OnInit {
         };
     }
 
-    ngOnInit = (): void => {};
+    ngOnInit(): void {}
 
     onSelect = (value: string) => {
         console.log(value);

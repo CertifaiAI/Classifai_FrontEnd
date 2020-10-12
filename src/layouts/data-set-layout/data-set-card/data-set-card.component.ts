@@ -13,14 +13,14 @@ export class DataSetCardComponent implements OnInit, OnChanges {
     // createdDate = '22092020';
     constructor() {}
 
-    ngOnChanges = (changes: SimpleChanges): void => {
-        console.log(changes);
-    };
-
-    ngOnInit = (): void => {};
+    ngOnInit(): void {}
 
     onOpenProject = (projectName: string): void => {
-        console.log(projectName);
+        // console.log(projectName);
         this._onClick.emit(projectName);
     };
+
+    ngOnChanges(changes: SimpleChanges): void {
+        // console.log(changes);
+    }
 }

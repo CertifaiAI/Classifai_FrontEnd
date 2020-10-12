@@ -29,7 +29,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
 
     constructor() {}
 
-    ngOnInit = (): void => {};
+    ngOnInit(): void {}
 
     onClose = (tab: TabsProps): void => {
         this._onClose.emit({ name: tab.name, closed: true });
@@ -88,7 +88,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
 
     checkStateEqual = (currObj: object, prevObj: object): boolean => !isEqual(currObj, prevObj);
 
-    ngOnChanges = (changes: SimpleChanges): void => {
+    ngOnChanges(changes: SimpleChanges): void {
         // console.log(changes);
         if (changes._thumbnailList) {
             const { currentValue }: { currentValue: Props<IThumbnailMetadata[]> } = changes._thumbnailList;
@@ -103,5 +103,5 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
             const { currentValue }: { currentValue: TabsProps[] } = changes._tabStatus;
             this._tabStatus = [...currentValue];
         }
-    };
+    }
 }

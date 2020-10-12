@@ -50,17 +50,26 @@ export class ImageLabellingLayoutComponent implements OnInit {
     ];
 
     constructor(private _router: Router, private _fb: FormBuilder, private _imgLabelService: ImageLabellingService) {
-        this.setState();
+        // this.setState();
         this.createFormControls();
     }
 
-    setState = (): Props => {
-        return (this.onChangeSchema = {
-            ...this.onChangeSchema,
-        });
-    };
+    // setState = (): Props => {
+    //     return (this.onChangeSchema = {
+    //         ...this.onChangeSchema,
+    //     });
+    // };
 
-    ngOnInit = (): void => {};
+    ngOnInit(): void {
+        const {
+            thumbnailList = [],
+            projectName,
+        }: { thumbnailList: IThumbnailMetadata[]; projectName: string } = window.history.state;
+        this.thumbnailList = [...thumbnailList];
+        this.selectedProjectName = projectName;
+        this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: thumbnailList.length };
+        // console.log(window.history.state);
+    }
 
     createFormControls = (): void => {
         this.form = this._fb.group({
@@ -76,7 +85,7 @@ export class ImageLabellingLayoutComponent implements OnInit {
     };
 
     onToggleTab = <T extends TabsProps>({ name, closed }: T): void => {
-        console.log(name, closed);
+        // console.log(name, closed);
 
         const isExactTabState: boolean = this.tabStatus.some(
             (tab) => tab.name.toLowerCase() === name.toLowerCase() && tab.closed === closed,
@@ -86,7 +95,7 @@ export class ImageLabellingLayoutComponent implements OnInit {
             : (this.tabStatus = this.tabStatus.map((tab) =>
                   tab.name.toLowerCase() === name.toLowerCase() ? { ...tab, closed } : { ...tab },
               ));
-        console.log(isExactTabState);
+        // console.log(isExactTabState);
     };
 
     navigateByUrl = <T extends EventEmitter_Url>({ url }: T): void => {
@@ -194,7 +203,7 @@ export class ImageLabellingLayoutComponent implements OnInit {
     handleKeyboardEvent(event: KeyboardEvent): void {
         /**toggle in between move image and draw boxes */
         if (event.ctrlKey && event.shiftKey) {
-            console.log('success');
+            // console.log('success');
             this.onChangeSchema = {
                 ...this.onChangeSchema,
                 status: true,

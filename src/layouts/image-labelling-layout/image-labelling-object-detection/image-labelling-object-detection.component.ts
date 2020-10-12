@@ -34,7 +34,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
 
     constructor(private _boundingBox: BoundingBoxService, private _bbState: BoundingBoxStateService) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         this._bbState.boundingBox$.subscribe((val) => (this.boundingBoxState = val));
     }
 
@@ -49,11 +49,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
 
     ngOnChanges(changes: SimpleChanges): void {
         try {
-            if (
-                changes._imgSrc.currentValue !== '' ||
-                changes._imgSrc.currentValue !== undefined ||
-                changes._imgSrc.currentValue !== null
-            ) {
+            if (changes._imgSrc.currentValue) {
                 this.initCanvas();
                 this.context = this.mycanvas?.nativeElement?.getContext('2d')
                     ? this.mycanvas.nativeElement.getContext('2d')

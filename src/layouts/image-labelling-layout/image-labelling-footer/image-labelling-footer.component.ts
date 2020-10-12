@@ -18,7 +18,7 @@ export class ImageLabellingFooterComponent implements OnInit, OnChanges {
     thumbnailType: string = '';
     constructor() {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         // this.thumbnailType = this._thumbnailInfo ? atob(this._thumbnailInfo.img_src) : '';
     }
 
