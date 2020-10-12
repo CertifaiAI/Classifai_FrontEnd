@@ -24,11 +24,11 @@ export class DataSetHeaderComponent implements OnInit {
                     hoverLabel: `Filter Starred`,
                     alt: `Starred`,
                 },
-                {
-                    imgPath: `${this.imgRelativePath}light-theme/more.png`,
-                    hoverLabel: `Extra Filter`,
-                    alt: `More`,
-                },
+                // {
+                //     imgPath: `${this.imgRelativePath}light-theme/more.png`,
+                //     hoverLabel: `Extra Filter`,
+                //     alt: `More`,
+                // },
             ],
         };
     }
