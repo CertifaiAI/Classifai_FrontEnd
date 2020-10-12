@@ -26,7 +26,7 @@ export class HomeContentComponent implements OnInit {
                 },
                 {
                     enabled: true,
-                    urlPath: '/imglabel',
+                    urlPath: '/dataset',
                     title: 'image',
                     imgPath: '../../assets/classifai-home-layout/Classifai_Thumbnail_Image.jpg',
                     imgAlt: 'image',
