@@ -36,7 +36,7 @@ export class DataSetSideMenuComponent implements OnInit {
 
     constructor() {}
 
-    ngOnInit = (): void => {};
+    ngOnInit(): void {}
 
     displayModal = (): void => {
         this._onClick.emit(true);

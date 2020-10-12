@@ -1,3 +1,5 @@
+$fontSize: 2vh;
+
 .upper-container {
     display: flex;
     margin-top: 5vh;
@@ -7,7 +9,7 @@
     position: fixed; /* Stay in place */
     z-index: 1000; /*Sit on top*/
     padding-top: 10vh; /* Location of the box */
-    left: 0;
+    // left: 0;
     top: 0;
     width: 100%; /* Full width */
     height: 100%; /* Full height */
@@ -27,96 +29,82 @@
     min-width: 30vw;
     border-radius: 1vw;
     margin-top: 15vh;
-    min-height: 25vh;
-    max-height: 25vh;
-    display: flex;
-    flex-direction: column;
-    margin-left: 34vw;
+    // min-height: 30vh;
+    // max-height: 30vh;
+}
+
+.content-container {
+    margin-left: 1.3vw;
 }
 
 .content-header {
     color: white;
-    margin-left: 1.3vw;
     font-size: 3vh;
 }
 
 .new-project-container {
     display: flex;
     flex-direction: row;
-    margin-left: 1.3vw;
-    margin-top: 3vh;
+    margin: 3vh 0 0 0;
+    align-items: baseline;
 }
 
-.label-color {
+.label {
     color: white;
-    font-size: 1.7vh;
+    font-size: $fontSize;
+    margin-right: 1vw;
 }
 
 .input-style {
-    margin-left: 0.5vw;
     border-radius: 2vw;
     border: none;
     outline: none;
     background-color: #363636;
     min-width: 11vw;
     max-width: 11vw;
-    min-height: 2.9vh;
-    max-height: 2.9vh;
-    padding-left: 1vw;
-    padding-right: 1vw;
-    font-size: 1.7vh;
+    min-height: 4vh;
+    max-height: 4vh;
+    font-size: $fontSize;
     color: white;
+    padding: 0 1vw 0 1vw;
 }
 
 .validation {
-    margin-left: 1.5vw;
+    color: red;
+}
+
+.error-msg {
+    font-size: $fontSize;
 }
 
 .select-folder-container {
     display: flex;
     flex-direction: row;
-    margin-left: 1.3vw;
-    margin-top: 2vh;
+    margin: 2vh 0 0 0;
 }
 
-.file-style {
-    margin-left: 0.7vw;
-    outline: none;
-    color: white !important;
-    font-size: 1.7vh;
-}
-
-.hr-style {
-    margin-left: 1.3vw;
-    margin-top: 18vh;
-    position: absolute;
-    max-width: 28.5vw;
-    min-width: 28.5vw;
-    min-height: 0vh;
-    max-height: 0vh;
+.horizontal-line {
     background-color: white;
+    min-height: 0.3vh;
+    max-height: 0.3vh;
+    margin: 2vh auto;
+    margin-top: 2vh;
 }
 
 .model-button-container {
     display: flex;
     flex-direction: row-reverse;
-    margin-top: 20.5vh;
-    margin-bottom: 2vh;
-    /* padding-top: 5vh; */
-    position: absolute;
-    margin-left: 18vw;
+    padding: 1vw;
 }
 
 .button-style {
-    padding: 1vh;
-    padding-left: 1.5vw;
-    padding-right: 1.5vw;
+    padding: 1vh 1.5vw 1vh 1.5vw;
     border-radius: 1vh;
     border: none;
     outline: none;
     color: white;
     cursor: pointer;
-    font-size: 1.7vh;
+    font-size: $fontSize;
 }
 
 .create-btn {
@@ -127,3 +115,48 @@
     background-color: #444444;
     margin-right: 0.7vw;
 }
+
+// .file-input {
+//     color: transparent;
+//     color: transparent;
+//     min-height: 2vh;
+//     max-height: 2vh;
+//     min-width: 4vw;
+//     max-width: 5vw;
+// }
+
+// .file-input::-webkit-file-upload-button {
+//     visibility: hidden;
+// }
+
+// .file-input::before {
+//     content: 'Choose File';
+//     color: black;
+//     display: block;
+//     position: absolute;
+//     background: white;
+//     border-radius: 1vw;
+//     padding: 0.2vw;
+//     outline: none;
+//     white-space: nowrap;
+//     -webkit-user-select: none;
+//     cursor: pointer;
+//     text-shadow: 1px 1px #fff;
+//     font-size: 1.5vh;
+//     min-height: inherit;
+//     max-height: inherit;
+//     min-width: inherit;
+//     max-width: inherit;
+// }
+
+// .file-input:hover::before {
+//     border-color: black;
+// }
+
+// .file-input:active {
+//     outline: 0;
+// }
+
+// .file-input:active::before {
+//     background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+// }

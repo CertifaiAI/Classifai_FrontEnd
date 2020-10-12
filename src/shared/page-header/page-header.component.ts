@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { IconSchema, Props } from '../../layouts/image-labelling-layout/image-labelling-layout.model';
 
 type HeaderLabelSchema = {
@@ -12,7 +12,7 @@ type HeaderLabelSchema = {
     styleUrls: ['./page-header.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PageHeaderComponent implements OnInit, OnChanges {
+export class PageHeaderComponent implements OnInit {
     @Input() _onChange!: Props;
     // @Output() _navigate: EventEmitter<UrlProps> = new EventEmitter();
     imgRelativePath: string = `../../../assets/classifai-image-labelling-layout/`;
@@ -37,11 +37,11 @@ export class PageHeaderComponent implements OnInit, OnChanges {
         },
     ];
 
-    constructor() {}
-
-    ngOnInit(): void {
+    constructor() {
         this.bindImagePath();
     }
+
+    ngOnInit(): void {}
 
     bindImagePath = () => {
         this.jsonSchema = {
@@ -64,19 +64,4 @@ export class PageHeaderComponent implements OnInit, OnChanges {
             ],
         };
     };
-
-    // emitParentUrl = <T extends UrlProps>({ url }: T): void => {
-    //     url ? this._navigate.emit({ url }) : null;
-    // };
-
-    ngOnChanges(changes: SimpleChanges): void {
-        // console.log(changes);
-        const { theme } = changes._onChange.currentValue;
-        // console.log(currentValue);
-        this._onChange.theme = theme;
-        this.bindImagePath();
-    }
-
-    conditionalIconTheme = (): string =>
-        this._onChange.theme === 'light' ? 'utility-icon-light' : 'utility-icon-dark';
 }

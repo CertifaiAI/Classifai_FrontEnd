@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { projectSchema } from './../data-set-layout.model';
 
 @Component({
@@ -8,31 +8,19 @@ import { projectSchema } from './../data-set-layout.model';
 })
 export class DataSetCardComponent implements OnInit, OnChanges {
     @Input() _jsonSchema!: projectSchema;
-    // modeldiv: HTMLDivElement;
-    // projectName = 'ProjectName';
-    status = 'New';
-    createdDate = '22092020';
+    @Output() _onClick: EventEmitter<string> = new EventEmitter();
+    // status = 'New';
+    // createdDate = '22092020';
     constructor() {}
 
+    ngOnInit(): void {}
+
+    onOpenProject = (projectName: string): void => {
+        // console.log(projectName);
+        this._onClick.emit(projectName);
+    };
+
     ngOnChanges(changes: SimpleChanges): void {
-        //const { theme } = changes._onChange.currentValue;
-        console.log(changes);
-        // this._onChange.theme = theme;
-        // this.bindImagePath();
-    }
-
-    ngOnInit() {
-        // this.modeldiv = document.getElementById('card-model') as HTMLDivElement;
-        // this.modeldiv.style.display = 'none';
-    }
-
-    navigate({ enabled, isclick }: { enabled: boolean; isclick: boolean }): void {
-        //TODO:
-        console.log(enabled, isclick);
-        // if (enabled && isclick) {
-        //     this.modeldiv.style.display = 'block';
-        // } else {
-        //     this.modeldiv.style.display = 'none';
-        // }
+        // console.log(changes);
     }
 }

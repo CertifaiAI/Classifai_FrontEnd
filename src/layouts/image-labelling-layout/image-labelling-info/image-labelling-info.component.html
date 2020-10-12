@@ -22,7 +22,9 @@
                     />
                 </div>
                 <div class="totalThumbnail">
-                    <label>{{ _onChange.currentThumbnailIndex }} / {{ _onChange.totalNumThumbnail }}</label>
+                    <ng-container *ngIf="_onChange && _onChange.totalNumThumbnail">
+                        <label>{{ _onChange.currentThumbnailIndex || 0 }} / {{ _onChange.totalNumThumbnail }}</label>
+                    </ng-container>
                 </div>
             </ng-container>
             <ng-template #renderOtherIcons>

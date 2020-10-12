@@ -3,7 +3,7 @@
     <data-set-side-menu (_onClick)="toggleModalDisplay($event)"></data-set-side-menu>
     <div>
         <data-set-header></data-set-header>
-        <data-set-card [_jsonSchema]="projectSchema"></data-set-card>
+        <data-set-card [_jsonSchema]="projects" (_onClick)="onSubmit(false, $event)"></data-set-card>
     </div>
 </div>
 
@@ -11,38 +11,40 @@
     <div class="model">
         <form [formGroup]="form">
             <div class="model-content">
-                <label class="content-header">Create new Project</label>
-                <div class="new-project-container">
-                    <label class="label-color">New Project Name: </label>
-                    <input
-                        class="input-style"
-                        type="text"
-                        placeholder="Type project new id"
-                        formControlName="inputProjectName"
-                        [value]="inputProjectName"
-                        (input)="onChange($event.target.value)"
-                    />
-                </div>
-                <div class="validation">
-                    <ng-container *ngIf="form.get('inputProjectName')?.touched">
-                        <span *ngIf="form.get('inputProjectName')?.getError('exist')">
-                            <small> * Project name already exist! Try other name </small>
-                        </span>
-                        <span *ngIf="form.get('inputProjectName')?.getError('required')">
-                            <small> * Project name is required </small>
-                        </span>
+                <div class="content-container">
+                    <h1 class="content-header">Create new Project</h1>
+                    <div class="new-project-container">
+                        <label class="label">New Project Name: </label>
+                        <input
+                            class="input-style"
+                            type="text"
+                            placeholder="Enter project name"
+                            formControlName="projectName"
+                            [value]="inputProjectName"
+                            (input)="onChange($event.target.value)"
+                        />
+                    </div>
+
+                    <ng-container *ngIf="form.get('projectName')?.touched">
+                        <div class="validation">
+                            <span *ngIf="form.get('projectName')?.getError('exist')">
+                                <small class="error-msg"> * Project name already exist! Try other name </small>
+                            </span>
+                            <span *ngIf="form.get('projectName')?.getError('required')">
+                                <small class="error-msg"> * Project name is required </small>
+                            </span>
+                        </div>
                     </ng-container>
-                </div>
-                <div class="select-folder-container">
-                    <label class="label-color">Label list file (*.txt): </label>
-                    <input class="file-style" type="file" accept=".txt" />
-                    <!-- <input class="file-style" type="file" accept=".txt" (change)="onFileChange($event)" /> -->
-                </div>
-                <hr class="hr-style" />
-                <div class="model-button-container">
-                    <button class="button-style create-btn" type="submit">Create</button>
-                    <!-- <button class="button-style create-btn" type="submit" (click)="onSubmit(true)">Create</button> -->
-                    <button (click)="toggleModalDisplay(false)" class="button-style cancel-btn">Cancel</button>
+
+                    <div class="select-folder-container">
+                        <label class="label">Label list file (*.txt): </label>
+                        <input type="file" accept=".txt" (change)="onFileChange($event)" />
+                    </div>
+                    <div class="horizontal-line"></div>
+                    <div class="model-button-container">
+                        <button class="button-style create-btn" type="submit" (click)="onSubmit(true)">Create</button>
+                        <button (click)="toggleModalDisplay(false)" class="button-style cancel-btn">Cancel</button>
+                    </div>
                 </div>
             </div>
         </form>
