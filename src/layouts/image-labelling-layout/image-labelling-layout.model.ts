@@ -1,3 +1,4 @@
+import { Metadata } from '../../classes/CustomType';
 type errormessage = string;
 type content = string[];
 type message = boolean | number;
@@ -171,3 +172,43 @@ export type BoundingBoxActionState = {
     clear: boolean;
     dbclick: boolean;
 };
+
+export type Polygons = {
+    coorPt: coordinate[];
+    label: string;
+    id: number;
+    lineWidth: number;
+    color: string;
+    regionatt: string;
+    sublabel: sublabels[];
+};
+export type coordinate = {
+    x: number;
+    y: number;
+    distancetoImg: {
+        x: number;
+        y: number;
+    };
+};
+export type sublabels = {
+    label: string;
+    regionatt: string;
+};
+
+export type PolyMeta = {
+    img_path: string;
+    project_name: string;
+    uuid: number;
+    img_x: number;
+    img_y: number;
+    img_w: number;
+    img_h: number;
+    img_ori_w: number;
+    img_ori_h: number;
+    img_thumbnail: string;
+    img_depth: number;
+    file_size: number;
+    polygons: Polygons[];
+};
+
+export type undoState = Metadata | PolyMeta | null;
