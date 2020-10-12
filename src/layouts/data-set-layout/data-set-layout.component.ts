@@ -46,7 +46,7 @@ export class DataSetLayoutComponent implements OnInit {
 
     createFormControls = (): void => {
         this.form = this._fb.group({
-            inputProjectName: ['', Validators.required],
+            projectName: ['', Validators.required],
         });
     };
 
@@ -55,6 +55,7 @@ export class DataSetLayoutComponent implements OnInit {
     };
 
     toggleModalDisplay = (shown: boolean): void => {
+        this.form.reset();
         this.displayModal = shown;
     };
 
@@ -110,7 +111,6 @@ export class DataSetLayoutComponent implements OnInit {
                     ? this.form.get('projectName')?.setErrors({ exist: true })
                     : (this.createProject(this.inputProjectName),
                       (this.selectedProjectName = this.form.get('projectName')?.value));
-                this.form.reset();
             } else {
                 this.form.get('projectName')?.setErrors({ required: true });
             }

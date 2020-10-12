@@ -11,15 +11,15 @@
     height: 80vh;
 }
 
-.card-layout-container::-webkit-scrollbar-track {
+.scroll::-webkit-scrollbar-track {
     @include scrollbar-track(color.$blackColor);
 }
 
-.card-layout-container::-webkit-scrollbar {
+.scroll::-webkit-scrollbar {
     @include scrollbar();
 }
 
-.card-layout-container::-webkit-scrollbar-thumb {
+.scroll::-webkit-scrollbar-thumb {
     @include scrollbar-thumb(color.$greyColor);
 }
 

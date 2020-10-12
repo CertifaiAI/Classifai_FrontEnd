@@ -134,21 +134,21 @@
     max-width: 16vw;
 }
 
-.utility-icon-container {
-    min-height: 5vh;
-    max-height: 5vh;
-}
-
-#inner-container::-webkit-scrollbar-track {
+.scroll::-webkit-scrollbar-track {
     @include scrollbar-track(color.$blackColor);
 }
 
-#inner-container::-webkit-scrollbar {
+.scroll::-webkit-scrollbar {
     @include scrollbar();
 }
 
-#inner-container::-webkit-scrollbar-thumb {
+.scroll::-webkit-scrollbar-thumb {
     @include scrollbar-thumb(color.$greyColor);
+}
+
+.utility-icon-container {
+    min-height: 5vh;
+    max-height: 5vh;
 }
 
 .img-container {

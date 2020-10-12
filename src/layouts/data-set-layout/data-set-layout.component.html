@@ -19,18 +19,18 @@
                             class="input-style"
                             type="text"
                             placeholder="Enter project name"
-                            formControlName="inputProjectName"
+                            formControlName="projectName"
                             [value]="inputProjectName"
                             (input)="onChange($event.target.value)"
                         />
                     </div>
 
-                    <ng-container *ngIf="form.get('inputProjectName')?.touched">
+                    <ng-container *ngIf="form.get('projectName')?.touched">
                         <div class="validation">
-                            <span *ngIf="form.get('inputProjectName')?.getError('exist')">
+                            <span *ngIf="form.get('projectName')?.getError('exist')">
                                 <small class="error-msg"> * Project name already exist! Try other name </small>
                             </span>
-                            <span *ngIf="form.get('inputProjectName')?.getError('required')">
+                            <span *ngIf="form.get('projectName')?.getError('required')">
                                 <small class="error-msg"> * Project name is required </small>
                             </span>
                         </div>
