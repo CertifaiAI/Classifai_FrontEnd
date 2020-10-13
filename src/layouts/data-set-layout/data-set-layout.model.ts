@@ -30,7 +30,7 @@ export interface IBase64Img {
 }
 
 export interface ILabelList {
-    labellist: labellist;
+    label_list: labellist;
     message: message;
     progress: progress;
     uuid_list: uuid_list[];

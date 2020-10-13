@@ -38,7 +38,7 @@
 
                     <div class="select-folder-container">
                         <label class="label">Label list file (*.txt): </label>
-                        <input type="file" accept=".txt" (change)="onFileChange($event)" />
+                        <input type="file" accept=".txt" class="input" (change)="onFileChange($event)" />
                     </div>
                     <div class="horizontal-line"></div>
                     <div class="model-button-container">
@@ -50,3 +50,5 @@
         </form>
     </div>
 </div>
+
+<spinner [_loading]="loading"></spinner>

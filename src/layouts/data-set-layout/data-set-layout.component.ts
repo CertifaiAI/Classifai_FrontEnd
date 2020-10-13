@@ -1,36 +1,45 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { DataSetLayoutService } from './data-set-layout.service';
-import { first, flatMap, map, mergeMap } from 'rxjs/operators';
+import { first, flatMap, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { forkJoin, interval, Subject, Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IThumbnailMetadata } from './data-set-layout.model';
 import { Props } from '../image-labelling-layout/image-labelling-layout.model';
 import { Router } from '@angular/router';
+import { SpinnerService } from 'src/shared/spinner/spinner.service';
 
 @Component({
     selector: 'data-set-layout',
     templateUrl: './data-set-layout.component.html',
     styleUrls: ['./data-set-layout.component.scss'],
 })
-export class DataSetLayoutComponent implements OnInit {
+export class DataSetLayoutComponent implements OnInit, OnDestroy {
     onChangeSchema!: Props;
     projects: string[] = [];
     inputProjectName: string = '';
     selectedProjectName: string = '';
-    labelTextUpload!: FileList;
-    labelArr: any[] = [];
+    labelTextUpload: any[] = [];
     form!: FormGroup;
     displayModal: boolean = false;
     subject$: Subject<any> = new Subject();
     subjectSubscription!: Subscription;
     thumbnailList: IThumbnailMetadata[] = [];
+    labelList: string[] = [];
+    loading: boolean = false;
+    unsubscribe$: Subject<any> = new Subject();
 
     constructor(
         private _fb: FormBuilder,
         private _cd: ChangeDetectorRef,
         private _router: Router,
         private _dataSetService: DataSetLayoutService,
+        private _spinnerService: SpinnerService,
     ) {
+        this._spinnerService
+            .returnAsObservable()
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe((loading) => (this.loading = loading));
+
         this.createFormControls();
 
         this._dataSetService
@@ -82,8 +91,8 @@ export class DataSetLayoutComponent implements OnInit {
                         prev.push(clearCharLabel);
                         return prev;
                     }, []);
-                    this.labelArr.push(...newLabelArray);
-                    // console.log(this.labelArr);
+                    this.labelTextUpload.push(...newLabelArray);
+                    // console.log(this.labelTextUpload);
                 }
             };
             // console.log(file);
@@ -126,8 +135,9 @@ export class DataSetLayoutComponent implements OnInit {
             .pipe(
                 first(),
                 flatMap(() => forkJoin([streamProj$, streamProjStatus$])),
-                mergeMap(([, { message, uuid_list }]) => {
+                mergeMap(([, { message, uuid_list, label_list }]) => {
                     if (message === 2) {
+                        this.labelList = [...label_list];
                         // this.tabStatus = this.tabStatus.map((tab) =>
                         //     tab.label_list ? (tab.label_list = label_list) && tab : tab,
                         // );
@@ -163,8 +173,9 @@ export class DataSetLayoutComponent implements OnInit {
                     //     ? this.onProcessLabel({ selectedLabel: '', label_list: [], action: 1 })
                     //     : null;
                     // console.log(this.thumbnailList);
+
                     this._router.navigate(['imglabel'], {
-                        state: { thumbnailList: this.thumbnailList, projectName },
+                        state: { thumbnailList: this.thumbnailList, projectName, labelList: this.labelList },
                     });
                 },
             );
@@ -273,7 +284,7 @@ export class DataSetLayoutComponent implements OnInit {
 
     createProject = (projectName: string): void => {
         const createProj$ = this._dataSetService.createNewProject(projectName);
-        const updateLabel$ = this._dataSetService.updateLabelList(projectName, this.labelArr);
+        const updateLabel$ = this._dataSetService.updateLabelList(projectName, this.labelTextUpload);
 
         createProj$
             .pipe(
@@ -285,4 +296,9 @@ export class DataSetLayoutComponent implements OnInit {
                 message === 1 ? ((this.projects = [projectName, ...this.projects]), (this.displayModal = false)) : null;
             });
     };
+
+    ngOnDestroy(): void {
+        this.unsubscribe$.next();
+        this.unsubscribe$.complete();
+    }
 }

@@ -1,5 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ThemeService } from 'src/shared/services/theme.service';
+
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -11,6 +13,7 @@ export class AppComponent implements OnInit, OnDestroy {
     darkIcon: string = `../assets/Classifai_Favicon_Dark_32px.ico`;
     lightIcon: string = `../assets/Classifai_Favicon_Light_32px.ico`;
     mediaTheme: MediaQueryList = window.matchMedia('(prefers-color-scheme: light)');
+
     constructor(private _themeService: ThemeService) {
         this._themeService.setThemeState();
         this._themeService.getThemeState() === 'light-theme'

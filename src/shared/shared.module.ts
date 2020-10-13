@@ -7,8 +7,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 import { LanguageService } from './services/language.service';
 import { LazyLoadImgDirective } from './directives/lazy-image.directive';
+import { LoadingInterceptor } from './interceptors/loading.interceptor';
 import { NgModule } from '@angular/core';
 import { PageHeaderModule } from './page-header/page-header.module';
+import { SpinnerModule } from './spinner/spinner.module';
 import { ThemeService } from './services/theme.service';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -29,6 +31,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
         FormsModule,
         ReactiveFormsModule,
         ClassifaiModalModule,
+        SpinnerModule,
         PageHeaderModule,
         TranslateModule.forRoot({
             loader: {
@@ -43,6 +46,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
         FileNamePipe,
         // SanitizeSvgPipe,
         ClassifaiModalModule,
+        SpinnerModule,
         PageHeaderModule,
         FormsModule,
         ReactiveFormsModule,
@@ -55,6 +59,11 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
         {
             provide: HTTP_INTERCEPTORS,
             useClass: CacheBustingInterceptor,
+            multi: true,
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: LoadingInterceptor,
             multi: true,
         },
         // {

@@ -1,9 +1,9 @@
-import { Component, HostListener, OnInit } from '@angular/core';
-import { first } from 'rxjs/operators';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { first, takeUntil } from 'rxjs/operators';
 import { ImageLabellingService } from './image-labelling-layout.service';
 import { Router } from '@angular/router';
-import { Subject, Subscription } from 'rxjs';
+import { SpinnerService } from 'src/shared/spinner/spinner.service';
+import { Subject } from 'rxjs';
 import {
     IThumbnailMetadata,
     Props,
@@ -19,19 +19,15 @@ import {
     templateUrl: './image-labelling-layout.component.html',
     styleUrls: ['./image-labelling-layout.component.scss'],
 })
-export class ImageLabellingLayoutComponent implements OnInit {
+export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     onChangeSchema!: Props;
-    projects: string[] = [];
     inputProjectName: string = '';
-    labelTextUpload!: FileList;
-    labelArr: any[] = [];
-    form!: FormGroup;
-    subject$: Subject<any> = new Subject();
-    subjectSubscription!: Subscription;
     selectedProjectName: string = '';
     imgSrc: string = '';
+    loading: boolean = false;
     thumbnailList: IThumbnailMetadata[] = [];
     selectedMetaData!: Partial<IThumbnailMetadata>;
+    unsubscribe$: Subject<any> = new Subject();
     tabStatus: TabsProps[] = [
         {
             name: 'Project',
@@ -49,44 +45,34 @@ export class ImageLabellingLayoutComponent implements OnInit {
         },
     ];
 
-    constructor(private _router: Router, private _fb: FormBuilder, private _imgLabelService: ImageLabellingService) {
-        // this.setState();
-        this.createFormControls();
-    }
-
-    // setState = (): Props => {
-    //     return (this.onChangeSchema = {
-    //         ...this.onChangeSchema,
-    //     });
-    // };
+    constructor(
+        private _router: Router,
+        private _imgLabelService: ImageLabellingService,
+        private _spinnerService: SpinnerService,
+    ) {}
 
     ngOnInit(): void {
+        this._spinnerService
+            .returnAsObservable()
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe((loading) => (this.loading = loading));
+
         const {
             thumbnailList = [],
+            labelList = [],
             projectName,
-        }: { thumbnailList: IThumbnailMetadata[]; projectName: string } = window.history.state;
+        }: { thumbnailList: IThumbnailMetadata[]; labelList: string[]; projectName: string } = window.history.state;
+        console.log(labelList);
         this.thumbnailList = [...thumbnailList];
         this.selectedProjectName = projectName;
         this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: thumbnailList.length };
         // console.log(window.history.state);
+
+        this.displayLabelList(labelList);
     }
-
-    createFormControls = (): void => {
-        this.form = this._fb.group({
-            projectName: [''],
-            selectExistProject: [''],
-            label: [''],
-        });
-        // this.form = this._formService.createControl(this.formJsonSchema);
-    };
-
-    onChange = (val: string): void => {
-        this.inputProjectName = val;
-    };
 
     onToggleTab = <T extends TabsProps>({ name, closed }: T): void => {
         // console.log(name, closed);
-
         const isExactTabState: boolean = this.tabStatus.some(
             (tab) => tab.name.toLowerCase() === name.toLowerCase() && tab.closed === closed,
         );
@@ -121,25 +107,27 @@ export class ImageLabellingLayoutComponent implements OnInit {
         // console.log(selectedLabel, label_list, action);
         const newLabelList: string[] =
             selectedLabel && !action ? label_list.filter((label) => label !== selectedLabel) : label_list;
-        const projectName: string = this.selectedProjectName || this.inputProjectName;
+        const projectName: string = this.selectedProjectName;
         const updateLabel$ = this._imgLabelService.updateLabelList(
             projectName,
             newLabelList.length > 0 ? newLabelList : [],
         );
 
         updateLabel$.pipe(first()).subscribe(({ message }) => {
-            message === 1
-                ? (this.tabStatus = this.tabStatus.map((tab) => {
-                      if (tab.label_list) {
-                          // const newLabelList = tab.label_list.filter((label) => label !== selectedLabel);
-                          return {
-                              ...tab,
-                              label_list: newLabelList,
-                          };
-                      }
-                      return tab;
-                  }))
-                : console.error(`Error while updating label`);
+            message === 1 ? this.displayLabelList(newLabelList) : console.error(`Error while updating label`);
+        });
+    };
+
+    displayLabelList = (newLabelList: string[]): void => {
+        this.tabStatus = this.tabStatus.map((tab) => {
+            if (tab.label_list) {
+                // const newLabelList = tab.label_list.filter((label) => label !== selectedLabel);
+                return {
+                    ...tab,
+                    label_list: newLabelList,
+                };
+            }
+            return tab;
         });
     };
 
@@ -149,7 +137,7 @@ export class ImageLabellingLayoutComponent implements OnInit {
      */
     showBase64Image = <T extends ThumbnailMetadataProps | Partial<ThumbnailMetadataProps>>(
         thumbnail: T,
-        projectName: string = this.selectedProjectName || this.inputProjectName,
+        projectName: string = this.selectedProjectName,
     ): void => {
         const { uuid } = thumbnail;
         if (uuid && this.validateUuid(uuid)(this.selectedMetaData?.uuid) && this.isExactCurrentImage(thumbnail)) {
@@ -230,5 +218,10 @@ export class ImageLabellingLayoutComponent implements OnInit {
         if (event.key === 'ArrowLeft') {
             console.log('left arrow key');
         }
+    }
+
+    ngOnDestroy(): void {
+        this.unsubscribe$.next();
+        this.unsubscribe$.complete();
     }
 }
