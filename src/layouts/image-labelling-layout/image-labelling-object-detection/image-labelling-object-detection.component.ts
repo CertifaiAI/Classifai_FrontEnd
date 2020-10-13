@@ -2,6 +2,7 @@ import { BoundingBoxActionState } from './../image-labelling-layout.model';
 import { BoundingBoxService } from '../../../shared/services/bounding-box.service';
 import { BoundingBoxStateService } from '../../../shared/services/bounding-box-state.service';
 import { UndoRedoService } from '../../../shared/services/undo-redo.service';
+import { CopyPasteService } from '../../../shared/services/copy-paste.service';
 import { Metadata } from './../../../classes/CustomType';
 import { utils } from './../../../classes/utils';
 import {
@@ -37,6 +38,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
         private _boundingBox: BoundingBoxService,
         private _bbState: BoundingBoxStateService,
         private Memo: UndoRedoService,
+        private cp: CopyPasteService,
     ) {}
 
     ngOnInit() {
