@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { ThemeService } from 'src/shared/services/theme.service';
 
 @Component({
