@@ -80,6 +80,5 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
         this.bindImagePath();
     }
 
-    conditionalIconTheme = (): string =>
-        this._onChange.theme === 'light' ? 'utility-icon-light' : 'utility-icon-dark';
+    conditionalIconTheme = (): string => 'utility-icon-light';
 }
