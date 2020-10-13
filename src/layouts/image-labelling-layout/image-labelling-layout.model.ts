@@ -1,4 +1,4 @@
-import { Metadata } from '../../classes/CustomType';
+import { Metadata, BoundingBox } from '../../classes/CustomType';
 type errormessage = string;
 type content = string[];
 type message = boolean | number;
@@ -212,3 +212,4 @@ export type PolyMeta = {
 };
 
 export type undoState = Metadata | PolyMeta | null;
+export type cpState = BoundingBox | Polygons | null;

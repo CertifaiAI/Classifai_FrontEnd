@@ -5,7 +5,7 @@ import { utils } from '../../classes/utils';
 @Injectable({
     providedIn: 'any',
 })
-export class UndoStateService {
+export class UndoRedoService {
     private CurrentArr: Array<undoState> = [];
     private UndoArr: Array<undoState> = [];
     private RedoArr: Array<undoState> = [];
