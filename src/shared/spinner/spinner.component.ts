@@ -13,6 +13,6 @@ export class SpinnerComponent implements OnInit, OnChanges {
     ngOnInit(): void {}
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log(this._loading);
+        // console.log(this._loading);
     }
 }

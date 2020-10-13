@@ -107,9 +107,6 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         // console.log(changes);
-        const { theme } = changes._onChange.currentValue;
-        // console.log(currentValue);
-        this._onChange.theme = theme;
         this.bindImagePath();
     }
 

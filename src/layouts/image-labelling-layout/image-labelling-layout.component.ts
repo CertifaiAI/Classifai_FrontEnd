@@ -62,7 +62,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             labelList = [],
             projectName,
         }: { thumbnailList: IThumbnailMetadata[]; labelList: string[]; projectName: string } = window.history.state;
-        console.log(labelList);
+
         this.thumbnailList = [...thumbnailList];
         this.selectedProjectName = projectName;
         this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: thumbnailList.length };

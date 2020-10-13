@@ -97,7 +97,7 @@ export interface IconSchema {
 /** @type mainly used for passing props with generic type while ability to allow conditional of generic type usage */
 export type Props<T = undefined> = {} & (T extends undefined
     ? {
-          theme: string;
+          // theme: string;
           status?: boolean;
           currentThumbnailIndex: number;
           totalNumThumbnail: number;

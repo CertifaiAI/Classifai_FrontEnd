@@ -1,4 +1,4 @@
-import { ThumbnailProps, IconSchema, Props } from '../image-labelling-layout.model';
+import { IconSchema, Props, ThumbnailProps } from '../image-labelling-layout.model';
 import {
     Component,
     EventEmitter,
@@ -75,9 +75,7 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
     };
 
     ngOnChanges(changes: SimpleChanges): void {
-        const { theme, totalNumThumbnail } = changes._onChange.currentValue;
-        // console.log(currentValue);
-        this._onChange.theme = theme;
+        const { totalNumThumbnail } = changes._onChange.currentValue;
         this._onChange.totalNumThumbnail = totalNumThumbnail;
         this.bindImagePath();
     }
