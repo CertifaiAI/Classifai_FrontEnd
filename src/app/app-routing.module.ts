@@ -19,7 +19,7 @@ const routes: Routes = [
             import('../layouts/data-set-layout/data-set-layout.module').then((m) => m.DataSetLayoutModule),
     },
     { path: '500', component: ServerErrorComponent },
-    { path: '*', component: PageNotFoundComponent },
+    { path: '**', component: PageNotFoundComponent },
 ];
 
 @NgModule({
