@@ -1,6 +1,8 @@
 import { BoundingBoxActionState } from './../image-labelling-layout.model';
 import { BoundingBoxService } from '../../../shared/services/bounding-box.service';
 import { BoundingBoxStateService } from '../../../shared/services/bounding-box-state.service';
+import { UndoRedoService } from '../../../shared/services/undo-redo.service';
+import { CopyPasteService } from '../../../shared/services/copy-paste.service';
 import { Metadata } from './../../../classes/CustomType';
 import { utils } from './../../../classes/utils';
 import {
@@ -32,48 +34,119 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     @Input() _selectMetadata!: Metadata;
     @Input() _imgSrc: string = '';
 
-    constructor(private _boundingBox: BoundingBoxService, private _bbState: BoundingBoxStateService) {}
+    constructor(
+        private _boundingBox: BoundingBoxService,
+        private _bbState: BoundingBoxStateService,
+        private Memo: UndoRedoService,
+        private cp: CopyPasteService,
+    ) {}
 
-    ngOnInit(): void {
-        this._bbState.boundingBox$.subscribe((val) => (this.boundingBoxState = val));
-    }
-
-    rulesOnChange(scroll: boolean, selectbox: number) {
-        try {
-            let tempRules: BoundingBoxActionState = this.utility.deepCloneVariable(this.boundingBoxState);
-            tempRules.scroll = scroll;
-            tempRules.selectedBox = selectbox;
-            this._bbState.setState(tempRules);
-        } catch (err) {}
+    ngOnInit() {
+        this._bbState.boundingBox$.subscribe(
+            (val) => (
+                (this.boundingBoxState = val),
+                this._boundingBox.setCurrentSelectedbBox(this.boundingBoxState.selectedBox),
+                this.isFitCenter(),
+                this.isClearCanvas()
+            ),
+        );
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         try {
-            if (changes._imgSrc.currentValue) {
-                this.initCanvas();
-                this.context = this.mycanvas?.nativeElement?.getContext('2d')
-                    ? this.mycanvas.nativeElement.getContext('2d')
-                    : null;
-                console.log(this._selectMetadata);
-                this.loadImages(changes._imgSrc.currentValue);
-            }
+            changes._imgSrc.currentValue
+                ? (this.initCanvas(),
+                  (this.context = this.mycanvas?.nativeElement?.getContext('2d')
+                      ? this.mycanvas.nativeElement.getContext('2d')
+                      : null),
+                  console.log(this._selectMetadata),
+                  this.loadImages(changes._imgSrc.currentValue))
+                : null;
+        } catch (err) {}
+    }
+
+    rulesOnChange(
+        scroll: boolean | null,
+        selectbox: number | null,
+        FitToscreen: boolean | null,
+        clearScreen: boolean | null,
+        dbclick: boolean | null,
+    ) {
+        try {
+            let tempRules: BoundingBoxActionState = this.utility.deepCloneVariable(this.boundingBoxState);
+            scroll !== null ? (tempRules.scroll = scroll) : {};
+            selectbox !== null ? (tempRules.selectedBox = selectbox) : {};
+            FitToscreen !== null ? (tempRules.fitCenter = FitToscreen) : {};
+            clearScreen !== null ? (tempRules.clear = clearScreen) : {};
+            dbclick !== null ? (tempRules.dbclick = dbclick) : {};
+            this._bbState.setState(tempRules);
+        } catch (err) {}
+    }
+
+    isClearCanvas() {
+        try {
+            this.boundingBoxState.clear
+                ? ((this._selectMetadata.bnd_box = []),
+                  this.redrawImages(
+                      this._selectMetadata.img_x,
+                      this._selectMetadata.img_y,
+                      this._selectMetadata.img_w,
+                      this._selectMetadata.img_h,
+                  ),
+                  this.rulesOnChange(null, null, null, false, null))
+                : {};
+        } catch (err) {}
+    }
+
+    isFitCenter() {
+        try {
+            this.boundingBoxState.fitCenter ? this.imgFitToCenter() : {};
+        } catch (err) {}
+    }
+
+    imgFitToCenter() {
+        try {
+            let tmpObj = this._boundingBox.calScaleTofitScreen(
+                this._selectMetadata.img_w,
+                this._selectMetadata.img_h,
+                this.mycanvas.nativeElement.offsetWidth,
+                this.mycanvas.nativeElement.offsetHeight,
+            );
+            this._selectMetadata.img_w *= tmpObj.factor;
+            this._selectMetadata.img_h *= tmpObj.factor;
+            this._boundingBox.scaleAllBoxes(
+                tmpObj.factor,
+                this._selectMetadata.bnd_box,
+                this._selectMetadata.img_x,
+                this._selectMetadata.img_y,
+            );
+            this._selectMetadata.img_x = tmpObj.newX;
+            this._selectMetadata.img_y = tmpObj.newY;
+            this._boundingBox.setGlobalXY(tmpObj.newX, tmpObj.newY);
+            this._boundingBox.moveAllBbox(
+                this._selectMetadata.bnd_box,
+                this._selectMetadata.img_x,
+                this._selectMetadata.img_y,
+            );
+            this.redrawImages(
+                this._selectMetadata.img_x,
+                this._selectMetadata.img_y,
+                this._selectMetadata.img_w,
+                this._selectMetadata.img_h,
+            );
+            this.rulesOnChange(null, null, false, null, null);
         } catch (err) {}
     }
 
     @HostListener('dblclick', ['$event'])
     toggleEvent(event: MouseEvent) {
         try {
-            if (!this.boundingBoxState.draw) {
-                this.boundingBoxState.draw = true;
-                this.boundingBoxState.drag = false;
-            } else {
-                this.boundingBoxState.drag = true;
-                this.boundingBoxState.draw = false;
-            }
+            this.rulesOnChange(null, null, null, null, true);
         } catch (err) {}
     }
 
     @HostListener('mousewheel', ['$event'])
+    @HostListener('DOMMouseScroll', ['$event'])
     mouseScroll(event: WheelEvent) {
         try {
             //positive value is scroll down, negative value is scroll up
@@ -100,16 +173,18 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                 )
             ) {
                 this.mousedown = true;
-                this.boundingBoxState.scroll = false;
+                this.rulesOnChange(false, null, null, null, null);
+                // this.boundingBoxState.scroll = false;
                 if (this.boundingBoxState.drag) {
                     this._boundingBox.setPanXY(event.offsetX, event.offsetY);
                 }
                 if (this.boundingBoxState.draw) {
-                    this.boundingBoxState.selectedBox = this._boundingBox.mouseDownDrawEnable(
+                    let tmpBox: number = this._boundingBox.mouseDownDrawEnable(
                         event.offsetX,
                         event.offsetY,
                         this._selectMetadata.bnd_box,
                     );
+                    this.rulesOnChange(null, tmpBox, null, null, null);
                     this.redrawImages(
                         this._selectMetadata.img_x,
                         this._selectMetadata.img_y,
@@ -144,7 +219,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                     const valuecode: number = this._boundingBox.mouseUpDrawEnable(this._selectMetadata);
                 }
                 this.mousedown = false;
-                this.boundingBoxState.scroll = true;
+                // this.boundingBoxState.scroll = true;
+                this.rulesOnChange(true, null, null, null, null);
                 this._boundingBox.getBBoxDistfromImg(
                     this._selectMetadata.bnd_box,
                     this._selectMetadata.img_x,
@@ -258,6 +334,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                     this._selectMetadata.img_w,
                     this._selectMetadata.img_h,
                 );
+                this._boundingBox.drawAllBoxOn(this._selectMetadata.bnd_box, this.context);
+                this.mycanvas.nativeElement.focus();
             };
         } catch (err) {}
     }

@@ -13,6 +13,7 @@ import {
     ThumbnailMetadataProps,
     SelectedLabelProps,
 } from './image-labelling-layout.model';
+import { filter } from 'jszip';
 
 @Component({
     selector: 'image-labelling-layout',
