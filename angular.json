@@ -23,7 +23,7 @@
                         "polyfills": "src/polyfills.ts",
                         "tsConfig": "tsconfig.app.json",
                         "aot": true,
-                        "assets": ["src/Classifai_Favicon_Dark_32px.ico", "src/assets"],
+                        "assets": ["src/assets"],
                         "styles": ["src/styles.scss"],
                         "stylePreprocessorOptions": {
                             "includePaths": ["src/styles"]
