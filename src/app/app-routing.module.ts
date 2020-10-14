@@ -1,8 +1,8 @@
 import { HomeLayoutComponent } from 'src/layouts/home-layout/home-layout.component';
-import { InternalServerErrorComponent } from './internal-server-error/internal-server-error.component';
 import { NgModule } from '@angular/core';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { RouterModule, Routes } from '@angular/router';
+import { ServerErrorComponent } from './server-error/server-error.component';
 
 const routes: Routes = [
     { path: '', component: HomeLayoutComponent },
@@ -18,8 +18,8 @@ const routes: Routes = [
         loadChildren: () =>
             import('../layouts/data-set-layout/data-set-layout.module').then((m) => m.DataSetLayoutModule),
     },
-    { path: '500', component: InternalServerErrorComponent },
-    { path: '404', component: PageNotFoundComponent },
+    { path: '500', component: ServerErrorComponent },
+    { path: '*', component: PageNotFoundComponent },
 ];
 
 @NgModule({

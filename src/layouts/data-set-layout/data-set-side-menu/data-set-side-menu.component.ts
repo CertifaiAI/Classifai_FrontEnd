@@ -12,23 +12,23 @@ type MenuSchema = {
 export class DataSetSideMenuComponent implements OnInit {
     menuSchema: MenuSchema[] = [
         {
-            src: '../../../assets/classifai-image-labelling-layout/light-theme/add.png',
+            src: '../../../assets/icons/add.png',
             name: 'New Project',
         },
         {
-            src: '../../../assets/classifai-image-labelling-layout/light-theme/project.png',
+            src: '../../../assets/icons/project.png',
             name: 'My Project',
         },
         {
-            src: '../../../assets/classifai-image-labelling-layout/light-theme/starred.png',
+            src: '../../../assets/icons/starred.png',
             name: 'Starred',
         },
         {
-            src: '../../../assets/classifai-image-labelling-layout/light-theme/history.png',
+            src: '../../../assets/icons/history.png',
             name: 'Recent',
         },
         {
-            src: '../../../assets/classifai-image-labelling-layout/light-theme/trash.png',
+            src: '../../../assets/icons/trash.png',
             name: 'Trash',
         },
     ];

@@ -5,11 +5,11 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
     selector: 'home-header',
     templateUrl: './home-header.component.html',
-    styleUrls: ['./home-header.component.css'],
+    styleUrls: ['./home-header.component.scss'],
 })
 export class HomeHeaderComponent implements OnInit {
     languageArr: (string | null)[] = [];
-    headerImage: string = '../../assets/classifai-home-layout/Classifai_PoweredBy_Horizontal_light.png';
+    headerImage: string = `../../assets/landing-page/Classifai_PoweredBy_Horizontal_light.png`;
 
     constructor(public _translate: TranslateService, private _languageService: LanguageService) {
         const langsArr: string[] = ['landing-page-en', 'landing-page-cn'];

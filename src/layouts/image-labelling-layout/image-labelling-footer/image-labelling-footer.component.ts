@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { Props, ThumbnailMetadataProps } from '../image-labelling-layout.model';
+import { ImgLabelProps, ThumbnailMetadataProps } from '../image-labelling-layout.model';
 
 type ThumbnailProps = {
     img_src: string;
@@ -40,7 +40,7 @@ export class ImageLabellingFooterComponent implements OnInit, OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         // console.log(changes);
         if (changes._thumbnailInfo && changes._imgSrc) {
-            const { currentValue }: { currentValue: Props<ThumbnailProps> } = changes._thumbnailInfo;
+            const { currentValue }: { currentValue: ImgLabelProps<ThumbnailProps> } = changes._thumbnailInfo;
             const { currentValue: imgSrcVal }: { currentValue: string } = changes._imgSrc;
             this._thumbnailInfo = { ...this._thumbnailInfo, ...currentValue };
             this.thumbnailSize = this.formatBytes(imgSrcVal.length);

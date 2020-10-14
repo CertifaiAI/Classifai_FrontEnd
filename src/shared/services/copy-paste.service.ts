@@ -1,5 +1,5 @@
 import { BoundingBox } from './../../classes/CustomType';
-import { cpState, Polygons } from './../../layouts/image-labelling-layout/image-labelling-layout.model';
+import { CopyPasteState, Polygons } from './../../layouts/image-labelling-layout/image-labelling-layout.model';
 import { Injectable } from '@angular/core';
 import { utils } from '../../classes/utils';
 
@@ -7,15 +7,15 @@ import { utils } from '../../classes/utils';
     providedIn: 'root',
 })
 export class CopyPasteService {
-    private MEMO: cpState = null;
+    private MEMO: CopyPasteState = null;
     private utility: utils = new utils();
     constructor() {}
 
-    public copy(currMeta: cpState) {
+    public copy(currMeta: CopyPasteState) {
         currMeta ? (this.MEMO = this.utility.deepCloneVariable(currMeta)) : {};
     }
 
-    public paste(): cpState {
+    public paste(): CopyPasteState {
         if (this.MEMO) {
             if ('coorPt' in this.MEMO) {
                 return this.polygonPaste();

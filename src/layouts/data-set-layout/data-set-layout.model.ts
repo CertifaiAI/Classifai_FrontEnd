@@ -2,7 +2,7 @@ type errormessage = string;
 type content = string[];
 type message = boolean | number;
 type progress = any;
-type labellist = string[];
+type label_list = string[];
 type uuid_list = number;
 type img_src = string;
 
@@ -30,7 +30,7 @@ export interface IBase64Img {
 }
 
 export interface ILabelList {
-    label_list: labellist;
+    label_list: label_list;
     message: message;
     progress: progress;
     uuid_list: uuid_list[];
@@ -64,3 +64,14 @@ export interface IProjectStatus {
 export type projectSchema = {
     projects: string[];
 };
+
+/** @type mainly used for passing props with generic type while ability to allow conditional of generic type usage */
+export type DataSetProps<T = undefined> = {} & (T extends undefined
+    ? {
+          // theme: string;
+          status?: boolean;
+          currentThumbnailIndex: number;
+          totalNumThumbnail: number;
+          thumbnailName: string | undefined;
+      }
+    : T);

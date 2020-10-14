@@ -68,7 +68,8 @@ export class LanguageService {
     };
 
     private setTranslation = (compName: string, lang: string, finalizedLang: string): void => {
-        /** @param {string} browserLang format like browserLang.match(/image-labelling-en|image-labelling-cn/)*/
+        /** @param {string} browserLang format like browserLang.match(/image-labelling-en|image-labelling-cn/)
+         *  which is needed by '@ngx-translate' library */
         const browserLang: string = this._translate.getBrowserLang();
 
         this._translate.use(browserLang.match(finalizedLang) ? browserLang : `${compName}-${lang}`);

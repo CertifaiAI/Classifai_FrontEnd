@@ -1,4 +1,5 @@
-import { Metadata, BoundingBox } from '../../classes/CustomType';
+import { BoundingBox, Metadata } from '../../classes/CustomType';
+
 type errormessage = string;
 type content = string[];
 type message = boolean | number;
@@ -76,27 +77,8 @@ export interface IThumbnailMetadata {
 //   createLoading: boolean;
 // }
 
-/** @interface icons' object mapping */
-type IconConfigs = {
-    imgPath: string;
-    hoverLabel: string;
-    alt: string;
-    // inputType?: string;
-    // accept?: 'image/x-png,image/jpeg';
-    /** @function responsible for toggling function */
-    onClick?: any;
-    // onClick?: (...args: any[]) => any;
-    /** @function responsible for uploading thumbnail(s) */
-    // onUpload?();
-};
-
-/** @interface backbone of icons' object schema */
-export interface IconSchema {
-    [key: string]: Array<IconConfigs>;
-}
-
 /** @type mainly used for passing props with generic type while ability to allow conditional of generic type usage */
-export type Props<T = undefined> = {} & (T extends undefined
+export type ImgLabelProps<T = undefined> = {} & (T extends undefined
     ? {
           // theme: string;
           status?: boolean;
@@ -170,19 +152,19 @@ export type BoundingBoxActionState = {
     selectedBox: number;
     fitCenter: boolean;
     clear: boolean;
-    dbclick: boolean;
+    dbClick: boolean;
 };
 
 export type Polygons = {
-    coorPt: coordinate[];
+    coorPt: Coordinate[];
     label: string;
     id: number;
     lineWidth: number;
     color: string;
     regionatt: string;
-    sublabel: sublabels[];
+    sublabel: SubLabels[];
 };
-export type coordinate = {
+export type Coordinate = {
     x: number;
     y: number;
     distancetoImg: {
@@ -190,7 +172,7 @@ export type coordinate = {
         y: number;
     };
 };
-export type sublabels = {
+export type SubLabels = {
     label: string;
     regionatt: string;
 };
@@ -211,5 +193,5 @@ export type PolyMeta = {
     polygons: Polygons[];
 };
 
-export type undoState = Metadata | PolyMeta | null;
-export type cpState = BoundingBox | Polygons | null;
+export type UndoState = Metadata | PolyMeta | null;
+export type CopyPasteState = BoundingBox | Polygons | null;

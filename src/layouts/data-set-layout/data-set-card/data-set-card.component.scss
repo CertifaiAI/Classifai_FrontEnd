@@ -1,5 +1,5 @@
-@use '../../../shared/_variables.scss' as color;
-@use '../../../shared/_scrollbar.scss' as *;
+@use '../../../shared/scss/_variables.scss' as color;
+@use '../../../shared/scss/_scrollbar.scss' as *;
 
 .card-layout-container {
     width: 80vw;

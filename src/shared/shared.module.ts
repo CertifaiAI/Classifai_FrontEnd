@@ -1,5 +1,4 @@
 import { CacheBustingInterceptor } from './interceptors/cache-busting.interceptor';
-import { ClassifaiModalModule } from './classifai-modal/classifai-modal.module';
 import { CommonModule } from '@angular/common';
 import { FileNamePipe } from './pipe/file-name.pipe';
 import { FormatLanguagePipe } from './pipe/format-language.pipe';
@@ -7,11 +6,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 import { LanguageService } from './services/language.service';
 import { LazyLoadImgDirective } from './directives/lazy-image.directive';
-import { LoadingInterceptor } from './interceptors/loading.interceptor';
+import { LoadingSpinnerInterceptor } from './interceptors/loading-spinner.interceptor';
+import { ModalModule } from './components/modal/modal.module';
 import { NgModule } from '@angular/core';
-import { PageHeaderModule } from './page-header/page-header.module';
-import { SpinnerModule } from './spinner/spinner.module';
-import { ThemeService } from './services/theme.service';
+import { PageHeaderModule } from './components/page-header/page-header.module';
+import { SpinnerModule } from './components/spinner/spinner.module';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 
@@ -30,7 +29,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
-        ClassifaiModalModule,
+        ModalModule,
         SpinnerModule,
         PageHeaderModule,
         TranslateModule.forRoot({
@@ -45,7 +44,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
         FormatLanguagePipe,
         FileNamePipe,
         // SanitizeSvgPipe,
-        ClassifaiModalModule,
+        ModalModule,
         SpinnerModule,
         PageHeaderModule,
         FormsModule,
@@ -55,7 +54,6 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     ],
     providers: [
         LanguageService,
-        ThemeService,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: CacheBustingInterceptor,
@@ -63,7 +61,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
         },
         {
             provide: HTTP_INTERCEPTORS,
-            useClass: LoadingInterceptor,
+            useClass: LoadingSpinnerInterceptor,
             multi: true,
         },
         // {

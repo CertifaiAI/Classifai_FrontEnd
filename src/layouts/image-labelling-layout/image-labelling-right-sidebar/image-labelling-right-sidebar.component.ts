@@ -1,4 +1,5 @@
-import { IconSchema, Props, TabsProps } from '../image-labelling-layout.model';
+import { IconSchema } from 'src/shared/type-casting/icon/icon.model';
+import { ImgLabelProps, TabsProps } from '../image-labelling-layout.model';
 import {
     Component,
     EventEmitter,
@@ -17,10 +18,8 @@ import {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
-    // @Input() _theme: string;
-    @Input() _onChange!: Props;
+    @Input() _onChange!: ImgLabelProps;
     @Output() _onClick: EventEmitter<TabsProps> = new EventEmitter();
-    imgRelativePath: string = `../../../assets/classifai-image-labelling-layout/`;
     jsonSchema!: IconSchema;
 
     constructor() {}
@@ -33,7 +32,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
         this.jsonSchema = {
             logos: [
                 {
-                    imgPath: `${this.imgRelativePath}light-theme/folder.png`,
+                    imgPath: `../../../assets/icons/folder.png`,
                     hoverLabel: `Folder / Files`,
                     alt: `Folder`,
                     // inputType: 'file',
@@ -42,19 +41,19 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     onClick: () => this._onClick.emit({ name: 'project', closed: false }),
                 },
                 {
-                    imgPath: `${this.imgRelativePath}light-theme/label.png`,
+                    imgPath: `../../../assets/icons/label.png`,
                     hoverLabel: `Label`,
                     alt: `Label`,
                     onClick: () => this._onClick.emit({ name: 'label', closed: false }),
                 },
                 {
-                    imgPath: `${this.imgRelativePath}light-theme/bounding_box.png`,
+                    imgPath: `../../../assets/icons/bounding_box.png`,
                     hoverLabel: `Annotation`,
                     alt: `Annotation`,
                     onClick: () => this._onClick.emit({ name: 'annotation', closed: false }),
                 },
                 {
-                    imgPath: `${this.imgRelativePath}light-theme/statistic.png`,
+                    imgPath: `../../../assets/icons/statistic.png`,
                     hoverLabel: `Statistic`,
                     alt: `Statistic`,
                     // onClick: () => this._onClick.emit(null),
@@ -67,6 +66,5 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
         this.bindImagePath();
     }
 
-    conditionalIconTheme = (): string =>
-        this._onChange.theme === 'light' ? 'utility-icon-light' : 'utility-icon-dark';
+    conditionalIconTheme = (): string => 'utility-icon-light';
 }

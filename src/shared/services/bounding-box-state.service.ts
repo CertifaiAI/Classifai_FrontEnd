@@ -9,11 +9,11 @@ const initialValue: BoundingBoxActionState = {
     selectedBox: -1,
     fitCenter: false,
     clear: false,
-    dbclick: false,
+    dbClick: false,
 };
 
 @Injectable({
-    providedIn: 'any',
+    providedIn: 'root',
 })
 export class BoundingBoxStateService {
     private boundingBoxSubject = new BehaviorSubject<BoundingBoxActionState>(initialValue);
@@ -22,10 +22,9 @@ export class BoundingBoxStateService {
 
     constructor() {}
 
-    public setState = (newState: Partial<BoundingBoxActionState>): void => {
-        newState
-            ? this.boundingBoxSubject.next({ ...initialValue, ...newState })
+    public setState = (inComingState: Partial<BoundingBoxActionState>): void => {
+        inComingState
+            ? this.boundingBoxSubject.next({ ...initialValue, ...inComingState })
             : this.boundingBoxSubject.next(initialValue);
-        this.boundingBox$.subscribe((val) => console.log(val));
     };
 }

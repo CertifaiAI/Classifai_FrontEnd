@@ -1,13 +1,13 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { HTMLElementEvent } from 'src/shared/type-casting/interfaces/field.model';
+import { HTMLElementEvent } from 'src/shared/type-casting/field/field.model';
 import { isEqual } from 'lodash-es';
 import {
     IThumbnailMetadata,
-    Props,
     TabsProps,
     ActionTabProps,
     SelectedLabelProps,
     ThumbnailMetadataProps,
+    ImgLabelProps,
 } from '../image-labelling-layout.model';
 
 @Component({
@@ -17,7 +17,7 @@ import {
     // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingProjectComponent implements OnInit, OnChanges {
-    @Input() _thumbnailList: Props<IThumbnailMetadata[]> = [];
+    @Input() _thumbnailList: ImgLabelProps<IThumbnailMetadata[]> = [];
     @Input() _tabStatus: TabsProps[] = [];
     @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
     @Output() _onClickThumbNail: EventEmitter<ThumbnailMetadataProps> = new EventEmitter();
@@ -91,7 +91,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         // console.log(changes);
         if (changes._thumbnailList) {
-            const { currentValue }: { currentValue: Props<IThumbnailMetadata[]> } = changes._thumbnailList;
+            const { currentValue }: { currentValue: ImgLabelProps<IThumbnailMetadata[]> } = changes._thumbnailList;
             // console.log(currentValue);
             this._thumbnailList = Object.assign([], this._thumbnailList, [...currentValue]);
         }

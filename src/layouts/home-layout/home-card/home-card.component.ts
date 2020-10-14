@@ -1,13 +1,13 @@
-import { cardFieldSchema } from './home-card.model';
+import { CardFieldSchema } from '../home-layout.model';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
     selector: 'home-card',
     templateUrl: './home-card.component.html',
-    styleUrls: ['./home-card.component.css'],
+    styleUrls: ['./home-card.component.scss'],
 })
 export class HomeCardComponent implements OnInit {
-    @Input() _jsonSchema!: cardFieldSchema;
+    @Input() _jsonSchema!: CardFieldSchema;
     @Output() _navigate: EventEmitter<any> = new EventEmitter();
     hover!: boolean;
     hoverIndex!: number;

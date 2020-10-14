@@ -1,4 +1,5 @@
-import { IconSchema, Props, ThumbnailProps } from '../image-labelling-layout.model';
+import { IconSchema } from 'src/shared/type-casting/icon/icon.model';
+import { ImgLabelProps, ThumbnailProps } from '../image-labelling-layout.model';
 import {
     Component,
     EventEmitter,
@@ -17,10 +18,8 @@ import {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingInfoComponent implements OnInit, OnChanges {
-    // @Input() _selectedThumbnail: string;
-    @Input() _onChange!: Props;
+    @Input() _onChange!: ImgLabelProps;
     @Output() _onClick: EventEmitter<ThumbnailProps> = new EventEmitter();
-    imgRelativePath: string = `../../../assets/classifai-image-labelling-layout/`;
     jsonSchema!: IconSchema;
     constructor() {}
 
@@ -32,13 +31,13 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
         this.jsonSchema = {
             logosCenter: [
                 {
-                    imgPath: `${this.imgRelativePath}light-theme/previous.png`,
+                    imgPath: `../../../assets/icons/previous.png`,
                     hoverLabel: `Pervious`,
                     alt: `Previous`,
                     onClick: () => this.emitParentEvent({ thumbnailAction: -1 }),
                 },
                 {
-                    imgPath: `${this.imgRelativePath}light-theme/next.png`,
+                    imgPath: `../../../assets/icons/next.png`,
                     hoverLabel: `Next`,
                     alt: `Next`,
                     onClick: () => this.emitParentEvent({ thumbnailAction: 1 }),
@@ -46,22 +45,22 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
             ],
             logosEnd: [
                 {
-                    imgPath: `${this.imgRelativePath}light-theme/undo.png`,
+                    imgPath: `../../../assets/icons/undo.png`,
                     hoverLabel: `Undo`,
                     alt: `Undo`,
                 },
                 {
-                    imgPath: `${this.imgRelativePath}light-theme/redo.png`,
+                    imgPath: `../../../assets/icons/redo.png`,
                     hoverLabel: `Redo`,
                     alt: `Redo`,
                 },
                 {
-                    imgPath: `${this.imgRelativePath}light-theme/zoom_in.png`,
+                    imgPath: `../../../assets/icons/zoom_in.png`,
                     hoverLabel: `Zoom In`,
                     alt: `Zoom In`,
                 },
                 {
-                    imgPath: `${this.imgRelativePath}light-theme/zoom_out.png`,
+                    imgPath: `../../../assets/icons/zoom_out.png`,
                     hoverLabel: `Zoom Out`,
                     alt: `Zoom Out`,
                 },

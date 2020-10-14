@@ -1,4 +1,6 @@
-import { IconSchema, Props } from '../image-labelling-layout.model';
+import { BoundingBoxStateService } from 'src/shared/services/bounding-box-state.service';
+import { IconSchema } from 'src/shared/type-casting/icon/icon.model';
+import { ImgLabelProps } from '../image-labelling-layout.model';
 import {
     Component,
     OnInit,
@@ -9,7 +11,6 @@ import {
     OnChanges,
     ChangeDetectionStrategy,
 } from '@angular/core';
-import { BoundingBoxStateService } from 'src/shared/services/bounding-box-state.service';
 
 @Component({
     selector: 'image-labelling-left-sidebar',
@@ -18,11 +19,8 @@ import { BoundingBoxStateService } from 'src/shared/services/bounding-box-state.
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
-    // @Input() _theme: string;
-    // @Input() _status: boolean;
-    @Input() _onChange!: Props;
+    @Input() _onChange!: ImgLabelProps;
     @Output() _navigate: EventEmitter<any> = new EventEmitter();
-    imgRelativePath: string = `../../../assets/classifai-image-labelling-layout/`;
     jsonSchema!: IconSchema;
     iconIndex!: number;
 
@@ -36,12 +34,15 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
         this.jsonSchema = {
             logos: [
                 {
-                    imgPath: `${this.imgRelativePath}light-theme/pointer.png`,
+                    imgPath: `../../../assets/icons/pointer.png`,
                     hoverLabel: `Pointer`,
                     alt: `Pointer`,
+                    onClick: (): void => {
+                        this._bbState.setState({ draw: false, drag: true });
+                    },
                 },
                 {
-                    imgPath: `${this.imgRelativePath}light-theme/move.png`,
+                    imgPath: `../../../assets/icons/move.png`,
                     hoverLabel: `Move Image`,
                     alt: `Move Image`,
                     onClick: (): void => {
@@ -49,7 +50,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     },
                 },
                 {
-                    imgPath: `${this.imgRelativePath}light-theme/rec_bounding_box.png`,
+                    imgPath: `../../../assets/icons/rec_bounding_box.png`,
                     hoverLabel: `Rectangular Bounding Box`,
                     alt: `RectangularBB`,
                     onClick: (): void => {
@@ -57,47 +58,50 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     },
                 },
                 // {
-                //   imgPath: `${this.imgRelativePath}light-theme/bounding_box.png`,
+                //   imgPath: `../../../assets/icons/bounding_box.png`,
                 //   hoverLabel: `Bounding Box`,
                 //   alt: `BoundingBox`,
                 // },
                 // {
-                //     imgPath: `${this.imgRelativePath}light-theme/polygon.png`,
+                //     imgPath: `../../../assets/icons/polygon.png`,
                 //     hoverLabel: `Polygon`,
                 //     alt: `Polygon`,
                 // },
                 // {
-                //   imgPath: `${this.imgRelativePath}light-theme/auto_select.png`,
+                //   imgPath: `../../../assets/icons/auto_select.png`,
                 //   hoverLabel: `Auto Select`,
                 //   alt: `AutoSelect`,
                 // },
                 // {
-                //   imgPath: `${this.imgRelativePath}light-theme/brush_segmentation.png`,
+                //   imgPath: `../../../assets/icons/brush_segmentation.png`,
                 //   hoverLabel: `Brush Segmentation`,
                 //   alt: `BrushSeg`,
                 // },
                 // {
-                //   imgPath: `${this.imgRelativePath}light-theme/key_point.png`,
+                //   imgPath: `../../../assets/icons/key_point.png`,
                 //   hoverLabel: `Key Point`,
                 //   alt: `KeyPoint`,
                 // },
                 {
-                    imgPath: `${this.imgRelativePath}light-theme/eraser.png`,
+                    imgPath: `../../../assets/icons/eraser.png`,
                     hoverLabel: `Eraser`,
                     alt: `Eraser`,
                 },
                 {
-                    imgPath: `${this.imgRelativePath}light-theme/fit_center.png`,
+                    imgPath: `../../../assets/icons/fit_center.png`,
                     hoverLabel: `Fit Center`,
                     alt: `Fit Center`,
+                    onClick: (): void => {
+                        this._bbState.setState({ draw: true, drag: false, fitCenter: true });
+                    },
                 },
                 // {
-                //   imgPath: `${this.imgRelativePath}light-theme/move_img_px.png`,
+                //   imgPath: `../../../assets/icons/move_img_px.png`,
                 //   hoverLabel: `Move Image by Pixel`,
                 //   alt: `Move Image by Pixel`,
                 // },
                 {
-                    imgPath: `${this.imgRelativePath}light-theme/save.png`,
+                    imgPath: `../../../assets/icons/save.png`,
                     hoverLabel: `Save`,
                     alt: `Save`,
                 },

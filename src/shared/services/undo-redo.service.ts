@@ -1,4 +1,4 @@
-import { undoState } from './../../layouts/image-labelling-layout/image-labelling-layout.model';
+import { UndoState } from './../../layouts/image-labelling-layout/image-labelling-layout.model';
 import { Injectable } from '@angular/core';
 import { utils } from '../../classes/utils';
 
@@ -6,9 +6,9 @@ import { utils } from '../../classes/utils';
     providedIn: 'any',
 })
 export class UndoRedoService {
-    private CurrentArr: Array<undoState> = [];
-    private UndoArr: Array<undoState> = [];
-    private RedoArr: Array<undoState> = [];
+    private CurrentArr: Array<UndoState> = [];
+    private UndoArr: Array<UndoState> = [];
+    private RedoArr: Array<UndoState> = [];
     private MaxStageSize: number = 51;
     private allowUndo: boolean = false;
     private allowRedo: boolean = false;
@@ -16,7 +16,7 @@ export class UndoRedoService {
 
     constructor() {}
 
-    public appendStages(stages: undoState): void {
+    public appendStages(stages: UndoState): void {
         if (stages && stages !== null) {
             this.UndoArr = [];
             this.allowRedo = false;
@@ -37,11 +37,11 @@ export class UndoRedoService {
         this.allowRedo = false;
     }
 
-    public undo(): undoState {
+    public undo(): UndoState {
         this.allowRedo = true;
         if (this.UndoArr.length !== 0) {
             this.RedoArr.push(this.CurrentArr.pop()!);
-            let tmpStages: undoState = this.UndoArr.pop()!;
+            let tmpStages: UndoState = this.UndoArr.pop()!;
             this.CurrentArr.push(tmpStages);
             this.UndoArr.length === 0 ? (this.allowUndo = false) : (this.allowUndo = true);
             return tmpStages;
@@ -49,8 +49,8 @@ export class UndoRedoService {
         return null;
     }
 
-    public redo(): undoState {
-        let tmpStages: undoState = null;
+    public redo(): UndoState {
+        let tmpStages: UndoState = null;
         if (this.RedoArr.length !== 0) {
             this.UndoArr.push(this.CurrentArr.pop()!);
             tmpStages = this.RedoArr.pop()!;

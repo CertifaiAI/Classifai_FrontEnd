@@ -1,12 +1,11 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { DataSetLayoutService } from './data-set-layout.service';
+import { DataSetProps, IThumbnailMetadata } from './data-set-layout.model';
 import { first, flatMap, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { forkJoin, interval, Subject, Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IThumbnailMetadata } from './data-set-layout.model';
-import { Props } from '../image-labelling-layout/image-labelling-layout.model';
 import { Router } from '@angular/router';
-import { SpinnerService } from 'src/shared/spinner/spinner.service';
+import { SpinnerService } from 'src/shared/components/spinner/spinner.service';
 
 @Component({
     selector: 'data-set-layout',
@@ -14,7 +13,7 @@ import { SpinnerService } from 'src/shared/spinner/spinner.service';
     styleUrls: ['./data-set-layout.component.scss'],
 })
 export class DataSetLayoutComponent implements OnInit, OnDestroy {
-    onChangeSchema!: Props;
+    onChangeSchema!: DataSetProps;
     projects: string[] = [];
     inputProjectName: string = '';
     selectedProjectName: string = '';

@@ -2,18 +2,18 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { first, takeUntil } from 'rxjs/operators';
 import { ImageLabellingService } from './image-labelling-layout.service';
 import { Router } from '@angular/router';
-import { SpinnerService } from 'src/shared/spinner/spinner.service';
+import { SpinnerService } from '../../shared/components/spinner/spinner.service';
 import { Subject } from 'rxjs';
+
 import {
     IThumbnailMetadata,
-    Props,
     TabsProps,
     EventEmitter_Action,
     EventEmitter_Url,
     ThumbnailMetadataProps,
     SelectedLabelProps,
+    ImgLabelProps,
 } from './image-labelling-layout.model';
-import { filter } from 'jszip';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -21,7 +21,7 @@ import { filter } from 'jszip';
     styleUrls: ['./image-labelling-layout.component.scss'],
 })
 export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
-    onChangeSchema!: Props;
+    onChangeSchema!: ImgLabelProps;
     inputProjectName: string = '';
     selectedProjectName: string = '';
     imgSrc: string = '';
@@ -64,7 +64,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             projectName,
         }: { thumbnailList: IThumbnailMetadata[]; labelList: string[]; projectName: string } = window.history.state;
 
-        this.thumbnailList = [...thumbnailList];
+        this.thumbnailList = thumbnailList;
         this.selectedProjectName = projectName;
         this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: thumbnailList.length };
         // console.log(window.history.state);

@@ -5,14 +5,14 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule, HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { HomeLayoutModule } from 'src/layouts/home-layout/home-layout.module';
 import { HttpClientModule } from '@angular/common/http';
-import { InternalServerErrorComponent } from './internal-server-error/internal-server-error.component';
 import { LanguageService } from 'src/shared/services/language.service';
 import { NgModule } from '@angular/core';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { ServerErrorComponent } from './server-error/server-error.component';
 import { SharedModule } from 'src/shared/shared.module';
 
 @NgModule({
-    declarations: [AppComponent, InternalServerErrorComponent, PageNotFoundComponent],
+    declarations: [AppComponent, ServerErrorComponent, PageNotFoundComponent],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
