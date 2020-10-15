@@ -9,6 +9,7 @@ import { projectSchema } from './../data-set-layout.model';
 export class DataSetCardComponent implements OnInit, OnChanges {
     @Input() _jsonSchema!: projectSchema;
     @Output() _onClick: EventEmitter<string> = new EventEmitter();
+    clickedIndex: number = -1;
     // status = 'New';
     // createdDate = '22092020';
     constructor() {}
@@ -18,6 +19,11 @@ export class DataSetCardComponent implements OnInit, OnChanges {
     onOpenProject = (projectName: string): void => {
         // console.log(projectName);
         this._onClick.emit(projectName);
+    };
+
+    onDisplayMore = (index: number): void => {
+        // alert(`${index}`);
+        this.clickedIndex = this.clickedIndex === index ? -1 : index;
     };
 
     ngOnChanges(changes: SimpleChanges): void {

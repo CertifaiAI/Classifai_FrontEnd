@@ -1,6 +1,8 @@
 @use '../../../shared/scss/_variables.scss' as color;
 @use '../../../shared/scss/_scrollbar.scss' as *;
 
+$hoverBackground: #393838;
+
 .card-layout-container {
     width: 80vw;
     display: flex;
@@ -58,6 +60,10 @@
     padding: 0.3vh 3.5vw 0.6vh 1vw;
 }
 
+.card-icon-container {
+    display: flex;
+}
+
 .card-icon-style {
     min-width: 1.5vw;
     max-width: 1.5vw;
@@ -66,12 +72,25 @@
     cursor: pointer;
 }
 
+.card-icon-style:hover {
+    cursor: pointer;
+    border-radius: 5vh;
+    background-color: $hoverBackground;
+}
+
 .card-header-style {
     margin-top: 1vh;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     position: relative;
+}
+
+.popup-container {
+    background: white;
+    overflow: hidden;
+    position: fixed;
+    margin-top: 4vh;
 }
 
 .card-title-style {
