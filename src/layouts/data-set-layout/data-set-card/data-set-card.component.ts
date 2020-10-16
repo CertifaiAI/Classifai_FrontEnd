@@ -32,6 +32,7 @@ export class DataSetCardComponent implements OnInit, OnChanges {
     };
 
     onDisplayMore = (event: Event, index: number): void => {
+        // event.stopImmediatePropagation();
         event.stopPropagation();
         const { clickIndex } = this.cardSchema;
         this.cardSchema = { ...this.cardSchema, clickIndex: clickIndex === index ? -1 : index };

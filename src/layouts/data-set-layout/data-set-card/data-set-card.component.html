@@ -13,9 +13,11 @@
                         <img class="card-icon-style" src="../../../assets/icons/more.png" />
                     </div>
                     <ng-container *ngIf="i === cardSchema.clickIndex">
-                        <div class="popup-container">
-                            <button (click)="onUploadFile(i, project)">Upload photo</button>
-                        </div>
+                        <span>
+                            <div class="popup-container">
+                                <div (click)="onUploadFile(i, project)">Upload photo</div>
+                            </div>
+                        </span>
                     </ng-container>
                 </div>
             </div>
