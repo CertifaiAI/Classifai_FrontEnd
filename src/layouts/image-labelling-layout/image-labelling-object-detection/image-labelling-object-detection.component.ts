@@ -53,7 +53,6 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log('xx');
         try {
             changes._imgSrc.currentValue
                 ? (this.initCanvas(),

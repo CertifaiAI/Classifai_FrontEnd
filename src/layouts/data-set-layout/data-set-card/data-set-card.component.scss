@@ -3,6 +3,13 @@
 
 $hoverBackground: #393838;
 
+@mixin porject-status($color, $right) {
+    color: whitesmoke;
+    background-color: $color;
+    font-size: 1.5vh;
+    padding: 0.3vh $right 0.6vh 1vw;
+}
+
 .card-layout-container {
     width: 80vw;
     display: flex;
@@ -53,11 +60,12 @@ $hoverBackground: #393838;
     background-color: rgb(54, 54, 54);
 }
 
-.project-status {
-    color: whitesmoke;
-    background-color: #f59221;
-    font-size: 1.5vh;
-    padding: 0.3vh 3.5vw 0.6vh 1vw;
+.project-status-new {
+    @include porject-status(#f59221, 3.5vw);
+}
+
+.project-status-uploading {
+    @include porject-status(#f5219d, 2.5vw);
 }
 
 .card-icon-container {
@@ -87,10 +95,11 @@ $hoverBackground: #393838;
 }
 
 .popup-container {
-    background: white;
+    // background: white;
     overflow: hidden;
-    position: fixed;
-    margin-top: 4vh;
+    position: absolute;
+    // margin-top: 4vh;
+    margin: 4vh 0 0 -4vw;
 }
 
 .card-title-style {

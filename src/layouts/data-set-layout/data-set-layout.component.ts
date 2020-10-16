@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { DataSetLayoutService } from './data-set-layout.service';
-import { DataSetProps, IThumbnailMetadata } from './data-set-layout.model';
+import { DataSetProps, IMessage, IThumbnailMetadata, projectSchema } from './data-set-layout.model';
 import { first, flatMap, map, mergeMap, takeUntil } from 'rxjs/operators';
-import { forkJoin, interval, Subject, Subscription } from 'rxjs';
+import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'src/shared/components/spinner/spinner.service';
@@ -14,7 +14,10 @@ import { SpinnerService } from 'src/shared/components/spinner/spinner.service';
 })
 export class DataSetLayoutComponent implements OnInit, OnDestroy {
     onChangeSchema!: DataSetProps;
-    projects: string[] = [];
+    projectList: projectSchema = {
+        projects: [],
+        isUploading: false,
+    };
     inputProjectName: string = '';
     selectedProjectName: string = '';
     labelTextUpload: any[] = [];
@@ -44,7 +47,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this._dataSetService
             .getProjectList()
             .pipe(first())
-            .subscribe(({ content }) => (this.projects = content)),
+            .subscribe(({ content }) => (this.projectList.projects = content)),
             (error: Error) => {
                 console.error(error);
             };
@@ -112,8 +115,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             // }
         } else {
             if (this.inputProjectName) {
-                const checkExistProject = this.projects
-                    ? this.projects.find((project) => (project ? project === this.inputProjectName : null))
+                const checkExistProject = this.projectList.projects
+                    ? this.projectList.projects.find((project) => (project ? project === this.inputProjectName : null))
                     : null;
                 checkExistProject
                     ? this.form.get('projectName')?.setErrors({ exist: true })
@@ -183,73 +186,90 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.subject$.next();
     };
 
-    // uploadThumbnail = (projectName: string = this.selectedProjectName || this.inputProjectName): void => {
-    //     const uploadType$ = this._imgLabelService.localUploadThumbnail(projectName);
-    //     const uploadStatus$ = this._imgLabelService.localUploadStatus(projectName);
-    //     const thumbnail$ = this._imgLabelService.getThumbnailList;
+    uploadThumbnail = (projectName: string = this.inputProjectName): void => {
+        const uploadType$ = this._dataSetService.localUploadThumbnail(projectName);
+        const uploadStatus$ = this._dataSetService.localUploadStatus(projectName);
+        const thumbnail$ = this._dataSetService.getThumbnailList;
+        let numberOfReq: number = 0;
 
-    //     const returnResponse = <T extends IMessage>({ message }: T): Observable<IThumbnailMetadata> => {
-    //         return message === 1
-    //             ? interval(500).pipe(
-    //                   flatMap(() => uploadStatus$),
-    //                   first(({ message }) => message === 4),
-    //                   mergeMap(({ uuid_list }) =>
-    //                       uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [],
-    //                   ),
-    //                   // * this flatMap responsible for flaten all observable into one layer
-    //                   flatMap((data) => data),
-    //               )
-    //             : message === 5
-    //             ? throwError((err: any) => err)
-    //             : throwError((err: any) => err);
+        const returnResponse = <T extends IMessage>({ message }: T): Observable<IThumbnailMetadata> => {
+            return message !== 5 && message === 1
+                ? interval(500).pipe(
+                      flatMap(() => uploadStatus$),
+                      /** @property {number} message value 4 means upload completed, value 1 means cancelled */
+                      first(({ message }) => {
+                          const isValidResponse: boolean = message === 4 || message === 1;
+                          return isValidResponse;
+                      }),
+                      mergeMap(({ uuid_list, message }) => {
+                          /** @property {number} message if value 4 means client has received uploaded item(s) */
+                          const thumbnails =
+                              message === 4 && uuid_list.length > 0
+                                  ? uuid_list.map((uuid) => thumbnail$(projectName, uuid))
+                                  : [];
+                          this.projectList =
+                              thumbnails.length > 0
+                                  ? { ...this.projectList, isUploading: true }
+                                  : { ...this.projectList, isUploading: false };
+                          numberOfReq = thumbnails.length;
+                          return thumbnails;
+                      }),
+                      // * this flatMap responsible for flaten all observable into one layer
+                      flatMap((data) => data),
+                  )
+                : throwError((error: any) => {
+                      console.error(error);
+                      this.projectList = { ...this.projectList, isUploading: false };
+                      return error;
+                  });
 
-    //         // if (message === 1) {
-    //         //   const uploadTypeResponse = interval(500).pipe(
-    //         //     flatMap(() => uploadStatus$),
-    //         //     first(({ message }) => message === 4),
-    //         //     mergeMap(({ uuid_list }) =>
-    //         //       uuid_list.length > 0
-    //         //         ? uuid_list.map((uuid) => thumbnail$(projectName, uuid))
-    //         //         : []
-    //         //     ),
-    //         //     // * this flatMap responsible for flaten all observable into one layer
-    //         //     flatMap((data) => data)
-    //         //   );
-    //         //   return uploadTypeResponse;
-    //         // }
-    //         // if (message === 5) {
-    //         //   catchError((err) => {
-    //         //     console.error(err);
-    //         //     return of(err);
-    //         //   });
-    //         // }
-    //     };
+            // if (message === 1) {
+            //   const uploadTypeResponse = interval(500).pipe(
+            //     flatMap(() => uploadStatus$),
+            //     first(({ message }) => message === 4),
+            //     mergeMap(({ uuid_list }) =>
+            //       uuid_list.length > 0
+            //         ? uuid_list.map((uuid) => thumbnail$(projectName, uuid))
+            //         : []
+            //     ),
+            //     // * this flatMap responsible for flaten all observable into one layer
+            //     flatMap((data) => data)
+            //   );
+            //   return uploadTypeResponse;
+            // }
+            // if (message === 5) {
+            //   catchError((err) => {
+            //     console.error(err);
+            //     return of(err);
+            //   });
+            // }
+        };
+        this.projectList = { ...this.projectList, isUploading: true };
+        this.subjectSubscription = this.subject$
+            .pipe(
+                first(),
+                flatMap(() => uploadType$),
+                mergeMap((val) => returnResponse(val)),
+            )
+            .subscribe((res) => {
+                numberOfReq = res ? --numberOfReq : numberOfReq;
+                numberOfReq < 1 ? (this.projectList = { ...this.projectList, isUploading: false }) : null;
+            });
 
-    //     this.subjectSubscription = this.subject$
-    //         .pipe(
-    //             first(),
-    //             flatMap(() => uploadType$),
-    //             mergeMap((val) => returnResponse(val)),
-    //         )
-    //         .subscribe(
-    //             (res) => (this.thumbnailList = [...this.thumbnailList, res]),
-    //             (error: Error) => console.error(error),
-    //             () => this.displayModal = false,
-    //         );
-    //     // make initial call
-    //     this.subject$.next();
+        // make initial call
+        this.subject$.next();
 
-    //     // /** @constant uses Array.from due to props 'type' of FileList are type of Iterable  */
-    //     // const arrFiles: File[] = Array.from(files);
-    //     // console.log(arrFiles);
-    //     // const filteredFiles = arrFiles.filter((file) => {
-    //     //   const { type } = file;
-    //     //   const validateFileType =
-    //     //     type && (type === 'image/jpeg' || type === 'image/png') ? file : null;
-    //     //   return validateFileType;
-    //     // });
-    //     // console.log(filteredFiles);
-    // };
+        // /** @constant uses Array.from due to props 'type' of FileList are type of Iterable  */
+        // const arrFiles: File[] = Array.from(files);
+        // console.log(arrFiles);
+        // const filteredFiles = arrFiles.filter((file) => {
+        //   const { type } = file;
+        //   const validateFileType =
+        //     type && (type === 'image/jpeg' || type === 'image/png') ? file : null;
+        //   return validateFileType;
+        // });
+        // console.log(filteredFiles);
+    };
 
     // onProcessLabel = <T extends SelectedLabelProps>({ selectedLabel, label_list, action }: T) => {
     //     // console.log(selectedLabel, label_list, action);
@@ -292,7 +312,10 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 mergeMap(() => updateLabel$),
             )
             .subscribe(({ message }) => {
-                message === 1 ? ((this.projects = [projectName, ...this.projects]), (this.displayModal = false)) : null;
+                message === 1
+                    ? ((this.projectList = { projects: [projectName], ...this.projectList }),
+                      (this.displayModal = false))
+                    : null;
             });
     };
 

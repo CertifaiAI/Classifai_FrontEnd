@@ -63,6 +63,7 @@ export interface IProjectStatus {
 
 export type projectSchema = {
     projects: string[];
+    isUploading: boolean;
 };
 
 /** @type mainly used for passing props with generic type while ability to allow conditional of generic type usage */

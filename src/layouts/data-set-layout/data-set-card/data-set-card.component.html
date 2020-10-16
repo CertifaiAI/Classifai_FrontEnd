@@ -1,17 +1,21 @@
 <div class="card-layout-container scroll">
-    <ng-container *ngFor="let project of _jsonSchema; index as i">
+    <ng-container *ngFor="let project of _jsonSchema.projects; index as i">
         <div class="card-container" (dblclick)="onOpenProject(project)">
             <div class="card-header-style">
                 <div>
-                    <label class="project-status">New</label>
+                    <ng-container *ngIf="i === cardSchema.clickIndex && _jsonSchema.isUploading; else newLabel">
+                        <label class="project-status-uploading"> Uploading </label> </ng-container
+                    ><ng-template #newLabel><label class="project-status-new">New</label> </ng-template>
                 </div>
                 <div class="card-icon-container">
                     <img class="card-icon-style" src="../../../assets/icons/starred.png" />
-                    <div (click)="onDisplayMore(i)">
+                    <div (click)="onDisplayMore($event, i)">
                         <img class="card-icon-style" src="../../../assets/icons/more.png" />
                     </div>
-                    <ng-container *ngIf="i === clickedIndex">
-                        <div class="popup-container"><button>Upload photo</button></div>
+                    <ng-container *ngIf="i === cardSchema.clickIndex">
+                        <div class="popup-container">
+                            <button (click)="onUploadFile(i, project)">Upload photo</button>
+                        </div>
                     </ng-container>
                 </div>
             </div>

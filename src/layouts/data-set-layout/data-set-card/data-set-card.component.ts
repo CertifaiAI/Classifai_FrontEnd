@@ -1,6 +1,9 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { projectSchema } from './../data-set-layout.model';
 
+type CardSchema = {
+    clickIndex: number;
+};
 @Component({
     selector: 'data-set-card',
     templateUrl: './data-set-card.component.html',
@@ -9,7 +12,10 @@ import { projectSchema } from './../data-set-layout.model';
 export class DataSetCardComponent implements OnInit, OnChanges {
     @Input() _jsonSchema!: projectSchema;
     @Output() _onClick: EventEmitter<string> = new EventEmitter();
-    clickedIndex: number = -1;
+    @Output() _onUpload: EventEmitter<string> = new EventEmitter();
+    cardSchema: CardSchema = {
+        clickIndex: -1,
+    };
     // status = 'New';
     // createdDate = '22092020';
     constructor() {}
@@ -17,13 +23,18 @@ export class DataSetCardComponent implements OnInit, OnChanges {
     ngOnInit(): void {}
 
     onOpenProject = (projectName: string): void => {
-        // console.log(projectName);
         this._onClick.emit(projectName);
     };
 
-    onDisplayMore = (index: number): void => {
-        // alert(`${index}`);
-        this.clickedIndex = this.clickedIndex === index ? -1 : index;
+    onUploadFile = (index: number, projectName: string): void => {
+        this.cardSchema = { clickIndex: index };
+        this._onUpload.emit(projectName);
+    };
+
+    onDisplayMore = (event: Event, index: number): void => {
+        event.stopPropagation();
+        const { clickIndex } = this.cardSchema;
+        this.cardSchema = { ...this.cardSchema, clickIndex: clickIndex === index ? -1 : index };
     };
 
     ngOnChanges(changes: SimpleChanges): void {
