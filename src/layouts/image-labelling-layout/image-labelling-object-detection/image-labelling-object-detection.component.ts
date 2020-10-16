@@ -220,7 +220,6 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                     const valuecode: number = this._boundingBoxCanvas.mouseUpDrawEnable(this._selectMetadata);
                 }
                 this.mousedown = false;
-                // this.boundingBoxState.scroll = true;
                 this.rulesOnChange(true, null, null, null, null);
                 this._boundingBoxCanvas.getBBoxDistfromImg(
                     this._selectMetadata.bnd_box,
