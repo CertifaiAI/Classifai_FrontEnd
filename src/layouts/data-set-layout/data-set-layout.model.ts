@@ -1,7 +1,7 @@
 import { FileType } from 'src/shared/type-casting/file-type/file-type.model';
 
 type errormessage = string;
-type content = string[];
+type content = Project[];
 type message = boolean | number;
 type progress = any;
 type label_list = string[];
@@ -63,8 +63,15 @@ export interface IProjectStatus {
 //     fields: Array<IProjectStatus>;
 // };
 
+export type Project = {
+    project_name: string;
+    is_loaded: boolean;
+    starred: boolean;
+    created_date: string;
+};
+
 export type projectSchema = {
-    projects: string[];
+    projects: Project[];
     isUploading: boolean;
 };
 

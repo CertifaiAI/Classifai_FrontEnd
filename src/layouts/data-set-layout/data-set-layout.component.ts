@@ -1,5 +1,11 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { cloneDeep } from 'lodash-es';
 import { DataSetLayoutService } from './data-set-layout.service';
+import { first, flatMap, map, mergeMap, takeUntil } from 'rxjs/operators';
+import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { SpinnerService } from 'src/shared/components/spinner/spinner.service';
 import {
     DataSetProps,
     IMessage,
@@ -7,11 +13,6 @@ import {
     projectSchema,
     UploadThumbnailProps,
 } from './data-set-layout.model';
-import { first, flatMap, map, mergeMap, takeUntil } from 'rxjs/operators';
-import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { SpinnerService } from 'src/shared/components/spinner/spinner.service';
 
 @Component({
     selector: 'data-set-layout',
@@ -49,17 +50,37 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .subscribe((loading) => (this.loading = loading));
 
         this.createFormControls();
-
-        this._dataSetService
-            .getProjectList()
-            .pipe(first())
-            .subscribe(({ content }) => (this.projectList.projects = content)),
-            (error: Error) => {
-                console.error(error);
-            };
+        this.getProjectList();
     }
 
     ngOnInit(): void {}
+
+    getProjectList = (): void => {
+        this._dataSetService
+            .getProjectList()
+            .pipe(first())
+            .subscribe(({ content }) => {
+                const clonedProjectList = cloneDeep(content);
+                const sortedProject = clonedProjectList.sort((a, b) => (b.created_date > a.created_date ? 1 : -1));
+                const formattedProjectList = sortedProject.map((project) => {
+                    const { created_date } = project;
+                    const newProjectList = (project = { ...project, created_date: this.formatDate(created_date) });
+                    return newProjectList;
+                });
+                // console.log(formattedProjectList);
+                this.projectList.projects = [...formattedProjectList];
+            }),
+            (error: Error) => {
+                console.error(error);
+            };
+    };
+
+    formatDate = (date: string): string => {
+        const initializedDate: Date = new Date(date);
+        const newDateFormat: string = `${initializedDate.getMonth()}-${initializedDate.getDate()}-${initializedDate.getFullYear()}`;
+        // console.log(newDateFormat);
+        return newDateFormat;
+    };
 
     createFormControls = (): void => {
         this.form = this._fb.group({
@@ -122,7 +143,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         } else {
             if (this.inputProjectName) {
                 const checkExistProject = this.projectList.projects
-                    ? this.projectList.projects.find((project) => (project ? project === this.inputProjectName : null))
+                    ? this.projectList.projects.find((project) =>
+                          project ? project.project_name === this.inputProjectName : null,
+                      )
                     : null;
                 checkExistProject
                     ? this.form.get('projectName')?.setErrors({ exist: true })
@@ -318,10 +341,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 mergeMap(() => updateLabel$),
             )
             .subscribe(({ message }) => {
-                message === 1
-                    ? ((this.projectList = { projects: [projectName], ...this.projectList }),
-                      (this.displayModal = false))
-                    : null;
+                message === 1 ? (this.getProjectList(), (this.displayModal = false)) : null;
             });
     };
 

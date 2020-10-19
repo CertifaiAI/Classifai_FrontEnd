@@ -15,8 +15,10 @@
                     <ng-container *ngIf="isExactIndex(i)">
                         <span>
                             <div class="popup-container">
-                                <div class="popup-label" (click)="onUploadContent(i, project)">Upload Folder</div>
-                                <div class="popup-label" (click)="onUploadContent(i, project, 'file')">
+                                <div class="popup-label" (click)="onUploadContent(i, project.project_name)">
+                                    Upload Folder
+                                </div>
+                                <div class="popup-label" (click)="onUploadContent(i, project.project_name, 'file')">
                                     Upload Photo(s)
                                 </div>
                             </div>
@@ -25,11 +27,11 @@
                 </div>
             </div>
             <div class="card-title-style">
-                <label class="card-title-txt">Created: </label>
+                <label class="card-title-txt">Created: {{ project.created_date }}</label>
                 <!-- <label class="card-title-txt">Created: {{ project.createdDate }}</label> -->
             </div>
             <div class="project-name-style">
-                <label class="project-name"> {{ project }} </label>
+                <label class="project-name"> {{ project.project_name }} </label>
             </div>
             <!-- <div class="tag-container">
                 <img class="tag-img" src="../../../assets/icons label.png" />

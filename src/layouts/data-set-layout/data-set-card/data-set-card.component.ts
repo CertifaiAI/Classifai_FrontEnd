@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FileType } from 'src/shared/type-casting/file-type/file-type.model';
-import { projectSchema } from './../data-set-layout.model';
+import { Project, projectSchema } from './../data-set-layout.model';
 
 type CardSchema = {
     clickIndex: number;
@@ -27,8 +27,8 @@ export class DataSetCardComponent implements OnInit, OnChanges {
 
     ngOnInit(): void {}
 
-    onOpenProject = (index: number, projectName: string): void => {
-        this.isExactIndex(index) ? null : this._onClick.emit(projectName);
+    onOpenProject = (index: number, { project_name }: Project): void => {
+        this.isExactIndex(index) ? null : this._onClick.emit(project_name);
     };
 
     onUploadContent = (index: number, projectName: string, fileType?: FileType): void => {
