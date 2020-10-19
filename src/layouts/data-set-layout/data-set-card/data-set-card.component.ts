@@ -21,8 +21,6 @@ export class DataSetCardComponent implements OnInit, OnChanges {
     ngOnInit(): void {}
 
     onOpenProject = (index: number, projectName: string): void => {
-        const ss = this.isExactIndex(index);
-        console.log(ss);
         this.isExactIndex(index) ? null : this._onClick.emit(projectName);
     };
 
@@ -31,10 +29,7 @@ export class DataSetCardComponent implements OnInit, OnChanges {
         this._onUpload.emit(projectName);
     };
 
-    onDisplayMore = (event: MouseEvent, index: number): void => {
-        // event.stopImmediatePropagation();
-        /** @function responsible to stop child event fires from bubbling up to fire the similar event of parent element */
-        event.stopPropagation();
+    onDisplayMore = (index: number): void => {
         const { clickIndex } = this.cardSchema;
         this.cardSchema = { clickIndex: clickIndex === index ? -1 : index };
         // console.log(this.cardSchema);
