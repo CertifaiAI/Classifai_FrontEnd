@@ -1,6 +1,6 @@
 @use '../../../shared/scss/_variables.scss' as color;
 @use '../../../shared/scss/_scrollbar.scss' as *;
-
+@use '../../../shared/scss/_ellipsis' as ellipsis;
 $hoverBackground: #393838;
 
 @mixin porject-status($color, $right) {
@@ -110,6 +110,7 @@ $hoverBackground: #393838;
 .project-name {
     color: #dbdbda;
     font-size: 2.5vh;
+    @include ellipsis.ellipsis();
 }
 
 .tag-container {
