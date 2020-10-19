@@ -94,21 +94,6 @@ $hoverBackground: #393838;
     position: relative;
 }
 
-.popup-container {
-    overflow: hidden;
-    position: absolute;
-    margin: 4vh 0 0 -6.5vw;
-    padding: 0.5vw;
-    border-radius: 0.2vw;
-    box-shadow: 0 2px 5px 0 rgba(var(--shadow-rgb), 0.26), 0 2px 10px 0 rgba(var(--shadow-rgb), 0.16);
-    transform-origin: left top;
-    transform: scale(1);
-    opacity: 1;
-    white-space: nowrap;
-    background: white;
-    font-size: 1.5vh;
-}
-
 .card-title-style {
     margin-left: 1vw;
 }
@@ -155,68 +140,99 @@ $hoverBackground: #393838;
     cursor: pointer;
 }
 
-.model-content {
-    background-color: #525353;
-    margin: auto;
-    padding: 1vw;
-    border: solid;
-    max-width: 30vw;
-    min-width: 30vw;
-    border-radius: 1vw;
-    margin-top: 15vh;
-    min-height: 25vh;
-    max-height: 25vh;
-    display: flex;
-    flex-direction: column;
-    margin-left: 34vw;
+//#########################
+//    Start - Modal PopUp
+//#########################
+
+.popup-container {
+    overflow: hidden;
+    position: absolute;
+    margin: 4vh 0 0 -6.5vw;
+    padding: 0.5vw;
+    border-radius: 0.2vw;
+    box-shadow: 0 2px 5px 0 rgba(var(--shadow-rgb), 0.26), 0 2px 10px 0 rgba(var(--shadow-rgb), 0.16);
+    transform-origin: left top;
+    transform: scale(1);
+    opacity: 1;
+    white-space: nowrap;
+    background: white;
+    font-size: 1.5vh;
+    animation: appear 350ms ease-in 1;
 }
 
-.model {
-    position: fixed; /* Stay in place */
-    z-index: 2; /*Sit on top*/
-    padding-top: 10vh; /* Location of the box */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: transparent;
-    scrollbar-width: none;
-    position: fixed;
-    background: rgba(0, 0, 0, 0.7);
+@keyframes appear {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
 }
 
-.upload-img {
-    border: solid;
-    height: 11vh;
-    cursor: pointer;
-    border-radius: 1.5vh;
-    display: flex;
-    align-items: center;
-    padding-left: 29vh;
-}
+//#########################
+//    End - Modal PopUp
+//#########################
 
-.upload-img:hover {
-    background-color: #2e2d2d;
-}
+// .model-content {
+//     background-color: #525353;
+//     margin: auto;
+//     padding: 1vw;
+//     border: solid;
+//     max-width: 30vw;
+//     min-width: 30vw;
+//     border-radius: 1vw;
+//     margin-top: 15vh;
+//     min-height: 25vh;
+//     max-height: 25vh;
+//     display: flex;
+//     flex-direction: column;
+//     margin-left: 34vw;
+// }
 
-.label {
-    cursor: pointer;
-}
+// .model {
+//     position: fixed; /* Stay in place */
+//     z-index: 2; /*Sit on top*/
+//     padding-top: 10vh; /* Location of the box */
+//     left: 0;
+//     top: 0;
+//     width: 100%; /* Full width */
+//     height: 100%; /* Full height */
+//     overflow: auto; /* Enable scroll if needed */
+//     background-color: transparent;
+//     scrollbar-width: none;
+//     position: fixed;
+//     background: rgba(0, 0, 0, 0.7);
+// }
 
-.import-img-btn-container {
-    display: flex;
-}
+// .upload-img {
+//     border: solid;
+//     height: 11vh;
+//     cursor: pointer;
+//     border-radius: 1.5vh;
+//     display: flex;
+//     align-items: center;
+//     padding-left: 29vh;
+// }
 
-.img-btn-style {
-    cursor: pointer;
-}
+// .upload-img:hover {
+//     background-color: #2e2d2d;
+// }
 
-.close-modal {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: -2vh;
-}
+// .label {
+//     cursor: pointer;
+// }
+
+// .import-img-btn-container {
+//     display: flex;
+// }
+
+// .img-btn-style {
+//     cursor: pointer;
+// }
+
+// .close-modal {
+//     display: flex;
+//     justify-content: flex-end;
+//     margin-top: -2vh;
+// }
 
 // .star {
 //     -webkit-filter: grayscale(100%) brightness(120%) sepia(99%) hue-rotate(5deg) saturate(800%) contrast(1);
