@@ -33,7 +33,7 @@ export class DataSetCardComponent implements OnInit, OnChanges {
 
     onDisplayMore = (event: MouseEvent, index: number): void => {
         // event.stopImmediatePropagation();
-        /** @function responsible to stop child event fires from bubbling up to fire the event of parent element */
+        /** @function responsible to stop child event fires from bubbling up to fire the similar event of parent element */
         event.stopPropagation();
         const { clickIndex } = this.cardSchema;
         this.cardSchema = { clickIndex: clickIndex === index ? -1 : index };
