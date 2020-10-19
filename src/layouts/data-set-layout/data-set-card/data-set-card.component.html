@@ -1,6 +1,6 @@
 <div class="card-layout-container scroll">
     <ng-container *ngFor="let project of _jsonSchema.projects; index as i">
-        <div class="card-container" [attr.data-index]="i" (dblclick)="onOpenProject(i, project)">
+        <div class="card-container" [attr.data-index]="i" (click)="onOpenProject(i, project)">
             <div class="card-header-style">
                 <div>
                     <ng-container *ngIf="isExactIndex(i) && _jsonSchema.isUploading; else newLabel">
@@ -9,7 +9,7 @@
                 </div>
                 <div class="card-icon-container">
                     <img class="card-icon-style" src="../../../assets/icons/starred.png" />
-                    <div (click)="onDisplayMore(i)">
+                    <div (click)="onDisplayMore($event, i)">
                         <img class="card-icon-style" src="../../../assets/icons/more.png" />
                     </div>
                     <ng-container *ngIf="isExactIndex(i)">
