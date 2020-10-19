@@ -12,7 +12,6 @@ import { forkJoin, interval, Observable, Subject, Subscription, throwError } fro
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'src/shared/components/spinner/spinner.service';
-import { FileType } from 'src/shared/type-casting/file-type/file-type.model';
 
 @Component({
     selector: 'data-set-layout',
