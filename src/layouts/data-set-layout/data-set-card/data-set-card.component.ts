@@ -1,9 +1,16 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { FileType } from 'src/shared/type-casting/file-type/file-type.model';
 import { projectSchema } from './../data-set-layout.model';
 
 type CardSchema = {
     clickIndex: number;
 };
+
+type Props = {
+    projectName: string;
+    fileType: FileType;
+};
+
 @Component({
     selector: 'data-set-card',
     templateUrl: './data-set-card.component.html',
@@ -12,7 +19,7 @@ type CardSchema = {
 export class DataSetCardComponent implements OnInit, OnChanges {
     @Input() _jsonSchema!: projectSchema;
     @Output() _onClick: EventEmitter<string> = new EventEmitter();
-    @Output() _onUpload: EventEmitter<string> = new EventEmitter();
+    @Output() _onUpload: EventEmitter<Props> = new EventEmitter();
     cardSchema: CardSchema = {
         clickIndex: -1,
     };
@@ -24,9 +31,9 @@ export class DataSetCardComponent implements OnInit, OnChanges {
         this.isExactIndex(index) ? null : this._onClick.emit(projectName);
     };
 
-    onUploadFile = (index: number, projectName: string): void => {
+    onUploadFile = (index: number, projectName: string, fileType?: FileType): void => {
         this.cardSchema = { clickIndex: index };
-        this._onUpload.emit(projectName);
+        this._onUpload.emit({ projectName, fileType: fileType ? fileType : 'folder' });
     };
 
     onDisplayMore = (index: number): void => {

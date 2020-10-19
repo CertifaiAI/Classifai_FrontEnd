@@ -1,3 +1,5 @@
+import { FileType } from 'src/shared/type-casting/file-type/file-type.model';
+
 type errormessage = string;
 type content = string[];
 type message = boolean | number;
@@ -76,3 +78,8 @@ export type DataSetProps<T = undefined> = {} & (T extends undefined
           thumbnailName: string | undefined;
       }
     : T);
+
+export type UploadThumbnailProps = {
+    projectName: string;
+    fileType: FileType;
+};

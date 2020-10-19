@@ -15,7 +15,10 @@
                     <ng-container *ngIf="isExactIndex(i)">
                         <span>
                             <div class="popup-container">
-                                <div (click)="onUploadFile(i, project)">Upload photo</div>
+                                <div class="popup-label" (click)="onUploadFile(i, project)">Upload Folder</div>
+                                <div class="popup-label" (click)="onUploadFile(i, project, 'file')">
+                                    Upload Photo(s)
+                                </div>
                             </div>
                         </span>
                     </ng-container>

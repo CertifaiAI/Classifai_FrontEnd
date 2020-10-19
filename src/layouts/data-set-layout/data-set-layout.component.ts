@@ -1,11 +1,18 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { DataSetLayoutService } from './data-set-layout.service';
-import { DataSetProps, IMessage, IThumbnailMetadata, projectSchema } from './data-set-layout.model';
+import {
+    DataSetProps,
+    IMessage,
+    IThumbnailMetadata,
+    projectSchema,
+    UploadThumbnailProps,
+} from './data-set-layout.model';
 import { first, flatMap, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'src/shared/components/spinner/spinner.service';
+import { FileType } from 'src/shared/type-casting/file-type/file-type.model';
 
 @Component({
     selector: 'data-set-layout',
@@ -186,8 +193,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.subject$.next();
     };
 
-    uploadThumbnail = (projectName: string = this.inputProjectName): void => {
-        const uploadType$ = this._dataSetService.localUploadThumbnail(projectName);
+    uploadThumbnail = <T extends UploadThumbnailProps>({ projectName = this.inputProjectName, fileType }: T): void => {
+        const uploadType$ = this._dataSetService.localUploadThumbnail(projectName, fileType);
         const uploadStatus$ = this._dataSetService.localUploadStatus(projectName);
         const thumbnail$ = this._dataSetService.getThumbnailList;
         let numberOfReq: number = 0;

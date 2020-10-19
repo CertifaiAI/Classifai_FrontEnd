@@ -1,4 +1,5 @@
 import { environment } from 'src/environments/environment.prod';
+import { FileType } from 'src/shared/type-casting/file-type/file-type.model';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -41,7 +42,11 @@ export class DataSetLayoutService {
         );
     };
 
-    localUploadThumbnail = (projectName: string, fileType: string = 'folder'): Observable<IMessage> => {
+    /** @function responsible for returning an Observable of data type IMessage
+     *  @param {string} projectName - your current project name
+     *  @param {string} fileType - default w/o value is 'folder', else have to provide 'file' as value
+     */
+    localUploadThumbnail = (projectName: string, fileType: FileType = 'folder'): Observable<IMessage> => {
         return this.http.get<IMessage>(`${this.hostPort}bndbox/projects/${projectName}/filesys/${fileType}`);
     };
 
