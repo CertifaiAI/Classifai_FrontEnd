@@ -31,7 +31,7 @@ export class DataSetCardComponent implements OnInit, OnChanges {
         this.isExactIndex(index) ? null : this._onClick.emit(projectName);
     };
 
-    onUploadFile = (index: number, projectName: string, fileType?: FileType): void => {
+    onUploadContent = (index: number, projectName: string, fileType?: FileType): void => {
         this.cardSchema = { clickIndex: index };
         this._onUpload.emit({ projectName, fileType: fileType ? fileType : 'folder' });
     };
