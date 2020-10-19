@@ -23,7 +23,7 @@ export class DataSetCardComponent implements OnInit, OnChanges {
     ngOnInit(): void {}
 
     onOpenProject = (index: number, projectName: string): void => {
-        index === this.cardSchema.clickIndex ? null : this._onClick.emit(projectName);
+        this.isExactIndex(index) ? null : this._onClick.emit(projectName);
     };
 
     onUploadFile = (index: number, projectName: string): void => {
@@ -31,13 +31,12 @@ export class DataSetCardComponent implements OnInit, OnChanges {
         this._onUpload.emit(projectName);
     };
 
-    onDisplayMore = (event: Event, index: number): void => {
-        // event.stopImmediatePropagation();
-        event.stopPropagation();
-        event.preventDefault();
+    onDisplayMore = (index: number): void => {
         const { clickIndex } = this.cardSchema;
-        this.cardSchema = { ...this.cardSchema, clickIndex: clickIndex === index ? -1 : index };
+        this.cardSchema = { clickIndex: clickIndex === index ? -1 : index };
     };
+
+    isExactIndex = (index: number): boolean => index === this.cardSchema.clickIndex;
 
     ngOnChanges(changes: SimpleChanges): void {
         // console.log(changes);
