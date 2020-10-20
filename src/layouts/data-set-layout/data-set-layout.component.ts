@@ -77,7 +77,10 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
 
     formatDate = (date: string): string => {
         const initializedDate: Date = new Date(date);
-        const newDateFormat: string = `${initializedDate.getMonth()}-${initializedDate.getDate()}-${initializedDate.getFullYear()}`;
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const actualMonth: string =
+            monthNames.find((month, i) => i - 1 === initializedDate.getMonth() ?? month) || 'Err';
+        const newDateFormat: string = `${actualMonth}-${initializedDate.getDate()}-${initializedDate.getFullYear()}`;
         // console.log(newDateFormat);
         return newDateFormat;
     };
