@@ -177,14 +177,14 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         // );
                         return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
                     } else {
-                        const ThumbnailResponse = interval(500).pipe(
+                        const thumbnailResponse = interval(500).pipe(
                             flatMap(() => streamProjStatus$),
                             first(({ message }) => message === 2),
                             mergeMap(({ uuid_list }) =>
                                 uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [],
                             ),
                         );
-                        return ThumbnailResponse;
+                        return thumbnailResponse;
                     }
                 }),
                 // * this flatMap responsible for flaten all observable into one layer
