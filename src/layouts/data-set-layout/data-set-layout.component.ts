@@ -4,6 +4,7 @@ import { DataSetLayoutService } from './data-set-layout.service';
 import { first, flatMap, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HTMLElementEvent } from 'src/shared/type-casting/field/field.model';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'src/shared/components/spinner/spinner.service';
 import {
@@ -100,13 +101,12 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.displayModal = shown;
     };
 
-    onFileChange = (event: any): void => {
-        const { files }: { files: any[] } = event.target;
+    onFileChange = (event: HTMLElementEvent<HTMLInputElement>): void => {
+        const { files } = event.target;
         const reader = new FileReader();
 
         if (files && files.length) {
-            const [file] = files;
-
+            const file = files.item(0);
             reader.onload = () => {
                 this.form.patchValue({
                     label: reader.result,
@@ -128,7 +128,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 }
             };
             // console.log(file);
-            reader.readAsText(file);
+            file ? reader.readAsText(file) : null;
         }
     };
 
