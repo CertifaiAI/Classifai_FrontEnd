@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./data-set-header.component.scss'],
 })
 export class DataSetHeaderComponent implements OnInit {
-    optionLists: string[] = ['status', 'name', 'date', 'starred'];
+    // optionLists: string[] = ['status', 'name', 'date', 'starred'];
     // jsonSchema!: IconSchema;
 
     constructor() {
@@ -33,7 +33,7 @@ export class DataSetHeaderComponent implements OnInit {
 
     ngOnInit(): void {}
 
-    onSelect = (value: string) => {
-        console.log(value);
-    };
+    // onSelect = (value: string) => {
+    //     console.log(value);
+    // };
 }
