@@ -2,11 +2,12 @@
     <label class="label">Dataset Management</label>
 
     <div class="dataset-icon-container">
-        <ng-container *ngFor="let icon of jsonSchema.icons">
+        <!-- <ng-container *ngFor="let icon of jsonSchema.icons">
             <img class="dataset-icon" [src]="icon.imgPath" [title]="icon.hoverLabel" [alt]="icon.alt" />
-        </ng-container>
+        </ng-container> -->
+        <div></div>
         <select class="dataset-select" #option (change)="onSelect(option.value)">
-            <option *ngFor="let option of optionLists" [value]="option" [selected]="option">
+            <option *ngFor="let option of optionLists" [value]="option">
                 {{ option | titlecase }}
             </option>
         </select>
