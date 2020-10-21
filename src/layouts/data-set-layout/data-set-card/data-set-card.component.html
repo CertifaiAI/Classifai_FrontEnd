@@ -8,16 +8,12 @@
                     ><ng-template #newLabel><label class="project-status-new">New</label> </ng-template>
                 </div>
                 <div class="card-icon-container">
-                    <ng-container *ngIf="project.starred; else notStarred">
-                        <div (click)="onStarred(project, false)">
-                            <img class="card-icon-style" src="../../../assets/icons/starred_active.svg" />
-                        </div>
-                    </ng-container>
-                    <ng-template #notStarred
-                        ><div (click)="onStarred(project, true)">
-                            <img class="card-icon-style" src="../../../assets/icons/starred.svg" />
-                        </div>
-                    </ng-template>
+                    <div (click)="onStarred(project, project.starred ? false : true)">
+                        <img
+                            class="card-icon-style"
+                            [src]="[project.starred ? starredActiveIcon : starredInactiveIcon]"
+                        />
+                    </div>
 
                     <div (click)="onDisplayMore(i)">
                         <img class="card-icon-style" src="../../../assets/icons/more.svg" />
