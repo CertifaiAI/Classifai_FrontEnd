@@ -31,13 +31,13 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
         this.jsonSchema = {
             logosCenter: [
                 {
-                    imgPath: `../../../assets/icons/previous.png`,
+                    imgPath: `../../../assets/icons/previous.svg`,
                     hoverLabel: `Pervious`,
                     alt: `Previous`,
                     onClick: () => this.emitParentEvent({ thumbnailAction: -1 }),
                 },
                 {
-                    imgPath: `../../../assets/icons/next.png`,
+                    imgPath: `../../../assets/icons/next.svg`,
                     hoverLabel: `Next`,
                     alt: `Next`,
                     onClick: () => this.emitParentEvent({ thumbnailAction: 1 }),
@@ -45,22 +45,22 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
             ],
             logosEnd: [
                 {
-                    imgPath: `../../../assets/icons/undo.png`,
+                    imgPath: `../../../assets/icons/undo.svg`,
                     hoverLabel: `Undo`,
                     alt: `Undo`,
                 },
                 {
-                    imgPath: `../../../assets/icons/redo.png`,
+                    imgPath: `../../../assets/icons/redo.svg`,
                     hoverLabel: `Redo`,
                     alt: `Redo`,
                 },
                 {
-                    imgPath: `../../../assets/icons/zoom_in.png`,
+                    imgPath: `../../../assets/icons/zoom_in.svg`,
                     hoverLabel: `Zoom In`,
                     alt: `Zoom In`,
                 },
                 {
-                    imgPath: `../../../assets/icons/zoom_out.png`,
+                    imgPath: `../../../assets/icons/zoom_out.svg`,
                     hoverLabel: `Zoom Out`,
                     alt: `Zoom Out`,
                 },

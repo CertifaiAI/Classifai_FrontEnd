@@ -151,6 +151,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
         try {
             //positive value is scroll down, negative value is scroll up
             let delta = event.deltaY ? event.deltaY / 40 : 0;
+            console.log(delta);
             if (delta && this.boundingBoxState.scroll) {
                 this.zoomImage(delta);
             }

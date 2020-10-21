@@ -8,9 +8,19 @@
                     ><ng-template #newLabel><label class="project-status-new">New</label> </ng-template>
                 </div>
                 <div class="card-icon-container">
-                    <img class="card-icon-style" src="../../../assets/icons/starred.png" />
+                    <ng-container *ngIf="project.starred; else notStarred">
+                        <div (click)="onStarred(project, false)">
+                            <img class="card-icon-style" src="../../../assets/icons/starred_active.svg" />
+                        </div>
+                    </ng-container>
+                    <ng-template #notStarred
+                        ><div (click)="onStarred(project, true)">
+                            <img class="card-icon-style" src="../../../assets/icons/starred.svg" />
+                        </div>
+                    </ng-template>
+
                     <div (click)="onDisplayMore(i)">
-                        <img class="card-icon-style" src="../../../assets/icons/more.png" />
+                        <img class="card-icon-style" src="../../../assets/icons/more.svg" />
                     </div>
                     <ng-container *ngIf="isExactIndex(i)">
                         <span>
@@ -34,7 +44,7 @@
                 <label class="project-name"> {{ project.project_name }} </label>
             </div>
             <!-- <div class="tag-container">
-                <img class="tag-img" src="../../../assets/icons label.png" />
+                <img class="tag-img" src="../../../assets/icons/tag.svg" />
                 <label class="tag-txt">Add tag</label>
             </div> -->
         </div>

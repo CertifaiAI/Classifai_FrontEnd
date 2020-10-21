@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { IconSchema } from 'src/shared/type-casting/icon/icon.model';
 import { ImgLabelProps } from 'src/layouts/image-labelling-layout/image-labelling-layout.model';
+import { Router } from '@angular/router';
 
 type HeaderLabelSchema = {
     name: string;
@@ -16,8 +17,7 @@ type HeaderLabelSchema = {
 export class PageHeaderComponent implements OnInit {
     @Input() _onChange!: ImgLabelProps;
     // @Output() _navigate: EventEmitter<UrlProps> = new EventEmitter();
-    imgRelativePath: string = `../../../assets/icons/`;
-    logoSrc: string = `../../../assets/icons/classifai_logo_dark.png`;
+    logoSrc: string = `../../../assets/icons/classifai_logo_white.svg`;
     jsonSchema!: IconSchema;
     headerLabels: HeaderLabelSchema[] = [
         {
@@ -38,31 +38,41 @@ export class PageHeaderComponent implements OnInit {
         },
     ];
 
-    constructor() {
-        this.bindImagePath();
+    constructor(private _router: Router) {
+        const { url } = _router;
+        this.bindImagePath(url);
     }
 
-    ngOnInit(): void {}
-
-    bindImagePath = () => {
+    bindImagePath = (url: string) => {
         this.jsonSchema = {
-            logos: [
-                {
-                    imgPath: `${this.imgRelativePath}add_user.png`,
-                    hoverLabel: `Add user to project`,
-                    alt: `Add user`,
-                },
-                // {
-                //   imgPath: `${this.imgRelativePath}workspaces.png`,
-                //   hoverLabel: `Workspaces`,
-                //   alt: `Workspaces`,
-                // },
-                // {
-                //   imgPath: `${this.imgRelativePath}upload.png`,
-                //   hoverLabel: `Share / Upload`,
-                //   alt: `Upload`,
-                // },
-            ],
+            logos:
+                url === '/imglabel'
+                    ? [
+                          {
+                              imgPath: `../../../assets/icons/add_user.svg`,
+                              hoverLabel: `Add user to project`,
+                              alt: `Add user`,
+                          },
+                          // {
+                          //     imgPath: `../../../assets/icons/workspaces.svg`,
+                          //     hoverLabel: `Workspaces`,
+                          //     alt: `Workspaces`,
+                          // },
+                          // {
+                          //     imgPath: `../../../assets/icons/upload.svg`,
+                          //     hoverLabel: `Share / Upload`,
+                          //     alt: `Upload`,
+                          // },
+                      ]
+                    : [
+                          {
+                              imgPath: `../../../assets/icons/profile.svg`,
+                              hoverLabel: `Profile`,
+                              alt: `Profile`,
+                          },
+                      ],
         };
     };
+
+    ngOnInit(): void {}
 }

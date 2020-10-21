@@ -1,3 +1,4 @@
+// import { cloneDeep } from 'lodash-es';
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FileType } from 'src/shared/type-casting/file-type/file-type.model';
 import { Project, projectSchema } from './../data-set-layout.model';
@@ -20,10 +21,13 @@ export class DataSetCardComponent implements OnInit, OnChanges {
     @Input() _jsonSchema!: projectSchema;
     @Output() _onClick: EventEmitter<string> = new EventEmitter();
     @Output() _onUpload: EventEmitter<Props> = new EventEmitter();
+    // clonedJsonSchema!: projectSchema;
     cardSchema: CardSchema = {
         clickIndex: -1,
     };
-    constructor() {}
+    constructor() {
+        // this.clonedJsonSchema = cloneDeep(this._jsonSchema);
+    }
 
     ngOnInit(): void {}
 
@@ -40,6 +44,13 @@ export class DataSetCardComponent implements OnInit, OnChanges {
         const { clickIndex } = this.cardSchema;
         this.cardSchema = { clickIndex: clickIndex === index ? -1 : index };
         // console.log(this.cardSchema);
+    };
+
+    onStarred = (project: Project, active: boolean): void => {
+        const { project_name } = project;
+        this._jsonSchema.projects = this._jsonSchema.projects.map((project) =>
+            project.project_name === project_name ? ((project.starred = active), project) : project,
+        );
     };
 
     isExactIndex = (index: number): boolean => index === this.cardSchema.clickIndex;

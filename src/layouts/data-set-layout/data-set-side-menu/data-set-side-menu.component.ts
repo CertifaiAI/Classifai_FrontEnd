@@ -16,19 +16,19 @@ export class DataSetSideMenuComponent implements OnInit {
             name: 'New Project',
         },
         {
-            src: '../../../assets/icons/project.png',
+            src: '../../../assets/icons/project.svg',
             name: 'My Project',
         },
         {
-            src: '../../../assets/icons/starred.png',
+            src: '../../../assets/icons/starred.svg',
             name: 'Starred',
         },
         {
-            src: '../../../assets/icons/history.png',
+            src: '../../../assets/icons/history.svg',
             name: 'Recent',
         },
         {
-            src: '../../../assets/icons/trash.png',
+            src: '../../../assets/icons/trash.svg',
             name: 'Trash',
         },
     ];

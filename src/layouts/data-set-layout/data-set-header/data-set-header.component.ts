@@ -12,21 +12,21 @@ export class DataSetHeaderComponent implements OnInit {
     constructor() {
         // this.jsonSchema = {
         //     icons: [
-        //         // {
-        //         //     imgPath: `../../../assets/icons/list_view.png`,
-        //         //     hoverLabel: `Toggle List View`,
-        //         //     alt: `List`,
-        //         // },
-        //         // {
-        //         //     imgPath: `../../../assets/icons/starred.png`,
-        //         //     hoverLabel: `Filter Starred`,
-        //         //     alt: `Starred`,
-        //         // },
-        //         // {
-        //         //     imgPath: `../../../assets/icons/more.png`,
-        //         //     hoverLabel: `Extra Filter`,
-        //         //     alt: `More`,
-        //         // },
+        //         {
+        //             imgPath: `../../../assets/icons/list_view.svg`,
+        //             hoverLabel: `Toggle List View`,
+        //             alt: `List`,
+        //         },
+        //         {
+        //             imgPath: `../../../assets/icons/starred.svg`,
+        //             hoverLabel: `Filter Starred`,
+        //             alt: `Starred`,
+        //         },
+        //         {
+        //             imgPath: `../../../assets/icons/more.svg`,
+        //             hoverLabel: `Extra Filter`,
+        //             alt: `More`,
+        //         },
         //     ],
         // };
     }
