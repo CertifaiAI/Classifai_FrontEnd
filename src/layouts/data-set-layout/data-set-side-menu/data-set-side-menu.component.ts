@@ -12,7 +12,7 @@ type MenuSchema = {
 export class DataSetSideMenuComponent implements OnInit {
     menuSchema: MenuSchema[] = [
         {
-            src: '../../../assets/icons/add.png',
+            src: '../../../assets/icons/add.svg',
             name: 'New Project',
         },
         {
