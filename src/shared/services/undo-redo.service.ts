@@ -1,4 +1,5 @@
-import { UndoState } from './../../layouts/image-labelling-layout/image-labelling-layout.model';
+import { BoundingBox, Metadata } from './../../classes/CustomType';
+import { UndoState, Polygons, PolyMeta } from './../../layouts/image-labelling-layout/image-labelling-layout.model';
 import { Injectable } from '@angular/core';
 import { utils } from '../../classes/utils';
 
@@ -68,5 +69,94 @@ export class UndoRedoService {
 
     public isAllowUndo() {
         return this.allowUndo;
+    }
+
+    public isMethodChange(currMethod: string): boolean {
+        if (this.CurrentArr[0]?.method !== currMethod) {
+            return true;
+        }
+        return false;
+    }
+
+    public replaceStages(stages: UndoState) {
+        stages ? (this.CurrentArr[0] = this.utility.deepCloneVariable(stages)) : {};
+    }
+
+    public isStateChange(notate: BoundingBox[] | Polygons[] | null): boolean {
+        if (notate === null || notate === undefined) {
+            return false;
+        }
+        if (this.isAnnotationChange(notate) || this.isLabelChange(notate)) {
+            return true;
+        }
+        return false;
+    }
+
+    private isLabelChange(notate: BoundingBox[] | Polygons[] | null): boolean {
+        if ('coorPt' in this.CurrentArr[0]?.meta!) {
+            let polybox: Polygons[] = notate as Polygons[];
+            let comparepolybox: Polygons[] = (this.CurrentArr[0]?.meta as PolyMeta).polygons;
+            if (polybox.length !== comparepolybox.length) {
+                return true;
+            } else {
+                for (var j = 0; j < comparepolybox.length; ++j) {
+                    if (polybox[j].label !== comparepolybox[j].label) {
+                        return true;
+                    }
+                }
+            }
+        } else {
+            let bndbox: BoundingBox[] = notate as BoundingBox[];
+            let comparebndbox: BoundingBox[] = (this.CurrentArr[0]?.meta as Metadata).bnd_box;
+            if (bndbox.length !== comparebndbox.length) {
+                return true;
+            } else {
+                for (var i = 0; i < comparebndbox.length; i++) {
+                    if (bndbox[i].label !== comparebndbox[i].label) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private isAnnotationChange(notate: BoundingBox[] | Polygons[] | null) {
+        if ('coorPt' in this.CurrentArr[0]?.meta!) {
+            let thisPoly: Polygons[] = notate as Polygons[];
+            let comparePoly: Polygons[] = (this.CurrentArr[0]?.meta as PolyMeta).polygons;
+            if (thisPoly.length !== comparePoly.length) {
+                return true;
+            } else {
+                for (var i = 0; i < comparePoly.length; ++i) {
+                    for (var j = 0; j < comparePoly[i].coorPt.length; ++j) {
+                        if (
+                            comparePoly[i].coorPt[j].x !== thisPoly[i].coorPt[j].x ||
+                            comparePoly[i].coorPt[j].y !== thisPoly[i].coorPt[j].y
+                        ) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        } else {
+            let thisbox: BoundingBox[] = notate as BoundingBox[];
+            let comparebox: BoundingBox[] = (this.CurrentArr[0]?.meta as Metadata).bnd_box;
+            if (thisbox.length !== comparebox.length) {
+                return true;
+            } else {
+                for (var i = 0; i < thisbox.length; ++i) {
+                    if (
+                        thisbox[i].x1 !== comparebox[i].x1 ||
+                        thisbox[i].x2 != comparebox[i].x2 ||
+                        thisbox[i].y1 != comparebox[i].y1 ||
+                        thisbox[i].y2 != comparebox[i].y2
+                    ) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

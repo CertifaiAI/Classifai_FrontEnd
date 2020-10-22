@@ -193,5 +193,5 @@ export type PolyMeta = {
     polygons: Polygons[];
 };
 
-export type UndoState = Metadata | PolyMeta | null;
+export type UndoState = { meta: Metadata | PolyMeta | null; method: string } | null;
 export type CopyPasteState = BoundingBox | Polygons | null;

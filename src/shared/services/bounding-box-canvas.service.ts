@@ -73,7 +73,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public moveAllBbox(bbox: BoundingBox[], imgX: number, imgY: number) {
+    public moveAllBbox(bbox: BoundingBox[], imgX: number, imgY: number, callback: Function) {
         try {
             for (var i = 0; i < bbox.length; ++i) {
                 let temRectWidth: number = bbox[i].x2 - bbox[i].x1;
@@ -83,6 +83,7 @@ export class BoundingBoxCanvasService {
                 bbox[i].x2 = this.utility.deepCloneVariable(bbox[i].x1 + temRectWidth);
                 bbox[i].y2 = this.utility.deepCloneVariable(bbox[i].y1 + temRectHeight);
             }
+            callback(true);
         } catch (err) {}
     }
 
@@ -106,6 +107,48 @@ export class BoundingBoxCanvasService {
         } catch (err) {
             return { factor: -1, newX: -1, newY: -1 };
         }
+    }
+
+    public deleteSingleBox(bbox: BoundingBox[], idx: number, callback: Function) {
+        try {
+            bbox.splice(idx, 1);
+            this.currentSelectedBndBox = -1;
+            this.currentClickedBox = { box: -1, pos: 'o' };
+            callback(true);
+        } catch (err) {}
+    }
+
+    public keyboardMoveBox(
+        direct: string,
+        bbox: BoundingBox,
+        imX: number,
+        imY: number,
+        imW: number,
+        imH: number,
+        callback: Function,
+    ) {
+        try {
+            let bboxH: number = bbox.x2 - bbox.x1;
+            let bboxW: number = bbox.y2 - bbox.y1;
+            if (direct === 'up') {
+                this.moveBoxWithinPointPath(imX, imY, imW, imH, 0, -3, bbox)
+                    ? ((bbox.y1 -= 3), (bbox.y2 = this.utility.deepCloneVariable(bbox.y1 + bboxH)))
+                    : {};
+            } else if (direct === 'down') {
+                this.moveBoxWithinPointPath(imX, imY, imW, imH, 0, 3, bbox)
+                    ? ((bbox.y1 += 3), (bbox.y2 = this.utility.deepCloneVariable(bbox.y1 + bboxH)))
+                    : {};
+            } else if (direct === 'left') {
+                this.moveBoxWithinPointPath(imX, imY, imW, imH, -3, 0, bbox)
+                    ? ((bbox.x1 -= 3), (bbox.x2 = this.utility.deepCloneVariable(bbox.x1 + bboxW)))
+                    : {};
+            } else if (direct === 'right') {
+                this.moveBoxWithinPointPath(imX, imY, imW, imH, 3, 0, bbox)
+                    ? ((bbox.x1 += 3), (bbox.x2 = this.utility.deepCloneVariable(bbox.x1 + bboxW)))
+                    : {};
+            }
+            callback(true);
+        } catch (err) {}
     }
 
     private mouseMoveBox(mouseX: number, mouseY: number, currMeta: Metadata): void {
@@ -177,15 +220,12 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public mouseUpDrawEnable(currMeta: Metadata): number {
+    public mouseUpDrawEnable(currMeta: Metadata, callback: Function) {
         try {
-            let drawcode: number = -1;
-            console.log(this.tmpbox);
             if (this.currentClickedBox.box === -1 && this.tmpbox !== null) {
                 currMeta.bnd_box.push(this.tmpbox);
                 this.currentSelectedBndBox = currMeta.bnd_box.length - 1;
                 currMeta.bnd_box[this.currentSelectedBndBox].label = 'default';
-                drawcode = 1;
             } else {
                 if (currMeta.bnd_box[this.currentSelectedBndBox].x1 > currMeta.bnd_box[this.currentSelectedBndBox].x2) {
                     let previousX1: number = this.utility.deepCloneVariable(
@@ -205,20 +245,19 @@ export class BoundingBoxCanvasService {
                     );
                     currMeta.bnd_box[this.currentSelectedBndBox].y2 = previousY1;
                 }
-                drawcode = 0;
             }
             this.currentClickedBox = { box: -1, pos: 'o' };
             this.setCurrentX1Y1(0, 0);
             this.setCurrentX2Y2(0, 0);
             this.tmpbox = null;
-            return drawcode;
+            callback(true);
         } catch (err) {
             console.log('ObjectDetection MouseUpDrawEnable(CurrMeta: Metadata): number', err.name + ': ', err.message);
             return -1;
         }
     }
 
-    public panRectangle(bbox: BoundingBox[], img_X: number, img_Y: number) {
+    public panRectangle(bbox: BoundingBox[], img_X: number, img_Y: number, callback: Function) {
         try {
             for (let i = 0; i < bbox.length; ++i) {
                 let temrectW: number = bbox[i].x2 - bbox[i].x1;
@@ -228,6 +267,7 @@ export class BoundingBoxCanvasService {
                 bbox[i].x2 = bbox[i].x1 + temrectW;
                 bbox[i].y2 = bbox[i].y1 + temrectH;
             }
+            callback(true);
         } catch (err) {
             console.log(
                 'ObjectDetection panRectangle(bbox:Boundingbox[], img_X:number, img_Y:number)',
@@ -237,7 +277,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public scaleAllBoxes(scalefactor: number, boxes: BoundingBox[], imgX: number, imgY: number) {
+    public scaleAllBoxes(scalefactor: number, boxes: BoundingBox[], imgX: number, imgY: number, callback: Function) {
         try {
             for (let i = 0; i < boxes.length; ++i) {
                 console.log(boxes[i]);
@@ -256,6 +296,7 @@ export class BoundingBoxCanvasService {
                 boxes[i].distancetoImg.x = this.utility.deepCloneVariable(newdistancex);
                 boxes[i].distancetoImg.y = this.utility.deepCloneVariable(newdistanceY);
             }
+            callback(true);
         } catch (err) {
             console.log(
                 'ObjectDetection scaleAllBoxes(scalefactor: number,boxes:Boundingbox[],imgX:number,imgY:number)',
