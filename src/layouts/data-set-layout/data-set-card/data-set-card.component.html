@@ -1,27 +1,46 @@
 <div class="card-layout-container scroll">
-    <ng-container *ngFor="let project of _jsonSchema">
-        <div class="card-container" (click)="onOpenProject(project)">
+    <ng-container *ngFor="let project of _jsonSchema.projects; index as i">
+        <div class="card-container" [attr.data-index]="i" (dblclick)="onOpenProject(i, project)">
             <div class="card-header-style">
                 <div>
-                    <label class="project-status">New</label>
+                    <ng-container *ngIf="isExactIndex(i) && _jsonSchema.isUploading; else newLabel">
+                        <label class="project-status-uploading"> Uploading </label> </ng-container
+                    ><ng-template #newLabel><label class="project-status-new">New</label> </ng-template>
                 </div>
-                <div>
-                    <img class="card-icon-style" src="../../../assets/icons/starred.png" />
-                    <!-- <img
-                        class="card-icon-style"
-                        src="../../../assets/icons more.png"
-                    /> -->
+                <div class="card-icon-container">
+                    <div (click)="onStarred(project, project.starred ? false : true)">
+                        <img
+                            class="card-icon-style"
+                            [src]="[project.starred ? starredActiveIcon : starredInactiveIcon]"
+                        />
+                    </div>
+
+                    <div (click)="onDisplayMore(i)">
+                        <img class="card-icon-style" src="../../../assets/icons/more.svg" />
+                    </div>
+                    <ng-container *ngIf="isExactIndex(i)">
+                        <span>
+                            <div class="popup-container">
+                                <div class="popup-label" (click)="onUploadContent(i, project.project_name)">
+                                    Upload Folder
+                                </div>
+                                <div class="popup-label" (click)="onUploadContent(i, project.project_name, 'file')">
+                                    Upload Photo(s)
+                                </div>
+                            </div>
+                        </span>
+                    </ng-container>
                 </div>
             </div>
             <div class="card-title-style">
-                <label class="card-title-txt">Created: </label>
+                <label class="card-title-txt">Created: {{ project.created_date }}</label>
                 <!-- <label class="card-title-txt">Created: {{ project.createdDate }}</label> -->
             </div>
             <div class="project-name-style">
-                <label class="project-name"> {{ project }} </label>
+                <label class="project-name"> {{ project.project_name }} </label>
             </div>
             <!-- <div class="tag-container">
-                <img class="tag-img" src="../../../assets/icons label.png" />
+                <img class="tag-img" src="../../../assets/icons/tag.svg" />
                 <label class="tag-txt">Add tag</label>
             </div> -->
         </div>

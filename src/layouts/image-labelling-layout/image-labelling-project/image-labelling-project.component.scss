@@ -1,5 +1,6 @@
 @use '../../../shared/scss/_variables.scss' as color;
 @use '../../../shared/scss/_scrollbar.scss' as *;
+@use '../../../shared/scss/_ellipsis' as ellipsis;
 
 @mixin tab-after() {
     position: absolute;
@@ -160,6 +161,7 @@
     align-items: center;
     min-height: 5vh;
     max-height: 5vh;
+    cursor: pointer;
 }
 
 .img {
@@ -173,9 +175,7 @@
 
 .img-name {
     margin-left: 0.5vw;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    @include ellipsis.ellipsis();
 }
 
 .closed {
@@ -197,11 +197,9 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     font-size: 1.5vh;
     color: white;
+    @include ellipsis.ellipsis();
 }
 
 .flex-center-width {

@@ -3,7 +3,11 @@
     <data-set-side-menu (_onClick)="toggleModalDisplay($event)"></data-set-side-menu>
     <div>
         <data-set-header></data-set-header>
-        <data-set-card [_jsonSchema]="projects" (_onClick)="onSubmit(false, $event)"></data-set-card>
+        <data-set-card
+            [_jsonSchema]="projectList"
+            (_onClick)="onSubmit(false, $event)"
+            (_onUpload)="uploadThumbnail($event)"
+        ></data-set-card>
     </div>
 </div>
 

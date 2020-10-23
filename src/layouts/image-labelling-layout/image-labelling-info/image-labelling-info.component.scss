@@ -1,3 +1,5 @@
+@use '../../../shared/scss/_ellipsis' as ellipsis;
+
 .header-container {
     min-width: 100vw;
     max-width: 100vw;
@@ -93,9 +95,7 @@
     max-height: inherit;
     position: absolute;
     margin-top: 0.5vh;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    @include ellipsis.ellipsis();
 }
 
 .indicator {

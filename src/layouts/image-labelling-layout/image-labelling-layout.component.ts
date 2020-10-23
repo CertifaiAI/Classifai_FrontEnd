@@ -190,7 +190,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
      */
     @HostListener('window:keydown', ['$event'])
     handleKeyboardEvent(event: KeyboardEvent): void {
-        /**toggle in between move image and draw boxes */
+        /** toggle in between move image and draw boxes */
         if (event.ctrlKey && event.shiftKey) {
             // console.log('success');
             this.onChangeSchema = {
@@ -198,7 +198,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 status: true,
             };
         }
-        /**toggle move image by pixel */
+        /** toggle move image by pixel */
         if (event.ctrlKey && event.altKey) {
             console.log('toggle image by px');
         }
@@ -215,11 +215,11 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         if (event.key === 'Delete') {
             console.log('delete');
         }
-        /**right arrow key */
+        /** right arrow key */
         if (event.key === 'ArrowRight') {
             console.log('right arrow key');
         }
-        /**left arrow key */
+        /** left arrow key */
         if (event.key === 'ArrowLeft') {
             console.log('left arrow key');
         }

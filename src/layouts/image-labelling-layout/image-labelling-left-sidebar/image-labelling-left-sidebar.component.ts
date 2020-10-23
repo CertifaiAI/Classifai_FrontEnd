@@ -34,7 +34,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
         this.jsonSchema = {
             logos: [
                 {
-                    imgPath: `../../../assets/icons/pointer.png`,
+                    imgPath: `../../../assets/icons/pointer.svg`,
                     hoverLabel: `Pointer`,
                     alt: `Pointer`,
                     onClick: (): void => {
@@ -42,7 +42,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     },
                 },
                 {
-                    imgPath: `../../../assets/icons/move.png`,
+                    imgPath: `../../../assets/icons/move.svg`,
                     hoverLabel: `Move Image`,
                     alt: `Move Image`,
                     onClick: (): void => {
@@ -50,7 +50,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     },
                 },
                 {
-                    imgPath: `../../../assets/icons/rec_bounding_box.png`,
+                    imgPath: `../../../assets/icons/rec_bounding_box.svg`,
                     hoverLabel: `Rectangular Bounding Box`,
                     alt: `RectangularBB`,
                     onClick: (): void => {
@@ -58,50 +58,45 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     },
                 },
                 // {
-                //   imgPath: `../../../assets/icons/bounding_box.png`,
+                //   imgPath: `../../../assets/icons/bounding_box.svg`,
                 //   hoverLabel: `Bounding Box`,
                 //   alt: `BoundingBox`,
                 // },
                 // {
-                //     imgPath: `../../../assets/icons/polygon.png`,
+                //     imgPath: `../../../assets/icons/polygon.svg`,
                 //     hoverLabel: `Polygon`,
                 //     alt: `Polygon`,
                 // },
                 // {
-                //   imgPath: `../../../assets/icons/auto_select.png`,
+                //   imgPath: `../../../assets/icons/auto_select.svg`,
                 //   hoverLabel: `Auto Select`,
                 //   alt: `AutoSelect`,
                 // },
                 // {
-                //   imgPath: `../../../assets/icons/brush_segmentation.png`,
+                //   imgPath: `../../../assets/icons/brush_segmentation.svg`,
                 //   hoverLabel: `Brush Segmentation`,
                 //   alt: `BrushSeg`,
                 // },
                 // {
-                //   imgPath: `../../../assets/icons/key_point.png`,
+                //   imgPath: `../../../assets/icons/key_point.svg`,
                 //   hoverLabel: `Key Point`,
                 //   alt: `KeyPoint`,
                 // },
                 {
-                    imgPath: `../../../assets/icons/eraser.png`,
+                    imgPath: `../../../assets/icons/eraser.svg`,
                     hoverLabel: `Eraser`,
                     alt: `Eraser`,
                 },
                 {
-                    imgPath: `../../../assets/icons/fit_center.png`,
+                    imgPath: `../../../assets/icons/fit_center.svg`,
                     hoverLabel: `Fit Center`,
                     alt: `Fit Center`,
                     onClick: (): void => {
                         this._bbState.setState({ draw: true, drag: false, fitCenter: true });
                     },
                 },
-                // {
-                //   imgPath: `../../../assets/icons/move_img_px.png`,
-                //   hoverLabel: `Move Image by Pixel`,
-                //   alt: `Move Image by Pixel`,
-                // },
                 {
-                    imgPath: `../../../assets/icons/save.png`,
+                    imgPath: `../../../assets/icons/save.svg`,
                     hoverLabel: `Save`,
                     alt: `Save`,
                 },

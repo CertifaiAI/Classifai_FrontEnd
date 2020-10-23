@@ -13,8 +13,8 @@
         "component-class-suffix": true,
         "contextual-lifecycle": true,
         "directive-class-suffix": true,
-        "directive-selector": [true, "attribute", "app", "camelCase"],
-        "component-selector": [true, "element", "app", "kebab-case"],
+        "directive-selector": [true, "attribute", "camelCase"],
+        "component-selector": [true, "element", "kebab-case"],
         "eofline": true,
         "import-blacklist": [true, "rxjs/Rx"],
         "import-spacing": true,
@@ -31,16 +31,16 @@
         ],
         "no-console": [true, "debug", "info", "time", "timeEnd", "trace"],
         "no-empty": false,
-        "no-inferrable-types": [true, "ignore-params"],
+        "no-inferrable-types": [false, "ignore-params"],
         "no-non-null-assertion": true,
-        "no-redundant-jsdoc": true,
+        "no-redundant-jsdoc": false,
         "no-switch-case-fall-through": true,
         "no-var-requires": false,
         "object-literal-key-quotes": [true, "as-needed"],
         "only-arrow-functions": true,
         "quotemark": [true, "single"],
         "semicolon": {
-            "options": ["always"]
+            "options": ["always", "ignore-bound-class-methods"]
         },
         "space-before-function-paren": {
             "options": {
@@ -70,7 +70,7 @@
             ]
         },
         "variable-name": {
-            "options": ["ban-keywords", "check-format", "allow-snake-case"]
+            "options": ["ban-keywords", "check-format", "allow-snake-case", "allow-leading-underscore"]
         },
         "whitespace": {
             "options": [
@@ -82,6 +82,8 @@
                 "check-typecast"
             ]
         },
+        "no-unused-expression": false,
+        "no-shadowed-variable": false,
         "no-conflicting-lifecycle": true,
         "no-host-metadata-property": true,
         "no-input-rename": true,

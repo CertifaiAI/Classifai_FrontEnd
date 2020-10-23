@@ -32,7 +32,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
         this.jsonSchema = {
             logos: [
                 {
-                    imgPath: `../../../assets/icons/folder.png`,
+                    imgPath: `../../../assets/icons/folder.svg`,
                     hoverLabel: `Folder / Files`,
                     alt: `Folder`,
                     // inputType: 'file',
@@ -41,19 +41,19 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     onClick: () => this._onClick.emit({ name: 'project', closed: false }),
                 },
                 {
-                    imgPath: `../../../assets/icons/label.png`,
+                    imgPath: `../../../assets/icons/tag.svg`,
                     hoverLabel: `Label`,
                     alt: `Label`,
                     onClick: () => this._onClick.emit({ name: 'label', closed: false }),
                 },
                 {
-                    imgPath: `../../../assets/icons/bounding_box.png`,
+                    imgPath: `../../../assets/icons/bounding_box.svg`,
                     hoverLabel: `Annotation`,
                     alt: `Annotation`,
                     onClick: () => this._onClick.emit({ name: 'annotation', closed: false }),
                 },
                 {
-                    imgPath: `../../../assets/icons/statistic.png`,
+                    imgPath: `../../../assets/icons/statistic.svg`,
                     hoverLabel: `Statistic`,
                     alt: `Statistic`,
                     // onClick: () => this._onClick.emit(null),
