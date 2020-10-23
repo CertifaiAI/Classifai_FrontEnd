@@ -1,4 +1,4 @@
-import { BoundingBoxActionState } from './../image-labelling-layout.model';
+import { BoundingBoxActionState, UndoState } from './../image-labelling-layout.model';
 import { BoundingBoxCanvasService } from '../../../shared/services/bounding-box-canvas.service';
 import { BoundingBoxStateService } from '../../../shared/services/bounding-box-state.service';
 import { CopyPasteService } from '../../../shared/services/copy-paste.service';
@@ -130,10 +130,15 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                 this._selectMetadata.img_y,
                 (isDone: boolean) => {
                     isDone
-                        ? this._undoRedoService.appendStages({
-                              meta: this.utility.deepCloneVariable(this._selectMetadata),
-                              method: 'zoom',
-                          })
+                        ? this._undoRedoService.isMethodChange('zoom')
+                            ? this._undoRedoService.appendStages({
+                                  meta: this.utility.deepCloneVariable(this._selectMetadata),
+                                  method: 'zoom',
+                              })
+                            : this._undoRedoService.replaceStages({
+                                  meta: this.utility.deepCloneVariable(this._selectMetadata),
+                                  method: 'zoom',
+                              })
                         : {};
                 },
             );
@@ -147,7 +152,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
         } catch (err) {}
     }
 
-    @HostListener('keydown', ['$event'])
+    @HostListener('window:keydown', ['$event'])
     keyStrokeEvent(event: KeyboardEvent) {
         try {
             if (!this.mousedown) {
@@ -155,10 +160,36 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                     //copy
                 } else if (event.ctrlKey && (event.key === 'v' || event.key === 'V')) {
                     //paste
+                    this._undoRedoService.appendStages({
+                        meta: this.utility.deepCloneVariable(this._selectMetadata),
+                        method: 'draw',
+                    });
                 } else if (event.ctrlKey && event.shiftKey && (event.key === 'z' || event.key === 'Z')) {
                     //redo
+                    console.log('child redo');
+                    if (this._undoRedoService.isAllowRedo()) {
+                        let rtStages: UndoState = this._undoRedoService.redo();
+                        this._selectMetadata = this.utility.deepCloneVariable(rtStages?.meta as Metadata);
+                        this.redrawImages(
+                            this._selectMetadata.img_x,
+                            this._selectMetadata.img_y,
+                            this._selectMetadata.img_w,
+                            this._selectMetadata.img_h,
+                        );
+                    }
                 } else if (event.ctrlKey && (event.key === 'z' || event.key === 'Z')) {
                     //undo
+                    console.log('child undo');
+                    if (this._undoRedoService.isAllowUndo()) {
+                        let rtStages: UndoState = this._undoRedoService.undo();
+                        this._selectMetadata = this.utility.deepCloneVariable(rtStages?.meta as Metadata);
+                        this.redrawImages(
+                            this._selectMetadata.img_x,
+                            this._selectMetadata.img_y,
+                            this._selectMetadata.img_w,
+                            this._selectMetadata.img_h,
+                        );
+                    }
                 } else if (event.key === 'Delete' || event.key === 'Backspace') {
                     //delete single annotation
                     this._boundingBoxCanvas.deleteSingleBox(
@@ -192,6 +223,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     @HostListener('dblclick', ['$event'])
     toggleEvent(event: MouseEvent) {
         try {
+            this._undoRedoService.clearRedundantStages();
             this.rulesOnChange(null, null, null, null, true);
         } catch (err) {}
     }
@@ -252,6 +284,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     @HostListener('mouseup', ['$event'])
     mouseUp(event: MouseEvent) {
         try {
+            console.log(event.detail);
             if (
                 this._boundingBoxCanvas.mouseClickWithinPointPath(
                     this._selectMetadata.img_x,
@@ -268,10 +301,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                 if (this.boundingBoxState.draw && this.mousedown) {
                     this._boundingBoxCanvas.mouseUpDrawEnable(this._selectMetadata, (isDone: boolean) => {
                         isDone
-                            ? this._undoRedoService.appendStages({
-                                  meta: this.utility.deepCloneVariable(this._selectMetadata),
-                                  method: 'draw',
-                              })
+                            ? this._undoRedoService.isStatgeChange(this._selectMetadata.bnd_box)
+                                ? this._undoRedoService.appendStages({
+                                      meta: this.utility.deepCloneVariable(this._selectMetadata),
+                                      method: 'draw',
+                                  })
+                                : {}
                             : {};
                     });
                 }
@@ -314,10 +349,15 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                         this._selectMetadata.img_y,
                         (isDone: boolean) => {
                             isDone
-                                ? this._undoRedoService.appendStages({
-                                      meta: this.utility.deepCloneVariable(this._selectMetadata),
-                                      method: 'pan',
-                                  })
+                                ? this._undoRedoService.isMethodChange('pan')
+                                    ? this._undoRedoService.appendStages({
+                                          meta: this.utility.deepCloneVariable(this._selectMetadata),
+                                          method: 'pan',
+                                      })
+                                    : this._undoRedoService.replaceStages({
+                                          meta: this.utility.deepCloneVariable(this._selectMetadata),
+                                          method: 'pan',
+                                      })
                                 : {};
                         },
                     );

@@ -19,7 +19,7 @@ export class UndoRedoService {
 
     public appendStages(stages: UndoState): void {
         if (stages && stages !== null) {
-            this.UndoArr = [];
+            this.RedoArr = [];
             this.allowRedo = false;
             this.CurrentArr.length === 0
                 ? this.CurrentArr.push(this.utility.deepCloneVariable(stages))
@@ -63,6 +63,18 @@ export class UndoRedoService {
         return tmpStages;
     }
 
+    public clearRedundantStages() {
+        if ('Polygons' in this.CurrentArr[0]?.meta!) {
+        } else {
+            if (this.UndoArr.length > 0) {
+                let last2Stages: boolean = this.isStatgeChange(
+                    (this.UndoArr[this.UndoArr.length - 1]?.meta as Metadata).bnd_box,
+                );
+                last2Stages ? (this.CurrentArr.pop(), this.CurrentArr.push(this.UndoArr.pop()!)) : {};
+            }
+        }
+    }
+
     public isAllowRedo() {
         return this.allowRedo;
     }
@@ -82,7 +94,7 @@ export class UndoRedoService {
         stages ? (this.CurrentArr[0] = this.utility.deepCloneVariable(stages)) : {};
     }
 
-    public isStateChange(notate: BoundingBox[] | Polygons[] | null): boolean {
+    public isStatgeChange(notate: BoundingBox[] | Polygons[] | null): boolean {
         if (notate === null || notate === undefined) {
             return false;
         }
@@ -93,7 +105,7 @@ export class UndoRedoService {
     }
 
     private isLabelChange(notate: BoundingBox[] | Polygons[] | null): boolean {
-        if ('coorPt' in this.CurrentArr[0]?.meta!) {
+        if ('Polygons' in this.CurrentArr[0]?.meta!) {
             let polybox: Polygons[] = notate as Polygons[];
             let comparepolybox: Polygons[] = (this.CurrentArr[0]?.meta as PolyMeta).polygons;
             if (polybox.length !== comparepolybox.length) {
@@ -122,7 +134,7 @@ export class UndoRedoService {
     }
 
     private isAnnotationChange(notate: BoundingBox[] | Polygons[] | null) {
-        if ('coorPt' in this.CurrentArr[0]?.meta!) {
+        if ('Polygons' in this.CurrentArr[0]?.meta!) {
             let thisPoly: Polygons[] = notate as Polygons[];
             let comparePoly: Polygons[] = (this.CurrentArr[0]?.meta as PolyMeta).polygons;
             if (thisPoly.length !== comparePoly.length) {

@@ -202,11 +202,15 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         if (event.ctrlKey && event.altKey) {
             console.log('toggle image by px');
         }
-        /**undo */
-        if ((event.ctrlKey || event.metaKey) && event.key === 'z') {
-            /**todo */
-            console.log('undo test');
-        }
+        // /**undo */
+        // if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'Z')) {
+        //     /**todo */
+        //     console.log('parent undo');
+        // }
+        // /** redo*/
+        // if(event.shiftKey && (event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'Z')){
+        //     console.log('parent redo');
+        // }
         /**delete */
         if (event.key === 'Delete') {
             console.log('delete');
