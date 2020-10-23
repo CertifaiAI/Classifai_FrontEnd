@@ -41,7 +41,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     onClick: () => this._onClick.emit({ name: 'project', closed: false }),
                 },
                 {
-                    imgPath: `../../../assets/icons/label.svg`,
+                    imgPath: `../../../assets/icons/tag.svg`,
                     hoverLabel: `Label`,
                     alt: `Label`,
                     onClick: () => this._onClick.emit({ name: 'label', closed: false }),
