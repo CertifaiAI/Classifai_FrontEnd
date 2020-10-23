@@ -2,9 +2,9 @@ import { BoundingBoxActionState, UndoState } from './../image-labelling-layout.m
 import { BoundingBoxCanvasService } from '../../../shared/services/bounding-box-canvas.service';
 import { BoundingBoxStateService } from '../../../shared/services/bounding-box-state.service';
 import { CopyPasteService } from '../../../shared/services/copy-paste.service';
-import { Metadata } from './../../../classes/CustomType';
+import { Metadata } from '../../../shared/type-casting/meta-data/meta-data';
 import { UndoRedoService } from '../../../shared/services/undo-redo.service';
-import { utils } from './../../../classes/utils';
+import { Utils } from '../../../shared/type-casting/utils/utils';
 import {
     Component,
     OnInit,
@@ -14,6 +14,7 @@ import {
     ElementRef,
     HostListener,
     ChangeDetectionStrategy,
+    OnChanges,
 } from '@angular/core';
 
 @Component({
@@ -22,7 +23,7 @@ import {
     styleUrls: ['./image-labelling-object-detection.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ImageLabellingObjectDetectionComponent implements OnInit {
+export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges {
     @ViewChild('canvasdrawing') mycanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('crossh') crossh!: ElementRef<HTMLDivElement>;
     @ViewChild('crossv') crossv!: ElementRef<HTMLDivElement>;
@@ -30,7 +31,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     private img: HTMLImageElement = new Image();
     private mousedown: boolean = false;
     private boundingBoxState!: BoundingBoxActionState;
-    private utility: utils = new utils();
+    private utility: Utils = new Utils();
     @Input() _selectMetadata!: Metadata;
     @Input() _imgSrc: string = '';
 
@@ -68,15 +69,15 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     rulesOnChange(
         scroll: boolean | null,
         selectbox: number | null,
-        FitToscreen: boolean | null,
+        fitToscreen: boolean | null,
         clearScreen: boolean | null,
         dbClick: boolean | null,
     ) {
         try {
-            let tempRules: BoundingBoxActionState = this.utility.deepCloneVariable(this.boundingBoxState);
+            const tempRules: BoundingBoxActionState = this.utility.deepCloneVariable(this.boundingBoxState);
             scroll !== null ? (tempRules.scroll = scroll) : {};
             selectbox !== null ? (tempRules.selectedBox = selectbox) : {};
-            FitToscreen !== null ? (tempRules.fitCenter = FitToscreen) : {};
+            fitToscreen !== null ? (tempRules.fitCenter = fitToscreen) : {};
             clearScreen !== null ? (tempRules.clear = clearScreen) : {};
             dbClick !== null ? (tempRules.dbClick = dbClick) : {};
             this._bbState.setState(tempRules);
@@ -106,7 +107,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
 
     imgFitToCenter() {
         try {
-            let tmpObj = this._boundingBoxCanvas.calScaleTofitScreen(
+            const tmpObj = this._boundingBoxCanvas.calScaleTofitScreen(
                 this._selectMetadata.img_w,
                 this._selectMetadata.img_h,
                 this.mycanvas.nativeElement.offsetWidth,
@@ -157,18 +158,18 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
         try {
             if (!this.mousedown) {
                 if (event.ctrlKey && (event.key === 'c' || event.key === 'C')) {
-                    //copy
+                    // copy
                 } else if (event.ctrlKey && (event.key === 'v' || event.key === 'V')) {
-                    //paste
+                    // paste
                     this._undoRedoService.appendStages({
                         meta: this.utility.deepCloneVariable(this._selectMetadata),
                         method: 'draw',
                     });
                 } else if (event.ctrlKey && event.shiftKey && (event.key === 'z' || event.key === 'Z')) {
-                    //redo
+                    // redo
                     console.log('child redo');
                     if (this._undoRedoService.isAllowRedo()) {
-                        let rtStages: UndoState = this._undoRedoService.redo();
+                        const rtStages: UndoState = this._undoRedoService.redo();
                         this._selectMetadata = this.utility.deepCloneVariable(rtStages?.meta as Metadata);
                         this.redrawImages(
                             this._selectMetadata.img_x,
@@ -178,10 +179,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                         );
                     }
                 } else if (event.ctrlKey && (event.key === 'z' || event.key === 'Z')) {
-                    //undo
+                    // undo
                     console.log('child undo');
                     if (this._undoRedoService.isAllowUndo()) {
-                        let rtStages: UndoState = this._undoRedoService.undo();
+                        const rtStages: UndoState = this._undoRedoService.undo();
                         this._selectMetadata = this.utility.deepCloneVariable(rtStages?.meta as Metadata);
                         this.redrawImages(
                             this._selectMetadata.img_x,
@@ -191,7 +192,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                         );
                     }
                 } else if (event.key === 'Delete' || event.key === 'Backspace') {
-                    //delete single annotation
+                    // delete single annotation
                     this._boundingBoxCanvas.deleteSingleBox(
                         this._selectMetadata.bnd_box,
                         this.boundingBoxState.selectedBox,
@@ -233,7 +234,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     mouseScroll(event: WheelEvent) {
         try {
             // let delta = event.deltaY ? event.deltaY / 40 : 0;
-            let delta = Math.max(-1, Math.min(1, -event.deltaY || -event.detail));
+            const delta = Math.max(-1, Math.min(1, -event.deltaY || -event.detail));
             if (delta && this.boundingBoxState.scroll) {
                 this.zoomImage(delta);
             }
@@ -262,7 +263,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                     this._boundingBoxCanvas.setPanXY(event.offsetX, event.offsetY);
                 }
                 if (this.boundingBoxState.draw) {
-                    let tmpBox: number = this._boundingBoxCanvas.mouseDownDrawEnable(
+                    const tmpBox: number = this._boundingBoxCanvas.mouseDownDrawEnable(
                         event.offsetX,
                         event.offsetY,
                         this._selectMetadata.bnd_box,
@@ -337,7 +338,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                 )
             ) {
                 if (this.boundingBoxState.drag && this.mousedown) {
-                    let diff: {
+                    const diff: {
                         diffX: number;
                         diffY: number;
                     } = this._boundingBoxCanvas.getdiffXY(event.offsetX, event.offsetY);
@@ -493,7 +494,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
     zoomImage(del: number) {
         try {
             if (del > 0) {
-                //zoom up
+                // zoom up
                 this._selectMetadata.img_w *= 1.1;
                 this._selectMetadata.img_h *= 1.1;
                 this._boundingBoxCanvas.scaleAllBoxes(
@@ -511,7 +512,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit {
                     },
                 );
             } else {
-                //zoom down
+                // zoom down
                 if (this._selectMetadata.img_w * 0.9 > 100 && this._selectMetadata.img_h * 0.9 > 100) {
                     this._selectMetadata.img_w *= 0.9;
                     this._selectMetadata.img_h *= 0.9;

@@ -1,10 +1,9 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { first, takeUntil } from 'rxjs/operators';
 import { ImageLabellingService } from './image-labelling-layout.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from '../../shared/components/spinner/spinner.service';
 import { Subject } from 'rxjs';
-
 import {
     IThumbnailMetadata,
     TabsProps,
@@ -184,46 +183,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             );
         };
     };
-
-    /**
-     * @param {KeyboardEvent} event keyboard keydown
-     */
-    @HostListener('window:keydown', ['$event'])
-    handleKeyboardEvent(event: KeyboardEvent): void {
-        /** toggle in between move image and draw boxes */
-        if (event.ctrlKey && event.shiftKey) {
-            // console.log('success');
-            this.onChangeSchema = {
-                ...this.onChangeSchema,
-                status: true,
-            };
-        }
-        /** toggle move image by pixel */
-        if (event.ctrlKey && event.altKey) {
-            console.log('toggle image by px');
-        }
-        // /**undo */
-        // if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'Z')) {
-        //     /**todo */
-        //     console.log('parent undo');
-        // }
-        // /** redo*/
-        // if(event.shiftKey && (event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'Z')){
-        //     console.log('parent redo');
-        // }
-        /**delete */
-        if (event.key === 'Delete') {
-            console.log('delete');
-        }
-        /** right arrow key */
-        if (event.key === 'ArrowRight') {
-            console.log('right arrow key');
-        }
-        /** left arrow key */
-        if (event.key === 'ArrowLeft') {
-            console.log('left arrow key');
-        }
-    }
 
     ngOnDestroy(): void {
         this.unsubscribe$.next();
