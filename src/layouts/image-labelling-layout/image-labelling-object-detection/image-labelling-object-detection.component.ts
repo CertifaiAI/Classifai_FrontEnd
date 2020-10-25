@@ -2,7 +2,7 @@ import { BoundingBoxActionState, UndoState } from './../image-labelling-layout.m
 import { BoundingBoxCanvasService } from '../../../shared/services/bounding-box-canvas.service';
 import { BoundingBoxStateService } from '../../../shared/services/bounding-box-state.service';
 import { CopyPasteService } from '../../../shared/services/copy-paste.service';
-import { Metadata } from '../../../shared/type-casting/meta-data/meta-data';
+import { Metadata, BoundingBox } from '../../../shared/type-casting/meta-data/meta-data';
 import { UndoRedoService } from '../../../shared/services/undo-redo.service';
 import { Utils } from '../../../shared/type-casting/utils/utils';
 import {
@@ -159,12 +159,25 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             if (!this.mousedown) {
                 if (event.ctrlKey && (event.key === 'c' || event.key === 'C')) {
                     // copy
+                    this.boundingBoxState.selectedBox > -1
+                        ? this._copyPasteService.copy(this._selectMetadata.bnd_box[this.boundingBoxState.selectedBox])
+                        : {};
                 } else if (event.ctrlKey && (event.key === 'v' || event.key === 'V')) {
                     // paste
+                    this._copyPasteService.isAvailable()
+                        ? (this._selectMetadata.bnd_box.push(this._copyPasteService.paste() as BoundingBox),
+                          this.rulesOnChange(null, this._selectMetadata.bnd_box.length - 1, null, null, null),
+                          this._boundingBoxCanvas.getBBoxDistfromImg(
+                              this._selectMetadata.bnd_box,
+                              this._selectMetadata.img_x,
+                              this._selectMetadata.img_y,
+                          ))
+                        : {};
                     this._undoRedoService.appendStages({
                         meta: this.utility.deepCloneVariable(this._selectMetadata),
                         method: 'draw',
                     });
+                    this.mycanvas.nativeElement.focus();
                 } else if (event.ctrlKey && event.shiftKey && (event.key === 'z' || event.key === 'Z')) {
                     // redo
                     console.log('child redo');
@@ -537,6 +550,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     );
                 }
             }
+            this._copyPasteService.isAvailable() ? this._copyPasteService.clear() : {};
             this.redrawImages(
                 this._selectMetadata.img_x,
                 this._selectMetadata.img_y,
