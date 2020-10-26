@@ -17,7 +17,7 @@ export class UndoRedoService {
 
     constructor() {}
 
-    removeLastArray = (arr: UndoState[]): UndoState => arr.slice(-1, 1)[0];
+    removeLastArray = (arr: UndoState[]): UndoState => arr.splice(-1, 1)[0];
 
     public appendStages(stages: UndoState): void {
         if (stages) {

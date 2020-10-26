@@ -18,7 +18,7 @@ export class DataSetLayoutService {
     constructor(private http: HttpClient) {}
 
     getProjectList = (): Observable<IContent> => {
-        return this.http.get<IContent>(`${this.hostPort}bndbox/projects`);
+        return this.http.get<IContent>(`${this.hostPort}bndbox/projects/meta`);
         // .pipe(catchError(this.handleError));
     };
 

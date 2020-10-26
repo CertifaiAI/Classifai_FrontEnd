@@ -1,6 +1,7 @@
 import { BoundingBox, Metadata, xyCoordinate } from '../type-casting/meta-data/meta-data';
 import { Injectable } from '@angular/core';
-import { Utils } from '../type-casting/utils/utils';
+import { cloneDeep } from 'lodash-es';
+import { Utils } from '../../shared/type-casting/utils/utils';
 
 @Injectable({
     providedIn: 'any',
@@ -14,7 +15,6 @@ export class BoundingBoxCanvasService {
     };
     private lineOffset: number = 3;
     private anchrSize: number = 2.5;
-    private utility: Utils = new Utils();
     private currentDrawing: { x1: number; x2: number; y1: number; y2: number } = {
         x1: 0,
         x2: 0,
@@ -23,6 +23,7 @@ export class BoundingBoxCanvasService {
     };
     private tmpbox!: BoundingBox | null;
     private currentSelectedBndBox: number = -1;
+    private utility: Utils = new Utils();
     constructor() {}
 
     public getdiffXY(offsetX: number, offsetY: number): { diffX: number; diffY: number } {
@@ -78,10 +79,10 @@ export class BoundingBoxCanvasService {
             for (const boundingBox of boundingBoxes) {
                 const temRectWidth: number = boundingBox.x2 - boundingBox.x1;
                 const temRectHeight: number = boundingBox.y2 - boundingBox.y1;
-                boundingBox.x1 = this.utility.deepCloneVariable(imgX + boundingBox.distancetoImg.x);
-                boundingBox.y1 = this.utility.deepCloneVariable(imgY + boundingBox.distancetoImg.y);
-                boundingBox.x2 = this.utility.deepCloneVariable(boundingBox.x1 + temRectWidth);
-                boundingBox.y2 = this.utility.deepCloneVariable(boundingBox.y1 + temRectHeight);
+                boundingBox.x1 = cloneDeep(imgX + boundingBox.distancetoImg.x);
+                boundingBox.y1 = cloneDeep(imgY + boundingBox.distancetoImg.y);
+                boundingBox.x2 = cloneDeep(boundingBox.x1 + temRectWidth);
+                boundingBox.y2 = cloneDeep(boundingBox.y1 + temRectHeight);
             }
             callback(true);
         } catch (err) {}
@@ -132,19 +133,19 @@ export class BoundingBoxCanvasService {
             const bBoxW: number = bBox.y2 - bBox.y1;
             if (direct === 'up') {
                 this.moveBoxWithinPointPath(imX, imY, imW, imH, 0, -3, bBox)
-                    ? ((bBox.y1 -= 3), (bBox.y2 = this.utility.deepCloneVariable(bBox.y1 + bBoxH)))
+                    ? ((bBox.y1 -= 3), (bBox.y2 = cloneDeep(bBox.y1 + bBoxH)))
                     : {};
             } else if (direct === 'down') {
                 this.moveBoxWithinPointPath(imX, imY, imW, imH, 0, 3, bBox)
-                    ? ((bBox.y1 += 3), (bBox.y2 = this.utility.deepCloneVariable(bBox.y1 + bBoxH)))
+                    ? ((bBox.y1 += 3), (bBox.y2 = cloneDeep(bBox.y1 + bBoxH)))
                     : {};
             } else if (direct === 'left') {
                 this.moveBoxWithinPointPath(imX, imY, imW, imH, -3, 0, bBox)
-                    ? ((bBox.x1 -= 3), (bBox.x2 = this.utility.deepCloneVariable(bBox.x1 + bBoxW)))
+                    ? ((bBox.x1 -= 3), (bBox.x2 = cloneDeep(bBox.x1 + bBoxW)))
                     : {};
             } else if (direct === 'right') {
                 this.moveBoxWithinPointPath(imX, imY, imW, imH, 3, 0, bBox)
-                    ? ((bBox.x1 += 3), (bBox.x2 = this.utility.deepCloneVariable(bBox.x1 + bBoxW)))
+                    ? ((bBox.x1 += 3), (bBox.x2 = cloneDeep(bBox.x1 + bBoxW)))
                     : {};
             }
             callback(true);
@@ -228,19 +229,15 @@ export class BoundingBoxCanvasService {
                 currMeta.bnd_box[this.currentSelectedBndBox].label = 'default';
             } else {
                 if (currMeta.bnd_box[this.currentSelectedBndBox].x1 > currMeta.bnd_box[this.currentSelectedBndBox].x2) {
-                    const previousX1: number = this.utility.deepCloneVariable(
-                        currMeta.bnd_box[this.currentSelectedBndBox].x1,
-                    );
-                    currMeta.bnd_box[this.currentSelectedBndBox].x1 = this.utility.deepCloneVariable(
+                    const previousX1: number = cloneDeep(currMeta.bnd_box[this.currentSelectedBndBox].x1);
+                    currMeta.bnd_box[this.currentSelectedBndBox].x1 = cloneDeep(
                         currMeta.bnd_box[this.currentSelectedBndBox].x2,
                     );
                     currMeta.bnd_box[this.currentSelectedBndBox].x2 = previousX1;
                 }
                 if (currMeta.bnd_box[this.currentSelectedBndBox].y1 > currMeta.bnd_box[this.currentSelectedBndBox].y2) {
-                    const previousY1: number = this.utility.deepCloneVariable(
-                        currMeta.bnd_box[this.currentSelectedBndBox].y1,
-                    );
-                    currMeta.bnd_box[this.currentSelectedBndBox].y1 = this.utility.deepCloneVariable(
+                    const previousY1: number = cloneDeep(currMeta.bnd_box[this.currentSelectedBndBox].y1);
+                    currMeta.bnd_box[this.currentSelectedBndBox].y1 = cloneDeep(
                         currMeta.bnd_box[this.currentSelectedBndBox].y2,
                     );
                     currMeta.bnd_box[this.currentSelectedBndBox].y2 = previousY1;
@@ -293,14 +290,14 @@ export class BoundingBoxCanvasService {
                 const Y1: number = box.distancetoImg.y * scalefactor + imgY;
                 const X2: number = X1 + newW;
                 const Y2: number = Y1 + newH;
-                box.x1 = this.utility.deepCloneVariable(X1);
-                box.y1 = this.utility.deepCloneVariable(Y1);
-                box.x2 = this.utility.deepCloneVariable(X2);
-                box.y2 = this.utility.deepCloneVariable(Y2);
+                box.x1 = cloneDeep(X1);
+                box.y1 = cloneDeep(Y1);
+                box.x2 = cloneDeep(X2);
+                box.y2 = cloneDeep(Y2);
                 const newdistancex: number = box.x1 - imgX;
                 const newdistanceY: number = box.y1 - imgY;
-                box.distancetoImg.x = this.utility.deepCloneVariable(newdistancex);
-                box.distancetoImg.y = this.utility.deepCloneVariable(newdistanceY);
+                box.distancetoImg.x = cloneDeep(newdistancex);
+                box.distancetoImg.y = cloneDeep(newdistanceY);
             }
             callback(true);
         } catch (err) {
@@ -369,6 +366,10 @@ export class BoundingBoxCanvasService {
             );
             return false;
         }
+    }
+
+    public changeLabel(bbox: BoundingBox, newLabel: string) {
+        bbox && newLabel ? (bbox.label = cloneDeep(newLabel)) : {};
     }
 
     public moveBoxWithinPointPath(
@@ -558,8 +559,8 @@ export class BoundingBoxCanvasService {
             for (const { x1, y1, distancetoImg } of boundingBoxes) {
                 const distX: number = x1 - imgX;
                 const distY: number = y1 - imgY;
-                distancetoImg.x = this.utility.deepCloneVariable(distX);
-                distancetoImg.y = this.utility.deepCloneVariable(distY);
+                distancetoImg.x = cloneDeep(distX);
+                distancetoImg.y = cloneDeep(distY);
             }
         } catch (err) {
             console.log(

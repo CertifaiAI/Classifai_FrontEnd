@@ -6,7 +6,6 @@ const initialValue: BoundingBoxActionState = {
     scroll: true,
     drag: false,
     draw: false,
-    selectedBox: -1,
     fitCenter: false,
     clear: false,
     dbClick: false,
