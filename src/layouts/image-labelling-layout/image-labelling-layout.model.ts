@@ -1,4 +1,4 @@
-import { BoundingBox, Metadata } from '../../classes/CustomType';
+import { BoundingBox, Metadata } from '../../shared/type-casting/meta-data/meta-data';
 
 type errormessage = string;
 type content = string[];
@@ -164,6 +164,7 @@ export type Polygons = {
     regionatt: string;
     sublabel: SubLabels[];
 };
+
 export type Coordinate = {
     x: number;
     y: number;
@@ -172,6 +173,7 @@ export type Coordinate = {
         y: number;
     };
 };
+
 export type SubLabels = {
     label: string;
     regionatt: string;
@@ -193,5 +195,5 @@ export type PolyMeta = {
     polygons: Polygons[];
 };
 
-export type UndoState = Metadata | PolyMeta | null;
+export type UndoState = { meta: Metadata | PolyMeta | null; method: string } | null;
 export type CopyPasteState = BoundingBox | Polygons | null;
