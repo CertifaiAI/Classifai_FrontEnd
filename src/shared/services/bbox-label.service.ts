@@ -3,7 +3,7 @@ import { labelState } from '../../layouts/image-labelling-layout/image-labelling
 import { BehaviorSubject } from 'rxjs';
 
 const initialState: labelState = {
-    label: 'default',
+    label: null,
     selectedAnnotate: -1,
 };
 

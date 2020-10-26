@@ -265,8 +265,9 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('dblclick', ['$event'])
     toggleEvent(event: MouseEvent) {
         try {
-            this._undoRedoService.clearRedundantStages();
-            this.rulesMakeChange(null, null, null, true);
+            this.dynamicLabelState.selectedAnnotate > -1
+                ? (this._undoRedoService.clearRedundantStages(), this.rulesMakeChange(null, null, null, true))
+                : {};
         } catch (err) {}
     }
 
@@ -327,7 +328,6 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('mouseup', ['$event'])
     mouseUp(event: MouseEvent) {
         try {
-            console.log(event.detail);
             if (
                 this._boundingBoxCanvas.mouseClickWithinPointPath(
                     this._selectMetadata.img_x,
