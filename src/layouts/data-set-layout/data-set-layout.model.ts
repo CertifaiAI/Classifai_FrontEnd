@@ -90,3 +90,14 @@ export type UploadThumbnailProps = {
     projectName: string;
     fileType: FileType;
 };
+
+export type StarredProps = {
+    projectName: string;
+    starred: boolean;
+};
+
+export interface IDataSetStatus {
+    error_code: number;
+    message: message;
+    error_message: errormessage;
+}

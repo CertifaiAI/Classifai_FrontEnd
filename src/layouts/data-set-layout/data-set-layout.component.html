@@ -6,6 +6,7 @@
         <data-set-card
             [_jsonSchema]="projectList"
             (_onClick)="onSubmit(false, $event)"
+            (_onStarred)="onStarred($event)"
             (_onUpload)="uploadThumbnail($event)"
         ></data-set-card>
     </div>

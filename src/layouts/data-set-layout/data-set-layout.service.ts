@@ -9,6 +9,7 @@ import {
     ILabelList,
     IThumbnailMetadata,
     IMessageUuidList,
+    IDataSetStatus,
 } from '../data-set-layout/data-set-layout.model';
 
 @Injectable({ providedIn: 'any' })
@@ -59,6 +60,13 @@ export class DataSetLayoutService {
         const checkLabelList: string[] = label_list.length > 0 ? label_list : ['default'];
         return this.http.put<IMessage>(`${this.hostPort}bndbox/projects/${projectName}/newlabels`, {
             label_list: checkLabelList,
+        });
+    };
+
+    updateProjectStatus = (projectName: string, loading: boolean, action: 'star' | 'loading') => {
+        const conditionalEndPoint = action === 'loading' ? 'status' : action;
+        return this.http.put<IDataSetStatus>(`${this.hostPort}bndbox/projects/${projectName}/${conditionalEndPoint}`, {
+            status: loading.toString(),
         });
     };
 }

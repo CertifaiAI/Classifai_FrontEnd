@@ -13,6 +13,7 @@ import {
     IThumbnailMetadata,
     projectSchema,
     UploadThumbnailProps,
+    StarredProps,
 } from './data-set-layout.model';
 
 @Component({
@@ -61,15 +62,17 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .getProjectList()
             .pipe(first())
             .subscribe(({ content }) => {
-                const clonedProjectList = cloneDeep(content);
-                const sortedProject = clonedProjectList.sort((a, b) => (b.created_date > a.created_date ? 1 : -1));
-                const formattedProjectList = sortedProject.map((project) => {
-                    const { created_date } = project;
-                    const newProjectList = (project = { ...project, created_date: this.formatDate(created_date) });
-                    return newProjectList;
-                });
-                // console.log(formattedProjectList);
-                this.projectList.projects = [...formattedProjectList];
+                if (content) {
+                    const clonedProjectList = cloneDeep(content);
+                    const sortedProject = clonedProjectList.sort((a, b) => (b.created_date > a.created_date ? 1 : -1));
+                    const formattedProjectList = sortedProject.map((project) => {
+                        const { created_date } = project;
+                        const newProjectList = (project = { ...project, created_date: this.formatDate(created_date) });
+                        return newProjectList;
+                    });
+                    // console.log(formattedProjectList);
+                    this.projectList.projects = [...formattedProjectList];
+                }
             }),
             (error: Error) => {
                 console.error(error);
@@ -130,6 +133,15 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             // console.log(file);
             file ? reader.readAsText(file) : null;
         }
+    };
+
+    onStarred = <T extends StarredProps>({ projectName, starred }: T) => {
+        this._dataSetService
+            .updateProjectStatus(projectName, starred, 'star')
+            .pipe(first())
+            .subscribe(({ message }) => {
+                console.log(message);
+            });
     };
 
     onSubmit = (isNewProject: boolean, projectName?: string): void => {

@@ -1,13 +1,12 @@
-// import { cloneDeep } from 'lodash-es';
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FileType } from 'src/shared/type-casting/file-type/file-type.model';
-import { Project, projectSchema } from './../data-set-layout.model';
+import { Project, projectSchema, StarredProps } from './../data-set-layout.model';
 
 type CardSchema = {
     clickIndex: number;
 };
 
-type Props = {
+type FileTypeProps = {
     projectName: string;
     fileType: FileType;
 };
@@ -20,7 +19,8 @@ type Props = {
 export class DataSetCardComponent implements OnInit, OnChanges {
     @Input() _jsonSchema!: projectSchema;
     @Output() _onClick: EventEmitter<string> = new EventEmitter();
-    @Output() _onUpload: EventEmitter<Props> = new EventEmitter();
+    @Output() _onUpload: EventEmitter<FileTypeProps> = new EventEmitter();
+    @Output() _onStarred: EventEmitter<StarredProps> = new EventEmitter();
     // clonedJsonSchema!: projectSchema;
     starredActiveIcon: string = `../../../assets/icons/starred_active.svg`;
     starredInactiveIcon: string = `../../../assets/icons/starred.svg`;
@@ -40,24 +40,28 @@ export class DataSetCardComponent implements OnInit, OnChanges {
     onUploadContent = (index: number, projectName: string, fileType?: FileType): void => {
         this.cardSchema = { clickIndex: index };
         this._onUpload.emit({ projectName, fileType: fileType ? fileType : 'folder' });
+        // this.onDisplayMore(index);
     };
 
-    onDisplayMore = (index: number): void => {
+    onDisplayMore = (index: number = this.cardSchema.clickIndex): void => {
         const { clickIndex } = this.cardSchema;
         this.cardSchema = { clickIndex: clickIndex === index ? -1 : index };
         // console.log(this.cardSchema);
     };
 
-    onStarred = (project: Project, active: boolean): void => {
+    onStarred = (project: Project, starred: boolean): void => {
         const { project_name } = project;
         this._jsonSchema.projects = this._jsonSchema.projects.map((project) =>
-            project.project_name === project_name ? ((project.starred = active), project) : project,
+            project.project_name === project_name ? ((project.starred = starred), project) : project,
         );
+        this._onStarred.emit({ projectName: project_name, starred });
     };
 
     isExactIndex = (index: number): boolean => index === this.cardSchema.clickIndex;
 
     ngOnChanges(changes: SimpleChanges): void {
-        // console.log(changes);
+        console.log(changes);
+        const { isUploading }: { isUploading: boolean } = changes._jsonSchema.currentValue;
+        isUploading ? null : this.onDisplayMore();
     }
 }
