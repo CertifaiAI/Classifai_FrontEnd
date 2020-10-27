@@ -113,15 +113,15 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     labelStateOnChange() {
-        this.dynamicLabelState
-            ? (this._boundingBoxCanvas.setCurrentSelectedbBox(cloneDeep(this.dynamicLabelState.selectedAnnotate)),
-              this.dynamicLabelState.label && this.dynamicLabelState.selectedAnnotate > -1
-                  ? this._boundingBoxCanvas.changeLabel(
-                        this._selectMetadata.bnd_box[this.dynamicLabelState.selectedAnnotate],
-                        cloneDeep(this.dynamicLabelState.label!),
-                    )
-                  : {})
-            : {};
+        // this.dynamicLabelState
+        //     ? (this._boundingBoxCanvas.setCurrentSelectedbBox(cloneDeep(this.dynamicLabelState.selectedAnnotate)),
+        //       this.dynamicLabelState.label && this.dynamicLabelState.selectedAnnotate > -1
+        //           ? this._boundingBoxCanvas.changeLabel(
+        //                 this._selectMetadata.bnd_box[this.dynamicLabelState.selectedAnnotate],
+        //                 cloneDeep(this.dynamicLabelState.label!),
+        //             )
+        //           : {})
+        //     : {};
     }
 
     imgFitToCenter() {
@@ -191,7 +191,6 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         ? (this._selectMetadata.bnd_box.push(this._copyPasteService.paste() as BoundingBox),
                           // this.rulesMakeChange(null, this._selectMetadata.bnd_box.length - 1, null, null, null),
                           this.labelStateMakeChange({
-                              label: null,
                               selectedAnnotate: this._selectMetadata.bnd_box.length - 1,
                           }),
                           this._boundingBoxCanvas.getBBoxDistfromImg(
@@ -238,7 +237,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this.dynamicLabelState.selectedAnnotate,
                         (isDone: boolean) => {
                             isDone
-                                ? (this.labelStateMakeChange({ label: null, selectedAnnotate: -1 }),
+                                ? (this.labelStateMakeChange({ selectedAnnotate: -1 }),
                                   /** ? (this.rulesMakeChange(null, -1, null, null, null),*/
                                   this._undoRedoService.appendStages({
                                       meta: cloneDeep(this._selectMetadata),
@@ -311,7 +310,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this._selectMetadata.bnd_box,
                     );
                     // this.rulesMakeChange(null, tmpBox, null, null, null);
-                    this.labelStateMakeChange({ label: null, selectedAnnotate: tmpBox });
+                    this.labelStateMakeChange({ selectedAnnotate: tmpBox });
                     this.redrawImages(
                         this._selectMetadata.img_x,
                         this._selectMetadata.img_y,

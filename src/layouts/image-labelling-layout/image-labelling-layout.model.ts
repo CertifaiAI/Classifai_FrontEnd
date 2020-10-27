@@ -26,7 +26,6 @@ export interface IMessageUuidList {
 export interface IBase64Img {
     message: message;
     img_src: img_src;
-
     errorcode: number;
     errormessage: string;
 }
@@ -179,7 +178,6 @@ export type SubLabels = {
 };
 
 export type labelState = {
-    label: string | null;
     selectedAnnotate: number;
 };
 
