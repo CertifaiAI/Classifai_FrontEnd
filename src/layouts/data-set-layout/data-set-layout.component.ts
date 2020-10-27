@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { cloneDeep } from 'lodash-es';
+import { concatMap, first, flatMap, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { DataSetLayoutService } from './data-set-layout.service';
-import { first, flatMap, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HTMLElementEvent } from 'src/shared/type-casting/field/field.model';
@@ -180,18 +180,37 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     startProject = (projectName: string): void => {
         this.selectedProjectName = projectName;
         // const updateProjStatus$ = this._dataSetService.updateProjectStatus(projectName, true, 'loaded');
-        const streamProj$ = this._dataSetService.checkAutoExistProject(projectName);
-        const streamProjStatus$ = this._dataSetService.checkExistProjectStatus(projectName);
+        const projMetaStatus$ = this._dataSetService.checkProjectStatus(projectName);
+        const updateProjLoadStatus$ = this._dataSetService.updateProjectLoadStatus(projectName);
+        const projLoadingStatus$ = this._dataSetService.checkExistProjectStatus(projectName);
         const thumbnail$ = this._dataSetService.getThumbnailList;
 
         this.subjectSubscription = this.subject$
             .pipe(
                 first(),
-                flatMap(() => forkJoin([streamProj$])),
-                first(([{ message }]) => (message === 1 ? true : false)),
-                flatMap(() => forkJoin([streamProjStatus$])),
-                mergeMap(([{ message, uuid_list, label_list }]) => {
-                    if (message === 2) {
+                flatMap(() => forkJoin([projMetaStatus$])),
+                first(([{ message, content }]) => {
+                    const { is_loaded } = content[0];
+                    return message === 1 && !is_loaded ? true : false;
+                }),
+
+                // first(([{ message: projExistStatus }, { message: projMetaStatus, content }]) => {
+                //     if (projExistStatus === 1 && projMetaStatus === 1) {
+                //         const { is_loaded } = content[0];
+                //         return is_loaded ? false : true;
+                //     }
+                //     return false;
+                // }),
+                // first(([{ message }]) => (message === 1 ? true : false)),
+                // concatMap(([{ message }]) => forkJoin([projMetaStatus$])),
+                // first(([{ message, content }]) => {
+                //     const { is_loaded } = content[0];
+                //     return message === 1 && !is_loaded ? true : false;
+                // }),
+
+                flatMap(([{ message }]) => (!message ? [] : forkJoin([updateProjLoadStatus$, projLoadingStatus$]))),
+                mergeMap(([{ message: updateProjStatus }, { message: loadProjStatus, uuid_list, label_list }]) => {
+                    if (loadProjStatus === 2) {
                         this.labelList = [...label_list];
                         // this.tabStatus = this.tabStatus.map((tab) =>
                         //     tab.label_list ? (tab.label_list = label_list) && tab : tab,
@@ -199,7 +218,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
                     } else {
                         const thumbnailResponse = interval(500).pipe(
-                            flatMap(() => streamProjStatus$),
+                            flatMap(() => projLoadingStatus$),
                             first(({ message }) => message === 2),
                             mergeMap(({ uuid_list }) =>
                                 uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [],
