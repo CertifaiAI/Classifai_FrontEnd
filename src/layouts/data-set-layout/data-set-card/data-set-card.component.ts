@@ -36,8 +36,8 @@ export class DataSetCardComponent implements OnInit, OnChanges {
     conditionalDisableProject = ({ is_loaded }: Project): string | null => (is_loaded ? 'disabled' : null);
 
     onOpenProject = (index: number, { project_name, is_loaded }: Project): void => {
-        // is_loaded ? null : this.isExactIndex(index) ? null : this._onClick.emit(project_name);
-        this.isExactIndex(index) ? null : this._onClick.emit(project_name);
+        is_loaded ? null : this.isExactIndex(index) ? null : this._onClick.emit(project_name);
+        // this.isExactIndex(index) ? null : this._onClick.emit(project_name);
     };
 
     onUploadContent = (index: number, projectName: string, fileType?: FileType): void => {

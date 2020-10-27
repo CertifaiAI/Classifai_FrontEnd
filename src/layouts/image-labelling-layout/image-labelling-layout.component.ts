@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, HostListener } from '@angular/core';
 import { DataSetLayoutService } from '../data-set-layout/data-set-layout.service';
 import { first, takeUntil } from 'rxjs/operators';
 import { ImageLabellingService } from './image-labelling-layout.service';
@@ -186,19 +186,18 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         };
     };
 
+    /** @event fires whenever browser is closing */
+    @HostListener('window:beforeunload', ['$event'])
+    resetProjectStatus = () => {
+        this._dataSetService
+            .manualCloseProject(this.inputProjectName || this.selectedProjectName, 'closed')
+            .pipe(first())
+            .subscribe(({ message }) => {});
+    };
+
     ngOnDestroy(): void {
         this.unsubscribe$.next();
         this.unsubscribe$.complete();
-
-        this._dataSetService
-            .updateProjectStatus(this.inputProjectName || this.selectedProjectName, false, 'loaded')
-            .pipe(first())
-            .subscribe(
-                ({ message }) => {
-                    console.log(message);
-                },
-                (error: Error) => console.error(error),
-                () => {},
-            );
+        this.resetProjectStatus();
     }
 }
