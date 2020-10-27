@@ -1,10 +1,11 @@
-import { BoundingBoxActionState, UndoState } from './../image-labelling-layout.model';
+import { BoundingBoxActionState, UndoState, labelState } from './../image-labelling-layout.model';
 import { BoundingBoxCanvasService } from '../../../shared/services/bounding-box-canvas.service';
 import { BoundingBoxStateService } from '../../../shared/services/bounding-box-state.service';
 import { CopyPasteService } from '../../../shared/services/copy-paste.service';
+import { BboxLabelService } from '../../../shared/services/bbox-label.service';
 import { Metadata, BoundingBox } from '../../../shared/type-casting/meta-data/meta-data';
 import { UndoRedoService } from '../../../shared/services/undo-redo.service';
-import { Utils } from '../../../shared/type-casting/utils/utils';
+import { cloneDeep } from 'lodash-es';
 import {
     Component,
     OnInit,
@@ -31,7 +32,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     private img: HTMLImageElement = new Image();
     private mousedown: boolean = false;
     private boundingBoxState!: BoundingBoxActionState;
-    private utility: Utils = new Utils();
+    private dynamicLabelState!: labelState;
     @Input() _selectMetadata!: Metadata;
     @Input() _imgSrc: string = '';
 
@@ -40,16 +41,20 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         private _bbState: BoundingBoxStateService,
         private _undoRedoService: UndoRedoService,
         private _copyPasteService: CopyPasteService,
+        private _bboxLabelState: BboxLabelService,
     ) {}
 
     ngOnInit() {
         this._bbState.boundingBox$.subscribe(
             (val) => (
                 (this.boundingBoxState = val),
-                this._boundingBoxCanvas.setCurrentSelectedbBox(this.boundingBoxState.selectedBox),
+                // this._boundingBoxCanvas.setCurrentSelectedbBox(this.boundingBoxState.selectedBox),
                 this.isFitCenter(),
                 this.isClearCanvas()
             ),
+        );
+        this._bboxLabelState.labelStaging$.subscribe(
+            (state) => ((this.dynamicLabelState = state), this.labelStateOnChange()),
         );
     }
 
@@ -66,17 +71,19 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         } catch (err) {}
     }
 
-    rulesOnChange(
+    labelStateMakeChange(newState: labelState | null) {
+        newState ? this._bboxLabelState.mutateState(newState) : {};
+    }
+
+    rulesMakeChange(
         scroll: boolean | null,
-        selectbox: number | null,
         fitToscreen: boolean | null,
         clearScreen: boolean | null,
         dbClick: boolean | null,
     ) {
         try {
-            const tempRules: BoundingBoxActionState = this.utility.deepCloneVariable(this.boundingBoxState);
+            const tempRules: BoundingBoxActionState = cloneDeep(this.boundingBoxState);
             scroll !== null ? (tempRules.scroll = scroll) : {};
-            selectbox !== null ? (tempRules.selectedBox = selectbox) : {};
             fitToscreen !== null ? (tempRules.fitCenter = fitToscreen) : {};
             clearScreen !== null ? (tempRules.clear = clearScreen) : {};
             dbClick !== null ? (tempRules.dbClick = dbClick) : {};
@@ -94,7 +101,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                       this._selectMetadata.img_w,
                       this._selectMetadata.img_h,
                   ),
-                  this.rulesOnChange(null, null, null, false, null))
+                  this.rulesMakeChange(null, null, false, null))
                 : {};
         } catch (err) {}
     }
@@ -103,6 +110,18 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         try {
             this.boundingBoxState.fitCenter ? this.imgFitToCenter() : {};
         } catch (err) {}
+    }
+
+    labelStateOnChange() {
+        this.dynamicLabelState
+            ? (this._boundingBoxCanvas.setCurrentSelectedbBox(cloneDeep(this.dynamicLabelState.selectedAnnotate)),
+              this.dynamicLabelState.label && this.dynamicLabelState.selectedAnnotate > -1
+                  ? this._boundingBoxCanvas.changeLabel(
+                        this._selectMetadata.bnd_box[this.dynamicLabelState.selectedAnnotate],
+                        cloneDeep(this.dynamicLabelState.label!),
+                    )
+                  : {})
+            : {};
     }
 
     imgFitToCenter() {
@@ -133,11 +152,11 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     isDone
                         ? this._undoRedoService.isMethodChange('zoom')
                             ? this._undoRedoService.appendStages({
-                                  meta: this.utility.deepCloneVariable(this._selectMetadata),
+                                  meta: cloneDeep(this._selectMetadata),
                                   method: 'zoom',
                               })
                             : this._undoRedoService.replaceStages({
-                                  meta: this.utility.deepCloneVariable(this._selectMetadata),
+                                  meta: cloneDeep(this._selectMetadata),
                                   method: 'zoom',
                               })
                         : {};
@@ -149,7 +168,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 this._selectMetadata.img_w,
                 this._selectMetadata.img_h,
             );
-            this.rulesOnChange(null, null, false, null, null);
+            this.rulesMakeChange(null, false, null, null);
         } catch (err) {}
     }
 
@@ -159,14 +178,22 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             if (!this.mousedown) {
                 if (event.ctrlKey && (event.key === 'c' || event.key === 'C')) {
                     // copy
-                    this.boundingBoxState.selectedBox > -1
-                        ? this._copyPasteService.copy(this._selectMetadata.bnd_box[this.boundingBoxState.selectedBox])
-                        : {};
+                    // this.boundingBoxState.selectedBox > -1
+                    this.dynamicLabelState.selectedAnnotate > -1
+                        ? this._copyPasteService.copy(
+                              this._selectMetadata.bnd_box[this.dynamicLabelState.selectedAnnotate],
+                          )
+                        : // ? this._copyPasteService.copy(this._selectMetadata.bnd_box[this.boundingBoxState.selectedBox])
+                          {};
                 } else if (event.ctrlKey && (event.key === 'v' || event.key === 'V')) {
                     // paste
                     this._copyPasteService.isAvailable()
                         ? (this._selectMetadata.bnd_box.push(this._copyPasteService.paste() as BoundingBox),
-                          this.rulesOnChange(null, this._selectMetadata.bnd_box.length - 1, null, null, null),
+                          // this.rulesMakeChange(null, this._selectMetadata.bnd_box.length - 1, null, null, null),
+                          this.labelStateMakeChange({
+                              label: null,
+                              selectedAnnotate: this._selectMetadata.bnd_box.length - 1,
+                          }),
                           this._boundingBoxCanvas.getBBoxDistfromImg(
                               this._selectMetadata.bnd_box,
                               this._selectMetadata.img_x,
@@ -174,16 +201,15 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                           ))
                         : {};
                     this._undoRedoService.appendStages({
-                        meta: this.utility.deepCloneVariable(this._selectMetadata),
+                        meta: cloneDeep(this._selectMetadata),
                         method: 'draw',
                     });
                     this.mycanvas.nativeElement.focus();
                 } else if (event.ctrlKey && event.shiftKey && (event.key === 'z' || event.key === 'Z')) {
                     // redo
-                    console.log('child redo');
                     if (this._undoRedoService.isAllowRedo()) {
                         const rtStages: UndoState = this._undoRedoService.redo();
-                        this._selectMetadata = this.utility.deepCloneVariable(rtStages?.meta as Metadata);
+                        this._selectMetadata = cloneDeep(rtStages?.meta as Metadata);
                         this.redrawImages(
                             this._selectMetadata.img_x,
                             this._selectMetadata.img_y,
@@ -196,7 +222,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     console.log('child undo');
                     if (this._undoRedoService.isAllowUndo()) {
                         const rtStages: UndoState = this._undoRedoService.undo();
-                        this._selectMetadata = this.utility.deepCloneVariable(rtStages?.meta as Metadata);
+                        this._selectMetadata = cloneDeep(rtStages?.meta as Metadata);
                         this.redrawImages(
                             this._selectMetadata.img_x,
                             this._selectMetadata.img_y,
@@ -208,12 +234,14 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     // delete single annotation
                     this._boundingBoxCanvas.deleteSingleBox(
                         this._selectMetadata.bnd_box,
-                        this.boundingBoxState.selectedBox,
+                        // this.boundingBoxState.selectedBox,
+                        this.dynamicLabelState.selectedAnnotate,
                         (isDone: boolean) => {
                             isDone
-                                ? (this.rulesOnChange(null, -1, null, null, null),
+                                ? (this.labelStateMakeChange({ label: null, selectedAnnotate: -1 }),
+                                  /** ? (this.rulesMakeChange(null, -1, null, null, null),*/
                                   this._undoRedoService.appendStages({
-                                      meta: this.utility.deepCloneVariable(this._selectMetadata),
+                                      meta: cloneDeep(this._selectMetadata),
                                       method: 'draw',
                                   }))
                                 : {};
@@ -237,8 +265,9 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('dblclick', ['$event'])
     toggleEvent(event: MouseEvent) {
         try {
-            this._undoRedoService.clearRedundantStages();
-            this.rulesOnChange(null, null, null, null, true);
+            this.dynamicLabelState.selectedAnnotate > -1
+                ? (this._undoRedoService.clearRedundantStages(), this.rulesMakeChange(null, null, null, true))
+                : {};
         } catch (err) {}
     }
 
@@ -270,7 +299,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 )
             ) {
                 this.mousedown = true;
-                this.rulesOnChange(false, null, null, null, null);
+                this.rulesMakeChange(false, null, null, null);
                 // this.boundingBoxState.scroll = false;
                 if (this.boundingBoxState.drag) {
                     this._boundingBoxCanvas.setPanXY(event.offsetX, event.offsetY);
@@ -281,7 +310,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         event.offsetY,
                         this._selectMetadata.bnd_box,
                     );
-                    this.rulesOnChange(null, tmpBox, null, null, null);
+                    // this.rulesMakeChange(null, tmpBox, null, null, null);
+                    this.labelStateMakeChange({ label: null, selectedAnnotate: tmpBox });
                     this.redrawImages(
                         this._selectMetadata.img_x,
                         this._selectMetadata.img_y,
@@ -298,7 +328,6 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('mouseup', ['$event'])
     mouseUp(event: MouseEvent) {
         try {
-            console.log(event.detail);
             if (
                 this._boundingBoxCanvas.mouseClickWithinPointPath(
                     this._selectMetadata.img_x,
@@ -317,7 +346,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         isDone
                             ? this._undoRedoService.isStatgeChange(this._selectMetadata.bnd_box)
                                 ? this._undoRedoService.appendStages({
-                                      meta: this.utility.deepCloneVariable(this._selectMetadata),
+                                      meta: cloneDeep(this._selectMetadata),
                                       method: 'draw',
                                   })
                                 : {}
@@ -325,7 +354,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     });
                 }
                 this.mousedown = false;
-                this.rulesOnChange(true, null, null, null, null);
+                this.rulesMakeChange(true, null, null, null);
                 this._boundingBoxCanvas.getBBoxDistfromImg(
                     this._selectMetadata.bnd_box,
                     this._selectMetadata.img_x,
@@ -340,68 +369,70 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('mousemove', ['$event'])
     mouseMove(event: MouseEvent) {
         try {
-            if (
-                this._boundingBoxCanvas.mouseClickWithinPointPath(
-                    this._selectMetadata.img_x,
-                    this._selectMetadata.img_y,
-                    this._selectMetadata.img_w,
-                    this._selectMetadata.img_h,
-                    event.offsetX,
-                    event.offsetY,
-                )
-            ) {
-                if (this.boundingBoxState.drag && this.mousedown) {
-                    const diff: {
-                        diffX: number;
-                        diffY: number;
-                    } = this._boundingBoxCanvas.getdiffXY(event.offsetX, event.offsetY);
-                    this._selectMetadata.img_x = diff.diffX;
-                    this._selectMetadata.img_y = diff.diffY;
-                    this._boundingBoxCanvas.panRectangle(
-                        this._selectMetadata.bnd_box,
-                        this._selectMetadata.img_x,
-                        this._selectMetadata.img_y,
-                        (isDone: boolean) => {
-                            isDone
-                                ? this._undoRedoService.isMethodChange('pan')
-                                    ? this._undoRedoService.appendStages({
-                                          meta: this.utility.deepCloneVariable(this._selectMetadata),
-                                          method: 'pan',
-                                      })
-                                    : this._undoRedoService.replaceStages({
-                                          meta: this.utility.deepCloneVariable(this._selectMetadata),
-                                          method: 'pan',
-                                      })
-                                : {};
-                        },
-                    );
-                    this.redrawImages(
-                        this._selectMetadata.img_x,
-                        this._selectMetadata.img_y,
-                        this._selectMetadata.img_w,
-                        this._selectMetadata.img_h,
-                    );
-                }
-                if (this.boundingBoxState.draw && this.mousedown) {
-                    this._boundingBoxCanvas.mouseMoveDrawEnable(event.offsetX, event.offsetY, this._selectMetadata);
-                    this.redrawImages(
-                        this._selectMetadata.img_x,
-                        this._selectMetadata.img_y,
-                        this._selectMetadata.img_w,
-                        this._selectMetadata.img_h,
-                    );
-                }
-            } else {
+            if (this._selectMetadata) {
                 if (
-                    this.crossh.nativeElement.style.zIndex !== '-1' ||
-                    this.crossh.nativeElement.style.visibility !== 'hidden' ||
-                    this.crossv.nativeElement.style.zIndex !== '-1' ||
-                    this.crossv.nativeElement.style.visibility !== 'hidden'
+                    this._boundingBoxCanvas.mouseClickWithinPointPath(
+                        this._selectMetadata.img_x,
+                        this._selectMetadata.img_y,
+                        this._selectMetadata.img_w,
+                        this._selectMetadata.img_h,
+                        event.offsetX,
+                        event.offsetY,
+                    )
                 ) {
-                    this.crossh.nativeElement.style.zIndex = '-1';
-                    this.crossh.nativeElement.style.visibility = 'hidden';
-                    this.crossv.nativeElement.style.zIndex = '-1';
-                    this.crossv.nativeElement.style.visibility = 'hidden';
+                    if (this.boundingBoxState.drag && this.mousedown) {
+                        const diff: {
+                            diffX: number;
+                            diffY: number;
+                        } = this._boundingBoxCanvas.getdiffXY(event.offsetX, event.offsetY);
+                        this._selectMetadata.img_x = diff.diffX;
+                        this._selectMetadata.img_y = diff.diffY;
+                        this._boundingBoxCanvas.panRectangle(
+                            this._selectMetadata.bnd_box,
+                            this._selectMetadata.img_x,
+                            this._selectMetadata.img_y,
+                            (isDone: boolean) => {
+                                isDone
+                                    ? this._undoRedoService.isMethodChange('pan')
+                                        ? this._undoRedoService.appendStages({
+                                              meta: cloneDeep(this._selectMetadata),
+                                              method: 'pan',
+                                          })
+                                        : this._undoRedoService.replaceStages({
+                                              meta: cloneDeep(this._selectMetadata),
+                                              method: 'pan',
+                                          })
+                                    : {};
+                            },
+                        );
+                        this.redrawImages(
+                            this._selectMetadata.img_x,
+                            this._selectMetadata.img_y,
+                            this._selectMetadata.img_w,
+                            this._selectMetadata.img_h,
+                        );
+                    }
+                    if (this.boundingBoxState.draw && this.mousedown) {
+                        this._boundingBoxCanvas.mouseMoveDrawEnable(event.offsetX, event.offsetY, this._selectMetadata);
+                        this.redrawImages(
+                            this._selectMetadata.img_x,
+                            this._selectMetadata.img_y,
+                            this._selectMetadata.img_w,
+                            this._selectMetadata.img_h,
+                        );
+                    }
+                } else {
+                    if (
+                        this.crossh.nativeElement.style.zIndex !== '-1' ||
+                        this.crossh.nativeElement.style.visibility !== 'hidden' ||
+                        this.crossv.nativeElement.style.zIndex !== '-1' ||
+                        this.crossv.nativeElement.style.visibility !== 'hidden'
+                    ) {
+                        this.crossh.nativeElement.style.zIndex = '-1';
+                        this.crossh.nativeElement.style.visibility = 'hidden';
+                        this.crossv.nativeElement.style.zIndex = '-1';
+                        this.crossv.nativeElement.style.visibility = 'hidden';
+                    }
                 }
             }
         } catch (err) {
@@ -421,6 +452,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this._selectMetadata.img_h,
                 );
             }
+            this.mousedown = false;
         } catch (err) {
             console.log('MouseOut(event: MouseEvent)', err.name + ': ', err.message);
         }
@@ -452,7 +484,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this._selectMetadata.img_h,
                 );
                 this._undoRedoService.appendStages({
-                    meta: this.utility.deepCloneVariable(this._selectMetadata),
+                    meta: cloneDeep(this._selectMetadata),
                     method: 'draw',
                 });
                 // this.context?.drawImage(
@@ -472,7 +504,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         try {
             this._boundingBoxCanvas.keyboardMoveBox(
                 direction,
-                this._selectMetadata.bnd_box[this.boundingBoxState.selectedBox],
+                // this._selectMetadata.bnd_box[this.boundingBoxState.selectedBox],
+                this._selectMetadata.bnd_box[this.dynamicLabelState.selectedAnnotate],
                 this._selectMetadata.img_x,
                 this._selectMetadata.img_y,
                 this._selectMetadata.img_w,
@@ -480,7 +513,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 (isDone: boolean) => {
                     isDone
                         ? this._undoRedoService.appendStages({
-                              meta: this.utility.deepCloneVariable(this._selectMetadata),
+                              meta: cloneDeep(this._selectMetadata),
                               method: 'draw',
                           })
                         : {};
@@ -518,7 +551,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     (isDone: boolean) => {
                         isDone
                             ? this._undoRedoService.appendStages({
-                                  meta: this.utility.deepCloneObject(this._selectMetadata),
+                                  meta: cloneDeep(this._selectMetadata),
                                   method: 'zoom',
                               })
                             : {};
@@ -538,11 +571,11 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             isDone
                                 ? this._undoRedoService.isMethodChange('zoom')
                                     ? this._undoRedoService.appendStages({
-                                          meta: this.utility.deepCloneObject(this._selectMetadata),
+                                          meta: cloneDeep(this._selectMetadata),
                                           method: 'zoom',
                                       })
                                     : this._undoRedoService.replaceStages({
-                                          meta: this.utility.deepCloneObject(this._selectMetadata),
+                                          meta: cloneDeep(this._selectMetadata),
                                           method: 'zoom',
                                       })
                                 : {};

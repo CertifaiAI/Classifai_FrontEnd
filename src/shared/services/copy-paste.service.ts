@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { Utils } from '../type-casting/utils/utils';
 
 @Injectable({
-    providedIn: 'root',
+    providedIn: 'any',
 })
 export class CopyPasteService {
     private MEMO: CopyPasteState = null;

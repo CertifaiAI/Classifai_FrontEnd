@@ -149,7 +149,6 @@ export type BoundingBoxActionState = {
     scroll: boolean;
     drag: boolean;
     draw: boolean;
-    selectedBox: number;
     fitCenter: boolean;
     clear: boolean;
     dbClick: boolean;
@@ -177,6 +176,11 @@ export type Coordinate = {
 export type SubLabels = {
     label: string;
     regionatt: string;
+};
+
+export type labelState = {
+    label: string | null;
+    selectedAnnotate: number;
 };
 
 export type PolyMeta = {
