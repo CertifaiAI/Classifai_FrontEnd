@@ -29,8 +29,14 @@ export class DataSetLayoutService {
         });
     };
 
-    checkExistProject = (projectName: string): Observable<IMessage> => {
+    checkAutoExistProject = (projectName: string): Observable<IMessage> => {
         return this.http.get<IMessage>(`${this.hostPort}bndbox/projects/${projectName}`);
+    };
+
+    manualCloseProject = (projectName: string, status: 'closed'): Observable<IMessage> => {
+        return this.http.put<IMessage>(`${this.hostPort}bndbox/projects/${projectName}`, {
+            status,
+        });
     };
 
     checkExistProjectStatus = (projectName: string): Observable<ILabelList> => {

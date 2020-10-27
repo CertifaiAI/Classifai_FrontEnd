@@ -64,13 +64,13 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .subscribe(({ content }) => {
                 if (content) {
                     const clonedProjectList = cloneDeep(content);
-                    const sortedProject = clonedProjectList.sort((a, b) => (b.created_date > a.created_date ? 1 : -1));
-                    const formattedProjectList = sortedProject.map((project) => {
+                    // const sortedProject = clonedProjectList.sort((a, b) => (b.created_date > a.created_date ? 1 : -1));
+                    const formattedProjectList = clonedProjectList.map((project) => {
                         const { created_date } = project;
                         const newProjectList = (project = { ...project, created_date: this.formatDate(created_date) });
                         return newProjectList;
                     });
-                    // console.log(formattedProjectList);
+                    console.log(formattedProjectList);
                     this.projectList.projects = [...formattedProjectList];
                 }
             }),
@@ -173,17 +173,17 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     startProject = (projectName: string): void => {
         this.selectedProjectName = projectName;
         // const updateProjStatus$ = this._dataSetService.updateProjectStatus(projectName, true, 'loaded');
-        const streamProj$ = this._dataSetService.checkExistProject(projectName);
+        const streamProj$ = this._dataSetService.checkAutoExistProject(projectName);
         const streamProjStatus$ = this._dataSetService.checkExistProjectStatus(projectName);
         const thumbnail$ = this._dataSetService.getThumbnailList;
 
         this.subjectSubscription = this.subject$
             .pipe(
                 first(),
-                // flatMap(() => forkJoin([updateProjStatus$])),
-                // first(([{ message }]) => (message === 1 ? true : false)),
-                flatMap(() => forkJoin([streamProj$, streamProjStatus$])),
-                mergeMap(([, { message, uuid_list, label_list }]) => {
+                flatMap(() => forkJoin([streamProj$])),
+                first(([{ message }]) => (message === 1 ? true : false)),
+                flatMap(() => forkJoin([streamProjStatus$])),
+                mergeMap(([{ message, uuid_list, label_list }]) => {
                     if (message === 2) {
                         this.labelList = [...label_list];
                         // this.tabStatus = this.tabStatus.map((tab) =>
