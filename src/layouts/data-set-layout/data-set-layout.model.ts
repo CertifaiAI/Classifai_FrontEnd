@@ -66,7 +66,9 @@ export interface IProjectStatus {
 export type Project = {
     project_name: string;
     is_loaded: boolean;
-    starred: boolean;
+    is_starred: boolean;
+    is_new: boolean;
+    total_uuid: number;
     created_date: string;
 };
 

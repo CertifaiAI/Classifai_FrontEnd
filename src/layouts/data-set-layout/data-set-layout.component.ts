@@ -139,9 +139,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this._dataSetService
             .updateProjectStatus(projectName, starred, 'star')
             .pipe(first())
-            .subscribe(({ message }) => {
-                console.log(message);
-            });
+            .subscribe(({ message }) => console.log(message));
     };
 
     onSubmit = (isNewProject: boolean, projectName?: string): void => {
@@ -173,6 +171,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     startProject = (projectName: string): void => {
+        this.selectedProjectName = projectName;
+        // const updateProjStatus$ = this._dataSetService.updateProjectStatus(projectName, true, 'loaded');
         const streamProj$ = this._dataSetService.checkExistProject(projectName);
         const streamProjStatus$ = this._dataSetService.checkExistProjectStatus(projectName);
         const thumbnail$ = this._dataSetService.getThumbnailList;
@@ -180,6 +180,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.subjectSubscription = this.subject$
             .pipe(
                 first(),
+                // flatMap(() => forkJoin([updateProjStatus$])),
+                // first(([{ message }]) => (message === 1 ? true : false)),
                 flatMap(() => forkJoin([streamProj$, streamProjStatus$])),
                 mergeMap(([, { message, uuid_list, label_list }]) => {
                     if (message === 2) {
@@ -295,10 +297,16 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 flatMap(() => uploadType$),
                 mergeMap((val) => returnResponse(val)),
             )
-            .subscribe((res) => {
-                numberOfReq = res ? --numberOfReq : numberOfReq;
-                numberOfReq < 1 ? (this.projectList = { ...this.projectList, isUploading: false }) : null;
-            });
+            .subscribe(
+                (res) => {
+                    numberOfReq = res ? --numberOfReq : numberOfReq;
+                    numberOfReq < 1 ? (this.projectList = { ...this.projectList, isUploading: false }) : null;
+                },
+                (error: Error) => {},
+                () => {
+                    this.getProjectList();
+                },
+            );
 
         // make initial call
         this.subject$.next();

@@ -1,17 +1,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { DataSetLayoutService } from '../data-set-layout/data-set-layout.service';
 import { first, takeUntil } from 'rxjs/operators';
 import { ImageLabellingService } from './image-labelling-layout.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from '../../shared/components/spinner/spinner.service';
 import { Subject } from 'rxjs';
 import {
+    ImgLabelProps,
     IThumbnailMetadata,
     TabsProps,
-    EventEmitter_Action,
     EventEmitter_Url,
-    ThumbnailMetadataProps,
+    EventEmitter_Action,
     SelectedLabelProps,
-    ImgLabelProps,
+    ThumbnailMetadataProps,
 } from './image-labelling-layout.model';
 
 @Component({
@@ -49,6 +50,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         private _router: Router,
         private _imgLabelService: ImageLabellingService,
         private _spinnerService: SpinnerService,
+        private _dataSetService: DataSetLayoutService,
     ) {}
 
     ngOnInit(): void {
@@ -187,5 +189,16 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.unsubscribe$.next();
         this.unsubscribe$.complete();
+
+        this._dataSetService
+            .updateProjectStatus(this.inputProjectName || this.selectedProjectName, false, 'loaded')
+            .pipe(first())
+            .subscribe(
+                ({ message }) => {
+                    console.log(message);
+                },
+                (error: Error) => console.error(error),
+                () => {},
+            );
     }
 }

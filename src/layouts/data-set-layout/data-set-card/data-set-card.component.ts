@@ -33,7 +33,10 @@ export class DataSetCardComponent implements OnInit, OnChanges {
 
     ngOnInit(): void {}
 
-    onOpenProject = (index: number, { project_name }: Project): void => {
+    conditionalDisableProject = ({ is_loaded }: Project): string | null => (is_loaded ? 'disabled' : null);
+
+    onOpenProject = (index: number, { project_name, is_loaded }: Project): void => {
+        // is_loaded ? null : this.isExactIndex(index) ? null : this._onClick.emit(project_name);
         this.isExactIndex(index) ? null : this._onClick.emit(project_name);
     };
 
@@ -52,7 +55,7 @@ export class DataSetCardComponent implements OnInit, OnChanges {
     onStarred = (project: Project, starred: boolean): void => {
         const { project_name } = project;
         this._jsonSchema.projects = this._jsonSchema.projects.map((project) =>
-            project.project_name === project_name ? ((project.starred = starred), project) : project,
+            project.project_name === project_name ? ((project.is_starred = starred), project) : project,
         );
         this._onStarred.emit({ projectName: project_name, starred });
     };
@@ -60,7 +63,7 @@ export class DataSetCardComponent implements OnInit, OnChanges {
     isExactIndex = (index: number): boolean => index === this.cardSchema.clickIndex;
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log(changes);
+        // console.log(changes);
         const { isUploading }: { isUploading: boolean } = changes._jsonSchema.currentValue;
         isUploading ? null : this.onDisplayMore();
     }

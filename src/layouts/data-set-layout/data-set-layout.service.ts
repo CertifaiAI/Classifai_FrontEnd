@@ -19,7 +19,7 @@ export class DataSetLayoutService {
     constructor(private http: HttpClient) {}
 
     getProjectList = (): Observable<IContent> => {
-        return this.http.get<IContent>(`${this.hostPort}bndbox/projects`);
+        return this.http.get<IContent>(`${this.hostPort}bndbox/projects/meta`);
         // .pipe(catchError(this.handleError));
     };
 
@@ -63,9 +63,14 @@ export class DataSetLayoutService {
         });
     };
 
-    updateProjectStatus = (projectName: string, loading: boolean, action: 'star' | 'loading') => {
-        const conditionalEndPoint = action === 'loading' ? 'status' : action;
+    updateProjectStatus = (
+        projectName: string,
+        loading: boolean,
+        action: 'star' | 'loaded',
+    ): Observable<IDataSetStatus> => {
+        const conditionalEndPoint = action === 'loaded' ? 'status' : action;
         return this.http.put<IDataSetStatus>(`${this.hostPort}bndbox/projects/${projectName}/${conditionalEndPoint}`, {
+            // status: 'true',
             status: loading.toString(),
         });
     };
