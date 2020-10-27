@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { labelState } from '../../layouts/image-labelling-layout/image-labelling-layout.model';
 import { BehaviorSubject } from 'rxjs';
+import { labelState } from '../../layouts/image-labelling-layout/image-labelling-layout.model';
 
 const initialState: labelState = {
     selectedAnnotate: -1,
@@ -9,7 +9,7 @@ const initialState: labelState = {
 @Injectable({
     providedIn: 'any',
 })
-export class BboxLabelService {
+export class AnnotateSelectionService {
     private labelStateSubject = new BehaviorSubject<labelState>(initialState);
     public labelStaging$ = this.labelStateSubject.asObservable();
 
