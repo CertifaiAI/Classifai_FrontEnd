@@ -8,6 +8,7 @@ type label_list = string[];
 type uuid_list = number;
 type img_src = string;
 type error_code = number;
+
 export interface IContent {
     content: content;
     message: message;
