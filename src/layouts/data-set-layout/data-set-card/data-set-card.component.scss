@@ -3,11 +3,11 @@
 @use '../../../shared/scss/_ellipsis' as ellipsis;
 $hoverBackground: #393838;
 
-@mixin porject-status($color, $right) {
+@mixin project-status($color) {
     color: whitesmoke;
     background-color: $color;
     font-size: 1.5vh;
-    padding: 0.3vh $right 0.6vh 1vw;
+    padding: 0.3vh 1.5vw 0.6vh 1vw;
 }
 
 .card-layout-container {
@@ -65,19 +65,19 @@ $hoverBackground: #393838;
 }
 
 .project-status-new {
-    @include porject-status(#f59221, 3.5vw);
+    @include project-status(#f59221);
 }
 
 .project-status-available {
-    @include porject-status(#4bf521, 2.5vw);
+    @include project-status(#4bf521);
 }
 
 .project-status-not-available {
-    @include porject-status(#f52121, 1.5vw);
+    @include project-status(#f52121);
 }
 
 .project-status-uploading {
-    @include porject-status(#f5219d, 2.5vw);
+    @include project-status(#f5219d);
 }
 
 .card-icon-container {

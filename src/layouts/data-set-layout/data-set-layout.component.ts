@@ -92,6 +92,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     createFormControls = (): void => {
         this.form = this._fb.group({
             projectName: ['', Validators.required],
+            fileUpload: [''],
         });
     };
 
@@ -132,6 +133,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             };
             // console.log(file);
             file ? reader.readAsText(file) : null;
+            this.form.get('fileUpload')?.patchValue(file);
         }
     };
 
