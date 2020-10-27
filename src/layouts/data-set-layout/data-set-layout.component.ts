@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { cloneDeep } from 'lodash-es';
 import { DataSetLayoutService } from './data-set-layout.service';
 import { first, flatMap, map, mergeMap, takeUntil } from 'rxjs/operators';
@@ -38,6 +38,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     labelList: string[] = [];
     loading: boolean = false;
     unsubscribe$: Subject<any> = new Subject();
+    @ViewChild('refProjectName') _refProjectName!: ElementRef<HTMLInputElement>;
 
     constructor(
         private _fb: FormBuilder,
@@ -70,7 +71,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         const newProjectList = (project = { ...project, created_date: this.formatDate(created_date) });
                         return newProjectList;
                     });
-                    console.log(formattedProjectList);
+                    // console.log(formattedProjectList);
                     this.projectList.projects = [...formattedProjectList];
                 }
             }),
@@ -101,8 +102,10 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     toggleModalDisplay = (shown: boolean): void => {
-        this.form.reset();
+        shown ? this.form.reset() : null;
         this.displayModal = shown;
+        /** timeOut needed to allow focus due to Angular's templating sys issue / bug */
+        setTimeout(() => this._refProjectName.nativeElement.focus());
     };
 
     onFileChange = (event: HTMLElementEvent<HTMLInputElement>): void => {
@@ -163,11 +166,13 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                       )
                     : null;
                 checkExistProject
-                    ? this.form.get('projectName')?.setErrors({ exist: true })
+                    ? (this.form.get('projectName')?.setErrors({ exist: true }),
+                      this._refProjectName.nativeElement.focus())
                     : (this.createProject(this.inputProjectName),
                       (this.selectedProjectName = this.form.get('projectName')?.value));
             } else {
                 this.form.get('projectName')?.setErrors({ required: true });
+                this._refProjectName.nativeElement.focus();
             }
         }
     };
