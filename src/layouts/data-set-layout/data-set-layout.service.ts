@@ -37,7 +37,7 @@ export class DataSetLayoutService {
         return this.http.get<IContent>(`${this.hostPort}bndbox/projects/${projectName}/meta`);
     };
 
-    manualCloseProject = (projectName: string, status: 'closed'): Observable<IMessage> => {
+    manualCloseProject = (projectName: string, status: 'closed' = 'closed'): Observable<IMessage> => {
         return this.http.put<IMessage>(`${this.hostPort}bndbox/projects/${projectName}`, {
             status,
         });

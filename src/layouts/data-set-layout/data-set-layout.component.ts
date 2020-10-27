@@ -179,7 +179,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
 
     startProject = (projectName: string): void => {
         this.selectedProjectName = projectName;
-        // const updateProjStatus$ = this._dataSetService.updateProjectStatus(projectName, true, 'loaded');
         const projMetaStatus$ = this._dataSetService.checkProjectStatus(projectName);
         const updateProjLoadStatus$ = this._dataSetService.updateProjectLoadStatus(projectName);
         const projLoadingStatus$ = this._dataSetService.checkExistProjectStatus(projectName);
@@ -193,28 +192,11 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     const { is_loaded } = content[0];
                     return message === 1 && !is_loaded ? true : false;
                 }),
-
-                // first(([{ message: projExistStatus }, { message: projMetaStatus, content }]) => {
-                //     if (projExistStatus === 1 && projMetaStatus === 1) {
-                //         const { is_loaded } = content[0];
-                //         return is_loaded ? false : true;
-                //     }
-                //     return false;
-                // }),
-                // first(([{ message }]) => (message === 1 ? true : false)),
-                // concatMap(([{ message }]) => forkJoin([projMetaStatus$])),
-                // first(([{ message, content }]) => {
-                //     const { is_loaded } = content[0];
-                //     return message === 1 && !is_loaded ? true : false;
-                // }),
-
                 flatMap(([{ message }]) => (!message ? [] : forkJoin([updateProjLoadStatus$, projLoadingStatus$]))),
                 mergeMap(([{ message: updateProjStatus }, { message: loadProjStatus, uuid_list, label_list }]) => {
                     if (loadProjStatus === 2) {
                         this.labelList = [...label_list];
-                        // this.tabStatus = this.tabStatus.map((tab) =>
-                        //     tab.label_list ? (tab.label_list = label_list) && tab : tab,
-                        // );
+
                         return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
                     } else {
                         const thumbnailResponse = interval(500).pipe(

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, HostListener } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { DataSetLayoutService } from '../data-set-layout/data-set-layout.service';
 import { first, takeUntil } from 'rxjs/operators';
 import { ImageLabellingService } from './image-labelling-layout.service';
@@ -190,7 +190,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     @HostListener('window:beforeunload', ['$event'])
     resetProjectStatus = () => {
         this._dataSetService
-            .manualCloseProject(this.inputProjectName || this.selectedProjectName, 'closed')
+            .manualCloseProject(this.inputProjectName || this.selectedProjectName)
             .pipe(first())
             .subscribe(({ message }) => {});
     };
