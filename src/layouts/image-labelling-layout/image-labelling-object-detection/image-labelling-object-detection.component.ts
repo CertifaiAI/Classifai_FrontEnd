@@ -1,4 +1,4 @@
-import { BoundingBoxActionState, UndoState, labelState } from './../image-labelling-layout.model';
+import { BoundingBoxActionState, UndoState } from './../image-labelling-layout.model';
 import { BoundingBoxCanvasService } from '../../../shared/services/bounding-box-canvas.service';
 import { BoundingBoxStateService } from '../../../shared/services/bounding-box-state.service';
 import { CopyPasteService } from '../../../shared/services/copy-paste.service';
@@ -32,7 +32,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     private img: HTMLImageElement = new Image();
     private mousedown: boolean = false;
     private boundingBoxState!: BoundingBoxActionState;
-    private annotateState!: labelState;
+    private annotateState!: number;
     @Input() _selectMetadata!: Metadata;
     @Input() _imgSrc: string = '';
 
@@ -71,8 +71,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         } catch (err) {}
     }
 
-    annotateStateMakeChange(newState: labelState | null) {
-        newState ? this._annotateSelectState.mutateState(newState) : {};
+    annotateStateMakeChange(newState: number | null) {
+        newState !== null ? this._annotateSelectState.mutateState(newState) : {};
     }
 
     rulesMakeChange(
@@ -113,9 +113,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     annotateStateOnChange() {
-        this.annotateState
-            ? this._boundingBoxCanvas.setCurrentSelectedbBox(cloneDeep(this.annotateState.selectedAnnotate))
-            : {};
+        this.annotateState ? this._boundingBoxCanvas.setCurrentSelectedbBox(cloneDeep(this.annotateState)) : {};
         // this.annotateState
         //     ? (this._boundingBoxCanvas.setCurrentSelectedbBox(cloneDeep(this.annotateState.selectedAnnotate)),
         //       this.annotateState.label && this.annotateState.selectedAnnotate > -1
@@ -182,8 +180,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 if (event.ctrlKey && (event.key === 'c' || event.key === 'C')) {
                     // copy
                     // this.boundingBoxState.selectedBox > -1
-                    this.annotateState.selectedAnnotate > -1
-                        ? this._copyPasteService.copy(this._selectMetadata.bnd_box[this.annotateState.selectedAnnotate])
+                    this.annotateState > -1
+                        ? this._copyPasteService.copy(this._selectMetadata.bnd_box[this.annotateState])
                         : // ? this._copyPasteService.copy(this._selectMetadata.bnd_box[this.boundingBoxState.selectedBox])
                           {};
                 } else if (event.ctrlKey && (event.key === 'v' || event.key === 'V')) {
@@ -191,9 +189,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this._copyPasteService.isAvailable()
                         ? (this._selectMetadata.bnd_box.push(this._copyPasteService.paste() as BoundingBox),
                           // this.rulesMakeChange(null, this._selectMetadata.bnd_box.length - 1, null, null, null),
-                          this.annotateStateMakeChange({
-                              selectedAnnotate: this._selectMetadata.bnd_box.length - 1,
-                          }),
+                          this.annotateStateMakeChange(this._selectMetadata.bnd_box.length - 1),
                           this._boundingBoxCanvas.getBBoxDistfromImg(
                               this._selectMetadata.bnd_box,
                               this._selectMetadata.img_x,
@@ -235,10 +231,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this._boundingBoxCanvas.deleteSingleBox(
                         this._selectMetadata.bnd_box,
                         // this.boundingBoxState.selectedBox,
-                        this.annotateState.selectedAnnotate,
+                        this.annotateState,
                         (isDone: boolean) => {
                             isDone
-                                ? (this.annotateStateMakeChange({ selectedAnnotate: -1 }),
+                                ? (this.annotateStateMakeChange(-1),
                                   /** ? (this.rulesMakeChange(null, -1, null, null, null),*/
                                   this._undoRedoService.appendStages({
                                       meta: cloneDeep(this._selectMetadata),
@@ -265,7 +261,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('dblclick', ['$event'])
     toggleEvent(event: MouseEvent) {
         try {
-            this.annotateState.selectedAnnotate > -1
+            this.annotateState > -1
                 ? (this._undoRedoService.clearRedundantStages(), this.rulesMakeChange(null, null, null, true))
                 : {};
         } catch (err) {}
@@ -311,7 +307,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this._selectMetadata.bnd_box,
                     );
                     // this.rulesMakeChange(null, tmpBox, null, null, null);
-                    this.annotateStateMakeChange({ selectedAnnotate: tmpBox });
+                    this.annotateStateMakeChange(cloneDeep(tmpBox));
                     this.redrawImages(
                         this._selectMetadata.img_x,
                         this._selectMetadata.img_y,
@@ -342,16 +338,20 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this._boundingBoxCanvas.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
                 }
                 if (this.boundingBoxState.draw && this.mousedown) {
-                    this._boundingBoxCanvas.mouseUpDrawEnable(this._selectMetadata, (isDone: boolean) => {
-                        isDone
-                            ? this._undoRedoService.isStatgeChange(this._selectMetadata.bnd_box)
-                                ? this._undoRedoService.appendStages({
-                                      meta: cloneDeep(this._selectMetadata),
-                                      method: 'draw',
-                                  })
-                                : {}
-                            : {};
-                    });
+                    const retObj = this._boundingBoxCanvas.mouseUpDrawEnable(
+                        this._selectMetadata,
+                        (isDone: boolean) => {
+                            isDone
+                                ? this._undoRedoService.isStatgeChange(this._selectMetadata.bnd_box)
+                                    ? this._undoRedoService.appendStages({
+                                          meta: cloneDeep(this._selectMetadata),
+                                          method: 'draw',
+                                      })
+                                    : {}
+                                : {};
+                        },
+                    );
+                    retObj.isNew ? this.annotateStateMakeChange(retObj.selBox) : {};
                 }
                 this.mousedown = false;
                 this.rulesMakeChange(true, null, null, null);
@@ -505,7 +505,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             this._boundingBoxCanvas.keyboardMoveBox(
                 direction,
                 // this._selectMetadata.bnd_box[this.boundingBoxState.selectedBox],
-                this._selectMetadata.bnd_box[this.annotateState.selectedAnnotate],
+                this._selectMetadata.bnd_box[this.annotateState],
                 this._selectMetadata.img_x,
                 this._selectMetadata.img_y,
                 this._selectMetadata.img_w,

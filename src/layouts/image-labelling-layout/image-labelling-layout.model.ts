@@ -177,10 +177,6 @@ export type SubLabels = {
     regionatt: string;
 };
 
-export type labelState = {
-    selectedAnnotate: number;
-};
-
 export type PolyMeta = {
     img_path: string;
     project_name: string;
