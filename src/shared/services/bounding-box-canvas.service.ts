@@ -213,6 +213,14 @@ export class BoundingBoxCanvasService {
         }
     }
 
+    public getCurrentSelectedBox(): number {
+        try {
+            return this.currentSelectedBndBox;
+        } catch {
+            return -1;
+        }
+    }
+
     public setCurrentSelectedbBox(newNUM: number): void {
         try {
             newNUM ? (this.currentSelectedBndBox = newNUM) : {};

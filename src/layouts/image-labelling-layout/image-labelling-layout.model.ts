@@ -150,7 +150,7 @@ export type BoundingBoxActionState = {
     draw: boolean;
     fitCenter: boolean;
     clear: boolean;
-    dbClick: boolean;
+    // dbClick: boolean;
 };
 
 export type Polygons = {
@@ -175,6 +175,11 @@ export type Coordinate = {
 export type SubLabels = {
     label: string;
     regionatt: string;
+};
+
+export type annotateAction = {
+    annotation: number;
+    isDlbClick: boolean;
 };
 
 export type PolyMeta = {

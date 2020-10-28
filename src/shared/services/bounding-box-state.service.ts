@@ -8,11 +8,11 @@ const initialValue: BoundingBoxActionState = {
     draw: false,
     fitCenter: false,
     clear: false,
-    dbClick: false,
+    // dbClick: false,
 };
 
 @Injectable({
-    providedIn: 'root',
+    providedIn: 'any',
 })
 export class BoundingBoxStateService {
     private boundingBoxSubject = new BehaviorSubject<BoundingBoxActionState>(initialValue);
