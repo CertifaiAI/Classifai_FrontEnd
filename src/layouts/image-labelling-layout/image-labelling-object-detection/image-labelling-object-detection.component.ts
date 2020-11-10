@@ -147,17 +147,20 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 this._selectMetadata.img_x,
                 this._selectMetadata.img_y,
                 (isDone: boolean) => {
-                    isDone
-                        ? this._undoRedoService.isMethodChange('zoom')
+                    if (isDone) {
+                        const meta = cloneDeep(this._selectMetadata);
+                        return this._undoRedoService.isMethodChange('zoom')
                             ? this._undoRedoService.appendStages({
-                                  meta: cloneDeep(this._selectMetadata),
+                                  meta,
                                   method: 'zoom',
                               })
                             : this._undoRedoService.replaceStages({
-                                  meta: cloneDeep(this._selectMetadata),
+                                  meta,
                                   method: 'zoom',
-                              })
-                        : {};
+                              });
+                    } else {
+                        return {};
+                    }
                 },
             );
             this.redrawImages(
@@ -235,7 +238,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         (isDone: boolean) => {
                             isDone
                                 ? (this.annotateStateMakeChange({ annotation: -1, isDlbClick: false }),
-                                  /** ? (this.rulesMakeChange(null, -1, null, null, null),*/
+                                  // ? (this.rulesMakeChange(null, -1, null, null, null),
                                   this._undoRedoService.appendStages({
                                       meta: cloneDeep(this._selectMetadata),
                                       method: 'draw',
@@ -394,17 +397,20 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             this._selectMetadata.img_x,
                             this._selectMetadata.img_y,
                             (isDone: boolean) => {
-                                isDone
-                                    ? this._undoRedoService.isMethodChange('pan')
+                                if (isDone) {
+                                    const meta = cloneDeep(this._selectMetadata);
+                                    return this._undoRedoService.isMethodChange('pan')
                                         ? this._undoRedoService.appendStages({
-                                              meta: cloneDeep(this._selectMetadata),
+                                              meta,
                                               method: 'pan',
                                           })
                                         : this._undoRedoService.replaceStages({
-                                              meta: cloneDeep(this._selectMetadata),
+                                              meta,
                                               method: 'pan',
-                                          })
-                                    : {};
+                                          });
+                                } else {
+                                    return {};
+                                }
                             },
                         );
                         this.redrawImages(
@@ -570,17 +576,20 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this._selectMetadata.img_x,
                         this._selectMetadata.img_y,
                         (isDone: boolean) => {
-                            isDone
-                                ? this._undoRedoService.isMethodChange('zoom')
+                            if (isDone) {
+                                const meta = cloneDeep(this._selectMetadata);
+                                return this._undoRedoService.isMethodChange('zoom')
                                     ? this._undoRedoService.appendStages({
-                                          meta: cloneDeep(this._selectMetadata),
+                                          meta,
                                           method: 'zoom',
                                       })
                                     : this._undoRedoService.replaceStages({
-                                          meta: cloneDeep(this._selectMetadata),
+                                          meta,
                                           method: 'zoom',
-                                      })
-                                : {};
+                                      });
+                            } else {
+                                return {};
+                            }
                         },
                     );
                 }
