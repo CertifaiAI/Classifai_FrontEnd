@@ -189,6 +189,14 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 first(),
                 flatMap(() => forkJoin([projMetaStatus$])),
                 first(([{ message, content }]) => {
+                    this.projectList = {
+                        isUploading: this.projectList.isUploading,
+                        projects: this.projectList.projects.map((project) =>
+                            project.project_name === content[0].project_name
+                                ? { ...content[0], created_date: project.created_date }
+                                : { ...project },
+                        ),
+                    };
                     const { is_loaded } = content[0];
                     return message === 1 && !is_loaded ? true : false;
                 }),
