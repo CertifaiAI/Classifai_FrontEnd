@@ -11,7 +11,7 @@ import {
     DataSetProps,
     IMessage,
     IThumbnailMetadata,
-    projectSchema,
+    ProjectSchema,
     UploadThumbnailProps,
     StarredProps,
 } from './data-set-layout.model';
@@ -23,7 +23,7 @@ import {
 })
 export class DataSetLayoutComponent implements OnInit, OnDestroy {
     onChangeSchema!: DataSetProps;
-    projectList: projectSchema = {
+    projectList: ProjectSchema = {
         projects: [],
         isUploading: false,
     };

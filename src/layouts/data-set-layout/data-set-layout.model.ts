@@ -62,7 +62,7 @@ export interface IProjectStatus {
     createdDate: string;
 }
 
-// export type projectSchema = {
+// export type ProjectSchema = {
 //     fields: Array<IProjectStatus>;
 // };
 
@@ -75,7 +75,7 @@ export type Project = {
     created_date: string;
 };
 
-export type projectSchema = {
+export type ProjectSchema = {
     projects: Project[];
     isUploading: boolean;
 };

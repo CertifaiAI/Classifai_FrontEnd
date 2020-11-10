@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FileType } from 'src/shared/type-casting/file-type/file-type.model';
-import { Project, projectSchema, StarredProps } from './../data-set-layout.model';
+import { Project, ProjectSchema, StarredProps } from './../data-set-layout.model';
 
 type CardSchema = {
     clickIndex: number;
@@ -17,11 +17,11 @@ type FileTypeProps = {
     styleUrls: ['./data-set-card.component.scss'],
 })
 export class DataSetCardComponent implements OnInit, OnChanges {
-    @Input() _jsonSchema!: projectSchema;
+    @Input() _jsonSchema!: ProjectSchema;
     @Output() _onClick: EventEmitter<string> = new EventEmitter();
     @Output() _onUpload: EventEmitter<FileTypeProps> = new EventEmitter();
     @Output() _onStarred: EventEmitter<StarredProps> = new EventEmitter();
-    // clonedJsonSchema!: projectSchema;
+    // clonedJsonSchema!: ProjectSchema;
     starredActiveIcon: string = `../../../assets/icons/starred_active.svg`;
     starredInactiveIcon: string = `../../../assets/icons/starred.svg`;
     cardSchema: CardSchema = {
