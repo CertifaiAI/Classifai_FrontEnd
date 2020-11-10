@@ -213,6 +213,14 @@ export class BoundingBoxCanvasService {
         }
     }
 
+    public getCurrentSelectedBox(): number {
+        try {
+            return this.currentSelectedBndBox;
+        } catch {
+            return -1;
+        }
+    }
+
     public setCurrentSelectedbBox(newNUM: number): void {
         try {
             newNUM ? (this.currentSelectedBndBox = newNUM) : {};
@@ -221,12 +229,18 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public mouseUpDrawEnable(currMeta: Metadata, callback: (args: boolean) => void) {
+    public mouseUpDrawEnable(
+        currMeta: Metadata,
+        callback: (args: boolean) => void,
+    ): { selBox: number; isNew: boolean } {
         try {
+            let ret: { selBox: number; isNew: boolean } = { selBox: -1, isNew: false };
             if (this.currentClickedBox.box === -1 && this.tmpbox !== null) {
                 currMeta.bnd_box.push(this.tmpbox);
                 this.currentSelectedBndBox = currMeta.bnd_box.length - 1;
                 currMeta.bnd_box[this.currentSelectedBndBox].label = 'default';
+                ret.isNew = true;
+                ret.selBox = cloneDeep(this.currentSelectedBndBox);
             } else {
                 if (currMeta.bnd_box[this.currentSelectedBndBox].x1 > currMeta.bnd_box[this.currentSelectedBndBox].x2) {
                     const previousX1: number = cloneDeep(currMeta.bnd_box[this.currentSelectedBndBox].x1);
@@ -248,9 +262,10 @@ export class BoundingBoxCanvasService {
             this.setCurrentX2Y2(0, 0);
             this.tmpbox = null;
             callback(true);
+            return ret;
         } catch (err) {
             console.log('ObjectDetection MouseUpDrawEnable(CurrMeta: Metadata): number', err.name + ': ', err.message);
-            return -1;
+            return { selBox: -1, isNew: false };
         }
     }
 

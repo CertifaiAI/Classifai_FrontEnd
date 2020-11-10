@@ -26,7 +26,6 @@ export interface IMessageUuidList {
 export interface IBase64Img {
     message: message;
     img_src: img_src;
-
     errorcode: number;
     errormessage: string;
 }
@@ -151,7 +150,7 @@ export type BoundingBoxActionState = {
     draw: boolean;
     fitCenter: boolean;
     clear: boolean;
-    dbClick: boolean;
+    // dbClick: boolean;
 };
 
 export type Polygons = {
@@ -178,9 +177,9 @@ export type SubLabels = {
     regionatt: string;
 };
 
-export type labelState = {
-    label: string | null;
-    selectedAnnotate: number;
+export type annotateAction = {
+    annotation: number;
+    isDlbClick: boolean;
 };
 
 export type PolyMeta = {
