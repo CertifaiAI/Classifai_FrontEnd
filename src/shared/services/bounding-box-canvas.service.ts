@@ -234,7 +234,7 @@ export class BoundingBoxCanvasService {
         callback: (args: boolean) => void,
     ): { selBox: number; isNew: boolean } {
         try {
-            let ret: { selBox: number; isNew: boolean } = { selBox: -1, isNew: false };
+            const ret: { selBox: number; isNew: boolean } = { selBox: -1, isNew: false };
             if (this.currentClickedBox.box === -1 && this.tmpbox !== null) {
                 currMeta.bnd_box.push(this.tmpbox);
                 this.currentSelectedBndBox = currMeta.bnd_box.length - 1;

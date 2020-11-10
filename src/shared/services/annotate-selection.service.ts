@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { cloneDeep } from 'lodash-es';
 import { annotateAction } from '../../layouts/image-labelling-layout/image-labelling-layout.model';
 
 const initialState: annotateAction = {
