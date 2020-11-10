@@ -177,7 +177,7 @@ export type SubLabels = {
     regionatt: string;
 };
 
-export type annotateAction = {
+export type AnnotateAction = {
     annotation: number;
     isDlbClick: boolean;
 };

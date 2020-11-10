@@ -1,4 +1,4 @@
-import { BoundingBoxActionState, UndoState, annotateAction } from './../image-labelling-layout.model';
+import { BoundingBoxActionState, UndoState, AnnotateAction } from './../image-labelling-layout.model';
 import { BoundingBoxCanvasService } from '../../../shared/services/bounding-box-canvas.service';
 import { BoundingBoxStateService } from '../../../shared/services/bounding-box-state.service';
 import { CopyPasteService } from '../../../shared/services/copy-paste.service';
@@ -32,7 +32,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     private img: HTMLImageElement = new Image();
     private mousedown: boolean = false;
     private boundingBoxState!: BoundingBoxActionState;
-    private annotateState!: annotateAction;
+    private annotateState!: AnnotateAction;
     @Input() _selectMetadata!: Metadata;
     @Input() _imgSrc: string = '';
 
@@ -66,7 +66,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         } catch (err) {}
     }
 
-    annotateStateMakeChange(newState: annotateAction | null) {
+    annotateStateMakeChange(newState: AnnotateAction | null) {
         newState !== null ? this._annotateSelectState.mutateState(newState) : {};
     }
 
