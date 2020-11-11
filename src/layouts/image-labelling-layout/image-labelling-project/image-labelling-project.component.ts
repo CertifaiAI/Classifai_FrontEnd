@@ -99,7 +99,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
 
     onClickAnnotation = <T extends ThumbnailMetadata>({ bnd_box }: T): void => {
         // this._onClickThumbNail.emit(thumbnail);
-        const bbLabel = bnd_box.find((box) => box.label);
+        const bbLabel = bnd_box.map(({ label }) => label);
         console.log(bbLabel);
     };
 
