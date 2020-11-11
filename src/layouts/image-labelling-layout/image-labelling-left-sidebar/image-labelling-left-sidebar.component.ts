@@ -57,7 +57,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     alt: `RectangularBB`,
                     toggleable: true,
                     onClick: (): void => {
-                        this._bbState.setState({ draw: true, drag: false });
+                        this._bbState.setState({ draw: true, drag: false, scroll: false });
                     },
                 },
                 // {
@@ -97,7 +97,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     alt: `Fit Center`,
                     toggleable: false,
                     onClick: (): void => {
-                        this._bbState.setState({ draw: true, drag: false, fitCenter: true });
+                        this._bbState.setState({ draw: false, drag: false, fitCenter: true, scroll: false });
                     },
                 },
                 {
