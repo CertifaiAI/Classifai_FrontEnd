@@ -6,7 +6,7 @@
                 <img
                     (click)="getIndex(i); logo?.onClick ? logo.onClick() : null"
                     [ngClass]="conditionalIconTheme()"
-                    [ngStyle]="conditionalActiveIcon(i)"
+                    [ngStyle]="logo?.toggleable ? conditionalActiveIcon(i) : null"
                     [attr.data-index]="i"
                     [src]="logo.imgPath"
                     [alt]="logo.alt"

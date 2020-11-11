@@ -37,6 +37,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     imgPath: `../../../assets/icons/pointer.svg`,
                     hoverLabel: `Pointer`,
                     alt: `Pointer`,
+                    toggleable: true,
                     onClick: (): void => {
                         this._bbState.setState({ draw: false, drag: true });
                     },
@@ -45,6 +46,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     imgPath: `../../../assets/icons/move.svg`,
                     hoverLabel: `Move Image`,
                     alt: `Move Image`,
+                    toggleable: true,
                     onClick: (): void => {
                         this._bbState.setState({ draw: false, drag: true });
                     },
@@ -53,6 +55,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     imgPath: `../../../assets/icons/rec_bounding_box.svg`,
                     hoverLabel: `Rectangular Bounding Box`,
                     alt: `RectangularBB`,
+                    toggleable: true,
                     onClick: (): void => {
                         this._bbState.setState({ draw: true, drag: false });
                     },
@@ -86,11 +89,13 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     imgPath: `../../../assets/icons/eraser.svg`,
                     hoverLabel: `Eraser`,
                     alt: `Eraser`,
+                    toggleable: true,
                 },
                 {
                     imgPath: `../../../assets/icons/fit_center.svg`,
                     hoverLabel: `Fit Center`,
                     alt: `Fit Center`,
+                    toggleable: false,
                     onClick: (): void => {
                         this._bbState.setState({ draw: true, drag: false, fitCenter: true });
                     },
@@ -99,6 +104,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     imgPath: `../../../assets/icons/save.svg`,
                     hoverLabel: `Save`,
                     alt: `Save`,
+                    toggleable: false,
                 },
             ],
         };

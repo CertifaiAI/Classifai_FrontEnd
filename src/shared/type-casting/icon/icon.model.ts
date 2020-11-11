@@ -5,6 +5,7 @@ type IconConfigs = {
     alt: string;
     // inputType?: string;
     // accept?: 'image/x-png,image/jpeg';
+    toggleable?: boolean;
     /** @function responsible for toggling function */
     onClick?: any;
     // onClick?: (...args: any[]) => any;
