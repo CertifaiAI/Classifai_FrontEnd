@@ -76,7 +76,7 @@ export type ThumbnailMetadata = {
     img_w: number;
     img_x: number;
     img_y: number;
-    message: boolean;
+    // message: boolean;
     project_name: string;
     uuid: number;
 };
@@ -96,6 +96,7 @@ export type TabsProps = {
     name: string;
     closed: boolean;
     label_list?: string[];
+    annotation?: ThumbnailMetadata | undefined;
 };
 
 export type UrlProps = {

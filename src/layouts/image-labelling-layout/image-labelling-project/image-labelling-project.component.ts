@@ -97,6 +97,12 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         });
     };
 
+    onClickAnnotation = <T extends ThumbnailMetadata>({ bnd_box }: T): void => {
+        // this._onClickThumbNail.emit(thumbnail);
+        const bbLabel = bnd_box.find((box) => box.label);
+        console.log(bbLabel);
+    };
+
     checkCloseToggle = <T extends TabsProps>({ closed }: T): string | null => (closed ? 'closed' : null);
 
     checkStateEqual = (currObj: object, prevObj: object): boolean => !isEqual(currObj, prevObj);

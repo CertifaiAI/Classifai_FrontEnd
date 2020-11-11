@@ -27,7 +27,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     imgSrc: string = '';
     loading: boolean = false;
     thumbnailList: ThumbnailMetadata[] = [];
-    selectedMetaData!: Partial<ThumbnailMetadata>;
+    selectedMetaData!: ThumbnailMetadata;
     unsubscribe$: Subject<any> = new Subject();
     tabStatus: TabsProps[] = [
         {
@@ -43,6 +43,34 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         {
             name: 'Annotation',
             closed: false,
+            // annotation: undefined,
+            annotation: {
+                uuid: 1,
+                project_name: 'test12',
+                img_path: 'C:\\Users\\Daniel.Lim\\Pictures\\Screenshots\\Screenshot (1).png',
+                bnd_box: [
+                    {
+                        color: 'rgba(255,255,0,0.8)',
+                        distancetoImg: { x: 519, y: 248 },
+                        y1: 315,
+                        x1: 537,
+                        y2: 515,
+                        x2: 785,
+                        label: 'label',
+                        id: 10112020174527860,
+                        lineWidth: 1,
+                    },
+                ],
+                img_depth: 3,
+                img_x: 18,
+                img_y: 67,
+                img_w: 1920,
+                img_h: 1080,
+                file_size: 329342,
+                img_ori_w: 1920,
+                img_ori_h: 1080,
+                img_thumbnail: '',
+            },
         },
     ];
 
@@ -133,6 +161,19 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         });
     };
 
+    displayBoundingBoxes = (boundingBoxes: ThumbnailMetadata): void => {
+        this.tabStatus = this.tabStatus.map((tab) => {
+            if (tab.annotation) {
+                return {
+                    ...tab,
+                    annotation: { ...boundingBoxes },
+                };
+            }
+            return tab;
+        });
+        console.log(this.tabStatus);
+    };
+
     /** @function responsible for calling API to acquire thumbnail in original size
      *  @type optional ThumbnailMetadataProps
      *        which allows navigateByAction function to send only needed props due to optional type
@@ -160,7 +201,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                         : console.error(errormessage);
                 },
                 (err: Error) => console.error(err),
-                () => {},
             );
         }
     };
