@@ -100,13 +100,19 @@
                             <div class="flex-center-width">
                                 <ng-container *ngIf="tab?.annotation">
                                     <ng-container *ngFor="let annotation of tab.annotation">
-                                        <ng-container *ngFor="let boundingBox of annotation.bnd_box">
-                                            <label class="label" (click)="onClickAnnotation(annotation)">
+                                        <ng-container *ngFor="let boundingBox of annotation.bnd_box; index as j">
+                                            <label
+                                                class="label"
+                                                [attr.data-index]="j"
+                                                [ngClass]="j === selectedIndexAnnotation ? 'annotation-active' : null"
+                                                (click)="onClickAnnotation(annotation)"
+                                            >
                                                 {{ boundingBox.label }} : {{ boundingBox.id }}</label
                                             >
                                         </ng-container></ng-container
                                     >
                                 </ng-container>
+                                <!-- [ngClass]="onClickAnnotation(annotation, j)" -->
                                 <!-- <ng-container *ngIf="tab?.annotation?.bnd_box.length > 0">
                                     <ng-container *ngFor="let boundingBox of tab.annotation.bnd_box">
                                         <label class="label" (click)="onClickAnnotation(tab.annotation)">

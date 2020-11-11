@@ -29,6 +29,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     action: number = -1;
     displayInputLabel: boolean = false;
     inputLabel: string = '';
+    selectedIndexAnnotation = -1;
     unsubscribe$: Subject<any> = new Subject();
 
     constructor(private _annotateService: AnnotateSelectionService) {}
@@ -37,9 +38,30 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         this._thumbnailList.length > 0
             ? this._annotateService.labelStaging$
                   .pipe(takeUntil(this.unsubscribe$))
-                  .subscribe(({ annotation, isDlbClick }) => {
-                      isDlbClick ? this._annotateService.mutateState({ annotation: -1 }) : null;
-                      console.log({ annotation, isDlbClick });
+                  .subscribe(({ annotation: annnotationIndex, isDlbClick }) => {
+                      // isDlbClick ? this._annotateService.mutateState({ annotation: -1 }) : null;
+
+                      this.selectedIndexAnnotation = annnotationIndex;
+
+                      // this.selectedIndexAnnotation = this._tabStatus.reduce((prev, { annotation }) => {
+                      //     const currentIndex =
+                      //         annotation?.findIndex(({ bnd_box }) =>
+                      //             bnd_box.findIndex((_, i) => {
+                      //                 const ss = i === annnotationIndex;
+                      //                 console.log(`${i}===${annnotationIndex}`);
+                      //                 console.log(ss);
+                      //                 return ss;
+                      //             }),
+                      //         ) || -1;
+                      //     prev = currentIndex || -1;
+                      //     return prev;
+                      // }, 0);
+
+                      // this.selectedIndexAnnotation = this._tabStatus.findIndex(({ annotation }) =>
+                      //     annotation?.findIndex(({ bnd_box }) => bnd_box.findIndex((_, i) => i === annnotationIndex)),
+                      // );
+                      // console.log({ annnotationIndex, isDlbClick });
+                      console.log(this.selectedIndexAnnotation);
                   })
             : null;
     }
@@ -97,7 +119,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         });
     };
 
-    onClickAnnotation = <T extends ThumbnailMetadata>({ bnd_box }: T): void => {
+    onClickAnnotation = <T extends ThumbnailMetadata>({ bnd_box }: T) => {
         // this._onClickThumbNail.emit(thumbnail);
         const bbLabel = bnd_box.map(({ label }) => label);
         console.log(bbLabel);
