@@ -98,13 +98,22 @@
                     <div class="utility-inner-container" id="inner-container">
                         <div class="flex-item">
                             <div class="flex-center-width">
-                                <ng-container *ngIf="tab?.annotation?.bnd_box.length > 0">
+                                <ng-container *ngIf="tab?.annotation">
+                                    <ng-container *ngFor="let annotation of tab.annotation">
+                                        <ng-container *ngFor="let boundingBox of annotation.bnd_box">
+                                            <label class="label" (click)="onClickAnnotation(annotation)">
+                                                {{ boundingBox.label }} : {{ boundingBox.id }}</label
+                                            >
+                                        </ng-container></ng-container
+                                    >
+                                </ng-container>
+                                <!-- <ng-container *ngIf="tab?.annotation?.bnd_box.length > 0">
                                     <ng-container *ngFor="let boundingBox of tab.annotation.bnd_box">
                                         <label class="label" (click)="onClickAnnotation(tab.annotation)">
                                             {{ boundingBox.label }} : {{ boundingBox.id }}</label
                                         >
                                     </ng-container>
-                                </ng-container>
+                                </ng-container> -->
                             </div>
                         </div>
                     </div>

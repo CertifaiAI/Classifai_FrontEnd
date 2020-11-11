@@ -44,44 +44,46 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             name: 'Annotation',
             closed: false,
             // annotation: undefined,
-            annotation: {
-                uuid: 1,
-                project_name: 'test12',
-                img_path: 'C:\\Users\\Daniel.Lim\\Pictures\\Screenshots\\Screenshot (1).png',
-                bnd_box: [
-                    {
-                        color: 'rgba(255,255,0,0.8)',
-                        distancetoImg: { x: 519, y: 248 },
-                        y1: 315,
-                        x1: 537,
-                        y2: 515,
-                        x2: 785,
-                        label: 'label',
-                        id: 10112020174527860,
-                        lineWidth: 1,
-                    },
-                    {
-                        color: 'rgba(255,255,0,0.8)',
-                        distancetoImg: { x: 519, y: 248 },
-                        y1: 315,
-                        x1: 537,
-                        y2: 515,
-                        x2: 785,
-                        label: 'try',
-                        id: 10112020174527860,
-                        lineWidth: 1,
-                    },
-                ],
-                img_depth: 3,
-                img_x: 18,
-                img_y: 67,
-                img_w: 1920,
-                img_h: 1080,
-                file_size: 329342,
-                img_ori_w: 1920,
-                img_ori_h: 1080,
-                img_thumbnail: '',
-            },
+            annotation: [
+                {
+                    uuid: 1,
+                    project_name: 'test12',
+                    img_path: 'C:\\Users\\Daniel.Lim\\Pictures\\Screenshots\\Screenshot (1).png',
+                    bnd_box: [
+                        {
+                            color: 'rgba(255,255,0,0.8)',
+                            distancetoImg: { x: 519, y: 248 },
+                            y1: 315,
+                            x1: 537,
+                            y2: 515,
+                            x2: 785,
+                            label: 'label',
+                            id: 10112020174527860,
+                            lineWidth: 1,
+                        },
+                        {
+                            color: 'rgba(255,255,0,0.8)',
+                            distancetoImg: { x: 519, y: 248 },
+                            y1: 315,
+                            x1: 537,
+                            y2: 515,
+                            x2: 785,
+                            label: 'try',
+                            id: 10112020174527860,
+                            lineWidth: 1,
+                        },
+                    ],
+                    img_depth: 3,
+                    img_x: 18,
+                    img_y: 67,
+                    img_w: 1920,
+                    img_h: 1080,
+                    file_size: 329342,
+                    img_ori_w: 1920,
+                    img_ori_h: 1080,
+                    img_thumbnail: '',
+                },
+            ],
         },
     ];
 
@@ -177,7 +179,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             if (tab.annotation) {
                 return {
                     ...tab,
-                    annotation: { ...boundingBoxes },
+                    annotation: [{ ...boundingBoxes }],
                 };
             }
             return tab;
