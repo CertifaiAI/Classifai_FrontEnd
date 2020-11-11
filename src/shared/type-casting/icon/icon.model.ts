@@ -13,6 +13,6 @@ type IconConfigs = {
 };
 
 /** @interface backbone of icons' object schema */
-export interface IconSchema {
+export type IconSchema = {
     [key: string]: Array<IconConfigs>;
-}
+};

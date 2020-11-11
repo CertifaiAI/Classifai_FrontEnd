@@ -1,4 +1,4 @@
-import { BoundingBox, Metadata } from '../type-casting/meta-data/meta-data';
+import { BoundingBox, Metadata } from '../type-casting/meta-data/meta-data.model';
 import { Injectable } from '@angular/core';
 import { Polygons, PolyMeta, UndoState } from './../../layouts/image-labelling-layout/image-labelling-layout.model';
 import { Utils } from '../type-casting/utils/utils';

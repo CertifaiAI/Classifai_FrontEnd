@@ -1,4 +1,4 @@
-import { BoundingBox } from '../meta-data/meta-data';
+import { BoundingBox } from '../meta-data/meta-data.model';
 
 export class Utils {
     constructor() {}

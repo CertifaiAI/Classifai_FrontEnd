@@ -1,9 +1,9 @@
-import { BoundingBoxActionState, UndoState, AnnotateAction } from './../image-labelling-layout.model';
+import { BoundingBoxActionState, UndoState, AnnotateActionState } from './../image-labelling-layout.model';
 import { BoundingBoxCanvasService } from '../../../shared/services/bounding-box-canvas.service';
 import { BoundingBoxStateService } from '../../../shared/services/bounding-box-state.service';
 import { CopyPasteService } from '../../../shared/services/copy-paste.service';
 import { AnnotateSelectionService } from '../../../shared/services/annotate-selection.service';
-import { Metadata, BoundingBox } from '../../../shared/type-casting/meta-data/meta-data';
+import { Metadata, BoundingBox } from '../../../shared/type-casting/meta-data/meta-data.model';
 import { UndoRedoService } from '../../../shared/services/undo-redo.service';
 import { cloneDeep } from 'lodash-es';
 import {
@@ -32,7 +32,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     private img: HTMLImageElement = new Image();
     private mousedown: boolean = false;
     private boundingBoxState!: BoundingBoxActionState;
-    private annotateState!: AnnotateAction;
+    private annotateState!: AnnotateActionState;
     @Input() _selectMetadata!: Metadata;
     @Input() _imgSrc: string = '';
 
@@ -66,7 +66,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         } catch (err) {}
     }
 
-    annotateStateMakeChange(newState: AnnotateAction | null) {
+    annotateStateMakeChange(newState: AnnotateActionState | null) {
         newState !== null ? this._annotateSelectState.mutateState(newState) : {};
     }
 

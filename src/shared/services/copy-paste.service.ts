@@ -1,4 +1,4 @@
-import { BoundingBox } from '../type-casting/meta-data/meta-data';
+import { BoundingBox } from '../type-casting/meta-data/meta-data.model';
 import { CopyPasteState, Polygons } from './../../layouts/image-labelling-layout/image-labelling-layout.model';
 import { Injectable } from '@angular/core';
 import { Utils } from '../type-casting/utils/utils';

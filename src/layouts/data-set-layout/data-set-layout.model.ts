@@ -9,39 +9,39 @@ type uuid_list = number;
 type img_src = string;
 type error_code = number;
 
-export interface IContent {
+export type MessageContent = {
     content: content;
     message: message;
     errormessage: errormessage;
-}
+};
 
-export interface IMessage {
+export type Message = {
     message: message;
     error_code: error_code;
     error_message: errormessage;
-}
+};
 
-export interface IMessageUuidList {
+export type MessageUuidList = {
     message: message;
     uuid_list: uuid_list[];
-}
+};
 
-export interface IBase64Img {
+export type MessageBase64Img = {
     message: message;
     img_src: img_src;
 
     errorcode: number;
     errormessage: string;
-}
+};
 
-export interface ILabelList {
+export type LabelList = {
     label_list: label_list;
     message: message;
     progress: progress;
     uuid_list: uuid_list[];
-}
+};
 
-export interface IThumbnailMetadata {
+export type ThumbnailMetadata = {
     img_path: string;
     project_name: string;
     uuid: number;
@@ -53,18 +53,14 @@ export interface IThumbnailMetadata {
     img_oriH: number;
     img_thumbnail: string;
     img_depth: number;
-}
+};
 
-export interface IProjectStatus {
+export type ProjectStatus = {
     status: string;
     backgroundColour: number;
     title: string;
     createdDate: string;
-}
-
-// export type ProjectSchema = {
-//     fields: Array<IProjectStatus>;
-// };
+};
 
 export type Project = {
     project_name: string;
@@ -101,8 +97,8 @@ export type StarredProps = {
     starred: boolean;
 };
 
-export interface IDataSetStatus {
-    error_code: number;
+export type MessageDataSetStatus = {
+    error_code: error_code;
     message: message;
     error_message: errormessage;
-}
+};

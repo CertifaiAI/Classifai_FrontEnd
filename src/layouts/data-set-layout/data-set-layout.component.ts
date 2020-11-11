@@ -9,8 +9,8 @@ import { Router } from '@angular/router';
 import { SpinnerService } from 'src/shared/components/spinner/spinner.service';
 import {
     DataSetProps,
-    IMessage,
-    IThumbnailMetadata,
+    Message,
+    ThumbnailMetadata,
     ProjectSchema,
     UploadThumbnailProps,
     StarredProps,
@@ -34,7 +34,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     displayModal: boolean = false;
     subject$: Subject<any> = new Subject();
     subjectSubscription!: Subscription;
-    thumbnailList: IThumbnailMetadata[] = [];
+    thumbnailList: ThumbnailMetadata[] = [];
     labelList: string[] = [];
     loading: boolean = false;
     unsubscribe$: Subject<any> = new Subject();
@@ -254,7 +254,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         const thumbnail$ = this._dataSetService.getThumbnailList;
         let numberOfReq: number = 0;
 
-        const returnResponse = <T extends IMessage>({ message }: T): Observable<IThumbnailMetadata> => {
+        const returnResponse = <T extends Message>({ message }: T): Observable<ThumbnailMetadata> => {
             return message !== 5 && message === 1
                 ? interval(500).pipe(
                       flatMap(() => uploadStatus$),
@@ -365,7 +365,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     //     });
     // };
 
-    // setLabelListLocalStorage = (labelList: ILabelList): void => {
+    // setLabelListLocalStorage = (labelList: LabelList): void => {
     //     console.log(labelList);
     // };
 

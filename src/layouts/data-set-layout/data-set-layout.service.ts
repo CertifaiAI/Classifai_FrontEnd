@@ -4,12 +4,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
-    IContent,
-    IMessage,
-    ILabelList,
-    IThumbnailMetadata,
-    IMessageUuidList,
-    IDataSetStatus,
+    MessageContent,
+    Message,
+    LabelList,
+    ThumbnailMetadata,
+    MessageUuidList,
+    MessageDataSetStatus,
 } from '../data-set-layout/data-set-layout.model';
 
 @Injectable({ providedIn: 'any' })
@@ -18,57 +18,57 @@ export class DataSetLayoutService {
 
     constructor(private http: HttpClient) {}
 
-    getProjectList = (): Observable<IContent> => {
-        return this.http.get<IContent>(`${this.hostPort}bndbox/projects/meta`);
+    getProjectList = (): Observable<MessageContent> => {
+        return this.http.get<MessageContent>(`${this.hostPort}bndbox/projects/meta`);
         // .pipe(catchError(this.handleError));
     };
 
-    createNewProject = (projectName: string): Observable<IMessage> => {
-        return this.http.put<IMessage>(`${this.hostPort}bndbox/newproject/${projectName}`, {
+    createNewProject = (projectName: string): Observable<Message> => {
+        return this.http.put<Message>(`${this.hostPort}bndbox/newproject/${projectName}`, {
             newprojectid: projectName,
         });
     };
 
-    updateProjectLoadStatus = (projectName: string): Observable<IMessage> => {
-        return this.http.get<IMessage>(`${this.hostPort}bndbox/projects/${projectName}`);
+    updateProjectLoadStatus = (projectName: string): Observable<Message> => {
+        return this.http.get<Message>(`${this.hostPort}bndbox/projects/${projectName}`);
     };
 
-    checkProjectStatus = (projectName: string): Observable<IContent> => {
-        return this.http.get<IContent>(`${this.hostPort}bndbox/projects/${projectName}/meta`);
+    checkProjectStatus = (projectName: string): Observable<MessageContent> => {
+        return this.http.get<MessageContent>(`${this.hostPort}bndbox/projects/${projectName}/meta`);
     };
 
-    manualCloseProject = (projectName: string, status: 'closed' = 'closed'): Observable<IMessage> => {
-        return this.http.put<IMessage>(`${this.hostPort}bndbox/projects/${projectName}`, {
+    manualCloseProject = (projectName: string, status: 'closed' = 'closed'): Observable<Message> => {
+        return this.http.put<Message>(`${this.hostPort}bndbox/projects/${projectName}`, {
             status,
         });
     };
 
-    checkExistProjectStatus = (projectName: string): Observable<ILabelList> => {
-        return this.http.get<ILabelList>(`${this.hostPort}bndbox/projects/${projectName}/loadingstatus`);
+    checkExistProjectStatus = (projectName: string): Observable<LabelList> => {
+        return this.http.get<LabelList>(`${this.hostPort}bndbox/projects/${projectName}/loadingstatus`);
     };
 
-    getThumbnailList = (projectName: string, uuid: number): Observable<IThumbnailMetadata> => {
-        return this.http.get<IThumbnailMetadata>(
+    getThumbnailList = (projectName: string, uuid: number): Observable<ThumbnailMetadata> => {
+        return this.http.get<ThumbnailMetadata>(
             `${this.hostPort}bndbox/projects/${projectName}/uuid/${uuid}/thumbnail`,
         );
     };
 
-    /** @function responsible for returning an Observable of data type IMessage
+    /** @function responsible for returning an Observable of data type Message
      *  @param {string} projectName - your current project name
      *  @param {string} fileType - default w/o value is 'folder', else have to provide 'file' as value
      */
-    localUploadThumbnail = (projectName: string, fileType: FileType = 'folder'): Observable<IMessage> => {
-        return this.http.get<IMessage>(`${this.hostPort}bndbox/projects/${projectName}/filesys/${fileType}`);
+    localUploadThumbnail = (projectName: string, fileType: FileType = 'folder'): Observable<Message> => {
+        return this.http.get<Message>(`${this.hostPort}bndbox/projects/${projectName}/filesys/${fileType}`);
     };
 
-    localUploadStatus = (projectName: string): Observable<IMessageUuidList> => {
-        return this.http.get<IMessageUuidList>(`${this.hostPort}bndbox/projects/${projectName}/filesysstatus`);
+    localUploadStatus = (projectName: string): Observable<MessageUuidList> => {
+        return this.http.get<MessageUuidList>(`${this.hostPort}bndbox/projects/${projectName}/filesysstatus`);
     };
 
-    updateLabelList = (projectName: string, label_list: string[]): Observable<IMessage> => {
+    updateLabelList = (projectName: string, label_list: string[]): Observable<Message> => {
         // console.log(label_list);
         const checkLabelList: string[] = label_list.length > 0 ? label_list : ['default'];
-        return this.http.put<IMessage>(`${this.hostPort}bndbox/projects/${projectName}/newlabels`, {
+        return this.http.put<Message>(`${this.hostPort}bndbox/projects/${projectName}/newlabels`, {
             label_list: checkLabelList,
         });
     };
@@ -77,11 +77,14 @@ export class DataSetLayoutService {
         projectName: string,
         loading: boolean,
         action: 'star' | 'loaded',
-    ): Observable<IDataSetStatus> => {
+    ): Observable<MessageDataSetStatus> => {
         const conditionalEndPoint = action === 'loaded' ? 'status' : action;
-        return this.http.put<IDataSetStatus>(`${this.hostPort}bndbox/projects/${projectName}/${conditionalEndPoint}`, {
-            // status: 'true',
-            status: loading.toString(),
-        });
+        return this.http.put<MessageDataSetStatus>(
+            `${this.hostPort}bndbox/projects/${projectName}/${conditionalEndPoint}`,
+            {
+                // status: 'true',
+                status: loading.toString(),
+            },
+        );
     };
 }

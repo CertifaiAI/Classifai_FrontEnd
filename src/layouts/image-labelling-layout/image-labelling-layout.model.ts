@@ -1,5 +1,6 @@
-import { BoundingBox, Metadata } from '../../shared/type-casting/meta-data/meta-data';
+import { BoundingBox, Metadata } from '../../shared/type-casting/meta-data/meta-data.model';
 
+type error_code = number;
 type errormessage = string;
 type content = string[];
 type message = boolean | number;
@@ -8,41 +9,50 @@ type label_list = string[];
 type uuid_list = number;
 type img_src = string;
 
-export interface IContent {
+//#region Reponse Status from API
+export interface MessageContent {
     content: content;
     message: message;
     errormessage: errormessage;
 }
 
-export interface IMessage {
+export type Message = {
     message: message;
-}
+};
 
-export interface IMessageUuidList {
+export type MessageUuidList = {
     message: message;
     uuid_list: uuid_list[];
-}
+};
 
-export interface IBase64Img {
+export type MessageBase64Img = {
     message: message;
     img_src: img_src;
-    errorcode: number;
+    errorcode: error_code;
     errormessage: string;
-}
+};
 
-export interface ILabelList {
+export type MessageProjectProgress = {
+    error_code?: error_code;
+    error_message?: errormessage;
+    message: message;
+};
+
+//#endregion
+
+export type LabelList = {
     label_list: label_list;
     message: message;
     progress: progress;
     uuid_list: uuid_list[];
-}
+};
 
-interface IAxis {
+type IAxis = {
     x: number;
     y: number;
-}
+};
 
-export interface IBoundingbox {
+export type Boundingbox = {
     x1: number;
     y1: number;
     x2: number;
@@ -52,10 +62,10 @@ export interface IBoundingbox {
     distancetoImg: IAxis;
     label: string;
     id: number;
-}
+};
 
-export interface IThumbnailMetadata {
-    bnd_box: IBoundingbox[];
+export type ThumbnailMetadata = {
+    bnd_box: Boundingbox[];
     file_size: number;
     img_depth: number;
     img_h: number;
@@ -69,12 +79,7 @@ export interface IThumbnailMetadata {
     message: boolean;
     project_name: string;
     uuid: number;
-}
-
-// export interface ILoading {
-//   submitLoading: boolean;
-//   createLoading: boolean;
-// }
+};
 
 /** @type mainly used for passing props with generic type while ability to allow conditional of generic type usage */
 export type ImgLabelProps<T = undefined> = {} & (T extends undefined
@@ -87,26 +92,11 @@ export type ImgLabelProps<T = undefined> = {} & (T extends undefined
       }
     : T);
 
-// export type TabsProps = {
-//   [tab: string]: {
-//     name: string;
-//     closed: boolean;
-//   };
-// };
-
 export type TabsProps = {
     name: string;
     closed: boolean;
     label_list?: string[];
 };
-
-// export type TabsProps = {
-//   [key: string]: {
-//       name: string;
-//       closed: boolean;
-//       label_list?: string[];
-//   };
-// };
 
 export type UrlProps = {
     url: string;
@@ -126,9 +116,9 @@ export type EventEmitter_Action = {
 
 export type SelectedThumbnailProps = {
     uuid: number;
-} & Pick<IBase64Img, 'img_src'>;
+} & Pick<MessageBase64Img, 'img_src'>;
 
-export type ThumbnailMetadataProps = IThumbnailMetadata;
+export type ThumbnailMetadataProps = ThumbnailMetadata;
 
 type TabAction = {
     /** @property {number} 1 represents add, whereas 0 represent remove */
@@ -177,7 +167,7 @@ export type SubLabels = {
     regionatt: string;
 };
 
-export type AnnotateAction = {
+export type AnnotateActionState = {
     annotation: number;
     isDlbClick: boolean;
 };

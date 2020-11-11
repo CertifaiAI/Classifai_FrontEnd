@@ -1,8 +1,11 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { HTMLElementEvent } from 'src/shared/type-casting/field/field.model';
 import { isEqual } from 'lodash-es';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 import {
-    IThumbnailMetadata,
+    ThumbnailMetadata,
     TabsProps,
     ActionTabProps,
     SelectedLabelProps,
@@ -16,8 +19,8 @@ import {
     styleUrls: ['./image-labelling-project.component.scss'],
     // changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ImageLabellingProjectComponent implements OnInit, OnChanges {
-    @Input() _thumbnailList: ImgLabelProps<IThumbnailMetadata[]> = [];
+export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDestroy {
+    @Input() _thumbnailList: ImgLabelProps<ThumbnailMetadata[]> = [];
     @Input() _tabStatus: TabsProps[] = [];
     @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
     @Output() _onClickThumbNail: EventEmitter<ThumbnailMetadataProps> = new EventEmitter();
@@ -26,10 +29,20 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
     action: number = -1;
     displayInputLabel: boolean = false;
     inputLabel: string = '';
+    unsubscribe$: Subject<any> = new Subject();
 
-    constructor() {}
+    constructor(private _annotateService: AnnotateSelectionService) {}
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this._thumbnailList.length > 0
+            ? this._annotateService.labelStaging$
+                  .pipe(takeUntil(this.unsubscribe$))
+                  .subscribe(({ annotation, isDlbClick }) => {
+                      isDlbClick ? this._annotateService.mutateState({ annotation: -1 }) : null;
+                      console.log({ annotation, isDlbClick });
+                  })
+            : null;
+    }
 
     onClose = (tab: TabsProps): void => {
         this._onClose.emit({ name: tab.name, closed: true });
@@ -91,7 +104,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         // console.log(changes);
         if (changes._thumbnailList) {
-            const { currentValue }: { currentValue: ImgLabelProps<IThumbnailMetadata[]> } = changes._thumbnailList;
+            const { currentValue }: { currentValue: ImgLabelProps<ThumbnailMetadata[]> } = changes._thumbnailList;
             // console.log(currentValue);
             this._thumbnailList = Object.assign([], this._thumbnailList, [...currentValue]);
         }
@@ -103,5 +116,10 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges {
             const { currentValue }: { currentValue: TabsProps[] } = changes._tabStatus;
             this._tabStatus = [...currentValue];
         }
+    }
+
+    ngOnDestroy(): void {
+        this.unsubscribe$.next();
+        this.unsubscribe$.complete();
     }
 }

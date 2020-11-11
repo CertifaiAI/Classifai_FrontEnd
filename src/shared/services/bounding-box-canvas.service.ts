@@ -1,4 +1,4 @@
-import { BoundingBox, Metadata, xyCoordinate } from '../type-casting/meta-data/meta-data';
+import { BoundingBox, Metadata, xyCoordinate } from '../type-casting/meta-data/meta-data.model';
 import { Injectable } from '@angular/core';
 import { cloneDeep } from 'lodash-es';
 import { Utils } from '../../shared/type-casting/utils/utils';

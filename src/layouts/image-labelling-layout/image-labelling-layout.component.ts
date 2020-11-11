@@ -7,7 +7,7 @@ import { SpinnerService } from '../../shared/components/spinner/spinner.service'
 import { Subject } from 'rxjs';
 import {
     ImgLabelProps,
-    IThumbnailMetadata,
+    ThumbnailMetadata,
     TabsProps,
     EventEmitter_Url,
     EventEmitter_Action,
@@ -26,8 +26,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     selectedProjectName: string = '';
     imgSrc: string = '';
     loading: boolean = false;
-    thumbnailList: IThumbnailMetadata[] = [];
-    selectedMetaData!: Partial<IThumbnailMetadata>;
+    thumbnailList: ThumbnailMetadata[] = [];
+    selectedMetaData!: Partial<ThumbnailMetadata>;
     unsubscribe$: Subject<any> = new Subject();
     tabStatus: TabsProps[] = [
         {
@@ -63,7 +63,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             thumbnailList = [],
             labelList = [],
             projectName,
-        }: { thumbnailList: IThumbnailMetadata[]; labelList: string[]; projectName: string } = window.history.state;
+        }: { thumbnailList: ThumbnailMetadata[]; labelList: string[]; projectName: string } = window.history.state;
 
         this.thumbnailList = thumbnailList;
         this.selectedProjectName = projectName;
@@ -167,7 +167,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     /** @function responsible for checking whether current selected thumbnail wanted to display is same as currently displaying image */
     isExactCurrentImage = (
-        selectedThumbnail: IThumbnailMetadata | Partial<IThumbnailMetadata>,
+        selectedThumbnail: ThumbnailMetadata | Partial<ThumbnailMetadata>,
         currentThumbnail: Partial<ThumbnailMetadataProps> = this.selectedMetaData,
     ): boolean => {
         return currentThumbnail?.uuid === selectedThumbnail?.uuid ? false : true;
