@@ -1,9 +1,10 @@
 import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
+import { BoundingBoxStateService } from 'src/shared/services/bounding-box-state.service';
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { HTMLElementEvent } from 'src/shared/type-casting/field/field.model';
 import { isEqual } from 'lodash-es';
-import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import {
     ThumbnailMetadata,
     TabsProps,
@@ -33,10 +34,15 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     selectedIndexAnnotation = -1;
     selectedLabel: string = '';
     unsubscribe$: Subject<any> = new Subject();
+    clickAbilityToggle: boolean = false;
 
-    constructor(private _annotateService: AnnotateSelectionService) {}
+    constructor(private _annotateService: AnnotateSelectionService, private _bbState: BoundingBoxStateService) {}
 
     ngOnInit(): void {
+        this._bbState.boundingBox$
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe(({ draw }) => (this.clickAbilityToggle = draw));
+
         this._thumbnailList.length > 0
             ? this._annotateService.labelStaging$
                   .pipe(takeUntil(this.unsubscribe$))
@@ -125,10 +131,13 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         });
     };
 
-    onClickAnnotation = (index: number, boundingBox: Boundingbox) => {
+    onClickLabel = (label: string) => {
+        this.selectedLabel = label;
+    };
+
+    onClickAnnotation = (index: number, { label }: Boundingbox) => {
         // this._onClickThumbNail.emit(thumbnail);
         // const bbLabel = bnd_box.map(({ label }) => label);
-        const { label } = boundingBox;
         this.selectedLabel = label;
         this._annotateService.mutateState({ annotation: index });
     };

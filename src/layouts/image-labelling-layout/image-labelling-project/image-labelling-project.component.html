@@ -71,13 +71,18 @@
                                     [ngClass]="label === selectedLabel ? 'label-active' : null"
                                 >
                                     <label class="label">
-                                        <div class="pointer">
+                                        <div
+                                            [ngClass]="clickAbilityToggle ? 'pointer' : null"
+                                            (click)="clickAbilityToggle ? onClickLabel(label) : null"
+                                        >
                                             {{ label }}
                                         </div>
                                     </label>
                                     <label class="action"
                                         ><ng-container *ngIf="!action && i > 0"
-                                            ><span class="pointer" (click)="onDeleteLabel(label)"
+                                            ><span
+                                                [ngClass]="clickAbilityToggle ? 'pointer' : null"
+                                                (click)="onDeleteLabel(label)"
                                                 >Delete</span
                                             ></ng-container
                                         ></label
@@ -112,9 +117,9 @@
                                                 class="label"
                                                 [attr.data-index]="j"
                                                 [ngClass]="j === selectedIndexAnnotation ? 'annotation-active' : null"
-                                                (click)="onClickAnnotation(j, boundingBox)"
+                                                (click)="clickAbilityToggle ? onClickAnnotation(j, boundingBox) : null"
                                             >
-                                                <div class="pointer">
+                                                <div [ngClass]="clickAbilityToggle ? 'pointer' : null">
                                                     {{ boundingBox.label }} : {{ boundingBox.id }}
                                                 </div>
                                             </label>
