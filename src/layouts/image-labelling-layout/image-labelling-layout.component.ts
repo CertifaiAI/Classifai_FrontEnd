@@ -114,7 +114,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.displayLabelList(labelList);
 
         if (this.inputProjectName || this.selectedProjectName) {
-            const [{ annotation }] = this.tabStatus.filter(({ annotation }) => annotation);
+            const [{ annotation }] = this.tabStatus;
             this._imgLabelService.setLocalStorageProjectProgress(
                 this.inputProjectName || this.selectedProjectName,
                 annotation,

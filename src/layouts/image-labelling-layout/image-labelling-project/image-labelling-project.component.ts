@@ -11,6 +11,7 @@ import {
     SelectedLabelProps,
     ThumbnailMetadataProps,
     ImgLabelProps,
+    Boundingbox,
 } from '../image-labelling-layout.model';
 
 @Component({
@@ -30,6 +31,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     displayInputLabel: boolean = false;
     inputLabel: string = '';
     selectedIndexAnnotation = -1;
+    selectedLabel: string = '';
     unsubscribe$: Subject<any> = new Subject();
 
     constructor(private _annotateService: AnnotateSelectionService) {}
@@ -42,6 +44,11 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
                       // isDlbClick ? this._annotateService.mutateState({ annotation: -1 }) : null;
 
                       this.selectedIndexAnnotation = annnotationIndex;
+                      const [{ annotation }] = this._tabStatus.filter((tab) => tab.annotation);
+                      const resultLabel = annotation?.map(({ bnd_box }) =>
+                          bnd_box.find((_, i) => i === annnotationIndex),
+                      )[0];
+                      this.selectedLabel = resultLabel?.label ?? '';
 
                       // this.selectedIndexAnnotation = this._tabStatus.reduce((prev, { annotation }) => {
                       //     const currentIndex =
@@ -61,7 +68,6 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
                       //     annotation?.findIndex(({ bnd_box }) => bnd_box.findIndex((_, i) => i === annnotationIndex)),
                       // );
                       // console.log({ annnotationIndex, isDlbClick });
-                      console.log(this.selectedIndexAnnotation);
                   })
             : null;
     }
@@ -119,11 +125,19 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         });
     };
 
-    onClickAnnotation = <T extends ThumbnailMetadata>({ bnd_box }: T) => {
+    onClickAnnotation = (index: number, boundingBox: Boundingbox) => {
         // this._onClickThumbNail.emit(thumbnail);
-        const bbLabel = bnd_box.map(({ label }) => label);
-        console.log(bbLabel);
+        // const bbLabel = bnd_box.map(({ label }) => label);
+        const { label } = boundingBox;
+        this.selectedLabel = label;
+        this._annotateService.mutateState({ annotation: index });
     };
+
+    // onClickAnnotation = <T extends ThumbnailMetadata>({ bnd_box }: T) => {
+    //     // this._onClickThumbNail.emit(thumbnail);
+    //     const bbLabel = bnd_box.map(({ label }) => label);
+    //     console.log(bbLabel);
+    // };
 
     checkCloseToggle = <T extends TabsProps>({ closed }: T): string | null => (closed ? 'closed' : null);
 
