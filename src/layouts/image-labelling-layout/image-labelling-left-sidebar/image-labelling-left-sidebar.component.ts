@@ -1,3 +1,4 @@
+import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { BoundingBoxStateService } from 'src/shared/services/bounding-box-state.service';
 import { IconSchema } from 'src/shared/type-casting/icon/icon.model';
 import { ImgLabelProps } from '../image-labelling-layout.model';
@@ -24,7 +25,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     jsonSchema!: IconSchema;
     iconIndex!: number;
 
-    constructor(private _bbState: BoundingBoxStateService) {}
+    constructor(private _bbState: BoundingBoxStateService, private _annotateService: AnnotateSelectionService) {}
 
     ngOnInit(): void {
         this.bindImagePath();
@@ -90,6 +91,9 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     hoverLabel: `Eraser`,
                     alt: `Eraser`,
                     toggleable: true,
+                    onClick: (): void => {
+                        this._annotateService.mutateState({ annotation: -1 });
+                    },
                 },
                 {
                     imgPath: `../../../assets/icons/fit_center.svg`,
@@ -97,6 +101,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     alt: `Fit Center`,
                     toggleable: false,
                     onClick: (): void => {
+                        this._annotateService.mutateState({ annotation: -1 });
                         this._bbState.setState({ draw: false, drag: false, fitCenter: true, scroll: false });
                     },
                 },
@@ -105,6 +110,16 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     hoverLabel: `Save`,
                     alt: `Save`,
                     toggleable: false,
+                    onClick: (): void => {
+                        this._annotateService.mutateState({ annotation: -1 });
+                        this._bbState.setState({
+                            draw: false,
+                            drag: false,
+                            fitCenter: false,
+                            scroll: false,
+                            clear: false,
+                        });
+                    },
                 },
             ],
         };
