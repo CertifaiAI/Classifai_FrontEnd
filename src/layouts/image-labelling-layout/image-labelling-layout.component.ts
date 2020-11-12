@@ -112,6 +112,14 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         // console.log(window.history.state);
 
         this.displayLabelList(labelList);
+
+        if (this.inputProjectName || this.selectedProjectName) {
+            const [{ annotation }] = this.tabStatus.filter(({ annotation }) => annotation);
+            localStorage.setItem(
+                `${this.inputProjectName || this.selectedProjectName}_bb`,
+                JSON.stringify({ cache: annotation }),
+            );
+        }
     }
 
     onToggleTab = <T extends TabsProps>({ name, closed }: T): void => {
@@ -162,28 +170,25 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     displayLabelList = (newLabelList: string[]): void => {
-        this.tabStatus = this.tabStatus.map((tab) => {
-            if (tab.label_list) {
-                // const newLabelList = tab.label_list.filter((label) => label !== selectedLabel);
-                return {
-                    ...tab,
-                    label_list: newLabelList,
-                };
-            }
-            return tab;
-        });
+        this.tabStatus = this.tabStatus.map((tab) =>
+            tab.label_list
+                ? {
+                      ...tab,
+                      label_list: newLabelList,
+                  }
+                : tab,
+        );
     };
 
     displayBoundingBoxes = (boundingBoxes: ThumbnailMetadata): void => {
-        this.tabStatus = this.tabStatus.map((tab) => {
-            if (tab.annotation) {
-                return {
-                    ...tab,
-                    annotation: [{ ...boundingBoxes }],
-                };
-            }
-            return tab;
-        });
+        this.tabStatus = this.tabStatus.map((tab) =>
+            tab.annotation
+                ? {
+                      ...tab,
+                      annotation: [{ ...boundingBoxes }],
+                  }
+                : tab,
+        );
         console.log(this.tabStatus);
     };
 
