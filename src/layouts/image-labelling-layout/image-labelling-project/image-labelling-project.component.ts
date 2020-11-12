@@ -95,18 +95,21 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         const { value } = event.target;
         const valTrimmed = value.trim();
         if (valTrimmed) {
-            const isInvalidLabel: boolean = this._tabStatus.some(({ label_list }) =>
-                label_list && label_list.length ? label_list.some((label) => label === valTrimmed) : null,
-            );
+            const validateVal: boolean = valTrimmed.match(/^[a-zA-Z0-9-]*$/) ? true : false;
+            if (validateVal) {
+                const isInvalidLabel: boolean = this._tabStatus.some(({ label_list }) =>
+                    label_list && label_list.length ? label_list.some((label) => label === valTrimmed) : null,
+                );
 
-            if (!isInvalidLabel) {
-                const label_list = this._tabStatus
-                    .map(({ label_list }) => (label_list ? label_list : []))
-                    .filter((tab) => tab.length > 0)[0];
-                this._onEnterLabel.emit({ action: 1, label_list: label_list ? [...label_list, value] : [value] });
-                this.displayInputLabel = false;
-            } else {
-                console.error(`Invalid Existing Label Input`);
+                if (!isInvalidLabel) {
+                    const label_list = this._tabStatus
+                        .map(({ label_list }) => (label_list ? label_list : []))
+                        .filter((tab) => tab.length > 0)[0];
+                    this._onEnterLabel.emit({ action: 1, label_list: label_list ? [...label_list, value] : [value] });
+                    this.displayInputLabel = false;
+                } else {
+                    console.error(`Invalid Existing Label Input`);
+                }
             }
         } else {
             console.error(`Invalid input value`);
