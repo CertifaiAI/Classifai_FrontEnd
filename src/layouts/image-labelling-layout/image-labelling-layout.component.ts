@@ -115,10 +115,26 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
         if (this.inputProjectName || this.selectedProjectName) {
             const [{ annotation }] = this.tabStatus.filter(({ annotation }) => annotation);
-            localStorage.setItem(
-                `${this.inputProjectName || this.selectedProjectName}_bb`,
-                JSON.stringify({ cache: annotation }),
+            this._imgLabelService.setLocalStorageProjectProgress(
+                this.inputProjectName || this.selectedProjectName,
+                annotation,
             );
+            annotation?.forEach((metadata) => {
+                this._imgLabelService
+                    .updateProjectProgress(this.inputProjectName || this.selectedProjectName, metadata.uuid, metadata)
+                    .pipe(first())
+                    .subscribe(
+                        ({ error_code, message }) => {},
+                        (err: Error) => {},
+                        () => {
+                            console.log(
+                                this._imgLabelService.getLocalStorageProjectProgress(
+                                    this.inputProjectName || this.selectedProjectName,
+                                ),
+                            );
+                        },
+                    );
+            });
         }
     }
 

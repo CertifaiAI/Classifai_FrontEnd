@@ -34,4 +34,14 @@ export class ImageLabellingService {
             },
         );
     };
+
+    setLocalStorageProjectProgress = (projectName: string, annotation: ThumbnailMetadata[] | undefined) => {
+        localStorage.setItem(`${projectName}_bb`, JSON.stringify({ cache: annotation }));
+    };
+
+    getLocalStorageProjectProgress = (projectName: string): ThumbnailMetadata | null => {
+        const result = localStorage.getItem(`${projectName}_bb`);
+        const jsonResult: ThumbnailMetadata | null = result ? JSON.parse(result) : null;
+        return jsonResult;
+    };
 }
