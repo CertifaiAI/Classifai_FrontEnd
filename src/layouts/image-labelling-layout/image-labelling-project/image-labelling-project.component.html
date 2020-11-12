@@ -66,8 +66,11 @@
                     <div class="utility-inner-container" id="inner-container">
                         <div class="flex-item">
                             <ng-container *ngFor="let label of tab.label_list; index as i">
-                                <div class="flex-center-width">
-                                    <label class="label" [ngClass]="label === selectedLabel ? 'label-active' : null">
+                                <div
+                                    class="flex-center-width"
+                                    [ngClass]="label === selectedLabel ? 'label-active' : null"
+                                >
+                                    <label class="label">
                                         {{ label }}
                                     </label>
                                     <label class="action"
