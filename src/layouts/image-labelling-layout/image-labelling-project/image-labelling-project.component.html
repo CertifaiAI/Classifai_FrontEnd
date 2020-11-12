@@ -71,11 +71,15 @@
                                     [ngClass]="label === selectedLabel ? 'label-active' : null"
                                 >
                                     <label class="label">
-                                        {{ label }}
+                                        <div class="pointer">
+                                            {{ label }}
+                                        </div>
                                     </label>
                                     <label class="action"
                                         ><ng-container *ngIf="!action && i > 0"
-                                            ><span (click)="onDeleteLabel(label)">Delete</span></ng-container
+                                            ><span class="pointer" (click)="onDeleteLabel(label)"
+                                                >Delete</span
+                                            ></ng-container
                                         ></label
                                     >
                                 </div>
@@ -110,8 +114,10 @@
                                                 [ngClass]="j === selectedIndexAnnotation ? 'annotation-active' : null"
                                                 (click)="onClickAnnotation(j, boundingBox)"
                                             >
-                                                {{ boundingBox.label }} : {{ boundingBox.id }}</label
-                                            >
+                                                <div class="pointer">
+                                                    {{ boundingBox.label }} : {{ boundingBox.id }}
+                                                </div>
+                                            </label>
                                         </ng-container></ng-container
                                     >
                                 </ng-container>
