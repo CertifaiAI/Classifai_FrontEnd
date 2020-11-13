@@ -135,6 +135,11 @@ export type SelectedLabelProps = {
     label_list: string[];
 } & TabAction;
 
+export type ChangeAnnotationLabel = {
+    label: string;
+    index: number;
+};
+
 export type BoundingBoxActionState = {
     scroll: boolean;
     drag: boolean;

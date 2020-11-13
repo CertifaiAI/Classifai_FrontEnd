@@ -13,6 +13,7 @@ import {
     ThumbnailMetadataProps,
     ImgLabelProps,
     Boundingbox,
+    ChangeAnnotationLabel,
 } from '../image-labelling-layout.model';
 
 @Component({
@@ -28,6 +29,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     @Output() _onClickThumbNail: EventEmitter<ThumbnailMetadataProps> = new EventEmitter();
     @Output() _onClickLabel: EventEmitter<SelectedLabelProps> = new EventEmitter();
     @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
+    @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
     action: number = -1;
     displayInputLabel: boolean = false;
     inputLabel: string = '';
@@ -91,8 +93,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         this.inputLabel = '';
     };
 
-    validateInputLabel = (event: HTMLElementEvent<HTMLTextAreaElement>): void => {
-        const { value } = event.target;
+    validateInputLabel = ({ target }: HTMLElementEvent<HTMLTextAreaElement>): void => {
+        const { value } = target;
         const valTrimmed = value.trim();
         if (valTrimmed) {
             const validateVal: boolean = valTrimmed.match(/^[a-zA-Z0-9-]*$/) ? true : false;
@@ -100,7 +102,6 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
                 const isInvalidLabel: boolean = this._tabStatus.some(({ label_list }) =>
                     label_list && label_list.length ? label_list.some((label) => label === valTrimmed) : null,
                 );
-
                 if (!isInvalidLabel) {
                     const label_list = this._tabStatus
                         .map(({ label_list }) => (label_list ? label_list : []))
@@ -108,11 +109,11 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
                     this._onEnterLabel.emit({ action: 1, label_list: label_list ? [...label_list, value] : [value] });
                     this.displayInputLabel = false;
                 } else {
-                    console.error(`Invalid Existing Label Input`);
+                    console.error(`Invalid existing label input`);
                 }
+            } else {
+                console.error(`Invalid input value`);
             }
-        } else {
-            console.error(`Invalid input value`);
         }
     };
 
@@ -136,6 +137,10 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
 
     onClickLabel = (label: string) => {
         this.selectedLabel = label;
+
+        this.selectedIndexAnnotation > -1
+            ? this._onChangeAnnotationLabel.emit({ label, index: this.selectedIndexAnnotation })
+            : null;
     };
 
     onClickAnnotation = (index: number, { label }: Boundingbox) => {

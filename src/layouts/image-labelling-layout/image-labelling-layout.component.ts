@@ -13,6 +13,7 @@ import {
     EventEmitter_Action,
     SelectedLabelProps,
     ThumbnailMetadataProps,
+    ChangeAnnotationLabel,
 } from './image-labelling-layout.model';
 
 @Component({
@@ -205,6 +206,25 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                   }
                 : tab,
         );
+        console.log(this.tabStatus);
+    };
+
+    onChangeAnnotationLabel = <T extends ChangeAnnotationLabel>({ label, index }: T): void => {
+        // let currentAnnotationLabel: string = '';
+        // for (const { annotation } of this._tabStatus) {
+        //     if (annotation) {
+        //         for (const { bnd_box } of annotation) {
+        //             currentAnnotationLabel = bnd_box[this.selectedIndexAnnotation].label;
+        //         }
+        //     }
+        // }
+
+        const ss = this.tabStatus.filter(({ annotation }) =>
+            annotation?.map(({ bnd_box }) => (bnd_box[index].label = label)),
+        );
+
+        console.log(ss);
+
         console.log(this.tabStatus);
     };
 
