@@ -1,6 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { DataSetLayoutService } from '../data-set-layout/data-set-layout.service';
-import { first, takeUntil } from 'rxjs/operators';
+import { first, takeUntil, map } from 'rxjs/operators';
 import { ImageLabellingService } from './image-labelling-layout.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from '../../shared/components/spinner/spinner.service';
@@ -210,22 +210,20 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     onChangeAnnotationLabel = <T extends ChangeAnnotationLabel>({ label, index }: T): void => {
-        // let currentAnnotationLabel: string = '';
-        // for (const { annotation } of this._tabStatus) {
-        //     if (annotation) {
-        //         for (const { bnd_box } of annotation) {
-        //             currentAnnotationLabel = bnd_box[this.selectedIndexAnnotation].label;
-        //         }
-        //     }
-        // }
+        this.tabStatus.filter(({ annotation }) => annotation?.map(({ bnd_box }) => (bnd_box[index].label = label)));
+        // console.log(this.tabStatus);
 
-        const ss = this.tabStatus.filter(({ annotation }) =>
-            annotation?.map(({ bnd_box }) => (bnd_box[index].label = label)),
-        );
-
-        console.log(ss);
-
-        console.log(this.tabStatus);
+        // this.tabStatus = this.tabStatus.map((tab) => {
+        //     return {
+        //         ...tab,
+        //         annotation: tab.annotation?.map((metadata) => {
+        //             return {
+        //                 ...metadata,
+        //                 bnd_box: [...annotation],
+        //             };
+        //         }),
+        //     };
+        // });
     };
 
     /** @function responsible for calling API to acquire thumbnail in original size
