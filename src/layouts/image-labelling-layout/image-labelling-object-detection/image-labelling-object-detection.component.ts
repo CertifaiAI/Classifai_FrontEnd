@@ -16,6 +16,8 @@ import {
     HostListener,
     ChangeDetectionStrategy,
     OnChanges,
+    Output,
+    EventEmitter,
 } from '@angular/core';
 
 @Component({
@@ -35,6 +37,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     private annotateState!: AnnotateActionState;
     @Input() _selectMetadata!: Metadata;
     @Input() _imgSrc: string = '';
+    @Output() _mutatedMeta: EventEmitter<Metadata> = new EventEmitter();
 
     constructor(
         private _boundingBoxCanvas: BoundingBoxCanvasService,
@@ -64,6 +67,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                   this.loadImages(changes._imgSrc.currentValue))
                 : {};
         } catch (err) {}
+    }
+
+    emmitMetadata() {
+        this._mutatedMeta.emit(this._selectMetadata);
     }
 
     annotateStateMakeChange(newState: AnnotateActionState | null) {
@@ -96,7 +103,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                       this._selectMetadata.img_w,
                       this._selectMetadata.img_h,
                   ),
-                  this.rulesMakeChange(null, null, false))
+                  this.rulesMakeChange(null, null, false),
+                  this.emmitMetadata())
                 : {};
         } catch (err) {}
     }
@@ -169,6 +177,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 this._selectMetadata.img_w,
                 this._selectMetadata.img_h,
             );
+            this.emmitMetadata();
             this.rulesMakeChange(null, false, null);
         } catch (err) {}
     }
@@ -203,6 +212,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         meta: cloneDeep(this._selectMetadata),
                         method: 'draw',
                     });
+                    this.emmitMetadata();
                     this.mycanvas.nativeElement.focus();
                 } else if (event.ctrlKey && event.shiftKey && (event.key === 'z' || event.key === 'Z')) {
                     // redo
@@ -215,10 +225,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             this._selectMetadata.img_w,
                             this._selectMetadata.img_h,
                         );
+                        this.emmitMetadata();
                     }
                 } else if (event.ctrlKey && (event.key === 'z' || event.key === 'Z')) {
                     // undo
-                    console.log('child undo');
                     if (this._undoRedoService.isAllowUndo()) {
                         const rtStages: UndoState = this._undoRedoService.undo();
                         this._selectMetadata = cloneDeep(rtStages?.meta as Metadata);
@@ -228,6 +238,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             this._selectMetadata.img_w,
                             this._selectMetadata.img_h,
                         );
+                        this.emmitMetadata();
                     }
                 } else if (event.key === 'Delete' || event.key === 'Backspace') {
                     // delete single annotation
@@ -242,7 +253,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                                   this._undoRedoService.appendStages({
                                       meta: cloneDeep(this._selectMetadata),
                                       method: 'draw',
-                                  }))
+                                  }),
+                                  this.emmitMetadata())
                                 : {};
                         },
                     );
@@ -365,6 +377,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this._selectMetadata.img_x,
                     this._selectMetadata.img_y,
                 );
+                this.emmitMetadata();
             }
         } catch (err) {
             console.log('MouseUp(event: MouseEvent)', err.name + ': ', err.message);
@@ -485,12 +498,13 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 this._selectMetadata.img_h =
                     this._selectMetadata.img_h < 1 ? this._selectMetadata.img_ori_h : this._selectMetadata.img_h;
                 this._boundingBoxCanvas.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
-                this.redrawImages(
-                    this._selectMetadata.img_x,
-                    this._selectMetadata.img_y,
-                    this._selectMetadata.img_w,
-                    this._selectMetadata.img_h,
-                );
+                this.imgFitToCenter();
+                // this.redrawImages(
+                //     this._selectMetadata.img_x,
+                //     this._selectMetadata.img_y,
+                //     this._selectMetadata.img_w,
+                //     this._selectMetadata.img_h,
+                // );
                 this._undoRedoService.appendStages({
                     meta: cloneDeep(this._selectMetadata),
                     method: 'draw',
@@ -520,10 +534,11 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 this._selectMetadata.img_h,
                 (isDone: boolean) => {
                     isDone
-                        ? this._undoRedoService.appendStages({
+                        ? (this._undoRedoService.appendStages({
                               meta: cloneDeep(this._selectMetadata),
                               method: 'draw',
-                          })
+                          }),
+                          this.emmitMetadata())
                         : {};
                 },
             );
@@ -558,10 +573,11 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this._selectMetadata.img_y,
                     (isDone: boolean) => {
                         isDone
-                            ? this._undoRedoService.appendStages({
+                            ? (this._undoRedoService.appendStages({
                                   meta: cloneDeep(this._selectMetadata),
                                   method: 'zoom',
-                              })
+                              }),
+                              this.emmitMetadata())
                             : {};
                     },
                 );
@@ -578,7 +594,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         (isDone: boolean) => {
                             if (isDone) {
                                 const meta = cloneDeep(this._selectMetadata);
-                                return this._undoRedoService.isMethodChange('zoom')
+                                this.emmitMetadata();
+                                this._undoRedoService.isMethodChange('zoom')
                                     ? this._undoRedoService.appendStages({
                                           meta,
                                           method: 'zoom',
@@ -587,8 +604,6 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                                           meta,
                                           method: 'zoom',
                                       });
-                            } else {
-                                return {};
                             }
                         },
                     );

@@ -13,6 +13,7 @@
         <image-labelling-object-detection
             [_selectMetadata]="selectedMetaData"
             [_imgSrc]="imgSrc"
+            (_mutatedMeta)="metaOnChange($event)"
         ></image-labelling-object-detection>
         <!-- <image-labelling-image [_thumbnail]="selectedThumbnail"></image-labelling-image> -->
 
