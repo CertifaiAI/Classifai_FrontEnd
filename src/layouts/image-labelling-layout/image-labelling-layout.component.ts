@@ -1,3 +1,4 @@
+import { Metadata } from '../../shared/type-casting/meta-data/meta-data.model';
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { DataSetLayoutService } from '../data-set-layout/data-set-layout.service';
 import { first, takeUntil, map } from 'rxjs/operators';
@@ -138,6 +139,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             });
         }
     }
+    metaOnChange = (meta: Metadata): void => {
+        //TODO: daniel to accept the changes
+    };
 
     onToggleTab = <T extends TabsProps>({ name, closed }: T): void => {
         // console.log(name, closed);
