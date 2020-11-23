@@ -1,9 +1,9 @@
 <div class="layout-container">
     <div>
         <!-- <image-labelling-header
-            [_onChange]="onChangeSchema"
-            (_navigate)="navigateByUrl($event)"
-        ></image-labelling-header> -->
+          [_onChange]="onChangeSchema"
+          (_navigate)="navigateByUrl($event)"
+      ></image-labelling-header> -->
         <page-header [_onChange]="onChangeSchema"></page-header>
         <image-labelling-info [_onChange]="onChangeSchema" (_onClick)="navigateByAction($event)"></image-labelling-info>
     </div>
@@ -13,7 +13,7 @@
         <image-labelling-object-detection
             [_selectMetadata]="selectedMetaData"
             [_imgSrc]="imgSrc"
-            (_mutatedMeta)="metaOnChange($event)"
+            (_mutateMetadata)="onChangeMetadata($event)"
         ></image-labelling-object-detection>
         <!-- <image-labelling-image [_thumbnail]="selectedThumbnail"></image-labelling-image> -->
 

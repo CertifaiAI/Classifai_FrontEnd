@@ -1,7 +1,6 @@
-import { Metadata } from '../../shared/type-casting/meta-data/meta-data.model';
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { DataSetLayoutService } from '../data-set-layout/data-set-layout.service';
-import { first, takeUntil, map } from 'rxjs/operators';
+import { first, takeUntil } from 'rxjs/operators';
 import { ImageLabellingService } from './image-labelling-layout.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from '../../shared/components/spinner/spinner.service';
@@ -46,46 +45,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             name: 'Annotation',
             closed: false,
             // annotation: undefined,
-            annotation: [
-                {
-                    uuid: 1,
-                    project_name: 'test12',
-                    img_path: 'C:\\Users\\Daniel.Lim\\Pictures\\Screenshots\\Screenshot (1).png',
-                    bnd_box: [
-                        {
-                            color: 'rgba(255,255,0,0.8)',
-                            distancetoImg: { x: 519, y: 248 },
-                            y1: 315,
-                            x1: 537,
-                            y2: 515,
-                            x2: 785,
-                            label: 'label',
-                            id: 10112020174527860,
-                            lineWidth: 1,
-                        },
-                        {
-                            color: 'rgba(255,255,0,0.8)',
-                            distancetoImg: { x: 519, y: 248 },
-                            y1: 315,
-                            x1: 537,
-                            y2: 515,
-                            x2: 785,
-                            label: 'try',
-                            id: 10112020174527860,
-                            lineWidth: 1,
-                        },
-                    ],
-                    img_depth: 3,
-                    img_x: 18,
-                    img_y: 67,
-                    img_w: 1920,
-                    img_h: 1080,
-                    file_size: 329342,
-                    img_ori_w: 1920,
-                    img_ori_h: 1080,
-                    img_thumbnail: '',
-                },
-            ],
+            annotation: [],
         },
     ];
 
@@ -114,33 +74,44 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         // console.log(window.history.state);
 
         this.displayLabelList(labelList);
-
-        if (this.inputProjectName || this.selectedProjectName) {
-            const [{ annotation }] = this.tabStatus;
-            this._imgLabelService.setLocalStorageProjectProgress(
-                this.inputProjectName || this.selectedProjectName,
-                annotation,
-            );
-            annotation?.forEach((metadata) => {
-                this._imgLabelService
-                    .updateProjectProgress(this.inputProjectName || this.selectedProjectName, metadata.uuid, metadata)
-                    .pipe(first())
-                    .subscribe(
-                        ({ error_code, message }) => {},
-                        (err: Error) => {},
-                        () => {
-                            console.log(
-                                this._imgLabelService.getLocalStorageProjectProgress(
-                                    this.inputProjectName || this.selectedProjectName,
-                                ),
-                            );
-                        },
-                    );
-            });
-        }
     }
-    metaOnChange = (meta: Metadata): void => {
-        //TODO: daniel to accept the changes
+
+    updateProjectProgress = (): void => {
+        this.tabStatus.forEach(({ annotation }) => {
+            annotation
+                ? (this._imgLabelService.setLocalStorageProjectProgress(
+                      this.inputProjectName || this.selectedProjectName,
+                      annotation,
+                  ),
+                  annotation?.forEach((metadata) => {
+                      this._imgLabelService
+                          .updateProjectProgress(
+                              this.inputProjectName || this.selectedProjectName,
+                              metadata.uuid,
+                              metadata,
+                          )
+                          .pipe(first())
+                          .subscribe(
+                              ({ error_code, message }) => {},
+                              // (err: Error) => {},
+                              // () => {
+                              //     console.log(
+                              //         this._imgLabelService.getLocalStorageProjectProgress(
+                              //             this.inputProjectName || this.selectedProjectName,
+                              //         ),
+                              //     );
+                              // },
+                          );
+                  }))
+                : null;
+        });
+    };
+
+    onChangeMetadata = (mutatedMetadata: ThumbnailMetadata): void => {
+        this.tabStatus = this.tabStatus.map((tab) =>
+            tab.annotation ? { ...tab, annotation: [mutatedMetadata] } : tab,
+        );
+        this.updateProjectProgress();
     };
 
     onToggleTab = <T extends TabsProps>({ name, closed }: T): void => {
@@ -188,6 +159,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         updateLabel$.pipe(first()).subscribe(({ message }) => {
             message === 1 ? this.displayLabelList(newLabelList) : console.error(`Error while updating label`);
         });
+
+        this.updateProjectProgress();
     };
 
     displayLabelList = (newLabelList: string[]): void => {
@@ -201,33 +174,41 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         );
     };
 
-    displayBoundingBoxes = (boundingBoxes: ThumbnailMetadata): void => {
+    // displayBoundingBoxes = (boundingBoxes: ThumbnailMetadata): void => {
+    //     this.tabStatus = this.tabStatus.map((tab) =>
+    //         tab.annotation
+    //             ? {
+    //                   ...tab,
+    //                   annotation: [{ ...boundingBoxes }],
+    //               }
+    //             : tab,
+    //     );
+    //     console.log(this.tabStatus);
+    // };
+
+    onChangeAnnotationLabel = <T extends ChangeAnnotationLabel>({ label, index }: T): void => {
         this.tabStatus = this.tabStatus.map((tab) =>
             tab.annotation
                 ? {
                       ...tab,
-                      annotation: [{ ...boundingBoxes }],
+                      annotation: tab.annotation.map((metadata) => {
+                          return {
+                              ...metadata,
+                              bnd_box: metadata.bnd_box.map((box, i) =>
+                                  i === index
+                                      ? {
+                                            ...box,
+                                            label,
+                                        }
+                                      : box,
+                              ),
+                          };
+                      }),
                   }
                 : tab,
         );
-        console.log(this.tabStatus);
-    };
-
-    onChangeAnnotationLabel = <T extends ChangeAnnotationLabel>({ label, index }: T): void => {
-        this.tabStatus.filter(({ annotation }) => annotation?.map(({ bnd_box }) => (bnd_box[index].label = label)));
-        // console.log(this.tabStatus);
-
-        // this.tabStatus = this.tabStatus.map((tab) => {
-        //     return {
-        //         ...tab,
-        //         annotation: tab.annotation?.map((metadata) => {
-        //             return {
-        //                 ...metadata,
-        //                 bnd_box: [...annotation],
-        //             };
-        //         }),
-        //     };
-        // });
+        // this.tabStatus.filter(({ annotation }) => annotation?.map(({ bnd_box }) => (bnd_box[index].label = label)));
+        this.updateProjectProgress();
     };
 
     /** @function responsible for calling API to acquire thumbnail in original size

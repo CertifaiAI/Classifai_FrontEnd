@@ -37,7 +37,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     private annotateState!: AnnotateActionState;
     @Input() _selectMetadata!: Metadata;
     @Input() _imgSrc: string = '';
-    @Output() _mutatedMeta: EventEmitter<Metadata> = new EventEmitter();
+    @Output() _mutateMetadata: EventEmitter<Metadata> = new EventEmitter();
 
     constructor(
         private _boundingBoxCanvas: BoundingBoxCanvasService,
@@ -69,8 +69,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         } catch (err) {}
     }
 
-    emmitMetadata() {
-        this._mutatedMeta.emit(this._selectMetadata);
+    emitMetadata() {
+        this._mutateMetadata.emit(this._selectMetadata);
     }
 
     annotateStateMakeChange(newState: AnnotateActionState | null) {
@@ -104,7 +104,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                       this._selectMetadata.img_h,
                   ),
                   this.rulesMakeChange(null, null, false),
-                  this.emmitMetadata())
+                  this.emitMetadata())
                 : {};
         } catch (err) {}
     }
@@ -177,7 +177,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 this._selectMetadata.img_w,
                 this._selectMetadata.img_h,
             );
-            this.emmitMetadata();
+            this.emitMetadata();
             this.rulesMakeChange(null, false, null);
         } catch (err) {}
     }
@@ -212,7 +212,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         meta: cloneDeep(this._selectMetadata),
                         method: 'draw',
                     });
-                    this.emmitMetadata();
+                    this.emitMetadata();
                     this.mycanvas.nativeElement.focus();
                 } else if (event.ctrlKey && event.shiftKey && (event.key === 'z' || event.key === 'Z')) {
                     // redo
@@ -225,7 +225,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             this._selectMetadata.img_w,
                             this._selectMetadata.img_h,
                         );
-                        this.emmitMetadata();
+                        this.emitMetadata();
                     }
                 } else if (event.ctrlKey && (event.key === 'z' || event.key === 'Z')) {
                     // undo
@@ -238,7 +238,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             this._selectMetadata.img_w,
                             this._selectMetadata.img_h,
                         );
-                        this.emmitMetadata();
+                        this.emitMetadata();
                     }
                 } else if (event.key === 'Delete' || event.key === 'Backspace') {
                     // delete single annotation
@@ -254,7 +254,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                                       meta: cloneDeep(this._selectMetadata),
                                       method: 'draw',
                                   }),
-                                  this.emmitMetadata())
+                                  this.emitMetadata())
                                 : {};
                         },
                     );
@@ -377,7 +377,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this._selectMetadata.img_x,
                     this._selectMetadata.img_y,
                 );
-                this.emmitMetadata();
+                this.emitMetadata();
             }
         } catch (err) {
             console.log('MouseUp(event: MouseEvent)', err.name + ': ', err.message);
@@ -538,7 +538,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                               meta: cloneDeep(this._selectMetadata),
                               method: 'draw',
                           }),
-                          this.emmitMetadata())
+                          this.emitMetadata())
                         : {};
                 },
             );
@@ -577,7 +577,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                                   meta: cloneDeep(this._selectMetadata),
                                   method: 'zoom',
                               }),
-                              this.emmitMetadata())
+                              this.emitMetadata())
                             : {};
                     },
                 );
@@ -594,7 +594,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         (isDone: boolean) => {
                             if (isDone) {
                                 const meta = cloneDeep(this._selectMetadata);
-                                this.emmitMetadata();
+                                this.emitMetadata();
                                 this._undoRedoService.isMethodChange('zoom')
                                     ? this._undoRedoService.appendStages({
                                           meta,
