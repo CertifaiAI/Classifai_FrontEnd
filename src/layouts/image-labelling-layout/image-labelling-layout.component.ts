@@ -207,11 +207,14 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                   }
                 : tab,
         );
-        // this.tabStatus.filter(({ annotation }) => annotation?.map(({ bnd_box }) => (bnd_box[index].label = label)));
+
+        /** @function responsible for updating selectedMetaData state to re-render object-detection comp */
+        this.tabStatus.forEach(({ annotation }) => (annotation ? (this.selectedMetaData = annotation[0]) : null));
         this.updateProjectProgress();
     };
 
-    /** @function responsible for calling API to acquire thumbnail in original size
+    /**
+     *  @function responsible for calling API to acquire thumbnail in original size
      *  @type optional ThumbnailMetadataProps
      *        which allows navigateByAction function to send only needed props due to optional type
      */

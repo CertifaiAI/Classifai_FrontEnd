@@ -210,10 +210,14 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         const thumbnailResponse = interval(500).pipe(
                             flatMap(() => projLoadingStatus$),
                             first(({ message }) => message === 2),
-                            mergeMap(({ uuid_list }) =>
-                                uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [],
-                            ),
+                            mergeMap(({ uuid_list, label_list }) => {
+                                this.labelList = [...label_list];
+                                return uuid_list.length > 0
+                                    ? uuid_list.map((uuid) => thumbnail$(projectName, uuid))
+                                    : [];
+                            }),
                         );
+
                         return thumbnailResponse;
                     }
                 }),
