@@ -2,6 +2,7 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { DataSetLayoutService } from '../data-set-layout/data-set-layout.service';
 import { first } from 'rxjs/operators';
 import { ImageLabellingService } from './image-labelling-layout.service';
+import { ModalService } from 'src/shared/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import {
@@ -14,7 +15,6 @@ import {
     ThumbnailMetadataProps,
     ChangeAnnotationLabel,
 } from './image-labelling-layout.model';
-import { ModalService } from 'src/shared/components/modal/modal.service';
 
 @Component({
     selector: 'image-labelling-layout',
