@@ -37,7 +37,7 @@
                             ><div class="div-close" (click)="onClose(tab)">x</div></span
                         >
                         <span class="tab-extra-icons">
-                            <ng-container *ngIf="_thumbnailList.length > 0; else noClick">
+                            <ng-container *ngIf="_thumbnailList.length > 0">
                                 <div
                                     class="extra-icons"
                                     (click)="onDisplayInputModal(true); onIconClick({ tabType: 'label', action: 1 })"
@@ -45,9 +45,6 @@
                                     +
                                 </div>
                             </ng-container>
-                            <ng-template #noClick>
-                                <div class="extra-icons">+</div>
-                            </ng-template>
                             <ng-container *ngIf="displayInputLabel">
                                 <div class="label-input">
                                     <input
@@ -59,7 +56,7 @@
                             ></ng-container>
                         </span>
                         <span class="tab-extra-icons">
-                            <ng-container *ngIf="_thumbnailList.length > 0; else noClick">
+                            <ng-container *ngIf="_thumbnailList.length > 0">
                                 <div
                                     class="extra-icons"
                                     (click)="
@@ -71,9 +68,6 @@
                                     -
                                 </div>
                             </ng-container>
-                            <ng-template #noClick>
-                                <div class="extra-icons">-</div>
-                            </ng-template>
                         </span>
                     </div>
 
@@ -120,12 +114,9 @@
                         >
                         <span class="tab-extra-icons"></span>
                         <span class="tab-extra-icons">
-                            <ng-container *ngIf="_thumbnailList.length > 0; else noClick">
+                            <ng-container *ngIf="_thumbnailList.length > 0">
                                 <div class="extra-icons" (click)="onDeleteAnnotation()">-</div>
                             </ng-container>
-                            <ng-template #noClick>
-                                <div class="extra-icons">-</div>
-                            </ng-template>
                         </span>
                     </div>
                     <div class="utility-inner-container" id="inner-container">

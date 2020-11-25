@@ -5,29 +5,29 @@ import { ModalComponent } from './modal.component';
 export class ModalService {
     private modals: ModalComponent[] = [];
 
-    add(modal: any) {
+    add = (modal: any) => {
         // add modal to array of active modals
-        // console.log(modal);
         this.modals.push(modal);
-    }
+    };
 
-    remove(id: string) {
+    remove = (inputId: string) => {
         // remove modal from array of active modals
-        this.modals = this.modals.filter((x) => x.id !== id);
+        this.modals = this.modals.filter(({ id }) => id !== inputId);
         // this.modals = this.modals = [];
-    }
+    };
 
-    open(id: string) {
+    open = (inputId: string) => {
         // open modal specified by id
-        const modal = this.modals.find((x) => x.id === id);
+        const modal = this.modals.find(({ id }) => id === inputId);
         // console.log(modal);
         modal?.open();
-    }
+    };
 
-    close(id: string) {
+    close = (inputId: string) => {
         // close modal specified by id
-        const modal = this.modals.find((x) => x.id === id);
+        // console.log(this.modals);
+        const modal = this.modals.find(({ id }) => id === inputId);
         // console.log(modal);
         modal?.close();
-    }
+    };
 }

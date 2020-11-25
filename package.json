@@ -6,7 +6,7 @@
     "start:dev": "nodemon -w ./webpack.config.js --exec \"ng s -o --extra-webpack-config webpack.config.js\"",
     "start:prod": "node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng s -o --extra-webpack-config webpack.config.js",
     "build:normal": "node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng build --prod --extra-webpack-config webpack.config.js",
-    "build:analyze": "node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng build --prod --extra-webpack-config webpack.config.js --stats-json && webpack-bundle-analyzer dist/intellabel/stats-es2015.json",
+    "build:analyze": "node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng build --prod --extra-webpack-config webpack.config.js --stats-json && webpack-bundle-analyzer dist/intellabel/stats.json",
     "build:lighthouse": "ng s -o --extra-webpack-config webpack.config.js --prod",
     "analyze:stats": "npm run analyze",
     "test": "ng test",

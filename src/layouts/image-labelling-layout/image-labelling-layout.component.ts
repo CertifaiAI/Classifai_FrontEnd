@@ -75,8 +75,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         // console.log(window.history.state);
 
         this.displayLabelList(labelList);
-        this._modalService.add('custom-modal-1');
-        this._modalService.close('custom-modal-1');
     }
 
     updateProjectProgress = (): void => {
