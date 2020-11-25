@@ -1,9 +1,8 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { DataSetLayoutService } from '../data-set-layout/data-set-layout.service';
-import { first, takeUntil } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { ImageLabellingService } from './image-labelling-layout.service';
 import { Router } from '@angular/router';
-import { SpinnerService } from '../../shared/components/spinner/spinner.service';
 import { Subject } from 'rxjs';
 import {
     ImgLabelProps,
@@ -52,15 +51,15 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     constructor(
         private _router: Router,
         private _imgLabelService: ImageLabellingService,
-        private _spinnerService: SpinnerService,
+        // private _spinnerService: SpinnerService,
         private _dataSetService: DataSetLayoutService,
     ) {}
 
     ngOnInit(): void {
-        this._spinnerService
-            .returnAsObservable()
-            .pipe(takeUntil(this.unsubscribe$))
-            .subscribe((loading) => (this.loading = loading));
+        // this._spinnerService
+        //     .returnAsObservable()
+        //     .pipe(takeUntil(this.unsubscribe$))
+        //     .subscribe((loading) => (this.loading = loading));
 
         const {
             thumbnailList = [],
@@ -202,6 +201,26 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                                         }
                                       : box,
                               ),
+                          };
+                      }),
+                  }
+                : tab,
+        );
+
+        /** @function responsible for updating selectedMetaData state to re-render object-detection comp */
+        this.tabStatus.forEach(({ annotation }) => (annotation ? (this.selectedMetaData = annotation[0]) : null));
+        this.updateProjectProgress();
+    };
+
+    onDeleteAnnotation = (index: number) => {
+        this.tabStatus = this.tabStatus.map((tab) =>
+            tab.annotation
+                ? {
+                      ...tab,
+                      annotation: tab.annotation.map((metadata) => {
+                          return {
+                              ...metadata,
+                              bnd_box: metadata.bnd_box.filter((_, i) => i !== index),
                           };
                       }),
                   }

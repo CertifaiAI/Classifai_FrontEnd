@@ -13,7 +13,7 @@
         <image-labelling-object-detection
             [_selectMetadata]="selectedMetaData"
             [_imgSrc]="imgSrc"
-            (_mutateMetadata)="onChangeMetadata($event)"
+            (_onChangeMetadata)="onChangeMetadata($event)"
         ></image-labelling-object-detection>
         <!-- <image-labelling-image [_thumbnail]="selectedThumbnail"></image-labelling-image> -->
 
@@ -25,6 +25,7 @@
             (_onClickLabel)="onProcessLabel($event)"
             (_onEnterLabel)="onProcessLabel($event)"
             (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
+            (_onDeleteAnnotation)="onDeleteAnnotation($event)"
         ></image-labelling-project>
         <image-labelling-right-sidebar
             [_onChange]="onChangeSchema"
@@ -34,4 +35,4 @@
     <image-labelling-footer [_thumbnailInfo]="selectedMetaData" [_imgSrc]="imgSrc"></image-labelling-footer>
 </div>
 
-<spinner [_loading]="loading"></spinner>
+<!-- <spinner [_loading]="loading"></spinner> -->

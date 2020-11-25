@@ -115,7 +115,14 @@
                             ><div class="div-close" (click)="onClose(tab)">x</div></span
                         >
                         <span class="tab-extra-icons"></span>
-                        <span class="tab-extra-icons"><div class="extra-icons">-</div></span>
+                        <span class="tab-extra-icons">
+                            <ng-container *ngIf="_thumbnailList.length > 0; else noClick">
+                                <div class="extra-icons" (click)="onDeleteAnnotation()">-</div>
+                            </ng-container>
+                            <ng-template #noClick>
+                                <div class="extra-icons">-</div>
+                            </ng-template>
+                        </span>
                     </div>
                     <div class="utility-inner-container" id="inner-container">
                         <div class="flex-item">

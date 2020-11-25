@@ -30,6 +30,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     @Output() _onClickLabel: EventEmitter<SelectedLabelProps> = new EventEmitter();
     @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
     @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
+    @Output() _onDeleteAnnotation: EventEmitter<number> = new EventEmitter();
     action: number = -1;
     displayInputLabel: boolean = false;
     inputLabel: string = '';
@@ -148,6 +149,10 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         // const bbLabel = bnd_box.map(({ label }) => label);
         this.selectedLabel = label;
         this._annotateService.mutateState({ annotation: index });
+    };
+
+    onDeleteAnnotation = () => {
+        this.selectedIndexAnnotation > -1 ? this._onDeleteAnnotation.emit(this.selectedIndexAnnotation) : null;
     };
 
     // onClickAnnotation = <T extends ThumbnailMetadata>({ bnd_box }: T) => {
