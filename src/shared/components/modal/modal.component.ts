@@ -9,7 +9,7 @@ import { ModalService } from './modal.service';
 })
 export class ModalComponent implements OnInit, OnDestroy {
     @Input() id: string = '';
-    private element: any;
+    private element: HTMLDivElement;
 
     constructor(private _modalService: ModalService, private _el: ElementRef) {
         this.element = this._el.nativeElement;
@@ -25,13 +25,10 @@ export class ModalComponent implements OnInit, OnDestroy {
         }
 
         // close modal on background click
-        // this.element.addEventListener('click', (el) => {
-        //   if (el.target.className === 'jw-modal') {
-        //     this.close();
-        //   }
-        // });
+        this.element.addEventListener('click', (el: any) => (el.target.className === 'modal' ? this.close() : null));
 
-        this._el.nativeElement.children[0].style.background = 'black';
+        // this._el.nativeElement.children[0].style.background = 'black';
+
         // console.log(this);
         // add self (this modal instance) to the modal service so it's accessible from controllers
         this._modalService.add(this);
@@ -39,7 +36,7 @@ export class ModalComponent implements OnInit, OnDestroy {
 
     // remove self from modal service when component is destroyed
     ngOnDestroy(): void {
-        // this._modalService.remove(this.id);
+        this._modalService.remove(this.id);
         this.element.remove();
     }
 
@@ -53,6 +50,6 @@ export class ModalComponent implements OnInit, OnDestroy {
     close(): void {
         this.element.style.display = 'none';
         document.body.classList.remove('modal-open');
-        this._el.nativeElement.children[0].style.background = null;
+        // this._el.nativeElement.children[0].style.background = null;
     }
 }

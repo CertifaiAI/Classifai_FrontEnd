@@ -2,16 +2,17 @@ import { CommonModule } from '@angular/common';
 import { ImageLabellingFooterComponent } from './image-labelling-footer/image-labelling-footer.component';
 import { ImageLabellingInfoComponent } from './image-labelling-info/image-labelling-info.component';
 import { ImageLabellingLayoutComponent } from './image-labelling-layout.component';
-import { ImageLabellingObjectDetectionComponent } from './image-labelling-object-detection/image-labelling-object-detection.component';
 import { ImageLabellingLeftSidebarComponent } from './image-labelling-left-sidebar/image-labelling-left-sidebar.component';
+import { ImageLabellingObjectDetectionComponent } from './image-labelling-object-detection/image-labelling-object-detection.component';
 import { ImageLabellingProjectComponent } from './image-labelling-project/image-labelling-project.component';
 import { ImageLabellingRightSidebarComponent } from './image-labelling-right-sidebar/image-labelling-right-sidebar.component';
 import { ImageLabellingRoutingModule } from './image-labelling-layout-routing.module';
+import { ModalModule } from 'src/shared/components/modal/modal.module';
 import { NgModule } from '@angular/core';
 import { SharedModule } from 'src/shared/shared.module';
 
 @NgModule({
-    imports: [CommonModule, SharedModule, ImageLabellingRoutingModule],
+    imports: [CommonModule, SharedModule, ImageLabellingRoutingModule, ModalModule],
     declarations: [
         ImageLabellingLayoutComponent,
         ImageLabellingInfoComponent,

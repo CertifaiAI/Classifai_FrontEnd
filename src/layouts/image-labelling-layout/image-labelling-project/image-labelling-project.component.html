@@ -62,7 +62,11 @@
                             <ng-container *ngIf="_thumbnailList.length > 0; else noClick">
                                 <div
                                     class="extra-icons"
-                                    (click)="onDisplayInputModal(false); onIconClick({ tabType: 'label', action: 0 })"
+                                    (click)="
+                                        onDisplayInputModal(false);
+                                        onIconClick({ tabType: 'label', action: 0 });
+                                        onClickModal()
+                                    "
                                 >
                                     -
                                 </div>

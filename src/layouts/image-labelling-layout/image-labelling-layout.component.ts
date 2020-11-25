@@ -14,6 +14,7 @@ import {
     ThumbnailMetadataProps,
     ChangeAnnotationLabel,
 } from './image-labelling-layout.model';
+import { ModalService } from 'src/shared/components/modal/modal.service';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -52,6 +53,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         private _router: Router,
         private _imgLabelService: ImageLabellingService,
         // private _spinnerService: SpinnerService,
+        private _modalService: ModalService,
         private _dataSetService: DataSetLayoutService,
     ) {}
 
@@ -73,6 +75,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         // console.log(window.history.state);
 
         this.displayLabelList(labelList);
+        this._modalService.add('custom-modal-1');
+        this._modalService.close('custom-modal-1');
     }
 
     updateProjectProgress = (): void => {
@@ -283,6 +287,14 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 currentThumbnailUuid !== uuid
             );
         };
+    };
+
+    onDisplayModal = (id: string = 'custom-modal-1') => {
+        this._modalService.open(id);
+    };
+
+    onCloseModal = (id: string = 'custom-modal-1') => {
+        this._modalService.close(id);
     };
 
     /** @event fires whenever browser is closing */

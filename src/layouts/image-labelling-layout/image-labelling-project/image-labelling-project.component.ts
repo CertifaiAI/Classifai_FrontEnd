@@ -31,6 +31,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
     @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
     @Output() _onDeleteAnnotation: EventEmitter<number> = new EventEmitter();
+    @Output() _onDisplayModal: EventEmitter<null> = new EventEmitter();
     action: number = -1;
     displayInputLabel: boolean = false;
     inputLabel: string = '';
@@ -164,6 +165,10 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     checkCloseToggle = <T extends TabsProps>({ closed }: T): string | null => (closed ? 'closed' : null);
 
     checkStateEqual = (currObj: object, prevObj: object): boolean => !isEqual(currObj, prevObj);
+
+    onClickModal = () => {
+        this._onDisplayModal.emit();
+    };
 
     ngOnChanges(changes: SimpleChanges): void {
         // console.log(changes);

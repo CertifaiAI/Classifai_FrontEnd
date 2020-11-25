@@ -26,6 +26,7 @@
             (_onEnterLabel)="onProcessLabel($event)"
             (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
             (_onDeleteAnnotation)="onDeleteAnnotation($event)"
+            (_onDisplayModal)="onDisplayModal()"
         ></image-labelling-project>
         <image-labelling-right-sidebar
             [_onChange]="onChangeSchema"
@@ -34,5 +35,9 @@
     </div>
     <image-labelling-footer [_thumbnailInfo]="selectedMetaData" [_imgSrc]="imgSrc"></image-labelling-footer>
 </div>
+
+<modal id="custom-modal-1">
+    <label>ok</label>
+</modal>
 
 <!-- <spinner [_loading]="loading"></spinner> -->
