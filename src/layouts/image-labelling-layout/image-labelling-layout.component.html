@@ -43,7 +43,13 @@
         <div>
             <label>Label: </label>
             <select>
-                <option>default</option>
+                <ng-container *ngFor="let tab of tabStatus">
+                    <ng-container *ngFor="let label of tab.label_list">
+                        <option [value]="label" [selected]="tab.label_list[0].label">
+                            {{ label }}
+                        </option>
+                    </ng-container>
+                </ng-container>
             </select>
             <label>Region Info: </label>
             <input value="12" />
@@ -55,6 +61,7 @@
         <div>
             <label>Label: </label>
             <select>
+                <option selected value="">None</option>
                 <option>default</option>
             </select>
             <label>Region Info: </label>
