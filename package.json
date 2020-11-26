@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "format:prettier": "./node_modules/.bin/prettier --write src/**/*.{js,ts,json,css,scss,md}",
-    "start:dev": "nodemon -w ./webpack.config.js --exec \"ng s -o --hmr --extra-webpack-config webpack.config.js\"",
+    "start:dev": "nodemon -w ./webpack.config.js --exec \"ng s --hmr --extra-webpack-config webpack.config.js\"",
     "start:prod": "node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng s -o --extra-webpack-config webpack.config.js",
     "build:normal": "node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng build --prod --extra-webpack-config webpack.config.js",
     "build:analyze": "node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng build --prod --extra-webpack-config webpack.config.js --stats-json && webpack-bundle-analyzer dist/classifai/stats.json",

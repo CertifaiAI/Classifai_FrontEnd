@@ -37,8 +37,31 @@
 </div>
 
 <modal id="custom-modal-1">
-    <label>ok</label>
-    <button (click)="onCloseModal('custom-modal-1')">Close</button>
+    <button class="button-close" (click)="onCloseModal('custom-modal-1')">X</button>
+    <div>
+        <h2>Main Label</h2>
+        <div>
+            <label>Label: </label>
+            <select>
+                <option>default</option>
+            </select>
+            <label>Region Info: </label>
+            <input value="12" />
+        </div>
+    </div>
+    <br />
+    <div>
+        <h2>Sub Label(s)</h2>
+        <div>
+            <label>Label: </label>
+            <select>
+                <option>default</option>
+            </select>
+            <label>Region Info: </label>
+            <input value="12" />
+            <button>Add</button>
+        </div>
+    </div>
 </modal>
 
 <!-- <spinner [_loading]="loading"></spinner> -->
