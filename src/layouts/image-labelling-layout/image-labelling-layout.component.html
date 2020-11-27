@@ -37,12 +37,12 @@
 </div>
 
 <modal id="custom-modal-1">
-    <button class="button-close" (click)="onCloseModal('custom-modal-1')">X</button>
+    <button class="modal-button float-right" (click)="onCloseModal('custom-modal-1')">X</button>
     <div>
-        <h2>Main Label</h2>
-        <div>
-            <label>Label: </label>
-            <select>
+        <h2 class="font-title">Main Label</h2>
+        <div class="main-label-container">
+            <label class="font-label">Label: </label>
+            <select class="static-select">
                 <ng-container *ngFor="let tab of tabStatus">
                     <ng-container *ngFor="let label of tab.label_list">
                         <option [value]="label" [selected]="tab.label_list[0].label">
@@ -51,22 +51,27 @@
                     </ng-container>
                 </ng-container>
             </select>
-            <label>Region Info: </label>
-            <input value="12" />
+            <label class="font-label">Region Info: </label>
+            <input class="static-input" value="12" />
         </div>
     </div>
     <br />
     <div>
-        <h2>Sub Label(s)</h2>
-        <div>
-            <label>Label: </label>
-            <select>
-                <option selected value="">None</option>
-                <option>default</option>
+        <h2 class="font-title">Sub Label(s)</h2>
+        <div class="sub-label-container">
+            <label class="font-label">Label: </label>
+            <select class="static-select">
+                <ng-container *ngFor="let tab of tabStatus">
+                    <ng-container *ngFor="let label of tab.label_list">
+                        <option [value]="label" [selected]="tab.label_list[0].label">
+                            {{ label }}
+                        </option>
+                    </ng-container>
+                </ng-container>
             </select>
-            <label>Region Info: </label>
-            <input value="12" />
-            <button>Add</button>
+            <label class="font-label">Region Info: </label>
+            <input class="static-input" value="12" />
+            <button class="modal-button">Add</button>
         </div>
     </div>
 </modal>
