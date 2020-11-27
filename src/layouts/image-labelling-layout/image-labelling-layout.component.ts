@@ -38,13 +38,11 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         {
             name: 'Label',
             closed: false,
-            // label_list: ['default', 'dsa'],
             label_list: [],
         },
         {
             name: 'Annotation',
             closed: false,
-            // annotation: undefined,
             annotation: [],
         },
     ];
@@ -73,7 +71,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.selectedProjectName = projectName;
         this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: thumbnailList.length };
         // console.log(window.history.state);
-
         this.displayLabelList(labelList);
     }
 
@@ -125,7 +122,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             : (this.tabStatus = this.tabStatus.map((tab) =>
                   tab.name.toLowerCase() === name.toLowerCase() ? { ...tab, closed } : { ...tab },
               ));
-        // console.log(isExactTabState);
     };
 
     navigateByUrl = <T extends EventEmitter_Url>({ url }: T): void => {
@@ -174,18 +170,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 : tab,
         );
     };
-
-    // displayBoundingBoxes = (boundingBoxes: ThumbnailMetadata): void => {
-    //     this.tabStatus = this.tabStatus.map((tab) =>
-    //         tab.annotation
-    //             ? {
-    //                   ...tab,
-    //                   annotation: [{ ...boundingBoxes }],
-    //               }
-    //             : tab,
-    //     );
-    //     console.log(this.tabStatus);
-    // };
 
     onChangeAnnotationLabel = <T extends ChangeAnnotationLabel>({ label, index }: T): void => {
         this.tabStatus = this.tabStatus.map((tab) =>
@@ -274,7 +258,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         return currentThumbnail?.uuid === selectedThumbnail?.uuid ? false : true;
     };
 
-    /** @function curry function responsible for reusability of the function logic across layout comp. with minimal codebase
+    /**
+     * @function responsible for reusability of the function logic across layout comp. with minimal codebase
      *            also responsible to check whether uuid exist in state and whether same uuid as current selected thumbnail state
      *            this behavior helps to prevent unnecessary API calls, thus maintain the health of performances for front & backend
      */
