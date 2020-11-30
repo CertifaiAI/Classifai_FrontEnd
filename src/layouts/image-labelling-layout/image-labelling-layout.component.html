@@ -85,6 +85,11 @@
             />
             <button class="modal-button" (click)="onSubmitLabel()">Add</button>
         </div>
+        <ng-container *ngIf="subLabelValidateMsg">
+            <div class="validate-msg">
+                {{ subLabelValidateMsg }}
+            </div>
+        </ng-container>
     </div>
     <ng-container *ngIf="addedSubLabelList?.length > 0">
         <hr class="hr-line" />

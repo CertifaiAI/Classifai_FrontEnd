@@ -51,6 +51,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     mainLabelRegionVal: string = '';
     subLabelRegionVal: string = '';
     addedSubLabelList?: AddedSubLabel[];
+    subLabelValidateMsg: string = '';
+
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
 
     constructor(
@@ -293,10 +295,21 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onSubmitLabel = () => {
         const { value } = this._subLabelSelect.nativeElement;
-        this.addedSubLabelList =
-            this.addedSubLabelList && this.addedSubLabelList.length > 0
-                ? [...this.addedSubLabelList, { label: value, region: this.subLabelRegionVal }]
-                : [{ label: value, region: this.subLabelRegionVal }];
+        let dupLabel: string = '';
+
+        if (this.addedSubLabelList && this.addedSubLabelList.length > 0) {
+            const isDuplicated = this.addedSubLabelList.some(({ label }) => (dupLabel = label === value ? label : ''));
+            isDuplicated
+                ? (this.subLabelValidateMsg = `Invalid of duplicate label: ${dupLabel}`)
+                : ((this.addedSubLabelList = [
+                      ...this.addedSubLabelList,
+                      { label: value, region: this.subLabelRegionVal },
+                  ]),
+                  (this.subLabelValidateMsg = ''));
+        } else {
+            this.addedSubLabelList = [{ label: value, region: this.subLabelRegionVal }];
+            this.subLabelValidateMsg = '';
+        }
         this.subLabelRegionVal = '';
     };
 

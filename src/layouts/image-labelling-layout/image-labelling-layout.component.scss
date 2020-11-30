@@ -110,20 +110,8 @@
     padding: 0.5vw;
 }
 
-.validation {
-    clear: both;
-    margin-top: 5.5vh;
-    margin-left: 13.5vw;
-    font-size: 2.5vh;
+.validate-msg {
     color: red;
-    margin-bottom: -1.5vh;
-}
-
-.existing-validation {
-    clear: both;
-    margin-top: 5.5vh;
-    margin-left: 10.5vw;
-    font-size: 2.5vh;
-    color: red;
-    margin-bottom: -1.5vh;
+    padding: 3vh 0 0 0;
+    font-size: 1vw;
 }
