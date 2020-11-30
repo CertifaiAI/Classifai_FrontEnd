@@ -52,7 +52,13 @@
                 </ng-container>
             </select>
             <label class="font-label">Region Info: </label>
-            <input class="static-input" value="12" placeholder="Input Region Info" />
+            <input
+                class="static-input"
+                type="text"
+                [value]="mainLabelValue"
+                placeholder="Input Main Region Info"
+                (change)="onChangeInput($event, 'main')"
+            />
         </div>
     </div>
     <hr class="hr-line" />
@@ -70,7 +76,13 @@
                 </ng-container>
             </select>
             <label class="font-label">Region Info: </label>
-            <input class="static-input" value="12" placeholder="Input Region Info" />
+            <input
+                class="static-input"
+                type="text"
+                [value]="subLabelValue"
+                placeholder="Input Sub Region Info"
+                (change)="onChangeInput($event, 'sub')"
+            />
             <button class="modal-button">Add</button>
         </div>
     </div>

@@ -15,6 +15,7 @@ import {
     ThumbnailMetadataProps,
     ChangeAnnotationLabel,
 } from './image-labelling-layout.model';
+import { HTMLElementEvent } from 'src/shared/type-casting/field/field.model';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -46,6 +47,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             annotation: [],
         },
     ];
+    mainLabelValue: string = '';
+    subLabelValue: string = '';
 
     constructor(
         private _router: Router,
@@ -278,6 +281,11 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onCloseModal = (id: string = 'custom-modal-1') => {
         this._modalService.close(id);
+    };
+
+    onChangeInput = (event: HTMLElementEvent<HTMLTextAreaElement>, type: 'main' | 'sub') => {
+        const { value } = event.target;
+        type === 'main' ? (this.mainLabelValue = value) : (this.subLabelValue = value);
     };
 
     /** @event fires whenever browser is closing */
