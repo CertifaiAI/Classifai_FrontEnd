@@ -297,6 +297,7 @@
 .label-input {
     position: absolute;
     z-index: 1000;
+    margin-left: -1vw;
 }
 
 .input {
@@ -309,5 +310,10 @@
     max-height: 2vh;
     min-width: 5vw;
     max-width: 5vw;
+    font-size: 1.7vh;
     // font-size: 2vh;
+}
+
+.input-invalid {
+    border: 0.2vw solid red;
 }

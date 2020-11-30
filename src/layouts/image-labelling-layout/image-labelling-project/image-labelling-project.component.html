@@ -49,6 +49,7 @@
                                 <div class="label-input">
                                     <input
                                         class="input"
+                                        [ngClass]="invalidInput ? 'input-invalid' : null"
                                         type="text"
                                         [value]="inputLabel"
                                         (change)="onChangeInputLabel($event)"

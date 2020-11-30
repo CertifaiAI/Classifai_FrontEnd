@@ -39,6 +39,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     selectedLabel: string = '';
     unsubscribe$: Subject<any> = new Subject();
     clickAbilityToggle: boolean = false;
+    invalidInput: boolean = false;
 
     constructor(private _annotateService: AnnotateSelectionService, private _bbState: BoundingBoxStateService) {}
 
@@ -105,15 +106,18 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
                     label_list && label_list.length ? label_list.some((label) => label === valTrimmed) : null,
                 );
                 if (!isInvalidLabel) {
-                    const label_list = this._tabStatus
+                    this.invalidInput = false;
+                    const label_lists = this._tabStatus
                         .map(({ label_list }) => (label_list ? label_list : []))
                         .filter((tab) => tab.length > 0)[0];
-                    this._onEnterLabel.emit({ action: 1, label_list: label_list ? [...label_list, value] : [value] });
+                    this._onEnterLabel.emit({ action: 1, label_list: label_lists ? [...label_lists, value] : [value] });
                     this.displayInputLabel = false;
                 } else {
+                    this.invalidInput = true;
                     console.error(`Invalid existing label input`);
                 }
             } else {
+                this.invalidInput = true;
                 console.error(`Invalid input value`);
             }
         }
