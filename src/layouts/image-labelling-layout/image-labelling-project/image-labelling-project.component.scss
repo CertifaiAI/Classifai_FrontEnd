@@ -281,6 +281,12 @@
     flex: 1 0 15%;
 }
 
+.tab-text {
+    font-size: 1.7vh;
+    min-width: 6vw;
+    max-width: 6vw;
+}
+
 .inner-content {
     max-height: 25vh;
     min-height: 25vh;
@@ -303,5 +309,5 @@
     max-height: 2vh;
     min-width: 5vw;
     max-width: 5vw;
-    font-size: 2vh;
+    // font-size: 2vh;
 }

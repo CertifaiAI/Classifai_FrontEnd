@@ -40,7 +40,7 @@
                             <ng-container *ngIf="_thumbnailList.length > 0">
                                 <div
                                     class="extra-icons"
-                                    (click)="onDisplayInputModal(true); onIconClick({ tabType: 'label', action: 1 })"
+                                    (click)="onDisplayInputModal(); onIconClick({ tabType: 'label', action: 1 })"
                                 >
                                     +
                                 </div>
@@ -49,13 +49,21 @@
                                 <div class="label-input">
                                     <input
                                         class="input"
+                                        type="text"
                                         [value]="inputLabel"
                                         (change)="onChangeInputLabel($event)"
                                         (keydown.enter)="validateInputLabel($event)"
+                                        placeholder="Enter Label"
                                     /></div
                             ></ng-container>
                         </span>
                         <span class="tab-extra-icons">
+                            <ng-container *ngIf="_thumbnailList.length > 0">
+                                <div class="extra-icons" (click)="onClickModal()">Edit</div>
+                            </ng-container>
+                        </span>
+
+                        <!--  <span class="tab-extra-icons">
                             <ng-container *ngIf="_thumbnailList.length > 0">
                                 <div
                                     class="extra-icons"
@@ -68,7 +76,7 @@
                                     -
                                 </div>
                             </ng-container>
-                        </span>
+                        </span> -->
                     </div>
 
                     <div class="utility-inner-container" id="inner-container">

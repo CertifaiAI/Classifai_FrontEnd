@@ -90,8 +90,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         this._onClickThumbNail.emit(thumbnail);
     };
 
-    onDisplayInputModal = (isDisplay: boolean): void => {
-        this.displayInputLabel = isDisplay;
+    onDisplayInputModal = (): void => {
+        this.displayInputLabel = !this.displayInputLabel;
         this.inputLabel = '';
     };
 
