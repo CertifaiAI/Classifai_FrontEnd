@@ -1,6 +1,7 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from '../data-set-layout/data-set-layout.service';
 import { first } from 'rxjs/operators';
+import { HTMLElementEvent } from 'src/shared/type-casting/field/field.model';
 import { ImageLabellingService } from './image-labelling-layout.service';
 import { ModalService } from 'src/shared/components/modal/modal.service';
 import { Router } from '@angular/router';
@@ -14,8 +15,8 @@ import {
     SelectedLabelProps,
     ThumbnailMetadataProps,
     ChangeAnnotationLabel,
+    AddedSubLabel,
 } from './image-labelling-layout.model';
-import { HTMLElementEvent } from 'src/shared/type-casting/field/field.model';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -47,8 +48,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             annotation: [],
         },
     ];
-    mainLabelValue: string = '';
-    subLabelValue: string = '';
+    mainLabelRegionVal: string = '';
+    subLabelRegionVal: string = '';
+    addedSubLabelList?: AddedSubLabel[];
+    @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
 
     constructor(
         private _router: Router,
@@ -285,7 +288,20 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onChangeInput = (event: HTMLElementEvent<HTMLTextAreaElement>, type: 'main' | 'sub') => {
         const { value } = event.target;
-        type === 'main' ? (this.mainLabelValue = value) : (this.subLabelValue = value);
+        type === 'main' ? (this.mainLabelRegionVal = value) : (this.subLabelRegionVal = value);
+    };
+
+    onSubmitLabel = () => {
+        const { value } = this._subLabelSelect.nativeElement;
+        this.addedSubLabelList =
+            this.addedSubLabelList && this.addedSubLabelList.length > 0
+                ? [...this.addedSubLabelList, { label: value, region: this.subLabelRegionVal }]
+                : [{ label: value, region: this.subLabelRegionVal }];
+        this.subLabelRegionVal = '';
+    };
+
+    onRemoveLabel = (index: number) => {
+        this.addedSubLabelList && this.addedSubLabelList.length > 0 ? this.addedSubLabelList.splice(index, 1) : null;
     };
 
     /** @event fires whenever browser is closing */

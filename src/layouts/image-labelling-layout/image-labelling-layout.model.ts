@@ -135,6 +135,11 @@ export type SelectedLabelProps = {
     label_list: string[];
 } & TabAction;
 
+export type AddedSubLabel = {
+    label: string;
+    region: string;
+};
+
 export type ChangeAnnotationLabel = {
     label: string;
     index: number;

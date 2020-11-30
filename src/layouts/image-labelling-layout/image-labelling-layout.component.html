@@ -55,7 +55,7 @@
             <input
                 class="static-input"
                 type="text"
-                [value]="mainLabelValue"
+                [value]="mainLabelRegionVal"
                 placeholder="Input Main Region Info"
                 (change)="onChangeInput($event, 'main')"
             />
@@ -66,7 +66,7 @@
         <h2 class="font-title">Sub Label(s)</h2>
         <div class="sub-label-container">
             <label class="font-label">Label: </label>
-            <select class="static-select">
+            <select class="static-select" #subLabelSelect>
                 <ng-container *ngFor="let tab of tabStatus">
                     <ng-container *ngFor="let label of tab.label_list">
                         <option [value]="label" [selected]="tab.label_list[0].label">
@@ -79,13 +79,27 @@
             <input
                 class="static-input"
                 type="text"
-                [value]="subLabelValue"
+                [value]="subLabelRegionVal"
                 placeholder="Input Sub Region Info"
                 (change)="onChangeInput($event, 'sub')"
             />
-            <button class="modal-button">Add</button>
+            <button class="modal-button" (click)="onSubmitLabel()">Add</button>
         </div>
     </div>
+    <ng-container *ngIf="addedSubLabelList?.length > 0">
+        <hr class="hr-line" />
+        <div>
+            <h2 class="font-title">Added Sub Label(s)</h2>
+            <ng-container *ngFor="let addedSubLabel of addedSubLabelList; index as i">
+                <div class="sub-label-container sub-label-padding">
+                    <label class="font-label">Label: {{ addedSubLabel.label }}</label>
+
+                    <label class="font-label">Region Info: {{ addedSubLabel.region }}</label>
+                    <button class="modal-button" (click)="onRemoveLabel(i)">X</button>
+                </div></ng-container
+            >
+        </div>
+    </ng-container>
 </modal>
 
 <!-- <spinner [_loading]="loading"></spinner> -->
