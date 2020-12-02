@@ -18,6 +18,7 @@
 @mixin container-flex-width($width) {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     min-width: $width;
     max-width: $width;
 }
@@ -40,10 +41,14 @@
     }
 }
 
-.modal-button {
+@mixin button-style() {
     line-height: 1vh;
     font-size: 1vw;
     padding: 0.5vw;
+}
+
+.modal-button {
+    @include button-style();
 }
 
 .float-right {
@@ -139,5 +144,6 @@
 }
 
 .flex-fourth {
+    @include button-style();
     flex: 0 0 5%;
 }
