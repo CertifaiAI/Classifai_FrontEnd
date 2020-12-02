@@ -68,6 +68,7 @@ export type Boundingbox = {
     label: string;
     id: number;
     subLabel?: SubLabel[];
+    region?: string;
 };
 
 export type ThumbnailMetadata = {

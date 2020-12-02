@@ -53,6 +53,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     subLabelRegionVal: string = '';
     addedSubLabelList?: AddedSubLabel[];
     subLabelValidateMsg: string = '';
+    currentAnnotationLabel: string = '';
     currentAnnotationIndex: number = -1;
 
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
@@ -86,9 +87,22 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
         this._annotateService.labelStaging$
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(({ annotation: annnotationIndex, isDlbClick }) =>
-                isDlbClick ? (this.onDisplayModal(), (this.currentAnnotationIndex = annnotationIndex)) : null,
-            );
+            .subscribe(({ annotation: annnotationIndex, isDlbClick }) => {
+                if (isDlbClick) {
+                    this.onDisplayModal();
+                    this.currentAnnotationIndex = annnotationIndex;
+                    this.tabStatus.forEach(({ annotation }) =>
+                        annotation?.forEach(({ bnd_box }) => {
+                            const { label, region } = bnd_box[annnotationIndex];
+                            this.currentAnnotationLabel = label;
+                            this.mainLabelRegionVal = region || '';
+                        }),
+                    );
+                } else {
+                    this.currentAnnotationLabel = '';
+                    this.currentAnnotationIndex = -1;
+                }
+            });
     }
 
     updateProjectProgress = (): void => {
@@ -286,6 +300,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     onDisplayModal = (id: string = 'custom-modal-1') => {
+        // this.mainLabelRegionVal = '';
+        this.subLabelRegionVal = '';
         this.subLabelValidateMsg = '';
         this._modalService.open(id);
     };
@@ -326,6 +342,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                                       return i === this.currentAnnotationIndex
                                           ? {
                                                 ...bb,
+                                                region: this.mainLabelRegionVal,
                                                 subLabel:
                                                     bb.subLabel && bb.subLabel.length > 0
                                                         ? [

@@ -44,7 +44,7 @@
             <select class="static-select">
                 <ng-container *ngFor="let tab of tabStatus">
                     <ng-container *ngFor="let label of tab.label_list">
-                        <option [value]="label" [selected]="tab.label_list[0].label">
+                        <option [value]="label" [selected]="label === currentAnnotationLabel">
                             {{ label }}
                         </option>
                     </ng-container>
