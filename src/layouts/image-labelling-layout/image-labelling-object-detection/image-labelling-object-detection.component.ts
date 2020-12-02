@@ -240,7 +240,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         );
                         this.emitMetadata();
                     }
-                } else if (event.key === 'Delete' || event.key === 'Backspace') {
+                } else if (event.key === 'Delete') {
                     // delete single annotation
                     this._boundingBoxCanvas.deleteSingleBox(
                         this._selectMetadata.bnd_box,

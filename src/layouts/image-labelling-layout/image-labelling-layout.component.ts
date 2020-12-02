@@ -54,7 +54,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     addedSubLabelList?: AddedSubLabel[];
     subLabelValidateMsg: string = '';
     currentAnnotationLabel: string = '';
-    currentAnnotationIndex: number = -1;
+    currentBBoxAnnotationIndex: number = -1;
 
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
 
@@ -89,8 +89,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe(({ annotation: annnotationIndex, isDlbClick }) => {
                 if (isDlbClick) {
-                    this.onDisplayModal();
-                    this.currentAnnotationIndex = annnotationIndex;
+                    this.currentBBoxAnnotationIndex = annnotationIndex;
                     this.tabStatus.forEach(({ annotation }) =>
                         annotation?.forEach(({ bnd_box }) => {
                             const { label, region } = bnd_box[annnotationIndex];
@@ -98,9 +97,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                             this.mainLabelRegionVal = region || '';
                         }),
                     );
+                    this.onDisplayModal();
                 } else {
                     this.currentAnnotationLabel = '';
-                    this.currentAnnotationIndex = -1;
+                    this.currentBBoxAnnotationIndex = -1;
                 }
             });
     }
@@ -323,7 +323,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
         this.tabStatus.forEach(({ annotation }) =>
             annotation?.forEach(({ bnd_box }) => {
-                const { subLabel } = bnd_box[this.currentAnnotationIndex];
+                const { subLabel } = bnd_box[this.currentBBoxAnnotationIndex];
                 isPreExistSubLabel = subLabel && subLabel?.length > 0 ? true : false;
                 isPreExistSubLabel ? subLabel?.some(({ label }) => (isDupSubLabel = label === value)) : null;
             }),
@@ -339,7 +339,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                               return {
                                   ...metadata,
                                   bnd_box: metadata.bnd_box.map((bb, i) => {
-                                      return i === this.currentAnnotationIndex
+                                      return i === this.currentBBoxAnnotationIndex
                                           ? {
                                                 ...bb,
                                                 region: this.mainLabelRegionVal,
@@ -359,15 +359,15 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     : tab,
             );
             this.subLabelValidateMsg = '';
+            this.updateSelectedMetaData();
             this.updateProjectProgress();
         } else {
             this.subLabelValidateMsg = `Invalid of duplicate label: ${value}`;
         }
-        this.updateSelectedMetaData();
         this.subLabelRegionVal = '';
     };
 
-    onRemoveLabel = (selectedBBIndex: number, selectedSubLabelIndex: number) => {
+    onRemoveSubLabel = (selectedBBIndex: number, selectedSubLabelIndex: number) => {
         this.tabStatus = this.tabStatus.map((tab) =>
             tab.annotation
                 ? {

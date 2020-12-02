@@ -95,14 +95,14 @@
     <ng-container *ngFor="let tab of tabStatus">
         <ng-container *ngFor="let annotation of tab.annotation">
             <ng-container *ngFor="let bb of annotation?.bnd_box; index as bbIndex">
-                <ng-container *ngIf="bb?.subLabel?.length > 0 && bbIndex === currentAnnotationIndex">
+                <ng-container *ngIf="bb?.subLabel?.length > 0 && bbIndex === currentBBoxAnnotationIndex">
                     <h2 class="font-title">Added Sub Label</h2>
                     <ng-container *ngFor="let sublabel of bb.subLabel; index as subLabelIndex">
                         <div class="sub-label-container sub-label-padding">
                             <label class="font-label">Label: {{ sublabel.label }}</label>
 
                             <label class="font-label">Region Info: {{ sublabel.region }}</label>
-                            <button class="modal-button" (click)="onRemoveLabel(bbIndex, subLabelIndex)">X</button>
+                            <button class="modal-button" (click)="onRemoveSubLabel(bbIndex, subLabelIndex)">X</button>
                         </div>
                     </ng-container>
                 </ng-container>
