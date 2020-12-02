@@ -1,6 +1,6 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from '../data-set-layout/data-set-layout.service';
-import { first } from 'rxjs/operators';
+import { first, takeUntil } from 'rxjs/operators';
 import { HTMLElementEvent } from 'src/shared/type-casting/field/field.model';
 import { ImageLabellingService } from './image-labelling-layout.service';
 import { ModalService } from 'src/shared/components/modal/modal.service';
@@ -17,6 +17,7 @@ import {
     ChangeAnnotationLabel,
     AddedSubLabel,
 } from './image-labelling-layout.model';
+import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -52,6 +53,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     subLabelRegionVal: string = '';
     addedSubLabelList?: AddedSubLabel[];
     subLabelValidateMsg: string = '';
+    currentAnnotationIndex: number = -1;
 
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
 
@@ -61,6 +63,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         // private _spinnerService: SpinnerService,
         private _modalService: ModalService,
         private _dataSetService: DataSetLayoutService,
+        private _annotateService: AnnotateSelectionService,
     ) {}
 
     ngOnInit(): void {
@@ -80,6 +83,12 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: thumbnailList.length };
         // console.log(window.history.state);
         this.displayLabelList(labelList);
+
+        this._annotateService.labelStaging$
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe(({ annotation: annnotationIndex, isDlbClick }) =>
+                isDlbClick ? (this.onDisplayModal(), (this.currentAnnotationIndex = annnotationIndex)) : null,
+            );
     }
 
     updateProjectProgress = (): void => {
@@ -200,9 +209,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                   }
                 : tab,
         );
-
-        /** @function responsible for updating selectedMetaData state to re-render object-detection comp */
-        this.tabStatus.forEach(({ annotation }) => (annotation ? (this.selectedMetaData = annotation[0]) : null));
+        this.updateSelectedMetaData();
         this.updateProjectProgress();
     };
 
@@ -220,9 +227,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                   }
                 : tab,
         );
-
-        /** @function responsible for updating selectedMetaData state to re-render object-detection comp */
-        this.tabStatus.forEach(({ annotation }) => (annotation ? (this.selectedMetaData = annotation[0]) : null));
+        this.updateSelectedMetaData();
         this.updateProjectProgress();
     };
 
@@ -281,6 +286,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     onDisplayModal = (id: string = 'custom-modal-1') => {
+        this.subLabelValidateMsg = '';
         this._modalService.open(id);
     };
 
@@ -295,26 +301,83 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onSubmitLabel = () => {
         const { value } = this._subLabelSelect.nativeElement;
-        let dupLabel: string = '';
 
-        if (this.addedSubLabelList && this.addedSubLabelList.length > 0) {
-            const isDuplicated = this.addedSubLabelList.some(({ label }) => (dupLabel = label === value ? label : ''));
-            isDuplicated
-                ? (this.subLabelValidateMsg = `Invalid of duplicate label: ${dupLabel}`)
-                : ((this.addedSubLabelList = [
-                      ...this.addedSubLabelList,
-                      { label: value, region: this.subLabelRegionVal },
-                  ]),
-                  (this.subLabelValidateMsg = ''));
-        } else {
-            this.addedSubLabelList = [{ label: value, region: this.subLabelRegionVal }];
+        let isPreExistSubLabel: boolean = false;
+        let isDupSubLabel: boolean = false;
+
+        this.tabStatus.forEach(({ annotation }) =>
+            annotation?.forEach(({ bnd_box }) => {
+                const { subLabel } = bnd_box[this.currentAnnotationIndex];
+                isPreExistSubLabel = subLabel && subLabel?.length > 0 ? true : false;
+                isPreExistSubLabel ? subLabel?.some(({ label }) => (isDupSubLabel = label === value)) : null;
+            }),
+        );
+        // console.log(isDupSubLabel);
+
+        if (!isDupSubLabel) {
+            this.tabStatus = this.tabStatus.map((tab) =>
+                tab.annotation
+                    ? {
+                          ...tab,
+                          annotation: tab.annotation.map((metadata) => {
+                              return {
+                                  ...metadata,
+                                  bnd_box: metadata.bnd_box.map((bb, i) => {
+                                      return i === this.currentAnnotationIndex
+                                          ? {
+                                                ...bb,
+                                                subLabel:
+                                                    bb.subLabel && bb.subLabel.length > 0
+                                                        ? [
+                                                              ...bb.subLabel,
+                                                              { label: value, region: this.subLabelRegionVal },
+                                                          ]
+                                                        : [{ label: value, region: this.subLabelRegionVal }],
+                                            }
+                                          : bb;
+                                  }),
+                              };
+                          }),
+                      }
+                    : tab,
+            );
             this.subLabelValidateMsg = '';
+            this.updateProjectProgress();
+        } else {
+            this.subLabelValidateMsg = `Invalid of duplicate label: ${value}`;
         }
+        this.updateSelectedMetaData();
         this.subLabelRegionVal = '';
     };
 
-    onRemoveLabel = (index: number) => {
-        this.addedSubLabelList && this.addedSubLabelList.length > 0 ? this.addedSubLabelList.splice(index, 1) : null;
+    onRemoveLabel = (selectedBBIndex: number, selectedSubLabelIndex: number) => {
+        this.tabStatus = this.tabStatus.map((tab) =>
+            tab.annotation
+                ? {
+                      ...tab,
+                      annotation: tab.annotation.map((metadata) => {
+                          return {
+                              ...metadata,
+                              bnd_box: metadata.bnd_box.map((bb, bbIndex) => {
+                                  return bbIndex === selectedBBIndex
+                                      ? {
+                                            ...bb,
+                                            subLabel: bb.subLabel?.filter((_, i) => i !== selectedSubLabelIndex),
+                                        }
+                                      : bb;
+                              }),
+                          };
+                      }),
+                  }
+                : tab,
+        );
+        this.updateSelectedMetaData();
+        this.updateProjectProgress();
+    };
+
+    /** @function responsible for updating selectedMetaData state to re-render object-detection comp */
+    updateSelectedMetaData = () => {
+        this.tabStatus.forEach(({ annotation }) => (annotation ? (this.selectedMetaData = annotation[0]) : null));
     };
 
     /** @event fires whenever browser is closing */

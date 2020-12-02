@@ -26,7 +26,6 @@
             (_onEnterLabel)="onProcessLabel($event)"
             (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
             (_onDeleteAnnotation)="onDeleteAnnotation($event)"
-            (_onDisplayModal)="onDisplayModal()"
         ></image-labelling-project>
         <image-labelling-right-sidebar
             [_onChange]="onChangeSchema"
@@ -91,24 +90,24 @@
             </div>
         </ng-container>
     </div>
-    <ng-container *ngIf="addedSubLabelList?.length > 0">
-        <hr class="hr-line" />
-        <div>
-            <ng-container *ngIf="addedSubLabelList?.length > 1; else singularAddedSubLabel">
-                <h2 class="font-title">Added Sub Labels</h2>
-            </ng-container>
-            <ng-template #singularAddedSubLabel>
-                <h2 class="font-title">Added Sub Label</h2>
-            </ng-template>
-            <ng-container *ngFor="let addedSubLabel of addedSubLabelList; index as i">
-                <div class="sub-label-container sub-label-padding">
-                    <label class="font-label">Label: {{ addedSubLabel.label }}</label>
+    <hr class="hr-line" />
 
-                    <label class="font-label">Region Info: {{ addedSubLabel.region }}</label>
-                    <button class="modal-button" (click)="onRemoveLabel(i)">X</button>
-                </div></ng-container
-            >
-        </div>
+    <ng-container *ngFor="let tab of tabStatus">
+        <ng-container *ngFor="let annotation of tab.annotation">
+            <ng-container *ngFor="let bb of annotation?.bnd_box; index as bbIndex">
+                <ng-container *ngIf="bb?.subLabel?.length > 0 && bbIndex === currentAnnotationIndex">
+                    <h2 class="font-title">Added Sub Label</h2>
+                    <ng-container *ngFor="let sublabel of bb.subLabel; index as subLabelIndex">
+                        <div class="sub-label-container sub-label-padding">
+                            <label class="font-label">Label: {{ sublabel.label }}</label>
+
+                            <label class="font-label">Region Info: {{ sublabel.region }}</label>
+                            <button class="modal-button" (click)="onRemoveLabel(bbIndex, subLabelIndex)">X</button>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </ng-container>
+        </ng-container>
     </ng-container>
 </modal>
 

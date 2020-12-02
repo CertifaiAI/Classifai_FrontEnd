@@ -67,7 +67,7 @@ export type Boundingbox = {
     distancetoImg: IAxis;
     label: string;
     id: number;
-    subLabel: SubLabel[];
+    subLabel?: SubLabel[];
 };
 
 export type ThumbnailMetadata = {

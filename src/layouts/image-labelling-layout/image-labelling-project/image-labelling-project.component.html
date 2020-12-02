@@ -36,6 +36,7 @@
                         <span class="tab-close-thumbnailless"
                             ><div class="div-close" (click)="onClose(tab)">x</div></span
                         >
+                        <span class="tab-extra-icons"></span>
                         <span class="tab-extra-icons">
                             <ng-container *ngIf="_thumbnailList.length > 0">
                                 <div
@@ -58,26 +59,6 @@
                                     /></div
                             ></ng-container>
                         </span>
-                        <span class="tab-extra-icons">
-                            <ng-container *ngIf="_thumbnailList.length > 0">
-                                <div class="extra-icons" (click)="onClickModal()">Edit</div>
-                            </ng-container>
-                        </span>
-
-                        <!--  <span class="tab-extra-icons">
-                            <ng-container *ngIf="_thumbnailList.length > 0">
-                                <div
-                                    class="extra-icons"
-                                    (click)="
-                                        onDisplayInputModal(false);
-                                        onIconClick({ tabType: 'label', action: 0 });
-                                        onClickModal()
-                                    "
-                                >
-                                    -
-                                </div>
-                            </ng-container>
-                        </span> -->
                     </div>
 
                     <div class="utility-inner-container" id="inner-container">
