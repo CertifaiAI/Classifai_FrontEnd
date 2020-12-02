@@ -57,6 +57,9 @@
 .font-label {
     line-height: 4vh;
     font-size: 1vw;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .main-label-container {
@@ -65,6 +68,13 @@
 
 .sub-label-container {
     @include container-flex-width(40vw);
+}
+
+.sub-label-flex-container {
+    display: flex;
+    align-items: center;
+    flex: 1 1 100%;
+    min-width: 0;
 }
 
 .static-select {
@@ -114,4 +124,20 @@
     color: red;
     padding: 3vh 0 0 0;
     font-size: 1vw;
+}
+
+.flex-first {
+    flex: 1 1 35%;
+}
+
+.flex-second {
+    flex: 1 1 55%;
+}
+
+.flex-third {
+    flex: 0 0 5%;
+}
+
+.flex-fourth {
+    flex: 0 0 5%;
 }

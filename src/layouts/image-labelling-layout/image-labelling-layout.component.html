@@ -98,11 +98,14 @@
                 <ng-container *ngIf="bb?.subLabel?.length > 0 && bbIndex === currentBBoxAnnotationIndex">
                     <h2 class="font-title">Added Sub Label</h2>
                     <ng-container *ngFor="let sublabel of bb.subLabel; index as subLabelIndex">
-                        <div class="sub-label-container sub-label-padding">
-                            <label class="font-label">Label: {{ sublabel.label }}</label>
+                        <div class="sub-label-flex-container sub-label-padding">
+                            <label class="font-label flex-first">Label: {{ sublabel.label }}</label>
 
-                            <label class="font-label">Region Info: {{ sublabel.region }}</label>
-                            <button class="modal-button" (click)="onRemoveSubLabel(bbIndex, subLabelIndex)">X</button>
+                            <label class="font-label flex-second">Region Info: {{ sublabel.region }}</label>
+                            <span class="flex-third"></span>
+                            <button class="modal-butto flex-fourth" (click)="onRemoveSubLabel(bbIndex, subLabelIndex)">
+                                X
+                            </button>
                         </div>
                     </ng-container>
                 </ng-container>
