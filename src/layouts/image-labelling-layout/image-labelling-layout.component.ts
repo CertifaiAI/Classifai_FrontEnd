@@ -1,9 +1,10 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from '../data-set-layout/data-set-layout.service';
 import { first, takeUntil } from 'rxjs/operators';
+import { HTMLElementEvent } from 'src/shared/type-casting/field/field.model';
 import { ImageLabellingService } from './image-labelling-layout.service';
+import { ModalService } from 'src/shared/components/modal/modal.service';
 import { Router } from '@angular/router';
-import { SpinnerService } from '../../shared/components/spinner/spinner.service';
 import { Subject } from 'rxjs';
 import {
     ImgLabelProps,
@@ -14,7 +15,9 @@ import {
     SelectedLabelProps,
     ThumbnailMetadataProps,
     ChangeAnnotationLabel,
+    AddedSubLabel,
 } from './image-labelling-layout.model';
+import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -38,29 +41,37 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         {
             name: 'Label',
             closed: false,
-            // label_list: ['default', 'dsa'],
             label_list: [],
         },
         {
             name: 'Annotation',
             closed: false,
-            // annotation: undefined,
             annotation: [],
         },
     ];
+    mainLabelRegionVal: string = '';
+    subLabelRegionVal: string = '';
+    addedSubLabelList?: AddedSubLabel[];
+    subLabelValidateMsg: string = '';
+    currentAnnotationLabel: string = '';
+    currentBBoxAnnotationIndex: number = -1;
+
+    @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
 
     constructor(
         private _router: Router,
         private _imgLabelService: ImageLabellingService,
-        private _spinnerService: SpinnerService,
+        // private _spinnerService: SpinnerService,
+        private _modalService: ModalService,
         private _dataSetService: DataSetLayoutService,
+        private _annotateService: AnnotateSelectionService,
     ) {}
 
     ngOnInit(): void {
-        this._spinnerService
-            .returnAsObservable()
-            .pipe(takeUntil(this.unsubscribe$))
-            .subscribe((loading) => (this.loading = loading));
+        // this._spinnerService
+        //     .returnAsObservable()
+        //     .pipe(takeUntil(this.unsubscribe$))
+        //     .subscribe((loading) => (this.loading = loading));
 
         const {
             thumbnailList = [],
@@ -72,8 +83,26 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.selectedProjectName = projectName;
         this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: thumbnailList.length };
         // console.log(window.history.state);
-
         this.displayLabelList(labelList);
+
+        this._annotateService.labelStaging$
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe(({ annotation: annnotationIndex, isDlbClick }) => {
+                if (isDlbClick) {
+                    this.currentBBoxAnnotationIndex = annnotationIndex;
+                    this.tabStatus.forEach(({ annotation }) =>
+                        annotation?.forEach(({ bnd_box }) => {
+                            const { label, region } = bnd_box[annnotationIndex];
+                            this.currentAnnotationLabel = label;
+                            this.mainLabelRegionVal = region || '';
+                        }),
+                    );
+                    this.onDisplayModal();
+                } else {
+                    this.currentAnnotationLabel = '';
+                    this.currentBBoxAnnotationIndex = -1;
+                }
+            });
     }
 
     updateProjectProgress = (): void => {
@@ -124,7 +153,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             : (this.tabStatus = this.tabStatus.map((tab) =>
                   tab.name.toLowerCase() === name.toLowerCase() ? { ...tab, closed } : { ...tab },
               ));
-        // console.log(isExactTabState);
     };
 
     navigateByUrl = <T extends EventEmitter_Url>({ url }: T): void => {
@@ -174,18 +202,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         );
     };
 
-    // displayBoundingBoxes = (boundingBoxes: ThumbnailMetadata): void => {
-    //     this.tabStatus = this.tabStatus.map((tab) =>
-    //         tab.annotation
-    //             ? {
-    //                   ...tab,
-    //                   annotation: [{ ...boundingBoxes }],
-    //               }
-    //             : tab,
-    //     );
-    //     console.log(this.tabStatus);
-    // };
-
     onChangeAnnotationLabel = <T extends ChangeAnnotationLabel>({ label, index }: T): void => {
         this.tabStatus = this.tabStatus.map((tab) =>
             tab.annotation
@@ -207,9 +223,25 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                   }
                 : tab,
         );
+        this.updateSelectedMetaData();
+        this.updateProjectProgress();
+    };
 
-        /** @function responsible for updating selectedMetaData state to re-render object-detection comp */
-        this.tabStatus.forEach(({ annotation }) => (annotation ? (this.selectedMetaData = annotation[0]) : null));
+    onDeleteAnnotation = (index: number) => {
+        this.tabStatus = this.tabStatus.map((tab) =>
+            tab.annotation
+                ? {
+                      ...tab,
+                      annotation: tab.annotation.map((metadata) => {
+                          return {
+                              ...metadata,
+                              bnd_box: metadata.bnd_box.filter((_, i) => i !== index),
+                          };
+                      }),
+                  }
+                : tab,
+        );
+        this.updateSelectedMetaData();
         this.updateProjectProgress();
     };
 
@@ -253,7 +285,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         return currentThumbnail?.uuid === selectedThumbnail?.uuid ? false : true;
     };
 
-    /** @function curry function responsible for reusability of the function logic across layout comp. with minimal codebase
+    /**
+     * @function responsible for reusability of the function logic across layout comp. with minimal codebase
      *            also responsible to check whether uuid exist in state and whether same uuid as current selected thumbnail state
      *            this behavior helps to prevent unnecessary API calls, thus maintain the health of performances for front & backend
      */
@@ -264,6 +297,104 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 currentThumbnailUuid !== uuid
             );
         };
+    };
+
+    onDisplayModal = (id: string = 'custom-modal-1') => {
+        // this.mainLabelRegionVal = '';
+        this.subLabelRegionVal = '';
+        this.subLabelValidateMsg = '';
+        this._modalService.open(id);
+    };
+
+    onCloseModal = (id: string = 'custom-modal-1') => {
+        this._modalService.close(id);
+    };
+
+    onChangeInput = (event: HTMLElementEvent<HTMLTextAreaElement>, type: 'main' | 'sub') => {
+        const { value } = event.target;
+        type === 'main' ? (this.mainLabelRegionVal = value) : (this.subLabelRegionVal = value);
+    };
+
+    onSubmitLabel = () => {
+        const { value } = this._subLabelSelect.nativeElement;
+
+        let isPreExistSubLabel: boolean = false;
+        let isDupSubLabel: boolean = false;
+
+        this.tabStatus.forEach(({ annotation }) =>
+            annotation?.forEach(({ bnd_box }) => {
+                const { subLabel } = bnd_box[this.currentBBoxAnnotationIndex];
+                isPreExistSubLabel = subLabel && subLabel?.length > 0 ? true : false;
+                isPreExistSubLabel ? subLabel?.some(({ label }) => (isDupSubLabel = label === value)) : null;
+            }),
+        );
+        // console.log(isDupSubLabel);
+
+        if (!isDupSubLabel) {
+            this.tabStatus = this.tabStatus.map((tab) =>
+                tab.annotation
+                    ? {
+                          ...tab,
+                          annotation: tab.annotation.map((metadata) => {
+                              return {
+                                  ...metadata,
+                                  bnd_box: metadata.bnd_box.map((bb, i) => {
+                                      return i === this.currentBBoxAnnotationIndex
+                                          ? {
+                                                ...bb,
+                                                region: this.mainLabelRegionVal,
+                                                subLabel:
+                                                    bb.subLabel && bb.subLabel.length > 0
+                                                        ? [
+                                                              ...bb.subLabel,
+                                                              { label: value, region: this.subLabelRegionVal },
+                                                          ]
+                                                        : [{ label: value, region: this.subLabelRegionVal }],
+                                            }
+                                          : bb;
+                                  }),
+                              };
+                          }),
+                      }
+                    : tab,
+            );
+            this.subLabelValidateMsg = '';
+            this.updateSelectedMetaData();
+            this.updateProjectProgress();
+        } else {
+            this.subLabelValidateMsg = `Invalid of duplicate label: ${value}`;
+        }
+        this.subLabelRegionVal = '';
+    };
+
+    onRemoveSubLabel = (selectedBBIndex: number, selectedSubLabelIndex: number) => {
+        this.tabStatus = this.tabStatus.map((tab) =>
+            tab.annotation
+                ? {
+                      ...tab,
+                      annotation: tab.annotation.map((metadata) => {
+                          return {
+                              ...metadata,
+                              bnd_box: metadata.bnd_box.map((bb, bbIndex) => {
+                                  return bbIndex === selectedBBIndex
+                                      ? {
+                                            ...bb,
+                                            subLabel: bb.subLabel?.filter((_, i) => i !== selectedSubLabelIndex),
+                                        }
+                                      : bb;
+                              }),
+                          };
+                      }),
+                  }
+                : tab,
+        );
+        this.updateSelectedMetaData();
+        this.updateProjectProgress();
+    };
+
+    /** @function responsible for updating selectedMetaData state to re-render object-detection comp */
+    updateSelectedMetaData = () => {
+        this.tabStatus.forEach(({ annotation }) => (annotation ? (this.selectedMetaData = annotation[0]) : null));
     };
 
     /** @event fires whenever browser is closing */

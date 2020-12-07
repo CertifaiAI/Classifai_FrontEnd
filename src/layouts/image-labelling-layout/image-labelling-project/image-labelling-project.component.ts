@@ -30,6 +30,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     @Output() _onClickLabel: EventEmitter<SelectedLabelProps> = new EventEmitter();
     @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
     @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
+    @Output() _onDeleteAnnotation: EventEmitter<number> = new EventEmitter();
     action: number = -1;
     displayInputLabel: boolean = false;
     inputLabel: string = '';
@@ -37,6 +38,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     selectedLabel: string = '';
     unsubscribe$: Subject<any> = new Subject();
     clickAbilityToggle: boolean = false;
+    invalidInput: boolean = false;
 
     constructor(private _annotateService: AnnotateSelectionService, private _bbState: BoundingBoxStateService) {}
 
@@ -88,8 +90,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         this._onClickThumbNail.emit(thumbnail);
     };
 
-    onDisplayInputModal = (isDisplay: boolean): void => {
-        this.displayInputLabel = isDisplay;
+    onDisplayInputModal = (): void => {
+        this.displayInputLabel = !this.displayInputLabel;
         this.inputLabel = '';
     };
 
@@ -103,15 +105,18 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
                     label_list && label_list.length ? label_list.some((label) => label === valTrimmed) : null,
                 );
                 if (!isInvalidLabel) {
-                    const label_list = this._tabStatus
+                    this.invalidInput = false;
+                    const label_lists = this._tabStatus
                         .map(({ label_list }) => (label_list ? label_list : []))
                         .filter((tab) => tab.length > 0)[0];
-                    this._onEnterLabel.emit({ action: 1, label_list: label_list ? [...label_list, value] : [value] });
+                    this._onEnterLabel.emit({ action: 1, label_list: label_lists ? [...label_lists, value] : [value] });
                     this.displayInputLabel = false;
                 } else {
+                    this.invalidInput = true;
                     console.error(`Invalid existing label input`);
                 }
             } else {
+                this.invalidInput = true;
                 console.error(`Invalid input value`);
             }
         }
@@ -148,6 +153,10 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         // const bbLabel = bnd_box.map(({ label }) => label);
         this.selectedLabel = label;
         this._annotateService.mutateState({ annotation: index });
+    };
+
+    onDeleteAnnotation = () => {
+        this.selectedIndexAnnotation > -1 ? this._onDeleteAnnotation.emit(this.selectedIndexAnnotation) : null;
     };
 
     // onClickAnnotation = <T extends ThumbnailMetadata>({ bnd_box }: T) => {

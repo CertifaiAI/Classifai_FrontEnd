@@ -56,7 +56,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     imgPath: `../../../assets/icons/statistic.svg`,
                     hoverLabel: `Statistic`,
                     alt: `Statistic`,
-                    // onClick: () => this._onClick.emit(null),
+                    onClick: () => null,
                 },
             ],
         };

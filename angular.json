@@ -3,7 +3,7 @@
     "version": 1,
     "newProjectRoot": "projects",
     "projects": {
-        "intellabel": {
+        "classifai": {
             "projectType": "application",
             "schematics": {
                 "@schematics/angular:component": {
@@ -17,7 +17,7 @@
                 "build": {
                     "builder": "ngx-build-plus:browser",
                     "options": {
-                        "outputPath": "dist/intellabel",
+                        "outputPath": "dist/classifai",
                         "index": "src/index.html",
                         "main": "src/main.ts",
                         "polyfills": "src/polyfills.ts",
@@ -64,18 +64,18 @@
                 "serve": {
                     "builder": "ngx-build-plus:dev-server",
                     "options": {
-                        "browserTarget": "intellabel:build"
+                        "browserTarget": "classifai:build"
                     },
                     "configurations": {
                         "production": {
-                            "browserTarget": "intellabel:build:production"
+                            "browserTarget": "classifai:build:production"
                         }
                     }
                 },
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "intellabel:build"
+                        "browserTarget": "classifai:build"
                     }
                 },
                 "test": {
@@ -101,18 +101,18 @@
                     "builder": "@angular-devkit/build-angular:protractor",
                     "options": {
                         "protractorConfig": "e2e/protractor.conf.js",
-                        "devServerTarget": "intellabel:serve"
+                        "devServerTarget": "classifai:serve"
                     },
                     "configurations": {
                         "production": {
-                            "devServerTarget": "intellabel:serve:production"
+                            "devServerTarget": "classifai:serve:production"
                         }
                     }
                 }
             }
         }
     },
-    "defaultProject": "intellabel",
+    "defaultProject": "classifai",
     "cli": {
         "analytics": false
     }

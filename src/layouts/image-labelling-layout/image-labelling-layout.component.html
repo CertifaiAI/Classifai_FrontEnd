@@ -13,7 +13,7 @@
         <image-labelling-object-detection
             [_selectMetadata]="selectedMetaData"
             [_imgSrc]="imgSrc"
-            (_mutateMetadata)="onChangeMetadata($event)"
+            (_onChangeMetadata)="onChangeMetadata($event)"
         ></image-labelling-object-detection>
         <!-- <image-labelling-image [_thumbnail]="selectedThumbnail"></image-labelling-image> -->
 
@@ -25,6 +25,7 @@
             (_onClickLabel)="onProcessLabel($event)"
             (_onEnterLabel)="onProcessLabel($event)"
             (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
+            (_onDeleteAnnotation)="onDeleteAnnotation($event)"
         ></image-labelling-project>
         <image-labelling-right-sidebar
             [_onChange]="onChangeSchema"
@@ -34,4 +35,83 @@
     <image-labelling-footer [_thumbnailInfo]="selectedMetaData" [_imgSrc]="imgSrc"></image-labelling-footer>
 </div>
 
-<spinner [_loading]="loading"></spinner>
+<modal id="custom-modal-1">
+    <button class="modal-button float-right" (click)="onCloseModal('custom-modal-1')">X</button>
+    <div>
+        <h2 class="font-title">Main Label</h2>
+        <div class="main-label-container">
+            <label class="font-label">Label: </label>
+            <select class="static-select">
+                <ng-container *ngFor="let tab of tabStatus">
+                    <ng-container *ngFor="let label of tab.label_list">
+                        <option [value]="label" [selected]="label === currentAnnotationLabel">
+                            {{ label }}
+                        </option>
+                    </ng-container>
+                </ng-container>
+            </select>
+            <label class="font-label">Region Info: </label>
+            <input
+                class="static-input"
+                type="text"
+                [value]="mainLabelRegionVal"
+                placeholder="Input Main Region Info"
+                (change)="onChangeInput($event, 'main')"
+            />
+        </div>
+    </div>
+    <hr class="hr-line" />
+    <div>
+        <h2 class="font-title">Sub Label</h2>
+        <div class="sub-label-container">
+            <label class="font-label">Label: </label>
+            <select class="static-select" #subLabelSelect>
+                <ng-container *ngFor="let tab of tabStatus">
+                    <ng-container *ngFor="let label of tab.label_list">
+                        <option [value]="label" [selected]="tab.label_list[0].label">
+                            {{ label }}
+                        </option>
+                    </ng-container>
+                </ng-container>
+            </select>
+            <label class="font-label">Region Info: </label>
+            <input
+                class="static-input"
+                type="text"
+                [value]="subLabelRegionVal"
+                placeholder="Input Sub Region Info"
+                (change)="onChangeInput($event, 'sub')"
+            />
+            <button class="modal-button" (click)="onSubmitLabel()">Add</button>
+        </div>
+        <ng-container *ngIf="subLabelValidateMsg">
+            <div class="validate-msg">
+                {{ subLabelValidateMsg }}
+            </div>
+        </ng-container>
+    </div>
+    <hr class="hr-line" />
+
+    <ng-container *ngFor="let tab of tabStatus">
+        <ng-container *ngFor="let annotation of tab.annotation">
+            <ng-container *ngFor="let bb of annotation?.bnd_box; index as bbIndex">
+                <ng-container *ngIf="bb?.subLabel?.length > 0 && bbIndex === currentBBoxAnnotationIndex">
+                    <h2 class="font-title">Added Sub Label</h2>
+                    <ng-container *ngFor="let sublabel of bb.subLabel; index as subLabelIndex">
+                        <div class="sub-label-flex-container sub-label-padding">
+                            <label class="font-label flex-first">Label: {{ sublabel.label }}</label>
+
+                            <label class="font-label flex-second">Region Info: {{ sublabel.region }}</label>
+                            <span class="flex-third"></span>
+                            <button class="modal-butto flex-fourth" (click)="onRemoveSubLabel(bbIndex, subLabelIndex)">
+                                X
+                            </button>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </ng-container>
+        </ng-container>
+    </ng-container>
+</modal>
+
+<!-- <spinner [_loading]="loading"></spinner> -->

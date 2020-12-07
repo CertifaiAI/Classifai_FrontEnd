@@ -273,12 +273,18 @@
 .tab-extra-icons {
     float: right;
     vertical-align: middle;
-    font-size: 2vh;
+    font-size: 1.7vh;
     line-height: 4vh;
     // cursor: pointer;
     text-align: center;
     color: white;
     flex: 1 0 15%;
+}
+
+.tab-text {
+    font-size: 1.7vh;
+    min-width: 6vw;
+    max-width: 6vw;
 }
 
 .inner-content {
@@ -291,6 +297,7 @@
 .label-input {
     position: absolute;
     z-index: 1000;
+    margin-left: -4vw;
 }
 
 .input {
@@ -301,7 +308,12 @@
     box-shadow: 0 0 0.3vw;
     min-height: 2vh;
     max-height: 2vh;
-    min-width: 5vw;
-    max-width: 5vw;
-    font-size: 2vh;
+    min-width: 6vw;
+    max-width: 6vw;
+    font-size: 1.7vh;
+    // font-size: 2vh;
+}
+
+.input-invalid {
+    border: 0.2vw solid red;
 }

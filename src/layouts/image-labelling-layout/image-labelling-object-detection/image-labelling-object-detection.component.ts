@@ -37,7 +37,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     private annotateState!: AnnotateActionState;
     @Input() _selectMetadata!: Metadata;
     @Input() _imgSrc: string = '';
-    @Output() _mutateMetadata: EventEmitter<Metadata> = new EventEmitter();
+    @Output() _onChangeMetadata: EventEmitter<Metadata> = new EventEmitter();
 
     constructor(
         private _boundingBoxCanvas: BoundingBoxCanvasService,
@@ -71,7 +71,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     emitMetadata() {
-        this._mutateMetadata.emit(this._selectMetadata);
+        this._onChangeMetadata.emit(this._selectMetadata);
     }
 
     annotateStateMakeChange(newState: AnnotateActionState | null) {
@@ -241,7 +241,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         );
                         this.emitMetadata();
                     }
-                } else if (event.key === 'Delete' || event.key === 'Backspace') {
+                } else if (event.key === 'Delete') {
                     // delete single annotation
                     this._boundingBoxCanvas.deleteSingleBox(
                         this._selectMetadata.bnd_box,
