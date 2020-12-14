@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { cloneDeep } from 'lodash-es';
-import { first, flatMap, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { DataSetLayoutService } from './data-set-layout.service';
+import { first, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HTMLElementEvent } from 'src/shared/type-casting/field/field.model';
@@ -187,7 +187,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.subjectSubscription = this.subject$
             .pipe(
                 first(),
-                flatMap(() => forkJoin([projMetaStatus$])),
+                mergeMap(() => forkJoin([projMetaStatus$])),
                 first(([{ message, content }]) => {
                     this.projectList = {
                         isUploading: this.projectList.isUploading,
@@ -200,7 +200,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     const { is_loaded } = content[0];
                     return message === 1 && !is_loaded ? true : false;
                 }),
-                flatMap(([{ message }]) => (!message ? [] : forkJoin([updateProjLoadStatus$, projLoadingStatus$]))),
+                mergeMap(([{ message }]) => (!message ? [] : forkJoin([updateProjLoadStatus$, projLoadingStatus$]))),
                 mergeMap(([{ message: updateProjStatus }, { message: loadProjStatus, uuid_list, label_list }]) => {
                     if (loadProjStatus === 2) {
                         this.labelList = [...label_list];
@@ -208,7 +208,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
                     } else {
                         const thumbnailResponse = interval(500).pipe(
-                            flatMap(() => projLoadingStatus$),
+                            mergeMap(() => projLoadingStatus$),
                             first(({ message }) => message === 2),
                             mergeMap(({ uuid_list, label_list }) => {
                                 this.labelList = [...label_list];
@@ -221,8 +221,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         return thumbnailResponse;
                     }
                 }),
-                // * this flatMap responsible for flaten all observable into one layer
-                flatMap((data) => data),
+                // * this mergeMap responsible for flaten all observable into one layer
+                mergeMap((data) => data),
             )
             .subscribe(
                 (res) => {
@@ -261,7 +261,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         const returnResponse = <T extends Message>({ message }: T): Observable<ThumbnailMetadata> => {
             return message !== 5 && message === 1
                 ? interval(500).pipe(
-                      flatMap(() => uploadStatus$),
+                      mergeMap(() => uploadStatus$),
                       /** @property {number} message value 4 means upload completed, value 1 means cancelled */
                       first(({ message }) => {
                           const isValidResponse: boolean = message === 4 || message === 1;
@@ -280,8 +280,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                           numberOfReq = thumbnails.length;
                           return thumbnails;
                       }),
-                      // * this flatMap responsible for flaten all observable into one layer
-                      flatMap((data) => data),
+                      // * this mergeMap responsible for flaten all observable into one layer
+                      mergeMap((data) => data),
                   )
                 : throwError((error: any) => {
                       console.error(error);
@@ -291,15 +291,15 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
 
             // if (message === 1) {
             //   const uploadTypeResponse = interval(500).pipe(
-            //     flatMap(() => uploadStatus$),
+            //     mergeMap(() => uploadStatus$),
             //     first(({ message }) => message === 4),
             //     mergeMap(({ uuid_list }) =>
             //       uuid_list.length > 0
             //         ? uuid_list.map((uuid) => thumbnail$(projectName, uuid))
             //         : []
             //     ),
-            //     // * this flatMap responsible for flaten all observable into one layer
-            //     flatMap((data) => data)
+            //     // * this mergeMap responsible for flaten all observable into one layer
+            //     mergeMap((data) => data)
             //   );
             //   return uploadTypeResponse;
             // }
@@ -314,7 +314,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.subjectSubscription = this.subject$
             .pipe(
                 first(),
-                flatMap(() => uploadType$),
+                mergeMap(() => uploadType$),
                 mergeMap((val) => returnResponse(val)),
             )
             .subscribe(
