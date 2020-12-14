@@ -58,6 +58,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     ngOnChanges(changes: SimpleChanges): void {
         try {
+            console.log(changes);
             changes._imgSrc.currentValue
                 ? (this.initCanvas(),
                   (this.context = this.mycanvas?.nativeElement?.getContext('2d')
@@ -186,14 +187,14 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     keyStrokeEvent(event: KeyboardEvent) {
         try {
             if (!this.mousedown) {
-                if (event.ctrlKey && (event.key === 'c' || event.key === 'C')) {
+                if (event.ctrlKey && (event.key === 'c' || event.key === 'C') && !this.boundingBoxState.halt) {
                     // copy
                     // this.boundingBoxState.selectedBox > -1
                     this.annotateState.annotation > -1
                         ? this._copyPasteService.copy(this._selectMetadata.bnd_box[this.annotateState.annotation])
                         : // ? this._copyPasteService.copy(this._selectMetadata.bnd_box[this.boundingBoxState.selectedBox])
                           {};
-                } else if (event.ctrlKey && (event.key === 'v' || event.key === 'V')) {
+                } else if (event.ctrlKey && (event.key === 'v' || event.key === 'V') && !this.boundingBoxState.halt) {
                     // paste
                     this._copyPasteService.isAvailable()
                         ? (this._selectMetadata.bnd_box.push(this._copyPasteService.paste() as BoundingBox),
@@ -214,7 +215,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     });
                     this.emitMetadata();
                     this.mycanvas.nativeElement.focus();
-                } else if (event.ctrlKey && event.shiftKey && (event.key === 'z' || event.key === 'Z')) {
+                } else if (
+                    event.ctrlKey &&
+                    event.shiftKey &&
+                    (event.key === 'z' || event.key === 'Z') &&
+                    !this.boundingBoxState.halt
+                ) {
                     // redo
                     if (this._undoRedoService.isAllowRedo()) {
                         const rtStages: UndoState = this._undoRedoService.redo();
@@ -227,7 +233,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         );
                         this.emitMetadata();
                     }
-                } else if (event.ctrlKey && (event.key === 'z' || event.key === 'Z')) {
+                } else if (event.ctrlKey && (event.key === 'z' || event.key === 'Z') && !this.boundingBoxState.halt) {
                     // undo
                     if (this._undoRedoService.isAllowUndo()) {
                         const rtStages: UndoState = this._undoRedoService.undo();
@@ -240,7 +246,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         );
                         this.emitMetadata();
                     }
-                } else if (event.key === 'Delete') {
+                } else if (!this.boundingBoxState.halt && (event.key === 'Delete' || event.key === 'Backspace')) {
                     // delete single annotation
                     this._boundingBoxCanvas.deleteSingleBox(
                         this._selectMetadata.bnd_box,
@@ -259,13 +265,13 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         },
                     );
                 } else {
-                    event.key === 'ArrowLeft'
+                    event.key === 'ArrowLeft' && !this.boundingBoxState.halt
                         ? this.keyMoveBox('left')
-                        : event.key === 'ArrowRight'
+                        : event.key === 'ArrowRight' && !this.boundingBoxState.halt
                         ? this.keyMoveBox('right')
-                        : event.key === 'ArrowUp'
+                        : event.key === 'ArrowUp' && !this.boundingBoxState.halt
                         ? this.keyMoveBox('up')
-                        : event.key === 'ArrowDown'
+                        : event.key === 'ArrowDown' && !this.boundingBoxState.halt
                         ? this.keyMoveBox('down')
                         : {};
                 }

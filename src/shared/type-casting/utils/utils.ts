@@ -73,6 +73,21 @@ export class Utils {
             return '';
         }
     }
+
+    GetFoldername(strs: string) {
+        try {
+            let temstr = JSON.parse(JSON.stringify({ st: strs }));
+            let temreplacestr = temstr.st.split('\\').join('/');
+            let temparr = temreplacestr.split('/');
+            temparr.pop();
+            let returnstr = temparr.join('/');
+
+            return returnstr;
+        } catch (err) {
+            console.log('GetFoldername(strs) ----> ', err.name + ': ', err.message);
+            return '';
+        }
+    }
 }
 
 export class ImglblCopyPaste {

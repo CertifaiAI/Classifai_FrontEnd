@@ -8,7 +8,7 @@ const initialValue: BoundingBoxActionState = {
     draw: false,
     fitCenter: false,
     clear: false,
-    // dbClick: false,
+    halt: false,
 };
 
 @Injectable({
