@@ -187,14 +187,15 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     keyStrokeEvent(event: KeyboardEvent) {
         try {
             if (!this.mousedown) {
-                if (event.ctrlKey && (event.key === 'c' || event.key === 'C') && !this.boundingBoxState.halt) {
+                const { isActiveModal } = this.boundingBoxState;
+                if (event.ctrlKey && (event.key === 'c' || event.key === 'C') && !isActiveModal) {
                     // copy
                     // this.boundingBoxState.selectedBox > -1
                     this.annotateState.annotation > -1
                         ? this._copyPasteService.copy(this._selectMetadata.bnd_box[this.annotateState.annotation])
                         : // ? this._copyPasteService.copy(this._selectMetadata.bnd_box[this.boundingBoxState.selectedBox])
                           {};
-                } else if (event.ctrlKey && (event.key === 'v' || event.key === 'V') && !this.boundingBoxState.halt) {
+                } else if (event.ctrlKey && (event.key === 'v' || event.key === 'V') && !isActiveModal) {
                     // paste
                     this._copyPasteService.isAvailable()
                         ? (this._selectMetadata.bnd_box.push(this._copyPasteService.paste() as BoundingBox),
@@ -219,7 +220,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     event.ctrlKey &&
                     event.shiftKey &&
                     (event.key === 'z' || event.key === 'Z') &&
-                    !this.boundingBoxState.halt
+                    !isActiveModal
                 ) {
                     // redo
                     if (this._undoRedoService.isAllowRedo()) {
@@ -233,7 +234,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         );
                         this.emitMetadata();
                     }
-                } else if (event.ctrlKey && (event.key === 'z' || event.key === 'Z') && !this.boundingBoxState.halt) {
+                } else if (event.ctrlKey && (event.key === 'z' || event.key === 'Z') && !isActiveModal) {
                     // undo
                     if (this._undoRedoService.isAllowUndo()) {
                         const rtStages: UndoState = this._undoRedoService.undo();
@@ -246,7 +247,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         );
                         this.emitMetadata();
                     }
-                } else if (!this.boundingBoxState.halt && (event.key === 'Delete' || event.key === 'Backspace')) {
+                } else if (!isActiveModal && (event.key === 'Delete' || event.key === 'Backspace')) {
                     // delete single annotation
                     this._boundingBoxCanvas.deleteSingleBox(
                         this._selectMetadata.bnd_box,
@@ -265,13 +266,13 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         },
                     );
                 } else {
-                    event.key === 'ArrowLeft' && !this.boundingBoxState.halt
+                    event.key === 'ArrowLeft' && !isActiveModal
                         ? this.keyMoveBox('left')
-                        : event.key === 'ArrowRight' && !this.boundingBoxState.halt
+                        : event.key === 'ArrowRight' && !isActiveModal
                         ? this.keyMoveBox('right')
-                        : event.key === 'ArrowUp' && !this.boundingBoxState.halt
+                        : event.key === 'ArrowUp' && !isActiveModal
                         ? this.keyMoveBox('up')
-                        : event.key === 'ArrowDown' && !this.boundingBoxState.halt
+                        : event.key === 'ArrowDown' && !isActiveModal
                         ? this.keyMoveBox('down')
                         : {};
                 }

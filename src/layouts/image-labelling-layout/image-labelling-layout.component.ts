@@ -18,6 +18,7 @@ import {
     AddedSubLabel,
 } from './image-labelling-layout.model';
 import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
+import { BoundingBoxStateService } from 'src/shared/services/bounding-box-state.service';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -65,6 +66,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         private _modalService: ModalService,
         private _dataSetService: DataSetLayoutService,
         private _annotateService: AnnotateSelectionService,
+        private _bbStateService: BoundingBoxStateService,
     ) {}
 
     ngOnInit(): void {
@@ -97,6 +99,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                             this.mainLabelRegionVal = region || '';
                         }),
                     );
+                    this._bbStateService.setState({ isActiveModal: true, draw: false, drag: false, scroll: false });
                     this.onDisplayModal();
                 } else {
                     this.currentAnnotationLabel = '';
@@ -307,6 +310,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     onCloseModal = (id: string = 'custom-modal-1') => {
+        this._bbStateService.setState({ isActiveModal: false, draw: true, scroll: true });
         this._modalService.close(id);
     };
 

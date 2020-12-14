@@ -158,7 +158,7 @@ export type BoundingBoxActionState = {
     draw: boolean;
     fitCenter: boolean;
     clear: boolean;
-    halt: boolean;
+    isActiveModal: boolean;
     // dbClick: boolean;
 };
 
