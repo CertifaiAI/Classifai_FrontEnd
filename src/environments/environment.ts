@@ -2,9 +2,14 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-export const environment = {
+import { Environment } from './environment.model';
+
+export const environment: Environment = {
     production: false,
     baseURL: 'http://localhost:4200/',
+    awsBucketName: `classifai-v2`,
+    awsAccessKeyId: '44LLO49S6VBXQ6APPW56',
+    awsSecretAccessKey: 'Diy1eCM9tNlzwqlwNS1eANSyucu2mePwJkdLXae0',
 };
 
 /*
