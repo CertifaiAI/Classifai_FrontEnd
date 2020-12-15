@@ -1,8 +1,8 @@
-import * as AWS from 'aws-sdk';
+// import * as AWS from 'aws-sdk';
 import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { cloneDeep } from 'lodash-es';
 import { DataSetLayoutService } from './data-set-layout.service';
-import { environment } from './../../environments/environment';
+// import { environment } from './../../environments/environment';
 import { first, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -58,37 +58,33 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        const wasabiEndpoint = new AWS.Endpoint('s3.eu-central-1.wasabisys.com');
-        const s3 = new AWS.S3({
-            endpoint: wasabiEndpoint,
-            credentials: {
-                accessKeyId: environment.awsAccessKeyId,
-                secretAccessKey: environment.awsSecretAccessKey,
-            },
-        });
-
-        console.log(s3);
-
-        const filePath = '../../assets/landing-page/Classifai_Thumbnail_Tabular.jpg';
-        const params: AWS.S3.PutObjectRequest = {
-            Bucket: environment.awsBucketName,
-            Key: `images/Classifai_Thumbnail_Tabular.jpg`,
-            Body: filePath,
-            // ContentType: 'application/octet-stream',
-        };
-
-        const options: AWS.S3.ManagedUpload.ManagedUploadOptions = {
-            partSize: 10 * 1024 * 1024, // 10 MB
-            queueSize: 10,
-        };
-
-        s3.upload(params, options, (err, data) => {
-            if (!err) {
-                console.log(data); // successful response
-            } else {
-                console.log(err); // an error occurred
-            }
-        });
+        // const wasabiEndpoint = new AWS.Endpoint('s3.eu-central-1.wasabisys.com');
+        // const s3 = new AWS.S3({
+        //     endpoint: wasabiEndpoint,
+        //     credentials: {
+        //         accessKeyId: environment.awsAccessKeyId,
+        //         secretAccessKey: environment.awsSecretAccessKey,
+        //     },
+        // });
+        // console.log(s3);
+        // const filePath = '../../assets/landing-page/Classifai_Thumbnail_Tabular.jpg';
+        // const params: AWS.S3.PutObjectRequest = {
+        //     Bucket: environment.awsBucketName,
+        //     Key: `images/Classifai_Thumbnail_Tabular.jpg`,
+        //     Body: filePath,
+        //     // ContentType: 'application/octet-stream',
+        // };
+        // const options: AWS.S3.ManagedUpload.ManagedUploadOptions = {
+        //     partSize: 10 * 1024 * 1024, // 10 MB
+        //     queueSize: 10,
+        // };
+        // s3.upload(params, options, (err, data) => {
+        //     if (!err) {
+        //         console.log(data); // successful response
+        //     } else {
+        //         console.log(err); // an error occurred
+        //     }
+        // });
     }
 
     getProjectList = (): void => {
