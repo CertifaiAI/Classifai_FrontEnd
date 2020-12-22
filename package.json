@@ -25,7 +25,6 @@
     "@angular/router": "~11.0.2",
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
-    "aws-sdk": "^2.809.0",
     "file-saver": "^2.0.5",
     "jszip": "^3.5.0",
     "lodash-es": "^4.17.15",
