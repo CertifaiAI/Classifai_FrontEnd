@@ -42,7 +42,7 @@ export class DataSetCardComponent implements OnInit, OnChanges {
 
     onUploadContent = (index: number, projectName: string, fileType?: FileType): void => {
         this.cardSchema = { clickIndex: index };
-        this._onUpload.emit({ projectName, fileType: fileType ? fileType : 'folder' });
+        this._onUpload.emit({ projectName, fileType: fileType ?? 'folder' });
         // this.onDisplayMore(index);
     };
 
