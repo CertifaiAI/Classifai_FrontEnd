@@ -5,7 +5,6 @@
         <data-set-header></data-set-header>
         <data-set-card
             [_jsonSchema]="projectList"
-            [_isFetching]="isFetching"
             (_onClick)="onSubmit(false, $event)"
             (_onStarred)="onStarred($event)"
             (_onUpload)="uploadThumbnail($event)"

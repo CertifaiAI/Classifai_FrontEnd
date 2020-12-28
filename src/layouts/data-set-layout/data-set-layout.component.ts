@@ -26,6 +26,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     projectList: ProjectSchema = {
         projects: [],
         isUploading: false,
+        isFetching: false,
     };
     inputProjectName: string = '';
     selectedProjectName: string = '';
@@ -39,7 +40,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     loading: boolean = false;
     unsubscribe$: Subject<any> = new Subject();
     visibleSpinner: boolean = true;
-    isFetching: boolean = false;
     @ViewChild('refProjectName') _refProjectName!: ElementRef<HTMLInputElement>;
 
     constructor(
@@ -61,8 +61,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     ngOnInit(): void {}
 
     getProjectList = (): void => {
-        this.isFetching = true;
-        this.projectList.projects = [];
+        this.projectList.isFetching = true;
         this._dataSetService
             .getProjectList()
             .pipe(first())
@@ -77,13 +76,12 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     });
                     // console.log(formattedProjectList);
                     this.projectList.projects = [...formattedProjectList];
-                    this.isFetching = false;
+                    this.projectList.isFetching = false;
                 }
             }),
             (error: Error) => {
                 console.error(error);
-                this.isFetching = false;
-                this.projectList.projects = [];
+                this.projectList.isFetching = false;
             };
     };
 
@@ -156,6 +154,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 (error: Error) =>
                     (this.projectList = {
                         isUploading: this.projectList.isUploading,
+                        isFetching: this.projectList.isFetching,
                         projects: this.projectList.projects.map((project) =>
                             project.project_name === projectName
                                 ? {
@@ -212,10 +211,11 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 first(([{ message, content }]) => {
                     this.projectList = {
                         isUploading: this.projectList.isUploading,
+                        isFetching: this.projectList.isFetching,
                         projects: this.projectList.projects.map((project) =>
                             project.project_name === content[0].project_name
                                 ? { ...content[0], created_date: project.created_date }
-                                : { ...project },
+                                : project,
                         ),
                     };
                     const { is_loaded } = content[0];
