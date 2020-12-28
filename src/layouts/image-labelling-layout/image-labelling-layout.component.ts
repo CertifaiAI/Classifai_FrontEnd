@@ -403,16 +403,18 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     /** @event fires whenever browser is closing */
     @HostListener('window:beforeunload', ['$event'])
-    resetProjectStatus = () => {
-        this._dataSetService
-            .manualCloseProject(this.inputProjectName || this.selectedProjectName)
-            .pipe(first())
-            .subscribe(({ message }) => {});
+    resetProjectStatus = (projectName: string) => {
+        projectName
+            ? this._dataSetService
+                  .manualCloseProject(projectName)
+                  .pipe(first())
+                  .subscribe(({ message }) => {})
+            : null;
     };
 
     ngOnDestroy(): void {
         this.unsubscribe$.next();
         this.unsubscribe$.complete();
-        this.resetProjectStatus();
+        this.resetProjectStatus(this.inputProjectName || this.selectedProjectName);
     }
 }
