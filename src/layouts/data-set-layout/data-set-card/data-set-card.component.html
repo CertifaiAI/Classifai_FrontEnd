@@ -1,90 +1,110 @@
-<ng-container *ngIf="_jsonSchema.projects.length > 0; else noProject">
-    <div class="card-layout-container scroll">
-        <ng-container *ngFor="let project of _jsonSchema.projects; index as i">
-            <div
-                class="card-container"
-                [attr.data-index]="i"
-                (dblclick)="onOpenProject(i, project)"
-                [ngClass]="conditionalDisableProject(project)"
-            >
-                <div class="card-header-style">
-                    <div>
-                        <ng-container *ngIf="isExactIndex(i) && _jsonSchema.isUploading; else newLabel">
-                            <label class="project-status-uploading"> Uploading </label> </ng-container
-                        ><ng-template #newLabel>
-                            <ng-container [ngSwitch]="project">
-                                <ng-container *ngIf="project.is_new">
-                                    <label class="project-status-new">New</label>
-                                </ng-container>
-                                <ng-container *ngIf="!project.is_new && !project.is_loaded">
-                                    <label class="project-status-available">Available</label>
-                                </ng-container>
-
-                                <ng-container *ngIf="!project.is_new && project.is_loaded">
-                                    <label class="project-status-not-available">Not Available</label>
-                                </ng-container>
-                            </ng-container></ng-template
-                        >
-                    </div>
-                    <div class="card-icon-container">
-                        <div (click)="onStarred(project, project.is_starred ? false : true)">
-                            <img
-                                class="card-icon-style"
-                                [src]="[project.is_starred ? starredActiveIcon : starredInactiveIcon]"
-                            />
-                        </div>
-
-                        <div (click)="onDisplayMore(i)">
-                            <img class="card-icon-style" src="../../../assets/icons/more.svg" />
-                        </div>
-                        <ng-container *ngIf="isExactIndex(i)">
-                            <span>
-                                <div class="popup-container">
-                                    <div class="popup-label" (click)="onUploadContent(i, project.project_name)">
-                                        Upload Folder
-                                    </div>
-                                    <div class="popup-label" (click)="onUploadContent(i, project.project_name, 'file')">
-                                        Upload Photo(s)
-                                    </div>
-                                </div>
-                            </span>
-                        </ng-container>
-                    </div>
-                </div>
-                <div class="card-title-style">
-                    <label class="card-title-txt" [title]="project.created_date"
-                        >Created: {{ project.created_date }}</label
-                    >
-                </div>
-                <div class="project-name-style">
-                    <label class="project-name" [title]="project.project_name"> {{ project.project_name }} </label>
-                </div>
-
-                <div class="project-name-style">
-                    <label class="project-name" [title]="'Total Photo: ' + project.total_uuid">
-                        Total Photo: {{ project.total_uuid }}
-                    </label>
-                </div>
-                <!-- <div class="tag-container">
-                <img class="tag-img" src="../../../assets/icons/tag.svg" />
-                <label class="tag-txt">Add tag</label>
-            </div> -->
-            </div>
-        </ng-container>
-    </div>
-</ng-container>
-
-<ng-template #noProject>
+<ng-container *ngIf="_isFetching; else showCardBody">
     <div class="card-layout-container scroll">
         <div class="no-project-card-container">
             <div class="no-project-title-padding">
-                <label class="no-project-title">Wait a minute... there's no project</label>
+                <label class="no-project-title">Fetching your project...</label>
             </div>
             <div>
-                <label class="no-project-subtitle">Gear up and start creating new project!</label>
+                <label class="no-project-subtitle">Please wait... while we prepare the dishes</label>
             </div>
         </div>
     </div>
+</ng-container>
+
+<ng-template #showCardBody>
+    <ng-container *ngIf="_jsonSchema.projects.length > 0; else noProject">
+        <div class="card-layout-container scroll">
+            <ng-container *ngFor="let project of _jsonSchema.projects; index as i">
+                <div
+                    class="card-container"
+                    [attr.data-index]="i"
+                    (dblclick)="onOpenProject(i, project)"
+                    [ngClass]="conditionalDisableProject(project)"
+                >
+                    <div class="card-header-style">
+                        <div>
+                            <ng-container *ngIf="isExactIndex(i) && _jsonSchema.isUploading; else newLabel">
+                                <label class="project-status-uploading"> Uploading </label> </ng-container
+                            ><ng-template #newLabel>
+                                <ng-container [ngSwitch]="project">
+                                    <ng-container *ngIf="project.is_new">
+                                        <label class="project-status-new">New</label>
+                                    </ng-container>
+                                    <ng-container *ngIf="!project.is_new && !project.is_loaded">
+                                        <label class="project-status-available">Available</label>
+                                    </ng-container>
+
+                                    <ng-container *ngIf="!project.is_new && project.is_loaded">
+                                        <label class="project-status-not-available">Not Available</label>
+                                    </ng-container>
+                                </ng-container></ng-template
+                            >
+                        </div>
+                        <div class="card-icon-container">
+                            <div (click)="onStarred(project, project.is_starred ? false : true)">
+                                <img
+                                    class="card-icon-style"
+                                    [src]="[project.is_starred ? starredActiveIcon : starredInactiveIcon]"
+                                />
+                            </div>
+
+                            <div (click)="onDisplayMore(i)">
+                                <img class="card-icon-style" src="../../../assets/icons/more.svg" />
+                            </div>
+                            <ng-container *ngIf="isExactIndex(i)">
+                                <span>
+                                    <div class="popup-container">
+                                        <div class="popup-label" (click)="onUploadContent(i, project.project_name)">
+                                            Upload Folder
+                                        </div>
+                                        <div
+                                            class="popup-label"
+                                            (click)="onUploadContent(i, project.project_name, 'file')"
+                                        >
+                                            Upload Photo(s)
+                                        </div>
+                                    </div>
+                                </span>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <div class="card-title-style">
+                        <label class="card-title-txt" [title]="project.created_date"
+                            >Created: {{ project.created_date }}</label
+                        >
+                    </div>
+                    <div class="project-name-style">
+                        <label class="project-name" [title]="project.project_name">
+                            {{ project.project_name }}
+                        </label>
+                    </div>
+
+                    <div class="project-name-style">
+                        <label class="project-name" [title]="'Total Photo: ' + project.total_uuid">
+                            Total Photo: {{ project.total_uuid }}
+                        </label>
+                    </div>
+                    <!-- <div class="tag-container">
+          <img class="tag-img" src="../../../assets/icons/tag.svg" />
+          <label class="tag-txt">Add tag</label>
+      </div> -->
+                </div>
+            </ng-container>
+        </div>
+    </ng-container>
+
+    <ng-template #noProject>
+        <div class="card-layout-container scroll">
+            <div class="no-project-card-container">
+                <div class="no-project-title-padding">
+                    <label class="no-project-title">Wait a minute... there's no project</label>
+                </div>
+                <div>
+                    <label class="no-project-subtitle">Gear up and start creating new project!</label>
+                </div>
+            </div>
+        </div>
+    </ng-template>
 </ng-template>
 
 <!-- <div id="card-model" class="model" style="position: fixed; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7)">

@@ -18,6 +18,7 @@ type FileTypeProps = {
 })
 export class DataSetCardComponent implements OnInit, OnChanges {
     @Input() _jsonSchema!: ProjectSchema;
+    @Input() _isFetching!: boolean;
     @Output() _onClick: EventEmitter<string> = new EventEmitter();
     @Output() _onUpload: EventEmitter<FileTypeProps> = new EventEmitter();
     @Output() _onStarred: EventEmitter<StarredProps> = new EventEmitter();
@@ -64,7 +65,9 @@ export class DataSetCardComponent implements OnInit, OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         // console.log(changes);
-        const { isUploading }: { isUploading: boolean } = changes._jsonSchema.currentValue;
-        isUploading ? null : this.onDisplayMore();
+        if (changes._jsonSchema) {
+            const { isUploading }: { isUploading: boolean } = changes._jsonSchema.currentValue;
+            isUploading ? null : this.onDisplayMore();
+        }
     }
 }

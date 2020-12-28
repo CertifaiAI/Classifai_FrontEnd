@@ -38,6 +38,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     labelList: string[] = [];
     loading: boolean = false;
     unsubscribe$: Subject<any> = new Subject();
+    visibleSpinner: boolean = true;
+    isFetching: boolean = false;
     @ViewChild('refProjectName') _refProjectName!: ElementRef<HTMLInputElement>;
 
     constructor(
@@ -59,6 +61,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     ngOnInit(): void {}
 
     getProjectList = (): void => {
+        this.isFetching = true;
+        this.projectList.projects = [];
         this._dataSetService
             .getProjectList()
             .pipe(first())
@@ -73,10 +77,13 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     });
                     // console.log(formattedProjectList);
                     this.projectList.projects = [...formattedProjectList];
+                    this.isFetching = false;
                 }
             }),
             (error: Error) => {
                 console.error(error);
+                this.isFetching = false;
+                this.projectList.projects = [];
             };
     };
 
@@ -267,6 +274,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     uploadThumbnail = <T extends UploadThumbnailProps>({ projectName = this.inputProjectName, fileType }: T): void => {
+        this.visibleSpinner = false;
         const uploadType$ = this._dataSetService.localUploadThumbnail(projectName, fileType);
         const uploadStatus$ = this._dataSetService.localUploadStatus(projectName);
         const thumbnail$ = this._dataSetService.getThumbnailList;
@@ -339,6 +347,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 (error: Error) => {},
                 () => {
                     this.getProjectList();
+                    this.visibleSpinner = true;
                 },
             );
 

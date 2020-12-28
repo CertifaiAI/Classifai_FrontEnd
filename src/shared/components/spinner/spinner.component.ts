@@ -7,7 +7,7 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/cor
 })
 export class SpinnerComponent implements OnInit, OnChanges {
     @Input() _loading: boolean = false;
-
+    @Input() _visible: boolean = true;
     constructor() {}
 
     ngOnInit(): void {}
