@@ -144,7 +144,21 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this._dataSetService
             .updateProjectStatus(projectName, starred, 'star')
             .pipe(first())
-            .subscribe(({ message }) => console.log(message));
+            .subscribe(
+                ({ message }) => console.log(message),
+                (error: Error) =>
+                    (this.projectList = {
+                        isUploading: this.projectList.isUploading,
+                        projects: this.projectList.projects.map((project) =>
+                            project.project_name === projectName
+                                ? {
+                                      ...project,
+                                      is_starred: false,
+                                  }
+                                : project,
+                        ),
+                    }),
+            );
     };
 
     onSubmit = (isNewProject: boolean, projectName?: string): void => {
