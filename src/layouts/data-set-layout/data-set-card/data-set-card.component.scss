@@ -1,6 +1,9 @@
 @use '../../../shared/scss/_variables.scss' as color;
 @use '../../../shared/scss/_scrollbar.scss' as *;
 @use '../../../shared/scss/_ellipsis' as ellipsis;
+@use '../../../shared/scss/fadeIn' as fadeIn;
+
+$fadeInEaseDuration: ease 1.5s;
 $hoverBackground: #393838;
 
 @mixin project-status($color) {
@@ -8,6 +11,14 @@ $hoverBackground: #393838;
     background-color: $color;
     font-size: 1.5vh;
     padding: 0.3vh 1.5vw 0.6vh 1vw;
+}
+
+.fade-in {
+    animation: fadeIn $fadeInEaseDuration;
+    -webkit-animation: fadeIn $fadeInEaseDuration;
+    -moz-animation: fadeIn $fadeInEaseDuration;
+    -o-animation: fadeIn $fadeInEaseDuration;
+    -ms-animation: fadeIn $fadeInEaseDuration;
 }
 
 .card-layout-container {
