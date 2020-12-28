@@ -70,8 +70,10 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     const clonedProjectList = cloneDeep(content);
                     // const sortedProject = clonedProjectList.sort((a, b) => (b.created_date > a.created_date ? 1 : -1));
                     const formattedProjectList = clonedProjectList.map((project) => {
-                        const { created_date } = project;
-                        const newProjectList = (project = { ...project, created_date: this.formatDate(created_date) });
+                        const newProjectList = (project = {
+                            ...project,
+                            created_date: this.formatDate(project.created_date),
+                        });
                         return newProjectList;
                     });
                     // console.log(formattedProjectList);
@@ -88,11 +90,11 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     formatDate = (date: string): string => {
         const initializedDate: Date = new Date(date);
         const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const actualMonth: string =
-            monthNames.find((month, i) => i - 1 === initializedDate.getMonth() ?? month) || 'Err';
-        const newDateFormat: string = `${actualMonth}-${initializedDate.getDate()}-${initializedDate.getFullYear()}`;
-        // console.log(newDateFormat);
-        return newDateFormat;
+        const actualMonth: string | undefined = monthNames.find(
+            (_, i) => i === initializedDate.getMonth() || undefined,
+        );
+
+        return actualMonth ? `${actualMonth}-${initializedDate.getDate()}-${initializedDate.getFullYear()}` : 'Error';
     };
 
     createFormControls = (): void => {
