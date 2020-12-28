@@ -192,73 +192,30 @@ $hoverBackground: #393838;
 }
 
 //#########################
-//    End - Modal PopUp
+//    Start - No Project Template
 //#########################
 
-// .model-content {
-//     background-color: #525353;
-//     margin: auto;
-//     padding: 1vw;
-//     border: solid;
-//     max-width: 30vw;
-//     min-width: 30vw;
-//     border-radius: 1vw;
-//     margin-top: 15vh;
-//     min-height: 25vh;
-//     max-height: 25vh;
-//     display: flex;
-//     flex-direction: column;
-//     margin-left: 34vw;
-// }
+.no-project-title {
+    font-size: 4vh;
+    color: black;
+    white-space: nowrap;
+}
 
-// .model {
-//     position: fixed; /* Stay in place */
-//     z-index: 2; /*Sit on top*/
-//     padding-top: 10vh; /* Location of the box */
-//     left: 0;
-//     top: 0;
-//     width: 100%; /* Full width */
-//     height: 100%; /* Full height */
-//     overflow: auto; /* Enable scroll if needed */
-//     background-color: transparent;
-//     scrollbar-width: none;
-//     position: fixed;
-//     background: rgba(0, 0, 0, 0.7);
-// }
+.no-project-title-padding {
+    padding: 2vw;
+}
 
-// .upload-img {
-//     border: solid;
-//     height: 11vh;
-//     cursor: pointer;
-//     border-radius: 1.5vh;
-//     display: flex;
-//     align-items: center;
-//     padding-left: 29vh;
-// }
+.no-project-subtitle {
+    font-size: 2vh;
+    color: #656667;
+    white-space: nowrap;
+}
 
-// .upload-img:hover {
-//     background-color: #2e2d2d;
-// }
-
-// .label {
-//     cursor: pointer;
-// }
-
-// .import-img-btn-container {
-//     display: flex;
-// }
-
-// .img-btn-style {
-//     cursor: pointer;
-// }
-
-// .close-modal {
-//     display: flex;
-//     justify-content: flex-end;
-//     margin-top: -2vh;
-// }
-
-// .star {
-//     -webkit-filter: grayscale(100%) brightness(120%) sepia(99%) hue-rotate(5deg) saturate(800%) contrast(1);
-//     filter: grayscale(100%) brightness(120%) sepia(99%) hue-rotate(5deg) saturate(800%) contrast(1);
-// }
+.no-project-card-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #c8c6c6;
+    width: 100%;
+}
