@@ -1,4 +1,9 @@
-import { BoundingBox, Metadata, xyCoordinate } from '../type-casting/meta-data/meta-data.model';
+//import { BoundingBox, Metadata, xyCoordinate } from '../type-casting/meta-data/meta-data.model';
+import {
+    Boundingbox,
+    ThumbnailMetadata,
+    xyCoordinate,
+} from '../../layouts/image-labelling-layout/image-labelling-layout.model';
 import { Injectable } from '@angular/core';
 import { cloneDeep } from 'lodash-es';
 import { Utils } from '../../shared/type-casting/utils/utils';
@@ -21,7 +26,7 @@ export class BoundingBoxCanvasService {
         y1: 0,
         y2: 0,
     };
-    private tmpbox!: BoundingBox | null;
+    private tmpbox!: Boundingbox | null;
     private currentSelectedBndBox: number = -1;
     private utility: Utils = new Utils();
     constructor() {}
@@ -74,7 +79,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public moveAllBbox(boundingBoxes: BoundingBox[], imgX: number, imgY: number, callback: (args: boolean) => void) {
+    public moveAllBbox(boundingBoxes: Boundingbox[], imgX: number, imgY: number, callback: (args: boolean) => void) {
         try {
             for (const boundingBox of boundingBoxes) {
                 const temRectWidth: number = boundingBox.x2 - boundingBox.x1;
@@ -110,7 +115,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public deleteSingleBox(bbox: BoundingBox[], idx: number, callback: (args: boolean) => void) {
+    public deleteSingleBox(bbox: Boundingbox[], idx: number, callback: (args: boolean) => void) {
         try {
             bbox.splice(idx, 1);
             this.currentSelectedBndBox = -1;
@@ -121,7 +126,7 @@ export class BoundingBoxCanvasService {
 
     public keyboardMoveBox(
         direct: string,
-        bBox: BoundingBox,
+        bBox: Boundingbox,
         imX: number,
         imY: number,
         imW: number,
@@ -152,7 +157,7 @@ export class BoundingBoxCanvasService {
         } catch (err) {}
     }
 
-    private mouseMoveBox(mouseX: number, mouseY: number, currMeta: Metadata): void {
+    private mouseMoveBox(mouseX: number, mouseY: number, currMeta: ThumbnailMetadata): void {
         try {
             const tmpOffsetX: number = mouseX - this.currentDrawing.x1;
             const tmpOffsetY: number = mouseY - this.currentDrawing.y1;
@@ -230,7 +235,7 @@ export class BoundingBoxCanvasService {
     }
 
     public mouseUpDrawEnable(
-        currMeta: Metadata,
+        currMeta: ThumbnailMetadata,
         callback: (args: boolean) => void,
     ): { selBox: number; isNew: boolean } {
         try {
@@ -269,7 +274,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public panRectangle(boundingBoxes: BoundingBox[], imgX: number, imgY: number, callback: (args: boolean) => void) {
+    public panRectangle(boundingBoxes: Boundingbox[], imgX: number, imgY: number, callback: (args: boolean) => void) {
         try {
             for (const boundingBox of boundingBoxes) {
                 const temrectW: number = boundingBox.x2 - boundingBox.x1;
@@ -291,7 +296,7 @@ export class BoundingBoxCanvasService {
 
     public scaleAllBoxes(
         scalefactor: number,
-        boxes: BoundingBox[],
+        boxes: Boundingbox[],
         imgX: number,
         imgY: number,
         callback: (args: boolean) => void,
@@ -324,7 +329,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public mouseMoveDrawEnable(mouseX: number, mouseY: number, selectedMeta: Metadata): void {
+    public mouseMoveDrawEnable(mouseX: number, mouseY: number, selectedMeta: ThumbnailMetadata): void {
         try {
             if (this.currentClickedBox.box === -1) {
                 this.setCurrentX2Y2(mouseX, mouseY);
@@ -340,7 +345,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public mouseDownDrawEnable(mouseX: number, mouseY: number, bBox: BoundingBox[]): number {
+    public mouseDownDrawEnable(mouseX: number, mouseY: number, bBox: Boundingbox[]): number {
         try {
             this.getCurrentClickBox(mouseX, mouseY, bBox);
             this.setCurrentX1Y1(mouseX, mouseY);
@@ -383,7 +388,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public changeLabel(bbox: BoundingBox, newLabel: string) {
+    public changeLabel(bbox: Boundingbox, newLabel: string) {
         bbox && newLabel ? (bbox.label = cloneDeep(newLabel)) : {};
     }
 
@@ -394,7 +399,7 @@ export class BoundingBoxCanvasService {
         imgH: number,
         addX: number,
         addY: number,
-        box: BoundingBox,
+        box: Boundingbox,
     ): boolean {
         try {
             return box.x1 + addX < imgX ||
@@ -433,7 +438,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public drawAllBoxOn(boundingBoxes: BoundingBox[], context: CanvasRenderingContext2D | null) {
+    public drawAllBoxOn(boundingBoxes: Boundingbox[], context: CanvasRenderingContext2D | null) {
         try {
             if (boundingBoxes.length > 0) {
                 for (const [i, boundingBox] of boundingBoxes.entries()) {
@@ -460,7 +465,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    private drawEachBoxOn(box: BoundingBox, context: CanvasRenderingContext2D | null, isSelected: boolean): void {
+    private drawEachBoxOn(box: Boundingbox, context: CanvasRenderingContext2D | null, isSelected: boolean): void {
         try {
             if (context) {
                 const xCenter = box.x1 + (box.x2 - box.x1) / 2;
@@ -538,7 +543,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    private generateNewBox(x1: number, x2: number, y1: number, y2: number): BoundingBox | null {
+    private generateNewBox(x1: number, x2: number, y1: number, y2: number): Boundingbox | null {
         try {
             const boxX1: number = x1 < x2 ? x1 : x2;
             const boxY1: number = y1 < y2 ? y1 : y2;
@@ -569,7 +574,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public getBBoxDistfromImg(boundingBoxes: BoundingBox[], imgX: number, imgY: number) {
+    public getBBoxDistfromImg(boundingBoxes: Boundingbox[], imgX: number, imgY: number) {
         try {
             for (const { x1, y1, distancetoImg } of boundingBoxes) {
                 const distX: number = x1 - imgX;
@@ -586,7 +591,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public getCurrentClickBox(mouseX: number, mouseY: number, box: BoundingBox[]): { box: number; pos: string } {
+    public getCurrentClickBox(mouseX: number, mouseY: number, box: Boundingbox[]): { box: number; pos: string } {
         try {
             this.currentClickedBox = this.mouseClickOnBoxeses(mouseX, mouseY, box);
             return this.currentClickedBox;
@@ -600,7 +605,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    private mouseClickOnBoxeses(mouseX: number, mouseY: number, box: BoundingBox[]): { box: number; pos: string } {
+    private mouseClickOnBoxeses(mouseX: number, mouseY: number, box: Boundingbox[]): { box: number; pos: string } {
         try {
             for (let i = 0; i < box.length; ++i) {
                 const xCenter: number = box[i].x1 + (box[i].x2 - box[i].x1) / 2;

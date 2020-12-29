@@ -57,6 +57,8 @@ type SubLabel = {
     label: string;
 };
 
+export type xyCoordinate = { x: number; y: number };
+
 export type Boundingbox = {
     x1: number;
     y1: number;
@@ -207,5 +209,5 @@ export type PolyMeta = {
     polygons: Polygons[];
 };
 
-export type UndoState = { meta: Metadata | PolyMeta | null; method: string } | null;
+export type UndoState = { meta: ThumbnailMetadata | PolyMeta | null; method: string } | null;
 export type CopyPasteState = BoundingBox | Polygons | null;

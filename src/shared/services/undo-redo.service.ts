@@ -1,4 +1,4 @@
-import { BoundingBox, Metadata } from '../type-casting/meta-data/meta-data.model';
+import { Boundingbox, ThumbnailMetadata } from '../../layouts/image-labelling-layout/image-labelling-layout.model';
 import { Injectable } from '@angular/core';
 import { Polygons, PolyMeta, UndoState } from './../../layouts/image-labelling-layout/image-labelling-layout.model';
 import { Utils } from '../type-casting/utils/utils';
@@ -66,14 +66,15 @@ export class UndoRedoService {
     }
 
     public clearRedundantStages() {
+        //TODO:Solve bugs here
         /** Daniel: Unable to shortcut code logic due to the Type embedded into 'currentArr.meta' prop */
         if (this.currentArr[0]?.meta && 'Polygons' in this.currentArr[0].meta) {
         } else {
             if (this.undoArr.length > 0) {
                 const last2Stages: boolean = this.isStatgeChange(
-                    (this.undoArr[this.undoArr.length - 1]?.meta as Metadata).bnd_box,
+                    (this.undoArr[this.undoArr.length - 1]?.meta as ThumbnailMetadata).bnd_box,
                 );
-                last2Stages ? (this.currentArr.pop(), this.currentArr.push(this.removeLastArray(this.redoArr))) : {};
+                last2Stages ? (this.currentArr.pop(), this.currentArr.push(this.removeLastArray(this.undoArr))) : {};
             }
         }
     }
@@ -97,7 +98,7 @@ export class UndoRedoService {
         stages ? (this.currentArr[0] = this.utility.deepCloneVariable(stages)) : {};
     }
 
-    public isStatgeChange(notate: BoundingBox[] | Polygons[] | null): boolean {
+    public isStatgeChange(notate: Boundingbox[] | Polygons[] | null): boolean {
         if (notate === null || notate === undefined) {
             return false;
         }
@@ -107,7 +108,7 @@ export class UndoRedoService {
         return false;
     }
 
-    private isLabelChange(notate: BoundingBox[] | Polygons[] | null): boolean {
+    private isLabelChange(notate: Boundingbox[] | Polygons[] | null): boolean {
         /** Daniel: Unable to shortcut code logic due to the Type embedded into 'currentArr.meta' prop */
         if (this.currentArr[0]?.meta && 'Polygons' in this.currentArr[0]?.meta) {
             const polybox: Polygons[] = notate as Polygons[];
@@ -120,8 +121,8 @@ export class UndoRedoService {
                 }
             }
         } else {
-            const bndBox: BoundingBox[] = notate as BoundingBox[];
-            const compareBndBox: BoundingBox[] = (this.currentArr[0]?.meta as Metadata).bnd_box;
+            const bndBox: Boundingbox[] = notate as Boundingbox[];
+            const compareBndBox: Boundingbox[] = (this.currentArr[0]?.meta as ThumbnailMetadata).bnd_box;
             if (bndBox.length !== compareBndBox.length) {
                 return true;
             } else {
@@ -135,35 +136,43 @@ export class UndoRedoService {
         return false;
     }
 
-    private isAnnotationChange(notate: BoundingBox[] | Polygons[] | null) {
+    private isAnnotationChange(notate: Boundingbox[] | Polygons[] | null) {
         /** Daniel: Unable to shortcut code logic due to the Type embedded into 'currentArr.meta' prop */
         if (this.currentArr[0]?.meta && 'Polygons' in this.currentArr[0]?.meta) {
-            const polygons: Polygons[] = notate as Polygons[];
-            const comparePolygons: Polygons[] = (this.currentArr[0]?.meta as PolyMeta).polygons;
-            if (polygons.length !== comparePolygons.length) {
+            if (this.currentArr.length < 1) {
                 return true;
             } else {
-                const compareResult: boolean = comparePolygons.some(({ coorPt: compareCoorPt }, i) =>
-                    polygons.some(
-                        ({ coorPt: oriCoorPt }, j) =>
-                            compareCoorPt[i].x !== oriCoorPt[j].x || compareCoorPt[i].y !== oriCoorPt[j].y,
-                    ),
-                );
-                return compareResult ? true : null;
+                const polygons: Polygons[] = notate as Polygons[];
+                const comparePolygons: Polygons[] = (this.currentArr[0]?.meta as PolyMeta).polygons;
+                if (polygons.length !== comparePolygons.length) {
+                    return true;
+                } else {
+                    const compareResult: boolean = comparePolygons.some(({ coorPt: compareCoorPt }, i) =>
+                        polygons.some(
+                            ({ coorPt: oriCoorPt }, j) =>
+                                compareCoorPt[i].x !== oriCoorPt[j].x || compareCoorPt[i].y !== oriCoorPt[j].y,
+                        ),
+                    );
+                    return compareResult ? true : null;
+                }
             }
         } else {
-            const thisBox: BoundingBox[] = notate as BoundingBox[];
-            const compareBox: BoundingBox[] = (this.currentArr[0]?.meta as Metadata).bnd_box;
-            if (thisBox.length !== compareBox.length) {
+            if (this.currentArr.length < 1) {
                 return true;
             } else {
-                for (const [i, { x1, x2, y1, y2 }] of thisBox.entries()) {
-                    return x1 !== compareBox[i].x1 ||
-                        x2 !== compareBox[i].x2 ||
-                        y1 !== compareBox[i].y1 ||
-                        y2 !== compareBox[i].y2
-                        ? true
-                        : null;
+                const thisBox: Boundingbox[] = notate as Boundingbox[];
+                const compareBox: Boundingbox[] = (this.currentArr[0]?.meta as ThumbnailMetadata).bnd_box;
+                if (thisBox.length !== compareBox.length) {
+                    return true;
+                } else {
+                    for (const [i, { x1, x2, y1, y2 }] of thisBox.entries()) {
+                        return x1 !== compareBox[i].x1 ||
+                            x2 !== compareBox[i].x2 ||
+                            y1 !== compareBox[i].y1 ||
+                            y2 !== compareBox[i].y2
+                            ? true
+                            : null;
+                    }
                 }
             }
         }

@@ -10,6 +10,7 @@ import { ImageLabellingRoutingModule } from './image-labelling-layout-routing.mo
 import { ModalModule } from 'src/shared/components/modal/modal.module';
 import { NgModule } from '@angular/core';
 import { SharedModule } from 'src/shared/shared.module';
+import { ImageLabellingSegmentationComponent } from './image-labelling-segmentation/image-labelling-segmentation.component';
 
 @NgModule({
     imports: [CommonModule, SharedModule, ImageLabellingRoutingModule, ModalModule],
@@ -21,6 +22,7 @@ import { SharedModule } from 'src/shared/shared.module';
         ImageLabellingRightSidebarComponent,
         ImageLabellingFooterComponent,
         ImageLabellingObjectDetectionComponent,
+        ImageLabellingSegmentationComponent,
     ],
 })
 export class ImageLabellingLayoutModule {}
