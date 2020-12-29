@@ -103,7 +103,7 @@ export type TabsProps = {
     name: string;
     closed: boolean;
     label_list?: string[];
-    annotation?: ThumbnailMetadata[] | undefined;
+    annotation?: ThumbnailMetadata[];
 };
 
 export type UrlProps = {

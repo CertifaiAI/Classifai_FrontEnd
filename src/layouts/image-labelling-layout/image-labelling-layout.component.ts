@@ -226,7 +226,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                   }
                 : tab,
         );
-        this.updateSelectedMetaData();
+        this.updateStateToRenderChild();
         this.updateProjectProgress();
     };
 
@@ -244,7 +244,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                   }
                 : tab,
         );
-        this.updateSelectedMetaData();
+        this.updateStateToRenderChild();
         this.updateProjectProgress();
     };
 
@@ -363,7 +363,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     : tab,
             );
             this.subLabelValidateMsg = '';
-            this.updateSelectedMetaData();
+            this.updateStateToRenderChild();
             this.updateProjectProgress();
         } else {
             this.subLabelValidateMsg = `Invalid of duplicate label: ${value}`;
@@ -392,13 +392,23 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                   }
                 : tab,
         );
-        this.updateSelectedMetaData();
+        this.updateStateToRenderChild();
         this.updateProjectProgress();
     };
 
-    /** @function responsible for updating selectedMetaData state to re-render object-detection comp */
-    updateSelectedMetaData = () => {
-        this.tabStatus.forEach(({ annotation }) => (annotation ? (this.selectedMetaData = annotation[0]) : null));
+    /** @function responsible for updating state to re-render child comp(s) */
+    updateStateToRenderChild = () => {
+        this.tabStatus.forEach(({ annotation }) => {
+            if (annotation) {
+                // re-render project comp
+                this.thumbnailList = this.thumbnailList.map(
+                    (thumbnail) =>
+                        annotation.find(({ uuid: incomingUuid }) => thumbnail.uuid === incomingUuid) ?? thumbnail,
+                );
+                // re-render object-detection comp
+                this.selectedMetaData = annotation[0];
+            }
+        });
     };
 
     /** @event fires whenever browser is closing */
