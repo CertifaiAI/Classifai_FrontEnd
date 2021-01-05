@@ -52,7 +52,6 @@ $hoverBackground: #393838;
     font-size: 2.2vh;
     // background: #404040;
     background: rgb(46, 45, 45);
-    cursor: pointer;
     position: relative;
 }
 
@@ -69,6 +68,10 @@ $hoverBackground: #393838;
     left: 0;
     width: 0.3vw;
     background-color: rgb(54, 54, 54);
+}
+
+.enabled {
+    cursor: pointer;
 }
 
 .disabled {
@@ -100,11 +103,10 @@ $hoverBackground: #393838;
     max-width: 1.5vw;
     min-height: 3vh;
     max-height: 3vh;
-    cursor: pointer;
 }
 
 .card-icon-style:hover {
-    cursor: pointer;
+    // cursor: pointer;
     border-radius: 5vh;
     background-color: $hoverBackground;
 }

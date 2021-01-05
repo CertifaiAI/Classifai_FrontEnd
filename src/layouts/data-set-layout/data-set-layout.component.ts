@@ -208,7 +208,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
 
         this.subjectSubscription = this.subject$
             .pipe(
-                first(),
                 mergeMap(() => forkJoin([projMetaStatus$])),
                 first(([{ message, content }]) => {
                     this.projectList = {
@@ -257,7 +256,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
 
                     // this.tabStatus = [...this.tabStatus, { name: 'Label', closed, label_list: [] }];
                 },
-                (error: Error) => console.error(error),
+                (error: Error) => console.log(error),
                 () => {
                     // const [{ label_list }] = this.tabStatus;
                     // label_list && label_list.length < 1

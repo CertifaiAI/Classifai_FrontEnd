@@ -10,13 +10,15 @@ const routes: Routes = [
         path: 'imglabel',
         loadChildren: () =>
             import('../layouts/image-labelling-layout/image-labelling-layout.module').then(
-                (m) => m.ImageLabellingLayoutModule,
+                ({ ImageLabellingLayoutModule }) => ImageLabellingLayoutModule,
             ),
     },
     {
         path: 'dataset',
         loadChildren: () =>
-            import('../layouts/data-set-layout/data-set-layout.module').then((m) => m.DataSetLayoutModule),
+            import('../layouts/data-set-layout/data-set-layout.module').then(
+                ({ DataSetLayoutModule }) => DataSetLayoutModule,
+            ),
     },
     { path: '500', component: ServerErrorComponent },
     { path: '**', component: PageNotFoundComponent },

@@ -33,7 +33,9 @@ export class DataSetCardComponent implements OnInit, OnChanges {
 
     ngOnInit(): void {}
 
-    conditionalDisableProject = ({ is_loaded }: Project): string | null => (is_loaded ? 'disabled' : null);
+    conditionalDisableProject = ({ is_loaded }: Project): string | null => (is_loaded ? 'disabled' : 'enabled');
+
+    conditionalDisableClickEvent = (is_loaded: boolean): boolean => is_loaded;
 
     onOpenProject = (index: number, { project_name, is_loaded }: Project): void => {
         is_loaded ? null : this.isExactIndex(index) ? null : this._onClick.emit(project_name);
