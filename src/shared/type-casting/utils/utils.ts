@@ -88,6 +88,17 @@ export class Utils {
             return '';
         }
     }
+
+    public RemoveHTMLElement(ids: string) {
+        try {
+            let elem = document.getElementById(ids);
+            if (elem !== null && elem !== undefined) {
+                elem.parentNode!.removeChild(elem);
+            }
+        } catch (err) {
+            console.log('RemoveHTMLElement(ids) ----> ', err.name + ': ', err.message);
+        }
+    }
 }
 
 export class ImglblCopyPaste {
