@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { cloneDeep } from 'lodash-es';
 import { Utils } from '../../shared/type-casting/utils/utils';
-import { Polygons, PolyMeta } from '../../layouts/image-labelling-layout/image-labelling-layout.model';
+import { Polygons, PolyMeta, Coordinate } from '../../layouts/image-labelling-layout/image-labelling-layout.model';
 
 @Injectable({
     providedIn: 'any',
@@ -171,7 +171,7 @@ export class SegmentationCanvasService {
 
     public DrawAllPolygons(pol: PolyMeta[], context: CanvasRenderingContext2D, selectpolygon: number) {
         try {
-            // if(this.Metadata[this.CurrentSelectedImg.idx].polygons.length < 1 || selectpolygon === -1){return;}
+            // if(pol[this.CurrentSelectedImg.idx].polygons.length < 1 || selectpolygon === -1){return;}
             // else{
             this.drawAllPolygonsLine(pol, context, 1);
             this.drawAllPolygonsDots(pol, context, selectpolygon, this.radius, 1);
@@ -226,8 +226,8 @@ export class SegmentationCanvasService {
     ) {
         try {
             for (var q = 0; q < len; ++q) {
-                // context.strokeStyle = this.Metadata[this.CurrentSelectedImg.idx].polygons[q].color;
-                // context.fillStyle = this.Metadata[this.CurrentSelectedImg.idx].polygons[q].color;
+                // context.strokeStyle = pol[this.CurrentSelectedImg.idx].polygons[q].color;
+                // context.fillStyle = pol[this.CurrentSelectedImg.idx].polygons[q].color;
                 if (q !== selectedpolygon) {
                     continue;
                 }
@@ -260,7 +260,7 @@ export class SegmentationCanvasService {
         try {
             this.clearAllDIV(pol, 1);
             for (var i = 0; i < len; ++i) {
-                // this.util.RemoveHTMLElement("float_" + this.Metadata[this.getCurrentSelectedimgidx()].polygons[i].id.toString());
+                // this.util.RemoveHTMLElement("float_" + pol[this.getCurrentSelectedimgidx()].polygons[i].id.toString());
                 let regionAtt = pol[this.CurrentSelectedImg.idx].polygons[i].regionatt.toString();
                 let uuids = pol[this.CurrentSelectedImg.idx].polygons[i].id;
                 let tempdiv = this.createDIV(
@@ -586,6 +586,213 @@ export class SegmentationCanvasService {
                 err.name + ': ',
                 err.message,
             );
+        }
+    }
+
+    public DrawfromlastPoint(e: MouseEvent, context: CanvasRenderingContext2D) {
+        try {
+            if (this.tmpPolygon!.coorPt.length > 0) {
+                context.beginPath();
+                context.moveTo(
+                    this.tmpPolygon!.coorPt[this.tmpPolygon!.coorPt.length - 1].x,
+                    this.tmpPolygon!.coorPt[this.tmpPolygon!.coorPt.length - 1].y,
+                );
+                context.lineTo(e.offsetX, e.offsetY);
+                context.stroke();
+            }
+        } catch (err) {
+            console.log(
+                'segmentation DrawfromlastPoint(e:MouseEvent, context:CanvasRenderingContext2D) ----> ',
+                err.name + ': ',
+                err.message,
+            );
+        }
+    }
+
+    public returnTempPoly() {
+        try {
+            if (this.tmpPolygon !== null && this.tmpPolygon !== undefined) {
+                return this.tmpPolygon;
+            } else {
+                return null;
+            }
+        } catch (err) {
+            console.log('segmentation returnTempPoly() ----> ', err.name + ': ', err.message);
+            return null;
+        }
+    }
+
+    public setPolygonCoordinate(e: MouseEvent, pol: PolyMeta[], selectedPoly: number, PointIndex: number) {
+        try {
+            if (selectedPoly !== -1 && PointIndex !== -1) {
+                pol[this.CurrentSelectedImg.idx].polygons[selectedPoly].coorPt[PointIndex].x = e.offsetX;
+                pol[this.CurrentSelectedImg.idx].polygons[selectedPoly].coorPt[PointIndex].y = e.offsetY;
+            }
+        } catch (err) {
+            console.log(
+                'segmentation setPolygonCoordinate(e:MouseEvent, selectedPoly:number, PointIndex:number) ----> ',
+                err.name + ': ',
+                err.message,
+            );
+        }
+    }
+
+    private insidePolygonArea(vert: Coordinate[], mouseX: number, mouseY: number): boolean {
+        try {
+            let inside = false;
+            for (var i = 0, j = vert.length - 1; i < vert.length; j = i++) {
+                var intersect =
+                    vert[i].y > mouseY != vert[j].y > mouseY &&
+                    mouseX < ((vert[j].x - vert[i].x) * (mouseY - vert[i].y)) / (vert[j].y - vert[i].y) + vert[i].x;
+                if (intersect) {
+                    inside = !inside;
+                }
+            }
+            return inside;
+        } catch (err) {
+            console.log(
+                'segmentation insidePolygonArea(vert:coordinate[], mouseX:number, mouseY:number):boolean ----> ',
+                err.name + ': ',
+                err.message,
+            );
+            return false;
+        }
+    }
+
+    private CalculatePolygonArea(poly: Polygons): number {
+        try {
+            var area: number = 0;
+            var j: number = poly.coorPt.length - 1;
+            for (var i = 0; i < poly.coorPt.length; ++i) {
+                area += (poly.coorPt[j].x + poly.coorPt[i].x) * (poly.coorPt[j].y - poly.coorPt[i].y);
+                j = i;
+            }
+
+            return Math.abs(area / 2.0);
+        } catch (err) {
+            return -1;
+        }
+    }
+
+    public findPolygonArea(e: MouseEvent, pol: PolyMeta[]): number {
+        try {
+            let polyindex: number = -1;
+            var area: number = 10000000;
+            for (var i = 0; i < pol[this.CurrentSelectedImg.idx].polygons.length; ++i) {
+                if (this.insidePolygonArea(pol[this.CurrentSelectedImg.idx].polygons[i].coorPt, e.offsetX, e.offsetY)) {
+                    var polyarea: number = this.CalculatePolygonArea(pol[this.CurrentSelectedImg.idx].polygons[i]);
+                    if (polyarea < area) {
+                        polyindex = i;
+                        area = cloneDeep(polyarea);
+                    }
+                }
+            }
+            return polyindex;
+        } catch (err) {
+            console.log('segmentation findPolygonArea(e:MouseEvent):number ----> ', err.name + ': ', err.message);
+            return -1;
+        }
+    }
+
+    public findClickPoint(e: MouseEvent, pol: PolyMeta[]): { polygonIndex: number; PointIndex: number } {
+        try {
+            let dist: number;
+            let clickarea = { polygonIndex: -1, PointIndex: -1 };
+            for (var i = 0; i < pol[this.CurrentSelectedImg.idx].polygons.length; ++i) {
+                for (var j = 0; j < pol[this.CurrentSelectedImg.idx].polygons[i].coorPt.length; ++j) {
+                    dist = Math.sqrt(
+                        Math.pow(e.offsetX - pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].x, 2) +
+                            Math.pow(e.offsetY - pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].y, 2),
+                    );
+                    if (dist <= this.radius) {
+                        clickarea.polygonIndex = i;
+                        clickarea.PointIndex = j;
+                        break;
+                    }
+                }
+            }
+            return clickarea;
+        } catch (err) {
+            console.log(
+                'segmentation findClickPoint(e:MouseEvent, radius:number):{polygonIndex:number, PointIndex:number} ----> ',
+                err.name + ': ',
+                err.message,
+            );
+            return { polygonIndex: -1, PointIndex: -1 };
+        }
+    }
+
+    public isNewPolygon(): Boolean {
+        try {
+            return this.isNewPoly;
+        } catch (err) {
+            console.log('segmentation isNewPolygon():Boolean ----> ', err.name + ': ', err.message);
+            return false;
+        }
+    }
+
+    public scalePolygons(pol: PolyMeta[], scaleFactor: number, imgX: number, imgY: number) {
+        try {
+            for (var i = 0; i < pol[this.CurrentSelectedImg.idx].polygons.length; ++i) {
+                for (var j = 0; j < pol[this.CurrentSelectedImg.idx].polygons[i].coorPt.length; ++j) {
+                    pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].x =
+                        pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].distancetoImg.x * scaleFactor + imgX;
+                    pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].y =
+                        pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].distancetoImg.y * scaleFactor + imgY;
+                    pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].distancetoImg.x =
+                        pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].x - imgX;
+                    pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].distancetoImg.y =
+                        pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].y - imgY;
+                }
+            }
+            this.setpolygonslineWidth(pol, -1);
+        } catch (err) {
+            console.log(
+                'segmentation scalePolygons(scaleFactor:number, imgX:number, imgY:number) ----> ',
+                err.name + ': ',
+                err.message,
+            );
+        }
+    }
+
+    public panPolygons(pol: PolyMeta[], imgX: number, imgY: number, isDraw: boolean) {
+        try {
+            if (isDraw) {
+                for (var ii = 0; ii < this.tmpPolygon!.coorPt.length; ++ii) {
+                    this.tmpPolygon!.coorPt[ii].x =
+                        cloneDeep(imgX) + cloneDeep(this.tmpPolygon!.coorPt[ii].distancetoImg.x);
+                    this.tmpPolygon!.coorPt[ii].y =
+                        cloneDeep(imgY) + cloneDeep(this.tmpPolygon!.coorPt[ii].distancetoImg.y);
+                }
+            }
+            for (var i = 0; i < pol[this.CurrentSelectedImg.idx].polygons.length; ++i) {
+                for (var j = 0; j < pol[this.CurrentSelectedImg.idx].polygons[i].coorPt.length; ++j) {
+                    pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].x =
+                        cloneDeep(imgX) +
+                        cloneDeep(pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].distancetoImg.x);
+                    pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].y =
+                        cloneDeep(imgY) +
+                        cloneDeep(pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].distancetoImg.y);
+                }
+            }
+        } catch (err) {
+            console.log('segmentation panPolygons(imgX:number, imgY:number) ----> ', err.name + ': ', err.message);
+        }
+    }
+
+    public setCurrentSelectedimgidx(idx: number | undefined) {
+        try {
+            this.CurrentSelectedImg.idx = idx!;
+        } catch (err) {
+            console.log('segmentation setCurrentSelectedimg(idx:number) ----> ', err.name + ': ', err.message);
+        }
+    }
+
+    public setCurrentSelectedimguid(uid: number) {
+        try {
+            this.CurrentSelectedImg.uid = uid;
+        } catch (err) {
+            console.log('segmentation setCurrentSelectedimguid(uid:number) ----> ', err.name + ': ', err.message);
         }
     }
 }
