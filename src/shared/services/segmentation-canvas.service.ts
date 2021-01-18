@@ -17,7 +17,48 @@ export class SegmentationCanvasService {
 
     constructor() {}
 
-    public pushTmpPoint(mouseX: number, mouseY: number, imgX: number, imgY: number) {
+    public whenMouseDownEvent() {}
+
+    public whenMouseUpEvent() {}
+
+    public whenMouseMoveEvent() {}
+
+    public whenMouseOutEvent() {}
+
+    public mouseClickWithinPointPath(
+        imgX: number,
+        imgY: number,
+        imgW: number,
+        imgH: number,
+        coorX: number,
+        coorY: number,
+    ): boolean {
+        return coorX > imgX && coorX < imgX + imgW && coorY > imgY && coorY < imgY + imgH ? true : false;
+    }
+
+    public calScaleTofitScreen(
+        imgW: number,
+        imgH: number,
+        canvasW: number,
+        canvasH: number,
+    ): {
+        factor: number;
+        newX: number;
+        newY: number;
+    } {
+        try {
+            const obj = { factor: -1, newX: -1, newY: -1 };
+            obj.factor = Math.min(canvasW / imgW, canvasH / imgH);
+            obj.factor = obj.factor - obj.factor * 0.05;
+            obj.newX = canvasW / 2 - (imgW / 2) * obj.factor;
+            obj.newY = canvasH / 2 - (imgH / 2) * obj.factor;
+            return obj;
+        } catch (err) {
+            return { factor: -1, newX: -1, newY: -1 };
+        }
+    }
+
+    public pushTmpPoint(mouseX: number, mouseY: number, imgX: number, imgY: number, len: number) {
         try {
             let distancetoX = mouseX - imgX;
             let distancetoY = mouseY - imgY;
@@ -32,7 +73,7 @@ export class SegmentationCanvasService {
                     });
                 }
             } else {
-                this.generateNewtmpPolygon(1);
+                this.generateNewtmpPolygon(len);
                 this.tmpPolygon!.coorPt.push({
                     x: mouseX,
                     y: mouseY,
@@ -45,7 +86,7 @@ export class SegmentationCanvasService {
     }
 
     public removeLastPoint(
-        pol: PolyMeta[],
+        pol: PolyMeta,
         context: CanvasRenderingContext2D,
         img: HTMLImageElement,
         canvasW: number,
@@ -100,7 +141,7 @@ export class SegmentationCanvasService {
     }
 
     public resetDrawing(
-        pol: PolyMeta[],
+        pol: PolyMeta,
         context: CanvasRenderingContext2D,
         img: HTMLImageElement,
         canvasW: number,
@@ -109,18 +150,7 @@ export class SegmentationCanvasService {
         try {
             this.tmpPolygon = null;
             this.setNewpolygon(false);
-            this.redraw(
-                pol,
-                img,
-                context,
-                canvasW,
-                canvasH,
-                pol[this.CurrentSelectedImg.idx].img_w,
-                pol[this.CurrentSelectedImg.idx].img_h,
-                pol[this.CurrentSelectedImg.idx].img_x,
-                pol[this.CurrentSelectedImg.idx].img_y,
-                -1,
-            );
+            this.redraw(pol, img, context, canvasW, canvasH, pol.img_w, pol.img_h, pol.img_x, pol.img_y, -1);
         } catch (err) {
             console.log(
                 'segmentation resetDrawing(context:CanvasRenderingContext2D, img:HTMLImageElement, canvasW:number, canvasH:number) ----> ',
@@ -139,7 +169,7 @@ export class SegmentationCanvasService {
     }
 
     public redraw(
-        pol: PolyMeta[],
+        pol: PolyMeta,
         img: HTMLImageElement,
         context: CanvasRenderingContext2D,
         canvasW: number,
@@ -169,9 +199,9 @@ export class SegmentationCanvasService {
         }
     }
 
-    public DrawAllPolygons(pol: PolyMeta[], context: CanvasRenderingContext2D, selectpolygon: number) {
+    public DrawAllPolygons(pol: PolyMeta, context: CanvasRenderingContext2D, selectpolygon: number) {
         try {
-            // if(pol[this.CurrentSelectedImg.idx].polygons.length < 1 || selectpolygon === -1){return;}
+            // if(pol.polygons.length < 1 || selectpolygon === -1){return;}
             // else{
             this.drawAllPolygonsLine(pol, context, 1);
             this.drawAllPolygonsDots(pol, context, selectpolygon, this.radius, 1);
@@ -186,23 +216,17 @@ export class SegmentationCanvasService {
         }
     }
 
-    private drawAllPolygonsLine(pol: PolyMeta[], context: CanvasRenderingContext2D, len: number) {
+    private drawAllPolygonsLine(pol: PolyMeta, context: CanvasRenderingContext2D, len: number) {
         try {
             for (var i = 0; i < len; ++i) {
-                context.lineWidth = pol[this.CurrentSelectedImg.idx].polygons[i].lineWidth;
-                context.strokeStyle = pol[this.CurrentSelectedImg.idx].polygons[i].color;
-                context.fillStyle = pol[this.CurrentSelectedImg.idx].polygons[i].color;
+                context.lineWidth = pol.polygons[i].lineWidth;
+                context.strokeStyle = pol.polygons[i].color;
+                context.fillStyle = pol.polygons[i].color;
                 context.beginPath();
-                context.moveTo(
-                    pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[0].x,
-                    pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[0].y,
-                );
-                for (var j = 0; j < pol[this.CurrentSelectedImg.idx].polygons[i].coorPt.length; ++j) {
-                    if (j + 1 < pol[this.CurrentSelectedImg.idx].polygons[i].coorPt.length) {
-                        context.lineTo(
-                            pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j + 1].x,
-                            pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j + 1].y,
-                        );
+                context.moveTo(pol.polygons[i].coorPt[0].x, pol.polygons[i].coorPt[0].y);
+                for (var j = 0; j < pol.polygons[i].coorPt.length; ++j) {
+                    if (j + 1 < pol.polygons[i].coorPt.length) {
+                        context.lineTo(pol.polygons[i].coorPt[j + 1].x, pol.polygons[i].coorPt[j + 1].y);
                     }
                 }
                 context.closePath();
@@ -218,7 +242,7 @@ export class SegmentationCanvasService {
     }
 
     private drawAllPolygonsDots(
-        pol: PolyMeta[],
+        pol: PolyMeta,
         context: CanvasRenderingContext2D,
         selectedpolygon: number,
         radius: number,
@@ -226,22 +250,16 @@ export class SegmentationCanvasService {
     ) {
         try {
             for (var q = 0; q < len; ++q) {
-                // context.strokeStyle = pol[this.CurrentSelectedImg.idx].polygons[q].color;
-                // context.fillStyle = pol[this.CurrentSelectedImg.idx].polygons[q].color;
+                // context.strokeStyle = pol.polygons[q].color;
+                // context.fillStyle = pol.polygons[q].color;
                 if (q !== selectedpolygon) {
                     continue;
                 }
                 context.strokeStyle = 'green';
                 context.fillStyle = 'green';
-                for (var k = 0; k < pol[this.CurrentSelectedImg.idx].polygons[q].coorPt.length; ++k) {
+                for (var k = 0; k < pol.polygons[q].coorPt.length; ++k) {
                     context.beginPath();
-                    context.arc(
-                        pol[this.CurrentSelectedImg.idx].polygons[q].coorPt[k].x,
-                        pol[this.CurrentSelectedImg.idx].polygons[q].coorPt[k].y,
-                        radius,
-                        0,
-                        2 * Math.PI,
-                    );
+                    context.arc(pol.polygons[q].coorPt[k].x, pol.polygons[q].coorPt[k].y, radius, 0, 2 * Math.PI);
                     context.fill();
                     context.closePath();
                     context.stroke();
@@ -256,18 +274,18 @@ export class SegmentationCanvasService {
         }
     }
 
-    private plotAllFloatLabel(pol: PolyMeta[], len: number) {
+    private plotAllFloatLabel(pol: PolyMeta, len: number) {
         try {
             this.clearAllDIV(pol, 1);
             for (var i = 0; i < len; ++i) {
                 // this.util.RemoveHTMLElement("float_" + pol[this.getCurrentSelectedimgidx()].polygons[i].id.toString());
-                let regionAtt = pol[this.CurrentSelectedImg.idx].polygons[i].regionatt.toString();
-                let uuids = pol[this.CurrentSelectedImg.idx].polygons[i].id;
+                let regionAtt = pol.polygons[i].regionatt.toString();
+                let uuids = pol.polygons[i].id;
                 let tempdiv = this.createDIV(
                     regionAtt,
                     uuids,
-                    pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[0].x,
-                    pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[0].y,
+                    pol.polygons[i].coorPt[0].x,
+                    pol.polygons[i].coorPt[0].y,
                 );
                 document.getElementById('')!.appendChild(tempdiv!);
             }
@@ -276,11 +294,11 @@ export class SegmentationCanvasService {
         }
     }
 
-    public clearAllDIV(pol: PolyMeta[], len: number) {
+    public clearAllDIV(pol: PolyMeta, len: number) {
         try {
             if (this.CurrentSelectedImg.idx !== undefined && this.CurrentSelectedImg.idx !== null) {
                 for (var i = 0; i < len; ++i) {
-                    this.util.RemoveHTMLElement('float_' + pol[this.CurrentSelectedImg.idx].polygons[i].id.toString());
+                    this.util.RemoveHTMLElement('float_' + pol.polygons[i].id.toString());
                 }
             }
         } catch (err) {
@@ -321,7 +339,7 @@ export class SegmentationCanvasService {
 
     public MouseMovePolygon(
         e: MouseEvent,
-        pol: PolyMeta[],
+        pol: PolyMeta,
         context: CanvasRenderingContext2D,
         PolyIndex: number,
         img: HTMLImageElement,
@@ -330,31 +348,20 @@ export class SegmentationCanvasService {
     ) {
         //, selectedpolygon:number){
         try {
-            let img_X: number = pol[this.CurrentSelectedImg.idx].img_x;
-            let img_Y: number = pol[this.CurrentSelectedImg.idx].img_y;
-            let imgW: number = pol[this.CurrentSelectedImg.idx].img_w;
-            let imgH: number = pol[this.CurrentSelectedImg.idx].img_h;
+            let img_X: number = pol.img_x;
+            let img_Y: number = pol.img_y;
+            let imgW: number = pol.img_w;
+            let imgH: number = pol.img_h;
             let newXoffset: number = e.offsetX - this.GlobalXY.x;
             let newYoffset: number = e.offsetY - this.GlobalXY.y;
             if (this.WithinPointPath(pol, img_X, img_Y, imgW, imgH, PolyIndex, newXoffset, newYoffset)) {
                 this.GlobalXY.x = e.offsetX;
                 this.GlobalXY.y = e.offsetY;
-                for (var i = 0; i < pol[this.CurrentSelectedImg.idx].polygons[PolyIndex].coorPt.length; ++i) {
-                    pol[this.CurrentSelectedImg.idx].polygons[PolyIndex].coorPt[i].x += newXoffset;
-                    pol[this.CurrentSelectedImg.idx].polygons[PolyIndex].coorPt[i].y += newYoffset;
+                for (var i = 0; i < pol.polygons[PolyIndex].coorPt.length; ++i) {
+                    pol.polygons[PolyIndex].coorPt[i].x += newXoffset;
+                    pol.polygons[PolyIndex].coorPt[i].y += newYoffset;
                 }
-                this.redraw(
-                    pol,
-                    img,
-                    context,
-                    canvasW,
-                    canvasH,
-                    pol[this.CurrentSelectedImg.idx].img_w,
-                    pol[this.CurrentSelectedImg.idx].img_h,
-                    pol[this.CurrentSelectedImg.idx].img_x,
-                    pol[this.CurrentSelectedImg.idx].img_y,
-                    PolyIndex,
-                ); //selectedpolygon);
+                this.redraw(pol, img, context, canvasW, canvasH, pol.img_w, pol.img_h, pol.img_x, pol.img_y, PolyIndex); //selectedpolygon);
             }
         } catch (err) {
             console.log(
@@ -366,7 +373,7 @@ export class SegmentationCanvasService {
     }
 
     public KeyboardMovePolygon(
-        pol: PolyMeta[],
+        pol: PolyMeta,
         direction: string,
         PolyIndex: number,
         context: CanvasRenderingContext2D,
@@ -376,30 +383,22 @@ export class SegmentationCanvasService {
     ): boolean {
         try {
             if (PolyIndex !== undefined && PolyIndex !== -1 && this.CurrentSelectedImg.idx !== undefined) {
-                let img_X: number = pol[this.CurrentSelectedImg.idx].img_x;
-                let img_Y: number = pol[this.CurrentSelectedImg.idx].img_y;
-                let imgW: number = pol[this.CurrentSelectedImg.idx].img_w;
-                let imgH: number = pol[this.CurrentSelectedImg.idx].img_h;
+                let img_X: number = pol.img_x;
+                let img_Y: number = pol.img_y;
+                let imgW: number = pol.img_w;
+                let imgH: number = pol.img_h;
                 if (direction == 'up' || direction == 'left') {
                     let offset: number = -3;
                     if (direction == 'up') {
                         if (this.WithinPointPath(pol, img_X, img_Y, imgW, imgH, PolyIndex, 0, offset)) {
-                            for (
-                                var i = 0;
-                                i < pol[this.CurrentSelectedImg.idx].polygons[PolyIndex].coorPt.length;
-                                ++i
-                            ) {
-                                pol[this.CurrentSelectedImg.idx].polygons[PolyIndex].coorPt[i].y += offset;
+                            for (var i = 0; i < pol.polygons[PolyIndex].coorPt.length; ++i) {
+                                pol.polygons[PolyIndex].coorPt[i].y += offset;
                             }
                         }
                     } else if (direction == 'left') {
                         if (this.WithinPointPath(pol, img_X, img_Y, imgW, imgH, PolyIndex, offset, 0)) {
-                            for (
-                                var l = 0;
-                                l < pol[this.CurrentSelectedImg.idx].polygons[PolyIndex].coorPt.length;
-                                ++l
-                            ) {
-                                pol[this.CurrentSelectedImg.idx].polygons[PolyIndex].coorPt[l].x += offset;
+                            for (var l = 0; l < pol.polygons[PolyIndex].coorPt.length; ++l) {
+                                pol.polygons[PolyIndex].coorPt[l].x += offset;
                             }
                         }
                     }
@@ -407,43 +406,20 @@ export class SegmentationCanvasService {
                     let offset: number = 3;
                     if (direction == 'down') {
                         if (this.WithinPointPath(pol, img_X, img_Y, imgW, imgH, PolyIndex, 0, offset)) {
-                            for (
-                                var j = 0;
-                                j < pol[this.CurrentSelectedImg.idx].polygons[PolyIndex].coorPt.length;
-                                ++j
-                            ) {
-                                pol[this.CurrentSelectedImg.idx].polygons[PolyIndex].coorPt[j].y += offset;
+                            for (var j = 0; j < pol.polygons[PolyIndex].coorPt.length; ++j) {
+                                pol.polygons[PolyIndex].coorPt[j].y += offset;
                             }
                         }
                     } else if (direction == 'right') {
                         if (this.WithinPointPath(pol, img_X, img_Y, imgW, imgH, PolyIndex, offset, 0)) {
-                            for (
-                                var k = 0;
-                                k < pol[this.CurrentSelectedImg.idx].polygons[PolyIndex].coorPt.length;
-                                ++k
-                            ) {
-                                pol[this.CurrentSelectedImg.idx].polygons[PolyIndex].coorPt[k].x += offset;
+                            for (var k = 0; k < pol.polygons[PolyIndex].coorPt.length; ++k) {
+                                pol.polygons[PolyIndex].coorPt[k].x += offset;
                             }
                         }
                     }
                 }
-                this.redraw(
-                    pol,
-                    img,
-                    context,
-                    canvasW,
-                    canvasH,
-                    pol[this.CurrentSelectedImg.idx].img_w,
-                    pol[this.CurrentSelectedImg.idx].img_h,
-                    pol[this.CurrentSelectedImg.idx].img_x,
-                    pol[this.CurrentSelectedImg.idx].img_y,
-                    PolyIndex,
-                );
-                this.validateXYDistance(
-                    pol,
-                    pol[this.CurrentSelectedImg.idx].img_x,
-                    pol[this.CurrentSelectedImg.idx].img_y,
-                );
+                this.redraw(pol, img, context, canvasW, canvasH, pol.img_w, pol.img_h, pol.img_x, pol.img_y, PolyIndex);
+                this.validateXYDistance(pol, pol.img_x, pol.img_y);
             }
             return true;
         } catch (err) {
@@ -457,7 +433,7 @@ export class SegmentationCanvasService {
     }
 
     private WithinPointPath(
-        pol: PolyMeta[],
+        pol: PolyMeta,
         imgx: number,
         imgy: number,
         imgw: number,
@@ -467,12 +443,12 @@ export class SegmentationCanvasService {
         newY: number,
     ): boolean {
         try {
-            for (var i = 0; i < pol[this.CurrentSelectedImg.idx].polygons[index].coorPt.length; ++i) {
+            for (var i = 0; i < pol.polygons[index].coorPt.length; ++i) {
                 if (
-                    pol[this.CurrentSelectedImg.idx].polygons[index].coorPt[i].x + newX < imgx ||
-                    pol[this.CurrentSelectedImg.idx].polygons[index].coorPt[i].x + newX > imgx + imgw ||
-                    pol[this.CurrentSelectedImg.idx].polygons[index].coorPt[i].y + newY < imgy ||
-                    pol[this.CurrentSelectedImg.idx].polygons[index].coorPt[i].y + newY > imgy + imgh
+                    pol.polygons[index].coorPt[i].x + newX < imgx ||
+                    pol.polygons[index].coorPt[i].x + newX > imgx + imgw ||
+                    pol.polygons[index].coorPt[i].y + newY < imgy ||
+                    pol.polygons[index].coorPt[i].y + newY > imgy + imgh
                 ) {
                     return false;
                 }
@@ -483,14 +459,14 @@ export class SegmentationCanvasService {
         }
     }
 
-    public validateXYDistance(pol: PolyMeta[], imgX: number, imgY: number) {
+    public validateXYDistance(pol: PolyMeta, imgX: number, imgY: number) {
         try {
-            for (var i = 0; i < pol[this.CurrentSelectedImg.idx].polygons.length; ++i) {
-                for (var j = 0; j < pol[this.CurrentSelectedImg.idx].polygons[i].coorPt.length; ++j) {
-                    let distancetoX = pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].x - imgX;
-                    let distancetoY = pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].y - imgY;
-                    pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].distancetoImg.x = distancetoX;
-                    pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].distancetoImg.y = distancetoY;
+            for (var i = 0; i < pol.polygons.length; ++i) {
+                for (var j = 0; j < pol.polygons[i].coorPt.length; ++j) {
+                    let distancetoX = pol.polygons[i].coorPt[j].x - imgX;
+                    let distancetoY = pol.polygons[i].coorPt[j].y - imgY;
+                    pol.polygons[i].coorPt[j].distancetoImg.x = distancetoX;
+                    pol.polygons[i].coorPt[j].distancetoImg.y = distancetoY;
                 }
             }
         } catch (err) {
@@ -502,20 +478,20 @@ export class SegmentationCanvasService {
         }
     }
 
-    public setpolygonslineWidth(pol: PolyMeta[], selectedpolygon: number) {
+    public setpolygonslineWidth(pol: PolyMeta, selectedpolygon: number) {
         try {
-            for (var i = 0; i < pol[this.CurrentSelectedImg.idx].polygons.length; ++i) {
+            for (var i = 0; i < pol.polygons.length; ++i) {
                 if (i === selectedpolygon) {
-                    pol[this.CurrentSelectedImg.idx].polygons[i].lineWidth = 2;
+                    pol.polygons[i].lineWidth = 2;
                 } else {
-                    pol[this.CurrentSelectedImg.idx].polygons[i].lineWidth = 1;
+                    pol.polygons[i].lineWidth = 1;
                 }
             }
         } catch (err) {}
     }
 
     public DrawNewPolygon(
-        pol: PolyMeta[],
+        pol: PolyMeta,
         img: HTMLImageElement,
         context: CanvasRenderingContext2D,
         canvasW: number,
@@ -523,18 +499,7 @@ export class SegmentationCanvasService {
         closepath: Boolean,
     ) {
         try {
-            this.redraw(
-                pol,
-                img,
-                context,
-                canvasW,
-                canvasH,
-                pol[this.CurrentSelectedImg.idx].img_w,
-                pol[this.CurrentSelectedImg.idx].img_h,
-                pol[this.CurrentSelectedImg.idx].img_x,
-                pol[this.CurrentSelectedImg.idx].img_y,
-                -1,
-            );
+            this.redraw(pol, img, context, canvasW, canvasH, pol.img_w, pol.img_h, pol.img_x, pol.img_y, -1);
             for (var iI = 0; iI < this.tmpPolygon!.coorPt.length; ++iI) {
                 context.strokeStyle = 'green';
                 context.fillStyle = 'green';
@@ -562,8 +527,8 @@ export class SegmentationCanvasService {
                 context.closePath();
                 context.stroke();
                 if (this.tmpPolygon !== null && this.tmpPolygon !== undefined) {
-                    pol[this.CurrentSelectedImg.idx].polygons.push(cloneDeep(this.tmpPolygon));
-                    this.setpolygonslineWidth(pol, pol[this.CurrentSelectedImg.idx].polygons.length - 1);
+                    pol.polygons.push(cloneDeep(this.tmpPolygon));
+                    this.setpolygonslineWidth(pol, pol.polygons.length - 1);
                     this.tmpPolygon = null;
                 }
                 this.setNewpolygon(false);
@@ -573,11 +538,11 @@ export class SegmentationCanvasService {
                     context,
                     canvasW,
                     canvasH,
-                    pol[this.CurrentSelectedImg.idx].img_w,
-                    pol[this.CurrentSelectedImg.idx].img_h,
-                    pol[this.CurrentSelectedImg.idx].img_x,
-                    pol[this.CurrentSelectedImg.idx].img_y,
-                    pol[this.CurrentSelectedImg.idx].polygons.length - 1,
+                    pol.img_w,
+                    pol.img_h,
+                    pol.img_x,
+                    pol.img_y,
+                    pol.polygons.length - 1,
                 );
             }
         } catch (err) {
@@ -622,11 +587,11 @@ export class SegmentationCanvasService {
         }
     }
 
-    public setPolygonCoordinate(e: MouseEvent, pol: PolyMeta[], selectedPoly: number, PointIndex: number) {
+    public setPolygonCoordinate(e: MouseEvent, pol: PolyMeta, selectedPoly: number, PointIndex: number) {
         try {
             if (selectedPoly !== -1 && PointIndex !== -1) {
-                pol[this.CurrentSelectedImg.idx].polygons[selectedPoly].coorPt[PointIndex].x = e.offsetX;
-                pol[this.CurrentSelectedImg.idx].polygons[selectedPoly].coorPt[PointIndex].y = e.offsetY;
+                pol.polygons[selectedPoly].coorPt[PointIndex].x = e.offsetX;
+                pol.polygons[selectedPoly].coorPt[PointIndex].y = e.offsetY;
             }
         } catch (err) {
             console.log(
@@ -674,13 +639,13 @@ export class SegmentationCanvasService {
         }
     }
 
-    public findPolygonArea(e: MouseEvent, pol: PolyMeta[]): number {
+    public findPolygonArea(e: MouseEvent, pol: PolyMeta): number {
         try {
             let polyindex: number = -1;
             var area: number = 10000000;
-            for (var i = 0; i < pol[this.CurrentSelectedImg.idx].polygons.length; ++i) {
-                if (this.insidePolygonArea(pol[this.CurrentSelectedImg.idx].polygons[i].coorPt, e.offsetX, e.offsetY)) {
-                    var polyarea: number = this.CalculatePolygonArea(pol[this.CurrentSelectedImg.idx].polygons[i]);
+            for (var i = 0; i < pol.polygons.length; ++i) {
+                if (this.insidePolygonArea(pol.polygons[i].coorPt, e.offsetX, e.offsetY)) {
+                    var polyarea: number = this.CalculatePolygonArea(pol.polygons[i]);
                     if (polyarea < area) {
                         polyindex = i;
                         area = cloneDeep(polyarea);
@@ -694,15 +659,15 @@ export class SegmentationCanvasService {
         }
     }
 
-    public findClickPoint(e: MouseEvent, pol: PolyMeta[]): { polygonIndex: number; PointIndex: number } {
+    public findClickPoint(e: MouseEvent, pol: PolyMeta): { polygonIndex: number; PointIndex: number } {
         try {
             let dist: number;
             let clickarea = { polygonIndex: -1, PointIndex: -1 };
-            for (var i = 0; i < pol[this.CurrentSelectedImg.idx].polygons.length; ++i) {
-                for (var j = 0; j < pol[this.CurrentSelectedImg.idx].polygons[i].coorPt.length; ++j) {
+            for (var i = 0; i < pol.polygons.length; ++i) {
+                for (var j = 0; j < pol.polygons[i].coorPt.length; ++j) {
                     dist = Math.sqrt(
-                        Math.pow(e.offsetX - pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].x, 2) +
-                            Math.pow(e.offsetY - pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].y, 2),
+                        Math.pow(e.offsetX - pol.polygons[i].coorPt[j].x, 2) +
+                            Math.pow(e.offsetY - pol.polygons[i].coorPt[j].y, 2),
                     );
                     if (dist <= this.radius) {
                         clickarea.polygonIndex = i;
@@ -731,18 +696,14 @@ export class SegmentationCanvasService {
         }
     }
 
-    public scalePolygons(pol: PolyMeta[], scaleFactor: number, imgX: number, imgY: number) {
+    public scalePolygons(pol: PolyMeta, scaleFactor: number, imgX: number, imgY: number) {
         try {
-            for (var i = 0; i < pol[this.CurrentSelectedImg.idx].polygons.length; ++i) {
-                for (var j = 0; j < pol[this.CurrentSelectedImg.idx].polygons[i].coorPt.length; ++j) {
-                    pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].x =
-                        pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].distancetoImg.x * scaleFactor + imgX;
-                    pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].y =
-                        pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].distancetoImg.y * scaleFactor + imgY;
-                    pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].distancetoImg.x =
-                        pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].x - imgX;
-                    pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].distancetoImg.y =
-                        pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].y - imgY;
+            for (var i = 0; i < pol.polygons.length; ++i) {
+                for (var j = 0; j < pol.polygons[i].coorPt.length; ++j) {
+                    pol.polygons[i].coorPt[j].x = pol.polygons[i].coorPt[j].distancetoImg.x * scaleFactor + imgX;
+                    pol.polygons[i].coorPt[j].y = pol.polygons[i].coorPt[j].distancetoImg.y * scaleFactor + imgY;
+                    pol.polygons[i].coorPt[j].distancetoImg.x = pol.polygons[i].coorPt[j].x - imgX;
+                    pol.polygons[i].coorPt[j].distancetoImg.y = pol.polygons[i].coorPt[j].y - imgY;
                 }
             }
             this.setpolygonslineWidth(pol, -1);
@@ -755,7 +716,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public panPolygons(pol: PolyMeta[], imgX: number, imgY: number, isDraw: boolean) {
+    public panPolygons(pol: PolyMeta, imgX: number, imgY: number, isDraw: boolean) {
         try {
             if (isDraw) {
                 for (var ii = 0; ii < this.tmpPolygon!.coorPt.length; ++ii) {
@@ -765,14 +726,12 @@ export class SegmentationCanvasService {
                         cloneDeep(imgY) + cloneDeep(this.tmpPolygon!.coorPt[ii].distancetoImg.y);
                 }
             }
-            for (var i = 0; i < pol[this.CurrentSelectedImg.idx].polygons.length; ++i) {
-                for (var j = 0; j < pol[this.CurrentSelectedImg.idx].polygons[i].coorPt.length; ++j) {
-                    pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].x =
-                        cloneDeep(imgX) +
-                        cloneDeep(pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].distancetoImg.x);
-                    pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].y =
-                        cloneDeep(imgY) +
-                        cloneDeep(pol[this.CurrentSelectedImg.idx].polygons[i].coorPt[j].distancetoImg.y);
+            for (var i = 0; i < pol.polygons.length; ++i) {
+                for (var j = 0; j < pol.polygons[i].coorPt.length; ++j) {
+                    pol.polygons[i].coorPt[j].x =
+                        cloneDeep(imgX) + cloneDeep(pol.polygons[i].coorPt[j].distancetoImg.x);
+                    pol.polygons[i].coorPt[j].y =
+                        cloneDeep(imgY) + cloneDeep(pol.polygons[i].coorPt[j].distancetoImg.y);
                 }
             }
         } catch (err) {

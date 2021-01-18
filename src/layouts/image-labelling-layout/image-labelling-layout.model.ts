@@ -164,6 +164,15 @@ export type BoundingBoxActionState = {
     // dbClick: boolean;
 };
 
+export type segActionState = {
+    scroll: boolean;
+    drag: boolean;
+    draw: boolean;
+    fitCenter: boolean;
+    clear: boolean;
+    isActiveModal: boolean;
+};
+
 export type Polygons = {
     coorPt: Coordinate[];
     label: string;
