@@ -12,8 +12,9 @@ export class SegmentationCanvasService {
     private util: Utils = new Utils();
     private GlobalXY: { x: number; y: number } = { x: -1, y: -1 };
     private isNewPoly: Boolean = false;
-    private CurrentSelectedImg = { uid: -1, idx: -1 };
+    // private CurrentSelectedImg = { uid: -1, idx: -1 };
     private distanceOffset: number = 8;
+    private selectedPolygon: number = -1;
 
     constructor() {}
 
@@ -24,6 +25,14 @@ export class SegmentationCanvasService {
     public whenMouseMoveEvent() {}
 
     public whenMouseOutEvent() {}
+
+    public setSelectedPolygon(index: number): void {
+        index ? (this.selectedPolygon = index) : {};
+    }
+
+    public getSelectedPolygon(): number {
+        return this.selectedPolygon;
+    }
 
     public mouseClickWithinPointPath(
         imgX: number,
@@ -296,10 +305,8 @@ export class SegmentationCanvasService {
 
     public clearAllDIV(pol: PolyMeta, len: number) {
         try {
-            if (this.CurrentSelectedImg.idx !== undefined && this.CurrentSelectedImg.idx !== null) {
-                for (var i = 0; i < len; ++i) {
-                    this.util.RemoveHTMLElement('float_' + pol.polygons[i].id.toString());
-                }
+            for (var i = 0; i < len; ++i) {
+                this.util.RemoveHTMLElement('float_' + pol.polygons[i].id.toString());
             }
         } catch (err) {
             console.log('segmentation clearAllDIV() ----> ', err.name + ': ', err.message);
@@ -380,9 +387,10 @@ export class SegmentationCanvasService {
         img: HTMLImageElement,
         canvasW: number,
         canvasH: number,
+        callback: Function,
     ): boolean {
         try {
-            if (PolyIndex !== undefined && PolyIndex !== -1 && this.CurrentSelectedImg.idx !== undefined) {
+            if (PolyIndex !== undefined && PolyIndex !== -1 && pol) {
                 let img_X: number = pol.img_x;
                 let img_Y: number = pol.img_y;
                 let imgW: number = pol.img_w;
@@ -420,6 +428,7 @@ export class SegmentationCanvasService {
                 }
                 this.redraw(pol, img, context, canvasW, canvasH, pol.img_w, pol.img_h, pol.img_x, pol.img_y, PolyIndex);
                 this.validateXYDistance(pol, pol.img_x, pol.img_y);
+                callback(true);
             }
             return true;
         } catch (err) {
@@ -696,7 +705,9 @@ export class SegmentationCanvasService {
         }
     }
 
-    public scalePolygons(pol: PolyMeta, scaleFactor: number, imgX: number, imgY: number) {
+    public deleteSinglePolygon(pol: PolyMeta, index: number, callback: Function) {}
+
+    public scalePolygons(pol: PolyMeta, scaleFactor: number, imgX: number, imgY: number, callback: Function) {
         try {
             for (var i = 0; i < pol.polygons.length; ++i) {
                 for (var j = 0; j < pol.polygons[i].coorPt.length; ++j) {
@@ -707,6 +718,7 @@ export class SegmentationCanvasService {
                 }
             }
             this.setpolygonslineWidth(pol, -1);
+            callback(true);
         } catch (err) {
             console.log(
                 'segmentation scalePolygons(scaleFactor:number, imgX:number, imgY:number) ----> ',
@@ -739,19 +751,19 @@ export class SegmentationCanvasService {
         }
     }
 
-    public setCurrentSelectedimgidx(idx: number | undefined) {
-        try {
-            this.CurrentSelectedImg.idx = idx!;
-        } catch (err) {
-            console.log('segmentation setCurrentSelectedimg(idx:number) ----> ', err.name + ': ', err.message);
-        }
-    }
+    // public setCurrentSelectedimgidx(idx: number | undefined) {
+    //     try {
+    //         this.CurrentSelectedImg.idx = idx!;
+    //     } catch (err) {
+    //         console.log('segmentation setCurrentSelectedimg(idx:number) ----> ', err.name + ': ', err.message);
+    //     }
+    // }
 
-    public setCurrentSelectedimguid(uid: number) {
-        try {
-            this.CurrentSelectedImg.uid = uid;
-        } catch (err) {
-            console.log('segmentation setCurrentSelectedimguid(uid:number) ----> ', err.name + ': ', err.message);
-        }
-    }
+    // public setCurrentSelectedimguid(uid: number) {
+    //     try {
+    //         this.CurrentSelectedImg.uid = uid;
+    //     } catch (err) {
+    //         console.log('segmentation setCurrentSelectedimguid(uid:number) ----> ', err.name + ': ', err.message);
+    //     }
+    // }
 }
