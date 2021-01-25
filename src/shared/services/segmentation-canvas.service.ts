@@ -62,7 +62,28 @@ export class SegmentationCanvasService {
         return this.selectedPolygon;
     }
 
-    public whenMouseMoveEvent() {}
+    public whenMouseMoveEvent(
+        pol: PolyMeta,
+        newX: number,
+        newY: number,
+        ctrldown: boolean,
+        isMouseDown: boolean,
+        redrawCallback: Function,
+    ) {
+        if (this.isNewPolygon() && ctrldown && isMouseDown) {
+            var diffX = newX - this.getPanX();
+            var diffY = newY - this.getPanY();
+            if (pol) {
+                pol.img_x = this.getGlobalX() + diffX;
+                pol.img_y = this.getGlobalY() + diffY;
+                this.panPolygons(pol, pol.img_x, pol.img_y, true);
+                redrawCallback();
+            }
+        } else if (this.isNewPolygon()) {
+        } else if (this.selectedPolygon > -1 && isMouseDown) {
+        } else {
+        }
+    }
 
     public whenMouseOutEvent() {}
 

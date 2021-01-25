@@ -518,7 +518,30 @@ export class ImageLabellingSegmentationComponent implements OnInit {
                       });
             }
             if (this.segState.draw && this.mousedown) {
-                this._segCanvasService.whenMouseMoveEvent();
+                this._segCanvasService.whenMouseMoveEvent(
+                    this._selectMetadata,
+                    event.offsetX,
+                    event.offsetY,
+                    this.isctrlHold,
+                    this.mousedown,
+                    () => {
+                        this.redrawImages(
+                            this._selectMetadata.img_x,
+                            this._selectMetadata.img_y,
+                            this._selectMetadata.img_w,
+                            this._selectMetadata.img_h,
+                        );
+                        this._undoRedoService.isMethodChange('pan')
+                            ? this._undoRedoService.appendStages({
+                                  meta: this._selectMetadata,
+                                  method: 'pan',
+                              })
+                            : this._undoRedoService.replaceStages({
+                                  meta: this._selectMetadata,
+                                  method: 'pan',
+                              });
+                    },
+                );
             }
         } else {
             if (
