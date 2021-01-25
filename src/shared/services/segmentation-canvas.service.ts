@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
 import { cloneDeep } from 'lodash-es';
 import { Utils } from '../../shared/type-casting/utils/utils';
-import { Polygons, PolyMeta, Coordinate } from '../../layouts/image-labelling-layout/image-labelling-layout.model';
+import {
+    Polygons,
+    PolyMeta,
+    Coordinate,
+    xyCoordinate,
+} from '../../layouts/image-labelling-layout/image-labelling-layout.model';
 
 @Injectable({
     providedIn: 'any',
@@ -10,7 +15,8 @@ export class SegmentationCanvasService {
     private tmpPolygon!: Polygons | null;
     private radius: number = 3.5;
     private util: Utils = new Utils();
-    private GlobalXY: { x: number; y: number } = { x: -1, y: -1 };
+    private GlobalXY: xyCoordinate = { x: -1, y: -1 };
+    private panXY: xyCoordinate = { x: 0, y: 0 };
     private isNewPoly: Boolean = false;
     // private CurrentSelectedImg = { uid: -1, idx: -1 };
     private distanceOffset: number = 8;
@@ -18,13 +24,64 @@ export class SegmentationCanvasService {
 
     constructor() {}
 
-    public whenMouseDownEvent() {}
-
-    public whenMouseUpEvent() {}
+    public whenMouseDownEvent(
+        newX: number,
+        newY: number,
+        imgX: number,
+        imgY: number,
+        canvasW: number,
+        canvasH: number,
+        pol: PolyMeta,
+        img: HTMLImageElement,
+        context: CanvasRenderingContext2D,
+        ctrldown: boolean,
+        altdown: boolean,
+    ): number {
+        this.setGlobalXY(newX, newY);
+        let polArea = this.findPolygonArea(newX, newY, pol);
+        let clickPt = this.findClickPoint(newX, newY, pol);
+        if (this.isNewPolygon() && ctrldown) {
+            this.setPanXY(newX, newY);
+        } else if ((this.tmpPolygon === null && this.selectedPolygon < 0) || altdown) {
+            this.setpolygonslineWidth(pol, -1);
+            this.selectedPolygon = -1;
+            this.setNewpolygon(true);
+            this.pushTmpPoint(newX, newY, imgX, imgY, pol.polygons.length);
+        } else if (this.isNewPolygon()) {
+            this.pushTmpPoint(newX, newY, imgX, imgY, pol.polygons.length);
+            this.DrawNewPolygon(pol, img, context, canvasW, canvasH, false);
+            this.DrawfromlastPoint(newX, newY, context);
+        } else {
+            this.setNewpolygon(false);
+            this.selectedPolygon =
+                this.findPolygonArea(newX, newY, pol) > -1
+                    ? this.findPolygonArea(newX, newY, pol)
+                    : this.findClickPoint(newX, newY, pol).polygonIndex;
+            this.setpolygonslineWidth(pol, this.selectedPolygon);
+        }
+        return this.selectedPolygon;
+    }
 
     public whenMouseMoveEvent() {}
 
     public whenMouseOutEvent() {}
+
+    public setPanXY(newX: number, newY: number): boolean {
+        try {
+            return newX && newY ? ((this.panXY.x = newX), (this.panXY.y = newY), true) : false;
+        } catch (err) {
+            console.log('ObjectDetection setPanXY(newX: number, newY: number):boolean', err.name + ': ', err.message);
+            return false;
+        }
+    }
+
+    public getPanX() {
+        return this.panXY.x;
+    }
+
+    public getPanY() {
+        return this.panXY.y;
+    }
 
     public setSelectedPolygon(index: number): void {
         index ? (this.selectedPolygon = index) : {};
@@ -344,6 +401,14 @@ export class SegmentationCanvasService {
         }
     }
 
+    public getGlobalX() {
+        return this.GlobalXY.x;
+    }
+
+    public getGlobalY() {
+        return this.GlobalXY.y;
+    }
+
     public MouseMovePolygon(
         e: MouseEvent,
         pol: PolyMeta,
@@ -563,7 +628,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public DrawfromlastPoint(e: MouseEvent, context: CanvasRenderingContext2D) {
+    public DrawfromlastPoint(MouseX: number, MouseY: number, context: CanvasRenderingContext2D) {
         try {
             if (this.tmpPolygon!.coorPt.length > 0) {
                 context.beginPath();
@@ -571,7 +636,7 @@ export class SegmentationCanvasService {
                     this.tmpPolygon!.coorPt[this.tmpPolygon!.coorPt.length - 1].x,
                     this.tmpPolygon!.coorPt[this.tmpPolygon!.coorPt.length - 1].y,
                 );
-                context.lineTo(e.offsetX, e.offsetY);
+                context.lineTo(MouseX, MouseY);
                 context.stroke();
             }
         } catch (err) {
@@ -648,12 +713,12 @@ export class SegmentationCanvasService {
         }
     }
 
-    public findPolygonArea(e: MouseEvent, pol: PolyMeta): number {
+    public findPolygonArea(MouseX: number, MouseY: number, pol: PolyMeta): number {
         try {
             let polyindex: number = -1;
             var area: number = 10000000;
             for (var i = 0; i < pol.polygons.length; ++i) {
-                if (this.insidePolygonArea(pol.polygons[i].coorPt, e.offsetX, e.offsetY)) {
+                if (this.insidePolygonArea(pol.polygons[i].coorPt, MouseX, MouseY)) {
                     var polyarea: number = this.CalculatePolygonArea(pol.polygons[i]);
                     if (polyarea < area) {
                         polyindex = i;
@@ -668,15 +733,15 @@ export class SegmentationCanvasService {
         }
     }
 
-    public findClickPoint(e: MouseEvent, pol: PolyMeta): { polygonIndex: number; PointIndex: number } {
+    public findClickPoint(MouseX: number, MouseY: number, pol: PolyMeta): { polygonIndex: number; PointIndex: number } {
         try {
             let dist: number;
             let clickarea = { polygonIndex: -1, PointIndex: -1 };
             for (var i = 0; i < pol.polygons.length; ++i) {
                 for (var j = 0; j < pol.polygons[i].coorPt.length; ++j) {
                     dist = Math.sqrt(
-                        Math.pow(e.offsetX - pol.polygons[i].coorPt[j].x, 2) +
-                            Math.pow(e.offsetY - pol.polygons[i].coorPt[j].y, 2),
+                        Math.pow(MouseX - pol.polygons[i].coorPt[j].x, 2) +
+                            Math.pow(MouseY - pol.polygons[i].coorPt[j].y, 2),
                     );
                     if (dist <= this.radius) {
                         clickarea.polygonIndex = i;

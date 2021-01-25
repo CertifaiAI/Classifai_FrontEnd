@@ -1,3 +1,4 @@
+import { ThisReceiver } from '@angular/compiler';
 import {
     Component,
     ElementRef,
@@ -29,6 +30,8 @@ export class ImageLabellingSegmentationComponent implements OnInit {
     private context!: CanvasRenderingContext2D | null;
     private img: HTMLImageElement = new Image();
     private mousedown: boolean = false;
+    private altdown: boolean = false;
+    private isctrlHold: boolean = false;
     private segState!: segActionState;
     private annotateState!: AnnotateActionState;
     @Input() _selectMetadata!: PolyMeta;
@@ -100,18 +103,12 @@ export class ImageLabellingSegmentationComponent implements OnInit {
         this.annotateState ? this._segCanvasService.setSelectedPolygon(cloneDeep(this.annotateState.annotation)) : {};
     }
 
-    rulesMakeChange(
-        scroll: boolean | null,
-        fitToscreen: boolean | null,
-        clearScreen: boolean | null,
-        // dbClick: boolean | null,
-    ) {
+    rulesMakeChange(scroll: boolean | null, fitToscreen: boolean | null, clearScreen: boolean | null) {
         try {
             const tempRules: segActionState = cloneDeep(this.segState);
             scroll !== null ? (tempRules.scroll = scroll) : {};
             fitToscreen !== null ? (tempRules.fitCenter = fitToscreen) : {};
             clearScreen !== null ? (tempRules.clear = clearScreen) : {};
-            // dbClick !== null ? (tempRules.dbClick = dbClick) : {};
             this._segStateService.setState(tempRules);
         } catch (err) {}
     }
@@ -159,7 +156,6 @@ export class ImageLabellingSegmentationComponent implements OnInit {
                 this._selectMetadata.img_h,
             );
             this.emitMetadata();
-            // this.rulesMakeChange(null, false, null);
         } catch (err) {}
     }
 
@@ -205,7 +201,6 @@ export class ImageLabellingSegmentationComponent implements OnInit {
             this._segCanvasService.KeyboardMovePolygon(
                 this._selectMetadata,
                 direction,
-                // this._selectMetadata.bnd_box[this.boundingBoxState.selectedBox],
                 this.annotateState.annotation,
                 this.context!,
                 this.img,
@@ -418,8 +413,29 @@ export class ImageLabellingSegmentationComponent implements OnInit {
         ) {
             this.mousedown = true;
             if (this.segState.drag) {
+                this._segCanvasService.setPanXY(event.offsetX, event.offsetY);
             }
             if (this.segState.draw) {
+                const tmpPoly: number = this._segCanvasService.whenMouseDownEvent(
+                    event.offsetX,
+                    event.offsetY,
+                    this._selectMetadata.img_x,
+                    this._selectMetadata.img_y,
+                    this.mycanvas.nativeElement.width,
+                    this.mycanvas.nativeElement.height,
+                    this._selectMetadata,
+                    this.img,
+                    this.context!,
+                    this.isctrlHold,
+                    this.altdown,
+                );
+                this.annotateStateMakeChange(cloneDeep({ annotation: tmpPoly, isDlbClick: false }));
+                this.redrawImages(
+                    this._selectMetadata.img_x,
+                    this._selectMetadata.img_y,
+                    this._selectMetadata.img_w,
+                    this._selectMetadata.img_h,
+                );
             }
         }
     }
@@ -437,10 +453,26 @@ export class ImageLabellingSegmentationComponent implements OnInit {
             )
         ) {
             this.mousedown = true;
-            if (this.segState.drag && this.mousedown) {
+            if (
+                (this.segState.drag && this.mousedown) ||
+                (this._segCanvasService.isNewPolygon() && this.isctrlHold && this.mousedown)
+            ) {
+                this._segCanvasService.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
             }
-            if (this.segState.draw && this.mousedown) {
+            if (this.segState.draw && !this._segCanvasService.isNewPolygon() && this.annotateState.annotation > -1) {
+                if (this._undoRedoService.isStatgeChange(this._selectMetadata.polygons)) {
+                    this._undoRedoService.appendStages({
+                        meta: cloneDeep(this._selectMetadata),
+                        method: 'draw',
+                    });
+                }
             }
+            this._segCanvasService.setGlobalXY(-1, -1);
+            this._segCanvasService.validateXYDistance(
+                this._selectMetadata,
+                this._selectMetadata.img_x,
+                this._selectMetadata.img_y,
+            );
             this.emitMetadata();
         }
     }
@@ -459,8 +491,34 @@ export class ImageLabellingSegmentationComponent implements OnInit {
         ) {
             this.mousedown = true;
             if (this.segState.drag && this.mousedown) {
+                var diffX = event.offsetX - this._segCanvasService.getPanX();
+                var diffy = event.offsetY - this._segCanvasService.getPanY();
+                this._selectMetadata.img_x = this._segCanvasService.getGlobalX() + diffX;
+                this._selectMetadata.img_y = this._segCanvasService.getGlobalY() + diffy;
+                this._segCanvasService.panPolygons(
+                    this._selectMetadata,
+                    this._selectMetadata.img_x,
+                    this._selectMetadata.img_y,
+                    false,
+                );
+                this.redrawImages(
+                    this._selectMetadata.img_x,
+                    this._selectMetadata.img_y,
+                    this._selectMetadata.img_w,
+                    this._selectMetadata.img_h,
+                );
+                this._undoRedoService.isMethodChange('pan')
+                    ? this._undoRedoService.appendStages({
+                          meta: this._selectMetadata,
+                          method: 'pan',
+                      })
+                    : this._undoRedoService.replaceStages({
+                          meta: this._selectMetadata,
+                          method: 'pan',
+                      });
             }
             if (this.segState.draw && this.mousedown) {
+                this._segCanvasService.whenMouseMoveEvent();
             }
         } else {
             if (
