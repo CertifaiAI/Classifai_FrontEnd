@@ -21,6 +21,7 @@ export class SegmentationCanvasService {
     // private CurrentSelectedImg = { uid: -1, idx: -1 };
     private distanceOffset: number = 8;
     private selectedPolygon: number = -1;
+    private clickPoint: { polygonIndex: number; PointIndex: number } = { polygonIndex: -1, PointIndex: -1 };
 
     constructor() {}
 
@@ -39,7 +40,7 @@ export class SegmentationCanvasService {
     ): number {
         this.setGlobalXY(newX, newY);
         let polArea = this.findPolygonArea(newX, newY, pol);
-        let clickPt = this.findClickPoint(newX, newY, pol);
+        this.clickPoint = this.findClickPoint(newX, newY, pol);
         if (this.isNewPolygon() && ctrldown) {
             this.setPanXY(newX, newY);
         } else if ((this.tmpPolygon === null && this.selectedPolygon < 0) || altdown) {
@@ -64,6 +65,10 @@ export class SegmentationCanvasService {
 
     public whenMouseMoveEvent(
         pol: PolyMeta,
+        img: HTMLImageElement,
+        context: CanvasRenderingContext2D,
+        canvasW: number,
+        canvasH: number,
         newX: number,
         newY: number,
         ctrldown: boolean,
@@ -77,15 +82,18 @@ export class SegmentationCanvasService {
                 pol.img_x = this.getGlobalX() + diffX;
                 pol.img_y = this.getGlobalY() + diffY;
                 this.panPolygons(pol, pol.img_x, pol.img_y, true);
-                redrawCallback();
+                redrawCallback('pan');
             }
         } else if (this.isNewPolygon()) {
+            this.DrawNewPolygon(pol, img, context, canvasW, canvasH, false);
+            this.DrawfromlastPoint(newX, newY, context);
         } else if (this.selectedPolygon > -1 && isMouseDown) {
+            this.MouseMovePolygon(newX, newY, pol, context, this.selectedPolygon, img, canvasW, canvasH);
         } else {
+            this.setPolygonCoordinate(newX, newY, pol, this.clickPoint.polygonIndex, this.clickPoint.PointIndex);
+            redrawCallback('draw');
         }
     }
-
-    public whenMouseOutEvent() {}
 
     public setPanXY(newX: number, newY: number): boolean {
         try {
@@ -431,7 +439,8 @@ export class SegmentationCanvasService {
     }
 
     public MouseMovePolygon(
-        e: MouseEvent,
+        MouseX: number,
+        MouseY: number,
         pol: PolyMeta,
         context: CanvasRenderingContext2D,
         PolyIndex: number,
@@ -445,11 +454,11 @@ export class SegmentationCanvasService {
             let img_Y: number = pol.img_y;
             let imgW: number = pol.img_w;
             let imgH: number = pol.img_h;
-            let newXoffset: number = e.offsetX - this.GlobalXY.x;
-            let newYoffset: number = e.offsetY - this.GlobalXY.y;
+            let newXoffset: number = MouseX - this.GlobalXY.x;
+            let newYoffset: number = MouseY - this.GlobalXY.y;
             if (this.WithinPointPath(pol, img_X, img_Y, imgW, imgH, PolyIndex, newXoffset, newYoffset)) {
-                this.GlobalXY.x = e.offsetX;
-                this.GlobalXY.y = e.offsetY;
+                this.GlobalXY.x = MouseX;
+                this.GlobalXY.y = MouseY;
                 for (var i = 0; i < pol.polygons[PolyIndex].coorPt.length; ++i) {
                     pol.polygons[PolyIndex].coorPt[i].x += newXoffset;
                     pol.polygons[PolyIndex].coorPt[i].y += newYoffset;
@@ -682,11 +691,17 @@ export class SegmentationCanvasService {
         }
     }
 
-    public setPolygonCoordinate(e: MouseEvent, pol: PolyMeta, selectedPoly: number, PointIndex: number) {
+    public setPolygonCoordinate(
+        MouseX: number,
+        MouseY: number,
+        pol: PolyMeta,
+        selectedPoly: number,
+        PointIndex: number,
+    ) {
         try {
             if (selectedPoly !== -1 && PointIndex !== -1) {
-                pol.polygons[selectedPoly].coorPt[PointIndex].x = e.offsetX;
-                pol.polygons[selectedPoly].coorPt[PointIndex].y = e.offsetY;
+                pol.polygons[selectedPoly].coorPt[PointIndex].x = MouseX;
+                pol.polygons[selectedPoly].coorPt[PointIndex].y = MouseY;
             }
         } catch (err) {
             console.log(

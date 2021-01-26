@@ -520,26 +520,32 @@ export class ImageLabellingSegmentationComponent implements OnInit {
             if (this.segState.draw && this.mousedown) {
                 this._segCanvasService.whenMouseMoveEvent(
                     this._selectMetadata,
+                    this.img,
+                    this.context!,
+                    this.mycanvas.nativeElement.width,
+                    this.mycanvas.nativeElement.height,
                     event.offsetX,
                     event.offsetY,
                     this.isctrlHold,
                     this.mousedown,
-                    () => {
+                    (met: string) => {
                         this.redrawImages(
                             this._selectMetadata.img_x,
                             this._selectMetadata.img_y,
                             this._selectMetadata.img_w,
                             this._selectMetadata.img_h,
                         );
-                        this._undoRedoService.isMethodChange('pan')
-                            ? this._undoRedoService.appendStages({
-                                  meta: this._selectMetadata,
-                                  method: 'pan',
-                              })
-                            : this._undoRedoService.replaceStages({
-                                  meta: this._selectMetadata,
-                                  method: 'pan',
-                              });
+                        if (met === 'pan') {
+                            this._undoRedoService.isMethodChange('pan')
+                                ? this._undoRedoService.appendStages({
+                                      meta: this._selectMetadata,
+                                      method: 'pan',
+                                  })
+                                : this._undoRedoService.replaceStages({
+                                      meta: this._selectMetadata,
+                                      method: 'pan',
+                                  });
+                        }
                     },
                 );
             }
@@ -561,6 +567,13 @@ export class ImageLabellingSegmentationComponent implements OnInit {
     @HostListener('mouseout', ['$event'])
     mouseOut(event: MouseEvent) {
         if (this.segState.drag && this.mousedown) {
+            this._segCanvasService.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
+            this.redrawImages(
+                this._selectMetadata.img_x,
+                this._selectMetadata.img_y,
+                this._selectMetadata.img_w,
+                this._selectMetadata.img_h,
+            );
         }
         this.mousedown = false;
     }
