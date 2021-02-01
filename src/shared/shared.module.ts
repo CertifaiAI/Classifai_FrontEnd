@@ -7,10 +7,10 @@ import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 import { LanguageService } from './services/language.service';
 import { LazyLoadImgDirective } from './directives/lazy-image.directive';
 import { LoadingSpinnerInterceptor } from './interceptors/loading-spinner.interceptor';
-import { ModalModule } from './components/modal/modal.module';
+import { ModalModule } from 'src/components/modal/modal.module';
 import { NgModule } from '@angular/core';
-import { PageHeaderModule } from './components/page-header/page-header.module';
-import { SpinnerModule } from './components/spinner/spinner.module';
+import { PageHeaderModule } from 'src/components/page-header/page-header.module';
+import { SpinnerModule } from 'src/components/spinner/spinner.module';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 
@@ -64,11 +64,6 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
             useClass: LoadingSpinnerInterceptor,
             multi: true,
         },
-        // {
-        //   provide: HTTP_INTERCEPTORS,
-        //   useClass: ResponseJsonInterceptor,
-        //   multi: true,
-        // },
     ],
 })
 export class SharedModule {}

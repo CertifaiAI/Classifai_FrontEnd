@@ -1,6 +1,10 @@
-import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { AnnotateActionState } from '../../layouts/image-labelling-layout/image-labelling-layout.model';
+import { Injectable } from '@angular/core';
+
+export type AnnotateActionState = {
+    annotation: number;
+    isDlbClick: boolean;
+};
 
 const initialState: AnnotateActionState = {
     annotation: -1,

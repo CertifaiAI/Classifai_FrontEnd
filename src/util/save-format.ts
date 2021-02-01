@@ -1,12 +1,13 @@
-import { Utils } from './../shared/type-casting/utils/utils';
-import { BoundingBox } from './../shared/type-casting/meta-data/meta-data.model';
+import { Boundingbox } from 'src/components/image-labelling/image-labelling.model';
 import { cloneDeep } from 'lodash-es';
+import { Utils } from './../shared/types/utils/utils';
+
 export class YoloFormat {
-    private box: BoundingBox[] = [];
+    private box: Boundingbox[] = [];
     private imgW: number = 0;
     private imgH: number = 0;
     private labelListArr: string[] = [];
-    constructor(bbox: BoundingBox[], oriimgW: number, oriimgH: number, labelList: string[]) {
+    constructor(bbox: Boundingbox[], oriimgW: number, oriimgH: number, labelList: string[]) {
         this.box = cloneDeep(bbox);
         this.imgW = cloneDeep(oriimgW);
         this.imgH = cloneDeep(oriimgH);
@@ -52,12 +53,12 @@ export class JsonFormat {
 
 export class PascalvocFormat {
     private utility: Utils = new Utils();
-    private box: BoundingBox[] = [];
+    private box: Boundingbox[] = [];
     private imgPath: string = '';
     private imgOri_W: number = 0;
     private imgOri_H: number = 0;
     private imgDepth: number = 0;
-    constructor(bbox: BoundingBox[], imgpath: string, imgori_W: number, imgori_H: number, imgdepth: number) {
+    constructor(bbox: Boundingbox[], imgpath: string, imgori_W: number, imgori_H: number, imgdepth: number) {
         this.box = cloneDeep(bbox);
         this.imgPath = cloneDeep(imgpath);
         this.imgOri_W = cloneDeep(imgori_W);

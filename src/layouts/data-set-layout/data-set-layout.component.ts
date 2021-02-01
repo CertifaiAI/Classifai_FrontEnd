@@ -1,20 +1,15 @@
+import { BboxMetadata, PolyMetadata } from 'src/components/image-labelling/image-labelling.model';
 import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { cloneDeep } from 'lodash-es';
 import { DataSetLayoutService } from './data-set-layout.service';
+import { DataSetProps, ProjectSchema, StarredProps, UploadThumbnailProps } from './data-set-layout.model';
 import { first, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HTMLElementEvent } from 'src/shared/type-casting/field/field.model';
+import { HTMLElementEvent } from 'src/shared/types/field/field.model';
+import { Message } from 'src/shared/types/message/message.model';
 import { Router } from '@angular/router';
-import { SpinnerService } from 'src/shared/components/spinner/spinner.service';
-import {
-    DataSetProps,
-    Message,
-    ThumbnailMetadata,
-    ProjectSchema,
-    UploadThumbnailProps,
-    StarredProps,
-} from './data-set-layout.model';
+import { SpinnerService } from 'src/components/spinner/spinner.service';
 
 @Component({
     selector: 'data-set-layout',
@@ -35,7 +30,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     displayModal: boolean = false;
     subject$: Subject<any> = new Subject();
     subjectSubscription!: Subscription;
-    thumbnailList: ThumbnailMetadata[] = [];
+    thumbnailList: BboxMetadata[] & PolyMetadata[] = [];
     labelList: string[] = [];
     loading: boolean = false;
     unsubscribe$: Subject<any> = new Subject();
@@ -147,7 +142,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         }
     };
 
-    onStarred = <T extends StarredProps>({ projectName, starred }: T) => {
+    onStarred = ({ projectName, starred }: StarredProps) => {
         this._dataSetService
             .updateProjectStatus(projectName, starred, 'star')
             .pipe(first())
@@ -264,7 +259,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     //     : null;
                     // console.log(this.thumbnailList);
 
-                    this._router.navigate(['imglabel'], {
+                    this._router.navigate(['imglabel/boundingbox'], {
+                        // this._router.navigate(['imglabel/segmentation'], {
                         state: { thumbnailList: this.thumbnailList, projectName, labelList: this.labelList },
                     });
                 },
@@ -274,14 +270,14 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.subject$.next();
     };
 
-    uploadThumbnail = <T extends UploadThumbnailProps>({ projectName = this.inputProjectName, fileType }: T): void => {
+    uploadThumbnail = ({ projectName = this.inputProjectName, fileType }: UploadThumbnailProps): void => {
         this.visibleSpinner = false;
         const uploadType$ = this._dataSetService.localUploadThumbnail(projectName, fileType);
         const uploadStatus$ = this._dataSetService.localUploadStatus(projectName);
         const thumbnail$ = this._dataSetService.getThumbnailList;
         let numberOfReq: number = 0;
 
-        const returnResponse = <T extends Message>({ message }: T): Observable<ThumbnailMetadata> => {
+        const returnResponse = ({ message }: Message): Observable<BboxMetadata & PolyMetadata> => {
             return message !== 5 && message === 1
                 ? interval(500).pipe(
                       mergeMap(() => uploadStatus$),

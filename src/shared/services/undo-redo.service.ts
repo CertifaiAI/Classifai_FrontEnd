@@ -1,7 +1,12 @@
-import { Boundingbox, ThumbnailMetadata } from '../../layouts/image-labelling-layout/image-labelling-layout.model';
+import {
+    BboxMetadata,
+    Boundingbox,
+    Polygons,
+    PolyMetadata,
+    UndoState,
+} from 'src/components/image-labelling/image-labelling.model';
 import { Injectable } from '@angular/core';
-import { Polygons, PolyMeta, UndoState } from './../../layouts/image-labelling-layout/image-labelling-layout.model';
-import { Utils } from '../type-casting/utils/utils';
+import { Utils } from '../types/utils/utils';
 
 @Injectable({
     providedIn: 'any',
@@ -66,13 +71,13 @@ export class UndoRedoService {
     }
 
     public clearRedundantStages() {
-        //TODO:Solve bugs here
+        // TODO:Solve bugs here
         /** Daniel: Unable to shortcut code logic due to the Type embedded into 'currentArr.meta' prop */
         if (this.currentArr[0]?.meta && 'Polygons' in this.currentArr[0].meta) {
         } else {
             if (this.undoArr.length > 0) {
                 const last2Stages: boolean = this.isStatgeChange(
-                    (this.undoArr[this.undoArr.length - 1]?.meta as ThumbnailMetadata).bnd_box,
+                    (this.undoArr[this.undoArr.length - 1]?.meta as BboxMetadata).bnd_box,
                 );
                 last2Stages ? (this.currentArr.pop(), this.currentArr.push(this.removeLastArray(this.undoArr))) : {};
             }
@@ -112,7 +117,7 @@ export class UndoRedoService {
         /** Daniel: Unable to shortcut code logic due to the Type embedded into 'currentArr.meta' prop */
         if (this.currentArr[0]?.meta && 'Polygons' in this.currentArr[0]?.meta) {
             const polybox: Polygons[] = notate as Polygons[];
-            const comparePolyBoxes: Polygons[] = (this.currentArr[0]?.meta as PolyMeta).polygons;
+            const comparePolyBoxes: Polygons[] = (this.currentArr[0]?.meta as PolyMetadata).polygons;
             if (polybox.length !== comparePolyBoxes.length) {
                 return true;
             } else {
@@ -122,7 +127,7 @@ export class UndoRedoService {
             }
         } else {
             const bndBox: Boundingbox[] = notate as Boundingbox[];
-            const compareBndBox: Boundingbox[] = (this.currentArr[0]?.meta as ThumbnailMetadata).bnd_box;
+            const compareBndBox: Boundingbox[] = (this.currentArr[0]?.meta as BboxMetadata).bnd_box;
             if (bndBox.length !== compareBndBox.length) {
                 return true;
             } else {
@@ -143,7 +148,7 @@ export class UndoRedoService {
                 return true;
             } else {
                 const polygons: Polygons[] = notate as Polygons[];
-                const comparePolygons: Polygons[] = (this.currentArr[0]?.meta as PolyMeta).polygons;
+                const comparePolygons: Polygons[] = (this.currentArr[0]?.meta as PolyMetadata).polygons;
                 if (polygons.length !== comparePolygons.length) {
                     return true;
                 } else {
@@ -161,7 +166,7 @@ export class UndoRedoService {
                 return true;
             } else {
                 const thisBox: Boundingbox[] = notate as Boundingbox[];
-                const compareBox: Boundingbox[] = (this.currentArr[0]?.meta as ThumbnailMetadata).bnd_box;
+                const compareBox: Boundingbox[] = (this.currentArr[0]?.meta as BboxMetadata).bnd_box;
                 if (thisBox.length !== compareBox.length) {
                     return true;
                 } else {

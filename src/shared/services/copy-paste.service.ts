@@ -1,8 +1,8 @@
-import { BoundingBox } from '../type-casting/meta-data/meta-data.model';
-import { CopyPasteState, Polygons } from './../../layouts/image-labelling-layout/image-labelling-layout.model';
+import { Boundingbox, Polygons } from 'src/components/image-labelling/image-labelling.model';
 import { Injectable } from '@angular/core';
-import { Utils } from '../type-casting/utils/utils';
+import { Utils } from '../types/utils/utils';
 
+type CopyPasteState = Boundingbox | Polygons | null;
 @Injectable({
     providedIn: 'any',
 })
@@ -15,7 +15,7 @@ export class CopyPasteService {
         currMeta ? (this.MEMO = this.utility.deepCloneVariable(currMeta)) : {};
     }
 
-    public paste(): CopyPasteState {
+    public paste() {
         if (this.MEMO) {
             if ('coorPt' in this.MEMO) {
                 return this.polygonPaste();
@@ -48,8 +48,8 @@ export class CopyPasteService {
         return rtMEMO;
     }
 
-    private boundingBoxPaste(): BoundingBox | null {
-        const rtMEMO: BoundingBox = this.utility.deepCloneObject(this.MEMO);
+    private boundingBoxPaste(): Boundingbox | null {
+        const rtMEMO: Boundingbox = this.utility.deepCloneObject(this.MEMO);
         // tslint:disable-next-line: prefer-const
         let { x1, x2, y1, y2, id, distancetoImg } = rtMEMO;
 

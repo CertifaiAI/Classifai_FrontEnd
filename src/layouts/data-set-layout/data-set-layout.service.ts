@@ -1,16 +1,16 @@
+import { BboxMetadata, PolyMetadata } from 'src/components/image-labelling/image-labelling.model';
 import { environment } from 'src/environments/environment.prod';
-import { FileType } from 'src/shared/type-casting/file-type/file-type.model';
+import { FileType, LabelList, Project } from './data-set-layout.model';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+
 import {
-    MessageContent,
     Message,
-    LabelList,
-    ThumbnailMetadata,
+    MessageContent,
+    MessageProjectProgress,
     MessageUuidList,
-    MessageDataSetStatus,
-} from '../data-set-layout/data-set-layout.model';
+} from 'src/shared/types/message/message.model';
 
 @Injectable({ providedIn: 'any' })
 export class DataSetLayoutService {
@@ -18,8 +18,8 @@ export class DataSetLayoutService {
 
     constructor(private http: HttpClient) {}
 
-    getProjectList = (): Observable<MessageContent> => {
-        return this.http.get<MessageContent>(`${this.hostPort}bndbox/projects/meta`);
+    getProjectList = (): Observable<MessageContent<Project[]>> => {
+        return this.http.get<MessageContent<Project[]>>(`${this.hostPort}bndbox/projects/meta`);
         // .pipe(catchError(this.handleError));
     };
 
@@ -33,8 +33,8 @@ export class DataSetLayoutService {
         return this.http.get<Message>(`${this.hostPort}bndbox/projects/${projectName}`);
     };
 
-    checkProjectStatus = (projectName: string): Observable<MessageContent> => {
-        return this.http.get<MessageContent>(`${this.hostPort}bndbox/projects/${projectName}/meta`);
+    checkProjectStatus = (projectName: string): Observable<MessageContent<Project[]>> => {
+        return this.http.get<MessageContent<Project[]>>(`${this.hostPort}bndbox/projects/${projectName}/meta`);
     };
 
     manualCloseProject = (projectName: string, status: 'closed' = 'closed'): Observable<Message> => {
@@ -47,8 +47,8 @@ export class DataSetLayoutService {
         return this.http.get<LabelList>(`${this.hostPort}bndbox/projects/${projectName}/loadingstatus`);
     };
 
-    getThumbnailList = (projectName: string, uuid: number): Observable<ThumbnailMetadata> => {
-        return this.http.get<ThumbnailMetadata>(
+    getThumbnailList = (projectName: string, uuid: number): Observable<BboxMetadata & PolyMetadata> => {
+        return this.http.get<BboxMetadata & PolyMetadata>(
             `${this.hostPort}bndbox/projects/${projectName}/uuid/${uuid}/thumbnail`,
         );
     };
@@ -77,9 +77,9 @@ export class DataSetLayoutService {
         projectName: string,
         loading: boolean,
         action: 'star' | 'loaded',
-    ): Observable<MessageDataSetStatus> => {
+    ): Observable<MessageProjectProgress> => {
         const conditionalEndPoint = action === 'loaded' ? 'status' : action;
-        return this.http.put<MessageDataSetStatus>(
+        return this.http.put<MessageProjectProgress>(
             `${this.hostPort}bndbox/projects/${projectName}/${conditionalEndPoint}`,
             {
                 // status: 'true',

@@ -33,9 +33,9 @@ export class LanguageService {
             langsArr.length === i + 1 ? `${lang}/` : `/${lang}|`,
         );
         /**
-      @method join(' ') Used for array turning into single string
-      @method replace(/ /g,'') Used for removing all white space from string
-    */
+         * @method join(' ') Used for array turning into single string
+         * @method replace(/ /g,'') Used for removing all white space from string
+         */
         const finalizedLang: string = mutatedLangsArr.join(' ').replace(/ /g, '');
         this._translate.addLangs(langsArr);
 
@@ -68,8 +68,10 @@ export class LanguageService {
     };
 
     private setTranslation = (compName: string, lang: string, finalizedLang: string): void => {
-        /** @param {string} browserLang format like browserLang.match(/image-labelling-en|image-labelling-cn/)
-         *  which is needed by '@ngx-translate' library */
+        /**
+         * @constant {string} browserLang format like browserLang.match(/image-labelling-en|image-labelling-cn/)
+         * which is needed by '@ngx-translate' library
+         */
         const browserLang: string = this._translate.getBrowserLang();
 
         this._translate.use(browserLang.match(finalizedLang) ? browserLang : `${compName}-${lang}`);
