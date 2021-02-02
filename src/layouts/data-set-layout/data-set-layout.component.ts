@@ -1,12 +1,13 @@
-import { BboxMetadata, PolyMetadata } from 'src/components/image-labelling/image-labelling.model';
+import { BboxMetadata, ImageLabellingMode, PolyMetadata } from 'src/components/image-labelling/image-labelling.model';
 import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { cloneDeep } from 'lodash-es';
 import { DataSetLayoutService } from './data-set-layout.service';
 import { DataSetProps, ProjectSchema, StarredProps, UploadThumbnailProps } from './data-set-layout.model';
-import { first, map, mergeMap, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, first, map, mergeMap, takeUntil } from 'rxjs/operators';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HTMLElementEvent } from 'src/shared/types/field/field.model';
+import { ImageLabellingModeService } from './../../components/image-labelling/image-labelling-mode.service';
 import { Message } from 'src/shared/types/message/message.model';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'src/components/spinner/spinner.service';
@@ -32,9 +33,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     subjectSubscription!: Subscription;
     thumbnailList: BboxMetadata[] & PolyMetadata[] = [];
     labelList: string[] = [];
-    loading: boolean = false;
     unsubscribe$: Subject<any> = new Subject();
-    visibleSpinner: boolean = true;
+    isLoading = false;
+    imgLblMode: ImageLabellingMode = null;
     @ViewChild('refProjectName') _refProjectName!: ElementRef<HTMLInputElement>;
 
     constructor(
@@ -43,17 +44,23 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         private _router: Router,
         private _dataSetService: DataSetLayoutService,
         private _spinnerService: SpinnerService,
+        private _imgLblModeService: ImageLabellingModeService,
     ) {
+        this._imgLblModeService.imgLabelMode$
+            .pipe(distinctUntilChanged())
+            .subscribe((modeVal) => (this.imgLblMode = modeVal));
+
         this._spinnerService
             .returnAsObservable()
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe((loading) => (this.loading = loading));
+            .subscribe((loading) => (this.isLoading = loading));
 
         this.createFormControls();
-        this.getProjectList();
     }
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.getProjectList();
+    }
 
     getProjectList = (): void => {
         this.projectList.isFetching = true;
@@ -251,7 +258,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
 
                     // this.tabStatus = [...this.tabStatus, { name: 'Label', closed, label_list: [] }];
                 },
-                (error: Error) => console.log(error),
+                (error: Error) => {},
                 () => {
                     // const [{ label_list }] = this.tabStatus;
                     // label_list && label_list.length < 1
@@ -259,10 +266,10 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     //     : null;
                     // console.log(this.thumbnailList);
 
-                    this._router.navigate(['imglabel/boundingbox'], {
-                        // this._router.navigate(['imglabel/segmentation'], {
+                    this._router.navigate([`imglabel/${this.imgLblMode}`], {
                         state: { thumbnailList: this.thumbnailList, projectName, labelList: this.labelList },
                     });
+                    this._spinnerService.hideSpinner();
                 },
             );
 
@@ -271,7 +278,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     uploadThumbnail = ({ projectName = this.inputProjectName, fileType }: UploadThumbnailProps): void => {
-        this.visibleSpinner = false;
         const uploadType$ = this._dataSetService.localUploadThumbnail(projectName, fileType);
         const uploadStatus$ = this._dataSetService.localUploadStatus(projectName);
         const thumbnail$ = this._dataSetService.getThumbnailList;
@@ -344,54 +350,12 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 (error: Error) => {},
                 () => {
                     this.getProjectList();
-                    this.visibleSpinner = true;
                 },
             );
 
         // make initial call
         this.subject$.next();
-
-        // /** @constant uses Array.from due to props 'type' of FileList are type of Iterable  */
-        // const arrFiles: File[] = Array.from(files);
-        // console.log(arrFiles);
-        // const filteredFiles = arrFiles.filter((file) => {
-        //   const { type } = file;
-        //   const validateFileType =
-        //     type && (type === 'image/jpeg' || type === 'image/png') ? file : null;
-        //   return validateFileType;
-        // });
-        // console.log(filteredFiles);
     };
-
-    // onProcessLabel = <T extends SelectedLabelProps>({ selectedLabel, label_list, action }: T) => {
-    //     // console.log(selectedLabel, label_list, action);
-    //     const newLabelList: string[] =
-    //         selectedLabel && !action ? label_list.filter((label) => label !== selectedLabel) : label_list;
-    //     const projectName: string = this.selectedProjectName || this.inputProjectName;
-    //     const updateLabel$ = this._imgLabelService.updateLabelList(
-    //         projectName,
-    //         newLabelList.length > 0 ? newLabelList : [],
-    //     );
-
-    //     updateLabel$.pipe(first()).subscribe(({ message }) => {
-    //         message === 1
-    //             ? (this.tabStatus = this.tabStatus.map((tab) => {
-    //                   if (tab.label_list) {
-    //                       // const newLabelList = tab.label_list.filter((label) => label !== selectedLabel);
-    //                       return {
-    //                           ...tab,
-    //                           label_list: newLabelList,
-    //                       };
-    //                   }
-    //                   return tab;
-    //               }))
-    //             : console.error(`Error while updating label`);
-    //     });
-    // };
-
-    // setLabelListLocalStorage = (labelList: LabelList): void => {
-    //     console.log(labelList);
-    // };
 
     createProject = (projectName: string): void => {
         const createProj$ = this._dataSetService.createNewProject(projectName);

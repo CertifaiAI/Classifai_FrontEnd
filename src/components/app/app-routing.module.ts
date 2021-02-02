@@ -14,14 +14,14 @@ const routes: Routes = [
             ),
     },
     {
-        path: 'imglabel/boundingbox',
+        path: 'imglabel/bndbox',
         loadChildren: () =>
             import('../../layouts/bounding-box-layout/bounding-box-layout.module').then(
                 ({ BoundingBoxLayoutModule }) => BoundingBoxLayoutModule,
             ),
     },
     {
-        path: 'imglabel/segmentation',
+        path: 'imglabel/seg',
         loadChildren: () =>
             import('../../layouts/segmentation-layout/segmentation-layout.module').then(
                 ({ SegmentationLayoutModule }) => SegmentationLayoutModule,

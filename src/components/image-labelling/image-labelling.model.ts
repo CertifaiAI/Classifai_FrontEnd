@@ -30,6 +30,8 @@ export type ActionState = {
     // dbClick: boolean;
 };
 
+export type ImageLabellingMode = 'bndbox' | 'seg' | null;
+
 export type TabsProps<TMetadata = undefined> = {
     name: string;
     closed: boolean;

@@ -5,17 +5,17 @@ import { Injectable } from '@angular/core';
     providedIn: 'root',
 })
 export class SpinnerService {
-    private loadingSubject = new BehaviorSubject<boolean>(false);
+    private toggleSpinnerSubject = new BehaviorSubject<boolean>(false);
     constructor() {}
 
     returnAsObservable(): Observable<boolean> {
-        return this.loadingSubject.asObservable();
+        return this.toggleSpinnerSubject.asObservable();
     }
 
     showSpinner(): void {
-        this.loadingSubject.next(true);
+        this.toggleSpinnerSubject.next(true);
     }
     hideSpinner(): void {
-        this.loadingSubject.next(false);
+        this.toggleSpinnerSubject.next(false);
     }
 }

@@ -1,8 +1,10 @@
 import { CardChoiceImgLblUrlPath, CardChoiceSchema } from './home-layout.model';
 import { Component, OnInit } from '@angular/core';
+import { ImageLabellingModeService } from './../../components/image-labelling/image-labelling-mode.service';
 import { ModalBodyStyle } from 'src/components/modal/modal.model';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
+import { ImageLabellingMode } from 'src/components/image-labelling/image-labelling.model';
 
 @Component({
     selector: 'home-layout',
@@ -41,7 +43,11 @@ export class HomeLayoutComponent implements OnInit {
     hover: boolean = false;
     hoverIndex: number = -1;
 
-    constructor(private _modalService: ModalService, private _router: Router) {}
+    constructor(
+        private _modalService: ModalService,
+        private _router: Router,
+        private _imgLblMode: ImageLabellingModeService,
+    ) {}
 
     ngOnInit() {}
 
@@ -55,7 +61,11 @@ export class HomeLayoutComponent implements OnInit {
     };
 
     onCloseModal = (id: string, path?: CardChoiceImgLblUrlPath) => {
-        path && this._router.navigate([this.navigateUrl]);
+        if (path) {
+            const chosenMode: ImageLabellingMode = path === 'boundingbox' ? 'bndbox' : 'seg';
+            this._imgLblMode.setState(chosenMode);
+            this._router.navigate([this.navigateUrl]);
+        }
         this._modalService.close(id);
     };
 

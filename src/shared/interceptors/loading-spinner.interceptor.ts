@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { SpinnerService } from 'src/components/spinner/spinner.service';
 import { tap } from 'rxjs/operators';
-
 import {
     HttpErrorResponse,
     HttpEvent,
@@ -26,14 +25,15 @@ export class LoadingSpinnerInterceptor implements HttpInterceptor {
                     // console.log(event);
                     if (event instanceof HttpResponse) {
                         this.pendingRequestsCount--;
-                        this.pendingRequestsCount < 1 ? this._spinner.hideSpinner() : null;
+                        this.pendingRequestsCount === 0 && this._spinner.hideSpinner();
                     }
                 },
                 (error) => {
                     if (error instanceof HttpErrorResponse) {
+                        this.pendingRequestsCount--;
                         // hide spinner when you receive error
                         this._spinner.hideSpinner();
-                        console.log(error);
+                        // console.log(error);
                     }
                 },
             ),

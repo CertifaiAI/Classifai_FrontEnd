@@ -8,7 +8,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 })
 export class HomeCardComponent implements OnInit {
     @Input() _jsonSchema!: CardFieldSchema;
-    @Output() _onThumbnailClick: EventEmitter<any> = new EventEmitter();
+    @Output() _onThumbnailClick: EventEmitter<string> = new EventEmitter();
     hover!: boolean;
     hoverIndex!: number;
 
