@@ -1,24 +1,24 @@
-import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { DataSetLayoutService } from '../data-set-layout/data-set-layout.service';
-import { first, takeUntil } from 'rxjs/operators';
-import { HTMLElementEvent } from 'src/shared/types/field/field.model';
-import { ModalService } from 'src/components/modal/modal.service';
-import { Router } from '@angular/router';
-import { SegmentationService } from './segmentation-layout.service';
-import { SegmentationStateService } from './segmentation-state.service';
-import { Subject } from 'rxjs';
 import {
-    AddedBBoxSubLabel,
+    AddSubLabel,
+    BboxMetadata,
     ChangeAnnotationLabel,
-    EventEmitter_BBoxAction,
+    EventEmitter_Action,
     EventEmitter_Url,
     ImgLabelProps,
     PolyMetadata,
     SelectedLabelProps,
     TabsProps,
-    ThumbnailMetadataProps,
-} from '../segmentation-layout/segmentation-layout.model';
+} from 'src/components/image-labelling/image-labelling.model';
+import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DataSetLayoutService } from '../data-set-layout/data-set-layout.service';
+import { first, takeUntil } from 'rxjs/operators';
+import { HTMLElementEvent } from 'src/shared/types/field/field.model';
+import { ImageLabellingStateService } from 'src/components/image-labelling/image-labelling-state.service';
+import { ModalService } from 'src/components/modal/modal.service';
+import { Router } from '@angular/router';
+import { SegmentationService } from './segmentation-layout.service';
+import { Subject } from 'rxjs';
 
 @Component({
     selector: 'segmentation-layout',
@@ -34,7 +34,7 @@ export class SegmentationLayoutComponent implements OnInit, OnDestroy {
     thumbnailList: PolyMetadata[] = [];
     selectedMetaData!: PolyMetadata;
     unsubscribe$: Subject<any> = new Subject();
-    tabStatus: TabsProps[] = [
+    tabStatus: TabsProps<PolyMetadata>[] = [
         {
             name: 'Project',
             closed: false,
@@ -52,7 +52,7 @@ export class SegmentationLayoutComponent implements OnInit, OnDestroy {
     ];
     mainLabelRegionVal: string = '';
     subLabelRegionVal: string = '';
-    addedSubLabelList?: AddedBBoxSubLabel[];
+    addedSubLabelList?: AddSubLabel[];
     subLabelValidateMsg: string = '';
     currentAnnotationLabel: string = '';
     currentBBoxAnnotationIndex: number = -1;
@@ -66,7 +66,7 @@ export class SegmentationLayoutComponent implements OnInit, OnDestroy {
         private _modalService: ModalService,
         private _dataSetService: DataSetLayoutService,
         private _annotateService: AnnotateSelectionService,
-        private _segStateService: SegmentationStateService,
+        private _imgLblStateService: ImageLabellingStateService,
     ) {}
 
     ngOnInit(): void {
@@ -99,7 +99,7 @@ export class SegmentationLayoutComponent implements OnInit, OnDestroy {
                             this.mainLabelRegionVal = region || '';
                         }),
                     );
-                    this._segStateService.setState({ isActiveModal: true, draw: false, drag: false, scroll: false });
+                    this._imgLblStateService.setState({ isActiveModal: true, draw: false, drag: false, scroll: false });
                     this.onDisplayModal();
                 } else {
                     this.currentAnnotationLabel = '';
@@ -163,7 +163,7 @@ export class SegmentationLayoutComponent implements OnInit, OnDestroy {
         url ? this._router.navigate([url]) : console.error(`No url received from child component`);
     };
 
-    navigateByAction = <T extends EventEmitter_BBoxAction>({ thumbnailAction }: T): void => {
+    navigateByAction = <T extends EventEmitter_Action>({ thumbnailAction }: T): void => {
         if (thumbnailAction) {
             let { uuid } = this.selectedMetaData || false;
             if (uuid) {
@@ -177,7 +177,7 @@ export class SegmentationLayoutComponent implements OnInit, OnDestroy {
         }
     };
 
-    onProcessLabel = <T extends SelectedLabelProps>({ selectedLabel, label_list, action }: T) => {
+    onProcessLabel = ({ selectedLabel, label_list, action }: SelectedLabelProps) => {
         // console.log(selectedLabel, label_list, action);
         const newLabelList: string[] =
             selectedLabel && !action ? label_list.filter((label) => label !== selectedLabel) : label_list;
@@ -205,7 +205,7 @@ export class SegmentationLayoutComponent implements OnInit, OnDestroy {
         );
     };
 
-    onChangeAnnotationLabel = <T extends ChangeAnnotationLabel>({ label, index }: T): void => {
+    onChangeAnnotationLabel = ({ label, index }: ChangeAnnotationLabel): void => {
         this.tabStatus = this.tabStatus.map((tab) =>
             tab.annotation
                 ? {
@@ -253,8 +253,8 @@ export class SegmentationLayoutComponent implements OnInit, OnDestroy {
      *  @type optional ThumbnailMetadataProps
      *        which allows navigateByAction function to send only needed props due to optional type
      */
-    showBase64Image = <T extends ThumbnailMetadataProps | Partial<ThumbnailMetadataProps>>(
-        thumbnail: T,
+    showBase64Image = (
+        thumbnail: (BboxMetadata & PolyMetadata) | Partial<BboxMetadata & PolyMetadata>,
         projectName: string = this.selectedProjectName,
     ): void => {
         const { uuid } = thumbnail;
@@ -283,7 +283,7 @@ export class SegmentationLayoutComponent implements OnInit, OnDestroy {
     /** @function responsible for checking whether current selected thumbnail wanted to display is same as currently displaying image */
     isExactCurrentImage = (
         selectedThumbnail: PolyMetadata | Partial<PolyMetadata>,
-        currentThumbnail: Partial<ThumbnailMetadataProps> = this.selectedMetaData,
+        currentThumbnail: Partial<BboxMetadata & PolyMetadata> = this.selectedMetaData,
     ): boolean => {
         return currentThumbnail?.uuid === selectedThumbnail?.uuid ? false : true;
     };
@@ -310,7 +310,7 @@ export class SegmentationLayoutComponent implements OnInit, OnDestroy {
     };
 
     onCloseModal = (id: string = 'custom-modal-1') => {
-        this._segStateService.setState({ isActiveModal: false, draw: true, scroll: true });
+        this._imgLblStateService.setState({ isActiveModal: false, draw: true, scroll: true });
         this._modalService.close(id);
     };
 

@@ -1,4 +1,4 @@
-import { BboxMetadata, Boundingbox, xyCoordinate } from '../image-labelling.model';
+import { BboxMetadata, Boundingbox, Direction, xyCoordinate } from '../image-labelling.model';
 import { cloneDeep } from 'lodash-es';
 import { Injectable } from '@angular/core';
 import { Utils } from '../../../shared/types/utils/utils';
@@ -120,7 +120,7 @@ export class BoundingBoxCanvasService {
     }
 
     public keyboardMoveBox(
-        direct: string,
+        direction: Direction,
         bBox: Boundingbox,
         imX: number,
         imY: number,
@@ -131,22 +131,18 @@ export class BoundingBoxCanvasService {
         try {
             const bBoxH: number = bBox.x2 - bBox.x1;
             const bBoxW: number = bBox.y2 - bBox.y1;
-            if (direct === 'up') {
-                this.moveBoxWithinPointPath(imX, imY, imW, imH, 0, -3, bBox)
-                    ? ((bBox.y1 -= 3), (bBox.y2 = cloneDeep(bBox.y1 + bBoxH)))
-                    : {};
-            } else if (direct === 'down') {
-                this.moveBoxWithinPointPath(imX, imY, imW, imH, 0, 3, bBox)
-                    ? ((bBox.y1 += 3), (bBox.y2 = cloneDeep(bBox.y1 + bBoxH)))
-                    : {};
-            } else if (direct === 'left') {
-                this.moveBoxWithinPointPath(imX, imY, imW, imH, -3, 0, bBox)
-                    ? ((bBox.x1 -= 3), (bBox.x2 = cloneDeep(bBox.x1 + bBoxW)))
-                    : {};
-            } else if (direct === 'right') {
-                this.moveBoxWithinPointPath(imX, imY, imW, imH, 3, 0, bBox)
-                    ? ((bBox.x1 += 3), (bBox.x2 = cloneDeep(bBox.x1 + bBoxW)))
-                    : {};
+            if (direction === 'up') {
+                this.moveBoxWithinPointPath(imX, imY, imW, imH, 0, -3, bBox) &&
+                    ((bBox.y1 -= 3), (bBox.y2 = cloneDeep(bBox.y1 + bBoxH)));
+            } else if (direction === 'down') {
+                this.moveBoxWithinPointPath(imX, imY, imW, imH, 0, 3, bBox) &&
+                    ((bBox.y1 += 3), (bBox.y2 = cloneDeep(bBox.y1 + bBoxH)));
+            } else if (direction === 'left') {
+                this.moveBoxWithinPointPath(imX, imY, imW, imH, -3, 0, bBox) &&
+                    ((bBox.x1 -= 3), (bBox.x2 = cloneDeep(bBox.x1 + bBoxW)));
+            } else if (direction === 'right') {
+                this.moveBoxWithinPointPath(imX, imY, imW, imH, 3, 0, bBox) &&
+                    ((bBox.x1 += 3), (bBox.x2 = cloneDeep(bBox.x1 + bBoxW)));
             }
             callback(true);
         } catch (err) {}

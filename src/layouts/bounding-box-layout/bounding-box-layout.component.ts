@@ -1,4 +1,3 @@
-import { AddedBBoxSubLabel, EventEmitter_BBoxAction } from './bounding-box-layout.model';
 import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { BoundingBoxService } from './bounding-box-layout.service';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
@@ -9,9 +8,12 @@ import { ImageLabellingStateService } from 'src/components/image-labelling/image
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
+
 import {
+    AddSubLabel,
     BboxMetadata,
     ChangeAnnotationLabel,
+    EventEmitter_Action,
     EventEmitter_Url,
     ImgLabelProps,
     PolyMetadata,
@@ -51,7 +53,7 @@ export class BoundingBoxLayoutComponent implements OnInit, OnDestroy {
     ];
     mainLabelRegionVal: string = '';
     subLabelRegionVal: string = '';
-    addedSubLabelList?: AddedBBoxSubLabel[];
+    addedSubLabelList?: AddSubLabel[];
     subLabelValidateMsg: string = '';
     currentAnnotationLabel: string = '';
     currentBBoxAnnotationIndex: number = -1;
@@ -162,7 +164,7 @@ export class BoundingBoxLayoutComponent implements OnInit, OnDestroy {
         url ? this._router.navigate([url]) : console.error(`No url received from child component`);
     };
 
-    navigateByAction = ({ thumbnailAction }: EventEmitter_BBoxAction): void => {
+    navigateByAction = ({ thumbnailAction }: EventEmitter_Action): void => {
         if (thumbnailAction) {
             let { uuid } = this.selectedMetaData || false;
             if (uuid) {

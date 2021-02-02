@@ -1,8 +1,9 @@
 import { environment } from 'src/environments/environment.prod';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Message, MessageBase64Img, MessageProjectProgress, PolyMetadata } from './segmentation-layout.model';
+import { Message, MessageBase64Img, MessageProjectProgress } from 'src/shared/types/message/message.model';
 import { Observable } from 'rxjs';
+import { PolyMetadata } from 'src/components/image-labelling/image-labelling.model';
 
 @Injectable({ providedIn: 'any' })
 export class SegmentationService {

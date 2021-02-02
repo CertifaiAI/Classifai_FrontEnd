@@ -1,4 +1,4 @@
-import { ActionState, BboxMetadata, Boundingbox, UndoState } from '../image-labelling.model';
+import { ActionState, BboxMetadata, Boundingbox, Direction, UndoState } from '../image-labelling.model';
 import { AnnotateActionState, AnnotateSelectionService } from '../../../shared/services/annotate-selection.service';
 import { BoundingBoxCanvasService } from './bounding-box-canvas.service';
 import { cloneDeep } from 'lodash-es';
@@ -267,9 +267,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         ? this.keyMoveBox('right')
                         : event.key === 'ArrowUp' && !isActiveModal
                         ? this.keyMoveBox('up')
-                        : event.key === 'ArrowDown' && !isActiveModal
-                        ? this.keyMoveBox('down')
-                        : {};
+                        : event.key === 'ArrowDown' && !isActiveModal && this.keyMoveBox('down');
                 }
             }
         } catch (err) {}
@@ -278,11 +276,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('dblclick', ['$event'])
     toggleEvent(event: MouseEvent) {
         try {
-            this.annotateState.annotation > -1
-                ? (this._undoRedoService.clearRedundantStages(),
-                  // this.rulesMakeChange(null, null, null, true),
-                  this.annotateStateMakeChange({ annotation: this.annotateState.annotation, isDlbClick: true }))
-                : {};
+            this.annotateState.annotation > -1 &&
+                (this._undoRedoService.clearRedundantStages(),
+                // this.rulesMakeChange(null, null, null, true),
+                this.annotateStateMakeChange({ annotation: this.annotateState.annotation, isDlbClick: true }));
         } catch (err) {}
     }
 
@@ -524,7 +521,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         } catch (err) {}
     }
 
-    keyMoveBox(direction: string) {
+    keyMoveBox(direction: Direction) {
         try {
             this._boundingBoxCanvas.keyboardMoveBox(
                 direction,

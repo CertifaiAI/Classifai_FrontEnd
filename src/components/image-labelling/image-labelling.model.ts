@@ -56,6 +56,16 @@ export type ChangeAnnotationLabel = {
     index: number;
 };
 
+export type AddSubLabel = {
+    label: string;
+    region: string;
+};
+
+export type EventEmitter_Action = {
+    /** @property {number} 1 represents next photo, whereas -1 represent previous photo */
+    thumbnailAction?: 1 | -1;
+};
+
 type IAxis = {
     x: number;
     y: number;
@@ -124,6 +134,8 @@ export type PolyMetadata = Metadata & {
 };
 
 type Method = 'zoom' | 'draw' | 'pan';
+
+export type Direction = 'up' | 'down' | 'left' | 'right';
 
 // export type ThumbnailMetadataProps = BboxMetadata;
 export type UndoState = { meta: BboxMetadata | PolyMetadata | null; method: Method } | null;

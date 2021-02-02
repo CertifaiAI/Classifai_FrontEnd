@@ -1,9 +1,5 @@
 <div class="layout-container">
     <div>
-        <!-- <image-labelling-header
-        [_onChange]="onChangeSchema"
-        (_navigate)="navigateByUrl($event)"
-    ></image-labelling-header> -->
         <page-header [_onChange]="onChangeSchema"></page-header>
         <image-labelling-info [_onChange]="onChangeSchema" (_onClick)="navigateByAction($event)"></image-labelling-info>
     </div>
@@ -16,8 +12,6 @@
             [_imgSrc]="imgSrc"
             (_onChangeMetadata)="onChangeMetadata($event)"
         ></image-labelling-segmentation>
-
-        <!-- <image-labelling-image [_thumbnail]="selectedThumbnail"></image-labelling-image> -->
 
         <image-labelling-project
             [_thumbnailList]="thumbnailList"
@@ -115,5 +109,3 @@
         </ng-container>
     </ng-container>
 </modal>
-
-<!-- <spinner [_loading]="loading"></spinner> -->

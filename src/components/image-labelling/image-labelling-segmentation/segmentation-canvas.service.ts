@@ -1,6 +1,5 @@
 import { cloneDeep } from 'lodash-es';
-import { Coordinate, Polygons, PolyMetadata, xyCoordinate } from '../image-labelling.model';
-import { Direction } from 'src/layouts/segmentation-layout/segmentation-layout.model';
+import { Coordinate, Direction, Polygons, PolyMetadata, xyCoordinate } from '../image-labelling.model';
 import { Injectable } from '@angular/core';
 import { Utils } from '../../../shared/types/utils/utils';
 
