@@ -2,8 +2,8 @@ import { ActionState, Direction, Polygons, PolyMetadata, UndoState } from '../im
 import { AnnotateActionState, AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { cloneDeep } from 'lodash-es';
 import { CopyPasteService } from 'src/shared/services/copy-paste.service';
+import { ImageLabellingStateService } from '../image-labelling-state.service';
 import { SegmentationCanvasService } from './segmentation-canvas.service';
-import { SegmentationStateService } from '../../../layouts/segmentation-layout/segmentation-state.service';
 import { UndoRedoService } from 'src/shared/services/undo-redo.service';
 
 import {
@@ -43,14 +43,14 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
 
     constructor(
         private _segCanvasService: SegmentationCanvasService,
-        private _segStateService: SegmentationStateService,
+        private _imgLblStateService: ImageLabellingStateService,
         private _undoRedoService: UndoRedoService,
         private _copyPasteService: CopyPasteService,
         private _annotateSelectState: AnnotateSelectionService,
     ) {}
 
     ngOnInit(): void {
-        //     this._segStateService.segmentation$.subscribe(
+        //     this._imgLblStateService.segmentation$.subscribe(
         //         (val) => ((this.segState = val), this.isFitCenter(), this.isClearCanvas()),
         //     );
     }
@@ -113,7 +113,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
             scroll && (tempRules.scroll = scroll);
             fitToscreen && (tempRules.fitCenter = fitToscreen);
             clearScreen && (tempRules.clear = clearScreen);
-            this._segStateService.setState(tempRules);
+            this._imgLblStateService.setState(tempRules);
         } catch (err) {}
     }
 

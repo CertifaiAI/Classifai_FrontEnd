@@ -40,14 +40,14 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     constructor(
         private _boundingBoxCanvas: BoundingBoxCanvasService,
-        private _bbState: ImageLabellingStateService,
+        private _imgLblStateService: ImageLabellingStateService,
         private _undoRedoService: UndoRedoService,
         private _copyPasteService: CopyPasteService,
         private _annotateSelectState: AnnotateSelectionService,
     ) {}
 
     ngOnInit() {
-        this._bbState.action$.subscribe(
+        this._imgLblStateService.action$.subscribe(
             (val) => ((this.boundingBoxState = val), this.isFitCenter(), this.isClearCanvas()),
         );
         this._annotateSelectState.labelStaging$.subscribe(
@@ -89,7 +89,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             fitToscreen !== null ? (tempRules.fitCenter = fitToscreen) : {};
             clearScreen !== null ? (tempRules.clear = clearScreen) : {};
             // dbClick !== null ? (tempRules.dbClick = dbClick) : {};
-            this._bbState.setState(tempRules);
+            this._imgLblStateService.setState(tempRules);
         } catch (err) {}
     }
 
