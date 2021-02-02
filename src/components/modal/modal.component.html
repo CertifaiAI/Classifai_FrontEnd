@@ -1,5 +1,9 @@
 <div class="modal">
-    <div class="modal-body scroll">
+    <div
+        [style]="modalBodyStyle"
+        [ngClass]="!modalBodyStyle && 'modal-body-height modal-body-width modal-body-margin'"
+        class="modal-body scroll"
+    >
         <ng-content></ng-content>
     </div>
 </div>

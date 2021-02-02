@@ -8,7 +8,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 })
 export class HomeCardComponent implements OnInit {
     @Input() _jsonSchema!: CardFieldSchema;
-    @Output() _navigate: EventEmitter<any> = new EventEmitter();
+    @Output() _onThumbnailClick: EventEmitter<any> = new EventEmitter();
     hover!: boolean;
     hoverIndex!: number;
 
@@ -23,7 +23,7 @@ export class HomeCardComponent implements OnInit {
     }
 
     emitParentUrl(enabled: boolean, url: string): void {
-        enabled ? this._navigate.emit(url) : null;
+        enabled && this._onThumbnailClick.emit(url);
     }
 
     hoverStyling = (index: number, isHover: boolean, hoverLabel: string, imgPath: string): object =>

@@ -303,14 +303,13 @@ export class BoundingBoxLayoutComponent implements OnInit, OnDestroy {
         };
     };
 
-    onDisplayModal = (id: string = 'custom-modal-1') => {
-        // this.mainLabelRegionVal = '';
+    onDisplayModal = (id = 'modal-image-labelling') => {
         this.subLabelRegionVal = '';
         this.subLabelValidateMsg = '';
         this._modalService.open(id);
     };
 
-    onCloseModal = (id: string = 'custom-modal-1') => {
+    onCloseModal = (id = 'modal-image-labelling') => {
         this._imgLblStateService.setState({ isActiveModal: false, draw: true, scroll: true });
         this._modalService.close(id);
     };

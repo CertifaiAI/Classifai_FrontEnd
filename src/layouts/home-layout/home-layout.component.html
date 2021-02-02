@@ -1,2 +1,7 @@
 <home-header></home-header>
-<home-content></home-content>
+<home-content (_navigate)="navigate($event)"></home-content>
+
+<modal id="modal-home" [modalBodyStyle]="modalBodyStyle">
+    <button class="modal-button float-right" (click)="onCloseModal()">X</button>
+    <div>haha</div>
+</modal>

@@ -1,4 +1,5 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { ModalBodyStyle } from './modal.model';
 import { ModalService } from './modal.service';
 
 @Component({
@@ -9,6 +10,7 @@ import { ModalService } from './modal.service';
 })
 export class ModalComponent implements OnInit, OnDestroy {
     @Input() id: string = '';
+    @Input() modalBodyStyle!: ModalBodyStyle;
     private element: HTMLDivElement;
 
     constructor(private _modalService: ModalService, private _el: ElementRef) {

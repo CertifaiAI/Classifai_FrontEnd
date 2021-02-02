@@ -1,6 +1,5 @@
 import { CardFieldSchema } from '../../../layouts/home-layout/home-layout.model';
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 
 @Component({
     selector: 'home-content',
@@ -8,10 +7,11 @@ import { Router } from '@angular/router';
     styleUrls: ['./home-content.component.scss'],
 })
 export class HomeContentComponent implements OnInit {
+    @Output() _navigate: EventEmitter<string> = new EventEmitter();
     languageArr: (string | RegExpMatchArray)[] = [];
     jsonSchema: CardFieldSchema;
 
-    constructor(private _router: Router) {
+    constructor() {
         this.jsonSchema = {
             fields: [
                 {
@@ -59,8 +59,7 @@ export class HomeContentComponent implements OnInit {
 
     ngOnInit(): void {}
 
-    navigate(url: string): void {
-        // console.log(url);
-        this._router.navigate([url]);
+    onThumbnailClick(url: string): void {
+        this._navigate.emit(url);
     }
 }
