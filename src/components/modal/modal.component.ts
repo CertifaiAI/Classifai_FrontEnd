@@ -11,6 +11,7 @@ import { ModalService } from './modal.service';
 export class ModalComponent implements OnInit, OnDestroy {
     @Input() id: string = '';
     @Input() modalBodyStyle!: ModalBodyStyle;
+    @Input() scrollable: boolean = true;
     private element: HTMLDivElement;
 
     constructor(private _modalService: ModalService, private _el: ElementRef) {
@@ -44,6 +45,13 @@ export class ModalComponent implements OnInit, OnDestroy {
         this._modalService.remove(this.id);
         this.element.remove();
     }
+
+    applyStyling = () => {
+        const className = `${!this.modalBodyStyle && 'modal-body-height modal-body-width modal-body-margin'} ${
+            this.scrollable && 'scroll'
+        }`;
+        return className;
+    };
 
     // open modal
     open(): void {

@@ -1,7 +1,31 @@
 <home-header></home-header>
 <home-content (_navigate)="navigate($event)"></home-content>
 
-<modal id="modal-home" [modalBodyStyle]="modalBodyStyle">
-    <button class="modal-button float-right" (click)="onCloseModal()">X</button>
-    <div>haha</div>
+<modal [id]="modalIdImgLbl" [modalBodyStyle]="modalBodyStyle" [scrollable]="false">
+    <div class="modal-header-container">
+        <label>Please select one of the below:</label>
+        <button class="modal-button float-right" (click)="onCloseModal(modalIdImgLbl)">X</button>
+    </div>
+
+    <div class="modal-body-container">
+        <ng-container *ngFor="let field of cardSchema.fields; index as i">
+            <div
+                class="card-container"
+                [attr.data-index]="i"
+                (mouseover)="mouseEventCapture($event, i)"
+                (mouseleave)="mouseEventCapture($event, i)"
+            >
+                <div [ngStyle]="hoverStyling(i, hover)" (click)="onCloseModal(modalIdImgLbl, field.urlPath)">
+                    <img class="card-image" [src]="field.imgPath" [alt]="field.imgAlt" />
+                    <ng-container *ngIf="hover">
+                        <div>
+                            <span [ngClass]="field.title ? null : 'label-hidden'">
+                                {{ conditionalHoverPlaceholder(i, field.title) }}
+                            </span>
+                        </div></ng-container
+                    >
+                </div>
+            </div>
+        </ng-container>
+    </div>
 </modal>

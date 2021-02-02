@@ -1,7 +1,8 @@
+import { CardChoiceImgLblUrlPath, CardChoiceSchema } from './home-layout.model';
 import { Component, OnInit } from '@angular/core';
+import { ModalBodyStyle } from 'src/components/modal/modal.model';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
-import { ModalBodyStyle } from 'src/components/modal/modal.model';
 
 @Component({
     selector: 'home-layout',
@@ -11,29 +12,74 @@ import { ModalBodyStyle } from 'src/components/modal/modal.model';
 export class HomeLayoutComponent implements OnInit {
     navigateUrl = '';
     modalBodyStyle: ModalBodyStyle = {
-        minHeight: '30vh',
-        maxHeight: '30vh',
-        minWidth: '20vw',
-        maxWidth: '20vw',
-        margin: '16vw 79vh',
+        minHeight: '37vh',
+        maxHeight: '37vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
     };
+    cardSchema: CardChoiceSchema = {
+        fields: [
+            {
+                enabled: true,
+                title: 'Bounding Boxes',
+                urlPath: 'boundingbox',
+                imgPath: '../../assets/landing-page/Classifai_Thumbnail_Band_Labeling.jpg',
+                imgAlt: 'Bounding Box',
+            },
+            {
+                enabled: true,
+                title: 'Polygons',
+                urlPath: 'segmentation',
+                imgPath: '../../assets/landing-page/Classifai_Thumbnail_Band_Segmentation.jpg',
+                imgAlt: 'Segmentation',
+            },
+        ],
+    };
+    readonly modalIdImgLbl = 'modal-home-image-labelling';
+    hover: boolean = false;
+    hoverIndex: number = -1;
+
     constructor(private _modalService: ModalService, private _router: Router) {}
 
     ngOnInit() {}
 
     navigate(url: string): void {
-        // console.log(url);
         this.navigateUrl = url;
-        this.onDisplayModal();
-        // this._router.navigate([url]);
+        this.onDisplayModal(this.modalIdImgLbl);
     }
 
-    onDisplayModal = (id = 'modal-home') => {
+    onDisplayModal = (id: string) => {
         this._modalService.open(id);
     };
 
-    onCloseModal = (path?: 'boundingbox' | 'segmentation', id = 'modal-home') => {
-        path && this._router.navigate([`${this.navigateUrl}/${path}`]);
+    onCloseModal = (id: string, path?: CardChoiceImgLblUrlPath) => {
+        path && this._router.navigate([this.navigateUrl]);
         this._modalService.close(id);
     };
+
+    mouseEventCapture(event: MouseEvent, index: number): void {
+        const { type } = event;
+        this.hover = type === 'mouseover' ? true : false;
+        this.hoverIndex = index;
+    }
+
+    hoverStyling = (index: number, isHover: boolean): Partial<CSSStyleDeclaration> => {
+        return index === this.hoverIndex && isHover
+            ? {
+                  opacity: '1.0',
+                  cursor: 'pointer',
+                  // minWidth: '16vw',
+                  // maxWidth: '16vw',
+              }
+            : {
+                  opacity: '0.5',
+                  // minWidth: '16vw',
+                  // maxWidth: '16vw',
+              };
+    };
+
+    conditionalHoverPlaceholder = (index: number, hoverLabel: string): string =>
+        index === this.hoverIndex && hoverLabel ? hoverLabel : '';
 }

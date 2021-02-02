@@ -10,5 +10,16 @@ export type CardFieldConfigs = {
 };
 
 export type CardFieldSchema = {
-    fields: Array<CardFieldConfigs>;
+    fields: CardFieldConfigs[];
+};
+
+export type CardChoiceImgLblUrlPath = 'boundingbox' | 'segmentation';
+
+type CardChoiceFieldConfigs = Omit<CardFieldConfigs, 'logoPath' | 'logoAlt'>[] &
+    {
+        urlPath: CardChoiceImgLblUrlPath;
+    }[];
+
+export type CardChoiceSchema = {
+    fields: CardChoiceFieldConfigs;
 };

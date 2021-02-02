@@ -30,7 +30,6 @@
     // margin: 5rem 25rem 15rem 25rem;
 
     position: absolute;
-    overflow-y: auto;
 }
 
 .modal-body-height {
@@ -45,6 +44,10 @@
 
 .modal-body-margin {
     margin: 5vh 25vw 15vh 25vw;
+}
+
+.scroll {
+    overflow-y: auto;
 }
 
 .scroll::-webkit-scrollbar-track {
