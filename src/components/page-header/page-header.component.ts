@@ -29,10 +29,6 @@ export class PageHeaderComponent implements OnInit {
             url: '/dataset',
         },
         {
-            name: 'Annotation',
-            url: '/imglabel',
-        },
-        {
             name: 'Revision',
             url: '/',
         },
