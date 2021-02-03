@@ -48,6 +48,7 @@ export class PageHeaderComponent implements OnInit {
                               imgPath: `../../../assets/icons/add_user.svg`,
                               hoverLabel: `Add user to project`,
                               alt: `Add user`,
+                              onClick: () => null,
                           },
                           // {
                           //     imgPath: `../../../assets/icons/workspaces.svg`,
@@ -65,6 +66,7 @@ export class PageHeaderComponent implements OnInit {
                               imgPath: `../../../assets/icons/profile.svg`,
                               hoverLabel: `Profile`,
                               alt: `Profile`,
+                              onClick: () => null,
                           },
                       ],
         };
