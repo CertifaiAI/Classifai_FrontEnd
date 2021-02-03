@@ -95,7 +95,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     alt: `Eraser`,
                     toggleable: true,
                     onClick: () => {
-                        this._annotateService.mutateState({ annotation: -1 });
+                        this._annotateService.setState({ annotation: -1 });
                     },
                 },
                 {
@@ -104,7 +104,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     alt: `Fit Center`,
                     toggleable: false,
                     onClick: () => {
-                        this._annotateService.mutateState({ annotation: -1 });
+                        this._annotateService.setState({ annotation: -1 });
                         this._imgLabelState.setState({ draw: false, drag: false, fitCenter: true, scroll: false });
                     },
                 },
@@ -114,7 +114,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     alt: `Save`,
                     toggleable: false,
                     onClick: () => {
-                        this._annotateService.mutateState({ annotation: -1 });
+                        this._annotateService.setState({ annotation: -1 });
                         this._imgLabelState.setState({
                             draw: false,
                             drag: false,

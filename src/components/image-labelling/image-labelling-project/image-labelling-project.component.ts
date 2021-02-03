@@ -55,7 +55,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
             ? this._annotateService.labelStaging$
                   .pipe(takeUntil(this.unsubscribe$))
                   .subscribe(({ annotation: annnotationIndex, isDlbClick }) => {
-                      // isDlbClick ? this._annotateService.mutateState({ annotation: -1 }) : null;
+                      // isDlbClick ? this._annotateService.setState({ annotation: -1 }) : null;
 
                       this.selectedIndexAnnotation = annnotationIndex;
                       const [{ annotation }] = this._tabStatus.filter((tab) => tab.annotation);
@@ -155,7 +155,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         // this._onClickThumbNail.emit(thumbnail);
         // const bbLabel = bnd_box.map(({ label }) => label);
         this.selectedLabel = label;
-        this._annotateService.mutateState({ annotation: index });
+        this._annotateService.setState({ annotation: index });
     };
 
     onDeleteAnnotation = () => {

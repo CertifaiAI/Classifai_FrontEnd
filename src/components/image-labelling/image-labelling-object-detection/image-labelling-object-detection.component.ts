@@ -74,7 +74,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     annotateStateMakeChange(newState: AnnotateActionState | null) {
-        newState !== null ? this._annotateSelectState.mutateState(newState) : {};
+        newState !== null ? this._annotateSelectState.setState(newState) : {};
     }
 
     rulesMakeChange(

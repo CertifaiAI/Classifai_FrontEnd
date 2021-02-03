@@ -20,7 +20,7 @@ export class AnnotateSelectionService {
 
     constructor() {}
 
-    public mutateState = (inComingState: Partial<AnnotateActionState>): void => {
+    public setState = (inComingState: Partial<AnnotateActionState>): void => {
         inComingState
             ? this.labelStateSubject.next({ ...initialState, ...inComingState })
             : this.labelStateSubject.next(initialState);
