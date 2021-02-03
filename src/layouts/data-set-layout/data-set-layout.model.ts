@@ -1,13 +1,14 @@
+import { uuid } from 'src/shared/types/message/message.model';
+
 type message = boolean | number;
 type progress = any;
 type label_list = string[];
-type uuid_list = number;
 
 export type LabelList = {
     label_list: label_list;
     message: message;
     progress: progress;
-    uuid_list: uuid_list[];
+    uuid_list: uuid[];
 };
 
 export type ProjectStatus = {

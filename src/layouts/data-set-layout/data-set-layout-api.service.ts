@@ -60,7 +60,7 @@ export class DataSetLayoutService {
         );
     };
 
-    getThumbnailList = (projectName: string, uuid: number): Observable<BboxMetadata & PolyMetadata> => {
+    getThumbnailList = (projectName: string, uuid: string): Observable<BboxMetadata & PolyMetadata> => {
         return this.http.get<BboxMetadata & PolyMetadata>(
             `${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/uuid/${uuid}/thumbnail`,
         );
