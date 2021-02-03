@@ -1,6 +1,6 @@
 import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { IconSchema } from 'src/shared/types/icon/icon.model';
-import { ImageLabellingStateService } from '../image-labelling-action.service';
+import { ImageLabellingActionService } from '../image-labelling-action.service';
 import { ImgLabelProps } from '../image-labelling.model';
 import {
     Component,
@@ -26,7 +26,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     iconIndex!: number;
 
     constructor(
-        private _imgLabelState: ImageLabellingStateService,
+        private _imgLabelState: ImageLabellingActionService,
         private _annotateService: AnnotateSelectionService,
     ) {}
 

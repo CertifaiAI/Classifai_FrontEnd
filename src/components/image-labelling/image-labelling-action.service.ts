@@ -14,7 +14,7 @@ const initialValue: ActionState = {
 @Injectable({
     providedIn: 'any',
 })
-export class ImageLabellingStateService {
+export class ImageLabellingActionService {
     private actionSubject = new BehaviorSubject<ActionState>(initialValue);
 
     public action$ = this.actionSubject.asObservable();

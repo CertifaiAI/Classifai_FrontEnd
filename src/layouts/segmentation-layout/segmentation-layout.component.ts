@@ -4,7 +4,7 @@ import { DataSetLayoutService } from '../data-set-layout/data-set-layout-api.ser
 import { first, takeUntil } from 'rxjs/operators';
 import { HTMLElementEvent } from 'src/shared/types/field/field.model';
 import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
-import { ImageLabellingStateService } from 'src/components/image-labelling/image-labelling-action.service';
+import { ImageLabellingActionService } from 'src/components/image-labelling/image-labelling-action.service';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -65,7 +65,7 @@ export class SegmentationLayoutComponent implements OnInit, OnDestroy {
         private _modalService: ModalService,
         private _dataSetService: DataSetLayoutService,
         private _annotateService: AnnotateSelectionService,
-        private _imgLblStateService: ImageLabellingStateService,
+        private _imgLblStateService: ImageLabellingActionService,
     ) {}
 
     ngOnInit(): void {

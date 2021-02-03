@@ -2,7 +2,7 @@ import { ActionState, Direction, Polygons, PolyMetadata, UndoState } from '../im
 import { AnnotateActionState, AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { cloneDeep } from 'lodash-es';
 import { CopyPasteService } from 'src/shared/services/copy-paste.service';
-import { ImageLabellingStateService } from '../image-labelling-action.service';
+import { ImageLabellingActionService } from '../image-labelling-action.service';
 import { SegmentationCanvasService } from './segmentation-canvas.service';
 import { UndoRedoService } from 'src/shared/services/undo-redo.service';
 
@@ -43,7 +43,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
 
     constructor(
         private _segCanvasService: SegmentationCanvasService,
-        private _imgLblStateService: ImageLabellingStateService,
+        private _imgLblStateService: ImageLabellingActionService,
         private _undoRedoService: UndoRedoService,
         private _copyPasteService: CopyPasteService,
         private _annotateSelectState: AnnotateSelectionService,

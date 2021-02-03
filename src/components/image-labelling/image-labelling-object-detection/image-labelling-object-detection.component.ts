@@ -3,7 +3,7 @@ import { AnnotateActionState, AnnotateSelectionService } from '../../../shared/s
 import { BoundingBoxCanvasService } from './bounding-box-canvas.service';
 import { cloneDeep } from 'lodash-es';
 import { CopyPasteService } from '../../../shared/services/copy-paste.service';
-import { ImageLabellingStateService } from '../image-labelling-action.service';
+import { ImageLabellingActionService } from '../image-labelling-action.service';
 import { UndoRedoService } from '../../../shared/services/undo-redo.service';
 import {
     Component,
@@ -40,7 +40,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     constructor(
         private _boundingBoxCanvas: BoundingBoxCanvasService,
-        private _imgLblStateService: ImageLabellingStateService,
+        private _imgLblStateService: ImageLabellingActionService,
         private _undoRedoService: UndoRedoService,
         private _copyPasteService: CopyPasteService,
         private _annotateSelectState: AnnotateSelectionService,
