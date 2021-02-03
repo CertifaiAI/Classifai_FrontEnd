@@ -2,7 +2,7 @@ import { ActionState, Direction, Polygons, PolyMetadata, UndoState } from '../im
 import { AnnotateActionState, AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { cloneDeep } from 'lodash-es';
 import { CopyPasteService } from 'src/shared/services/copy-paste.service';
-import { ImageLabellingStateService } from '../image-labelling-state.service';
+import { ImageLabellingStateService } from '../image-labelling-action.service';
 import { SegmentationCanvasService } from './segmentation-canvas.service';
 import { UndoRedoService } from 'src/shared/services/undo-redo.service';
 

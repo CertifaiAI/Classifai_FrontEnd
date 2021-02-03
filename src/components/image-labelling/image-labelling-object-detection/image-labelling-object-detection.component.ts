@@ -3,7 +3,7 @@ import { AnnotateActionState, AnnotateSelectionService } from '../../../shared/s
 import { BoundingBoxCanvasService } from './bounding-box-canvas.service';
 import { cloneDeep } from 'lodash-es';
 import { CopyPasteService } from '../../../shared/services/copy-paste.service';
-import { ImageLabellingStateService } from '../image-labelling-state.service';
+import { ImageLabellingStateService } from '../image-labelling-action.service';
 import { UndoRedoService } from '../../../shared/services/undo-redo.service';
 import {
     Component,

@@ -1,6 +1,6 @@
 import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { IconSchema } from 'src/shared/types/icon/icon.model';
-import { ImageLabellingStateService } from '../image-labelling-state.service';
+import { ImageLabellingStateService } from '../image-labelling-action.service';
 import { ImgLabelProps } from '../image-labelling.model';
 import {
     Component,
