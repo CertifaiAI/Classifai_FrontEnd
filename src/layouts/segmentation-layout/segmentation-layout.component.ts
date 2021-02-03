@@ -1,3 +1,13 @@
+import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DataSetLayoutService } from '../data-set-layout/data-set-layout-api.service';
+import { first, takeUntil } from 'rxjs/operators';
+import { HTMLElementEvent } from 'src/shared/types/field/field.model';
+import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
+import { ImageLabellingStateService } from 'src/components/image-labelling/image-labelling-state.service';
+import { ModalService } from 'src/components/modal/modal.service';
+import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
 import {
     AddSubLabel,
     BboxMetadata,
@@ -9,16 +19,6 @@ import {
     SelectedLabelProps,
     TabsProps,
 } from 'src/components/image-labelling/image-labelling.model';
-import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { DataSetLayoutService } from '../data-set-layout/data-set-layout.service';
-import { first, takeUntil } from 'rxjs/operators';
-import { HTMLElementEvent } from 'src/shared/types/field/field.model';
-import { ImageLabellingStateService } from 'src/components/image-labelling/image-labelling-state.service';
-import { ModalService } from 'src/components/modal/modal.service';
-import { Router } from '@angular/router';
-import { SegmentationService } from './segmentation-layout.service';
-import { Subject } from 'rxjs';
 
 @Component({
     selector: 'segmentation-layout',
@@ -61,8 +61,7 @@ export class SegmentationLayoutComponent implements OnInit, OnDestroy {
 
     constructor(
         public _router: Router,
-        private _segmentationService: SegmentationService,
-        // private _spinnerService: SpinnerService,
+        private _imgLblApiService: ImageLabellingApiService,
         private _modalService: ModalService,
         private _dataSetService: DataSetLayoutService,
         private _annotateService: AnnotateSelectionService,
@@ -111,12 +110,12 @@ export class SegmentationLayoutComponent implements OnInit, OnDestroy {
     updateProjectProgress = (): void => {
         this.tabStatus.forEach(({ annotation }) => {
             annotation
-                ? (this._segmentationService.setLocalStorageProjectProgress(
+                ? (this._imgLblApiService.setLocalStorageProjectProgress(
                       this.inputProjectName || this.selectedProjectName,
                       annotation,
                   ),
                   annotation?.forEach((metadata) => {
-                      this._segmentationService
+                      this._imgLblApiService
                           .updateProjectProgress(
                               this.inputProjectName || this.selectedProjectName,
                               metadata.uuid,
@@ -128,7 +127,7 @@ export class SegmentationLayoutComponent implements OnInit, OnDestroy {
                               // (err: Error) => {},
                               // () => {
                               //     console.log(
-                              //         this._segmentationService.getLocalStorageProjectProgress(
+                              //         this._imgLblApiService.getLocalStorageProjectProgress(
                               //             this.inputProjectName || this.selectedProjectName,
                               //         ),
                               //     );
@@ -182,7 +181,7 @@ export class SegmentationLayoutComponent implements OnInit, OnDestroy {
         const newLabelList: string[] =
             selectedLabel && !action ? label_list.filter((label) => label !== selectedLabel) : label_list;
         const projectName: string = this.selectedProjectName;
-        const updateLabel$ = this._segmentationService.updateLabelList(
+        const updateLabel$ = this._imgLblApiService.updateLabelList(
             projectName,
             newLabelList.length > 0 ? newLabelList : [],
         );
@@ -259,7 +258,7 @@ export class SegmentationLayoutComponent implements OnInit, OnDestroy {
     ): void => {
         const { uuid } = thumbnail;
         if (uuid && this.validateUuid(uuid)(this.selectedMetaData?.uuid) && this.isExactCurrentImage(thumbnail)) {
-            const getImage$ = this._segmentationService.getBase64Thumbnail(projectName, uuid);
+            const getImage$ = this._imgLblApiService.getBase64Thumbnail(projectName, uuid);
             const filteredThumbInfo = this.thumbnailList.find((f) => f.uuid === uuid);
             const thumbIndex = this.thumbnailList.findIndex((f) => f.uuid === uuid);
             getImage$.pipe(first()).subscribe(
