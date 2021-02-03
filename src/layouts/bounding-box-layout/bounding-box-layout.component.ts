@@ -3,16 +3,18 @@ import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } fro
 import { DataSetLayoutService } from '../data-set-layout/data-set-layout-api.service';
 import { first, takeUntil } from 'rxjs/operators';
 import { HTMLElementEvent } from 'src/shared/types/field/field.model';
-import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
 import { ImageLabellingActionService } from 'src/components/image-labelling/image-labelling-action.service';
+import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { uuid } from 'src/shared/types/message/message.model';
 import {
     AddSubLabel,
     BboxMetadata,
     ChangeAnnotationLabel,
     EventEmitter_Action,
+    EventEmitter_ThumbnailDetails,
     EventEmitter_Url,
     ImgLabelProps,
     PolyMetadata,
@@ -32,7 +34,7 @@ export class BoundingBoxLayoutComponent implements OnInit, OnDestroy {
     imgSrc: string = '';
     loading: boolean = false;
     thumbnailList: BboxMetadata[] = [];
-    selectedMetaData!: BboxMetadata;
+    selectedMetaData!: BboxMetadata | PolyMetadata;
     unsubscribe$: Subject<any> = new Subject();
     tabStatus: TabsProps<BboxMetadata>[] = [
         {
@@ -50,13 +52,13 @@ export class BoundingBoxLayoutComponent implements OnInit, OnDestroy {
             annotation: [],
         },
     ];
-    mainLabelRegionVal: string = '';
-    subLabelRegionVal: string = '';
+    mainLabelRegionVal = '';
+    subLabelRegionVal = '';
     addedSubLabelList?: AddSubLabel[];
-    subLabelValidateMsg: string = '';
-    currentAnnotationLabel: string = '';
-    currentBBoxAnnotationIndex: number = -1;
-
+    subLabelValidateMsg = '';
+    currentAnnotationLabel = '';
+    currentBBoxAnnotationIndex = -1;
+    currentImageDisplayIndex = -1;
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
 
     constructor(
@@ -164,16 +166,61 @@ export class BoundingBoxLayoutComponent implements OnInit, OnDestroy {
 
     navigateByAction = ({ thumbnailAction }: EventEmitter_Action): void => {
         if (thumbnailAction) {
-            let { uuid } = this.selectedMetaData || false;
-            if (uuid) {
-                this.showBase64Image({ uuid: thumbnailAction === 1 ? (uuid += 1) : (uuid -= 1) });
-            } else {
-                const firstThumbnail = this.thumbnailList.find((thumb) => thumb.uuid);
-                firstThumbnail
-                    ? this.showBase64Image({ uuid: firstThumbnail.uuid })
-                    : this.showBase64Image({ uuid: 1 });
+            const calculatedIndex = this.calculateIndex(
+                thumbnailAction,
+                this.currentImageDisplayIndex,
+                this.thumbnailList.length,
+            );
+
+            if (calculatedIndex !== this.currentImageDisplayIndex) {
+                this.currentImageDisplayIndex = calculatedIndex;
+                const filteredThumbMetadata = this.thumbnailList.find((_, i) => i === calculatedIndex);
+                const thumbnailIndex = this.thumbnailList.findIndex((_, i) => i === calculatedIndex);
+                filteredThumbMetadata &&
+                    thumbnailIndex !== -1 &&
+                    this.displayImage({ ...filteredThumbMetadata, thumbnailIndex });
             }
         }
+    };
+
+    calculateIndex = (
+        thumbnailAction: Required<Omit<EventEmitter_Action, 'thumbnailAction'>>,
+        currImageIndex: number,
+        thumbnailListLength: number,
+    ) => {
+        let calIndex = currImageIndex;
+        const finalIndex =
+            thumbnailAction === 1
+                ? calIndex >= thumbnailListLength - 1
+                    ? thumbnailListLength - 1
+                    : (calIndex += 1)
+                : calIndex <= 0
+                ? 0
+                : (currImageIndex -= 1);
+
+        return finalIndex;
+    };
+
+    displayImage = (
+        { thumbnailIndex, ...thumbnail }: EventEmitter_ThumbnailDetails,
+        projectName = this.selectedProjectName,
+    ): void => {
+        const getImage$ = this._imgLblApiService.getBase64Thumbnail(projectName, thumbnail.uuid);
+
+        getImage$.pipe(first()).subscribe(
+            ({ message, img_src }) => {
+                message === 1 &&
+                    ((this.selectedMetaData = thumbnail),
+                    (this.imgSrc = img_src),
+                    (this.onChangeSchema = {
+                        ...this.onChangeSchema,
+                        // + 1 to prevent showing photo but info comp shows 0/2 on UI
+                        currentThumbnailIndex: thumbnailIndex + 1,
+                        thumbnailName: thumbnail.img_path,
+                    }));
+            },
+            (err: Error) => console.error(err),
+        );
     };
 
     onProcessLabel = ({ selectedLabel, label_list, action }: SelectedLabelProps) => {
@@ -248,56 +295,13 @@ export class BoundingBoxLayoutComponent implements OnInit, OnDestroy {
     };
 
     /**
-     *  @function responsible for calling API to acquire thumbnail in original size
-     *  @type optional ThumbnailMetadataProps
-     *        which allows navigateByAction function to send only needed props due to optional type
-     */
-    showBase64Image = (
-        thumbnail: (BboxMetadata & PolyMetadata) | Partial<BboxMetadata & PolyMetadata>,
-        projectName: string = this.selectedProjectName,
-    ): void => {
-        const { uuid } = thumbnail;
-        if (uuid && this.validateUuid(uuid)(this.selectedMetaData?.uuid) && this.isExactCurrentImage(thumbnail)) {
-            const getImage$ = this._imgLblApiService.getBase64Thumbnail(projectName, uuid);
-            const filteredThumbInfo = this.thumbnailList.find((f) => f.uuid === uuid);
-            const thumbIndex = this.thumbnailList.findIndex((f) => f.uuid === uuid);
-            getImage$.pipe(first()).subscribe(
-                ({ message, img_src, errormessage }) => {
-                    message === 1 && filteredThumbInfo
-                        ? // (this.selectedThumbnail = { ...thumbnail, ...filteredThumbInfo, img_src }),
-                          ((this.selectedMetaData = filteredThumbInfo),
-                          (this.imgSrc = img_src),
-                          (this.onChangeSchema = {
-                              ...this.onChangeSchema,
-                              currentThumbnailIndex: thumbIndex + 1,
-                              thumbnailName: filteredThumbInfo?.img_path,
-                          }))
-                        : console.error(errormessage);
-                },
-                (err: Error) => console.error(err),
-            );
-        }
-    };
-
-    /** @function responsible for checking whether current selected thumbnail wanted to display is same as currently displaying image */
-    isExactCurrentImage = (
-        selectedThumbnail: BboxMetadata | Partial<BboxMetadata>,
-        currentThumbnail: Partial<BboxMetadata & PolyMetadata> = this.selectedMetaData,
-    ): boolean => {
-        return currentThumbnail?.uuid === selectedThumbnail?.uuid ? false : true;
-    };
-
-    /**
      * @function responsible for reusability of the function logic across layout comp. with minimal codebase
      *            also responsible to check whether uuid exist in state and whether same uuid as current selected thumbnail state
      *            this behavior helps to prevent unnecessary API calls, thus maintain the health of performances for front & backend
      */
-    validateUuid = (uuid: number) => {
-        return (currentThumbnailUuid?: number): boolean => {
-            return (
-                (this.thumbnailList.find((thumbnail) => thumbnail.uuid === uuid) || false) &&
-                currentThumbnailUuid !== uuid
-            );
+    validateUuid = (uuid: uuid) => {
+        return (currentUuid?: uuid): boolean => {
+            return (this.thumbnailList.find((thumbnail) => thumbnail.uuid === uuid) || false) && currentUuid !== uuid;
         };
     };
 

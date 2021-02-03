@@ -8,7 +8,8 @@ type IconConfigs = {
     toggleable?: boolean;
     /** @function responsible for toggling function */
     // onClick?: any;
-    onClick?(): void;
+    // onClick?(): void;
+    onClick: () => void;
     /** @function responsible for uploading thumbnail(s) */
     // onUpload?();
 };

@@ -1,3 +1,5 @@
+import { uuid } from 'src/shared/types/message/message.model';
+
 export type ImgLabelProps = {
     status?: boolean;
     currentThumbnailIndex: number;
@@ -19,6 +21,10 @@ export type ThumbnailInfoProps = {
 } & Partial<UrlProps>;
 
 export type EventEmitter_Url = UrlProps;
+
+export type EventEmitter_ThumbnailDetails = (BboxMetadata | PolyMetadata) & {
+    thumbnailIndex: number;
+};
 
 export type ActionState = {
     scroll: boolean;
@@ -121,7 +127,7 @@ type Metadata = {
     img_x: number;
     img_y: number;
     project_name: string;
-    uuid: number;
+    uuid: uuid;
     file_size: number;
 };
 

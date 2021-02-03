@@ -4,7 +4,7 @@
         <div class="utility-icon-container">
             <ng-container *ngIf="logo">
                 <img
-                    (click)="getIndex(i); logo?.onClick()"
+                    (click)="getIndex(i); logo.onClick()"
                     [ngClass]="conditionalIconTheme()"
                     [ngStyle]="logo?.toggleable && conditionalActiveIcon(i)"
                     [attr.data-index]="i"

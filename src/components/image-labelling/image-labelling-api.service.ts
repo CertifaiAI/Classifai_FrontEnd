@@ -4,7 +4,7 @@ import { environment } from 'src/environments/environment.prod';
 import { HttpClient } from '@angular/common/http';
 import { ImageLabellingModeService } from './image-labelling-mode.service';
 import { Injectable } from '@angular/core';
-import { Message, MessageBase64Img, MessageProjectProgress } from 'src/shared/types/message/message.model';
+import { Message, MessageBase64Img, MessageProjectProgress, uuid } from 'src/shared/types/message/message.model';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 
@@ -19,7 +19,7 @@ export class ImageLabellingApiService {
             .subscribe((modeVal) => (modeVal ? (this.imageLabellingMode = modeVal) : this.router.navigate(['/'])));
     }
 
-    getBase64Thumbnail = (projectName: string, uuid: number): Observable<MessageBase64Img> => {
+    getBase64Thumbnail = (projectName: string, uuid: uuid): Observable<MessageBase64Img> => {
         return this.http.get<MessageBase64Img>(
             `${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/uuid/${uuid}/imgsrc`,
         );
@@ -35,7 +35,7 @@ export class ImageLabellingApiService {
 
     updateProjectProgress = <T extends BboxMetadata | PolyMetadata>(
         projectName: string,
-        uuid: number,
+        uuid: uuid,
         metadata: T,
     ): Observable<MessageProjectProgress> => {
         return this.http.put<MessageProjectProgress>(

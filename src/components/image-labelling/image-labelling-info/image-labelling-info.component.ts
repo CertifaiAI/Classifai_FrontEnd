@@ -48,21 +48,25 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
                     imgPath: `../../../assets/icons/undo.svg`,
                     hoverLabel: `Undo`,
                     alt: `Undo`,
+                    onClick: () => null,
                 },
                 {
                     imgPath: `../../../assets/icons/redo.svg`,
                     hoverLabel: `Redo`,
                     alt: `Redo`,
+                    onClick: () => null,
                 },
                 {
                     imgPath: `../../../assets/icons/zoom_in.svg`,
                     hoverLabel: `Zoom In`,
                     alt: `Zoom In`,
+                    onClick: () => null,
                 },
                 {
                     imgPath: `../../../assets/icons/zoom_out.svg`,
                     hoverLabel: `Zoom Out`,
                     alt: `Zoom Out`,
+                    onClick: () => null,
                 },
             ],
         };

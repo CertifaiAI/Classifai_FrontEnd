@@ -10,6 +10,7 @@ import {
     BboxMetadata,
     Boundingbox,
     ChangeAnnotationLabel,
+    EventEmitter_ThumbnailDetails,
     Polygons,
     PolyMetadata,
     SelectedLabelProps,
@@ -26,7 +27,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     @Input() _thumbnailList: BboxMetadata[] & PolyMetadata[] = [];
     @Input() _tabStatus: TabsProps[] = [];
     @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
-    @Output() _onClickThumbNail: EventEmitter<BboxMetadata | PolyMetadata> = new EventEmitter();
+    @Output() _onClickThumbNail: EventEmitter<EventEmitter_ThumbnailDetails> = new EventEmitter();
     @Output() _onClickLabel: EventEmitter<SelectedLabelProps> = new EventEmitter();
     @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
     @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
@@ -88,8 +89,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         this._onClose.emit({ name: tab.name, closed: true });
     };
 
-    onClick = (thumbnail: Omit<BboxMetadata & PolyMetadata, 'img_src'>): void => {
-        this._onClickThumbNail.emit(thumbnail);
+    onClick = (thumbnail: Omit<BboxMetadata & PolyMetadata, 'img_src'>, thumbnailIndex: number): void => {
+        this._onClickThumbNail.emit({ ...thumbnail, thumbnailIndex });
     };
 
     onDisplayInputModal = (): void => {
