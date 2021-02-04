@@ -90,15 +90,13 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     this.currentAnnotationIndex = annnotationIndex;
                     this.tabStatus.forEach(({ annotation }) =>
                         annotation?.forEach(({ bnd_box, polygons }) => {
-                            if (bnd_box) {
-                                const { label, region } = bnd_box[annnotationIndex];
+                            const dynamicProp = bnd_box ?? polygons;
+                            if (dynamicProp) {
+                                const { label, region } = dynamicProp[annnotationIndex];
                                 this.currentAnnotationLabel = label;
                                 this.mainLabelRegionVal = region || '';
-                            }
-                            if (polygons) {
-                                const { label, region } = polygons[annnotationIndex];
-                                this.currentAnnotationLabel = label;
-                                this.mainLabelRegionVal = region || '';
+                            } else {
+                                console.log('missing prop bnd_box OR polygons');
                             }
                         }),
                     );
@@ -242,15 +240,13 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
         this.tabStatus.forEach(({ annotation }) =>
             annotation?.forEach(({ bnd_box, polygons }) => {
-                if (bnd_box) {
-                    const { subLabel } = bnd_box[this.currentAnnotationIndex];
+                const dynamicProp = bnd_box ?? polygons;
+                if (dynamicProp) {
+                    const { subLabel } = dynamicProp[this.currentAnnotationIndex];
                     isPreExistSubLabel = subLabel && subLabel?.length > 0 ? true : false;
                     isPreExistSubLabel ? subLabel?.some(({ label }) => (isDupSubLabel = label === value)) : null;
-                }
-                if (polygons) {
-                    const { subLabel } = polygons[this.currentAnnotationIndex];
-                    isPreExistSubLabel = subLabel && subLabel?.length > 0 ? true : false;
-                    isPreExistSubLabel ? subLabel?.some(({ label }) => (isDupSubLabel = label === value)) : null;
+                } else {
+                    console.log('missing prop bnd_box OR polygons');
                 }
             }),
         );

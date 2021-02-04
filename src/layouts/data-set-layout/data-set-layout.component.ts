@@ -102,7 +102,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     createFormControls = (): void => {
         this.form = this._fb.group({
             projectName: ['', Validators.required],
-            fileUpload: [''],
         });
     };
 
@@ -117,16 +116,12 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         setTimeout(() => this._refProjectName.nativeElement.focus());
     };
 
-    onFileChange = (event: HTMLElementEvent<HTMLInputElement>): void => {
-        const { files } = event.target;
+    onFileChange = ({ target: { files } }: HTMLElementEvent<HTMLInputElement>): void => {
         const reader = new FileReader();
 
         if (files && files.length) {
             const file = files.item(0);
             reader.onload = () => {
-                this.form.patchValue({
-                    label: reader.result,
-                });
                 // need to run CD since file load runs outside of zone
                 this._cd.markForCheck();
             };
@@ -139,13 +134,16 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         prev.push(clearCharLabel);
                         return prev;
                     }, []);
+                    // clear entire array before giving it new set of data, prevents stacking more array of data
+                    this.labelTextUpload = [];
+                    // spread due to newLabelArray is already an array
+                    // with push would lead to nested array
                     this.labelTextUpload.push(...newLabelArray);
                     // console.log(this.labelTextUpload);
                 }
             };
             // console.log(file);
-            file ? reader.readAsText(file) : null;
-            this.form.get('fileUpload')?.patchValue(file);
+            file && reader.readAsText(file);
         }
     };
 
@@ -272,7 +270,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     this._spinnerService.hideSpinner();
                 },
             );
-
         // make initial call
         this.subject$.next();
     };
@@ -345,7 +342,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .subscribe(
                 (res) => {
                     numberOfReq = res ? --numberOfReq : numberOfReq;
-                    numberOfReq < 1 ? (this.projectList = { ...this.projectList, isUploading: false }) : null;
+                    numberOfReq < 1 && (this.projectList = { ...this.projectList, isUploading: false });
                 },
                 (error: Error) => {},
                 () => {

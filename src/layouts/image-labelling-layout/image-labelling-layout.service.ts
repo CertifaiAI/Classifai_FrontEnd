@@ -1,3 +1,6 @@
+import { first } from 'rxjs/operators';
+import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
+import { Injectable } from '@angular/core';
 import {
     BboxMetadata,
     ChangeAnnotationLabel,
@@ -5,9 +8,6 @@ import {
     EventEmitter_Action,
     TabsProps,
 } from '../../components/image-labelling/image-labelling.model';
-import { Injectable } from '@angular/core';
-import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
-import { first } from 'rxjs/operators';
 
 type CustomHistory = Omit<History, 'state'> & {
     state: { thumbnailList: BboxMetadata[]; labelList: string[]; projectName: string };
@@ -61,6 +61,12 @@ export class ImageLabellingLayoutService {
                 : (currImageIndex -= 1);
 
         return finalIndex;
+    };
+
+    checkAnnotationMetadataProp = ({ bnd_box, polygons }: CompleteMetadata) => {
+        // null assertion used due to guarantee either one of the prop exists
+        // tslint:disable-next-line: no-non-null-assertion
+        return (bnd_box ?? polygons)!;
     };
 
     changeAnnotationLabel = (tabs: TabsProps<CompleteMetadata>[], { label, index }: ChangeAnnotationLabel) => {
