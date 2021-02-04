@@ -1,4 +1,5 @@
 import { uuid } from 'src/shared/types/message/message.model';
+import { WithOptional } from 'src/shared/types/with-optional/with-optional';
 
 export type ImgLabelProps = {
     status?: boolean;
@@ -22,7 +23,7 @@ export type ThumbnailInfoProps = {
 
 export type EventEmitter_Url = UrlProps;
 
-export type EventEmitter_ThumbnailDetails = (BboxMetadata | PolyMetadata) & {
+export type EventEmitter_ThumbnailDetails = CompleteMetadata & {
     thumbnailIndex: number;
 };
 
@@ -138,8 +139,10 @@ export type BboxMetadata = Metadata & {
 
 export type PolyMetadata = Metadata & {
     polygons: Polygons[];
-    img_path: string;
 };
+
+export type CompleteMetadata = WithOptional<BboxMetadata, 'bnd_box' | 'img_depth'> &
+    WithOptional<PolyMetadata, 'polygons'>;
 
 type Method = 'zoom' | 'draw' | 'pan';
 

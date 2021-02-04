@@ -16,15 +16,15 @@ const routes: Routes = [
     {
         path: 'imglabel/bndbox',
         loadChildren: () =>
-            import('../../layouts/bounding-box-layout/bounding-box-layout.module').then(
-                ({ BoundingBoxLayoutModule }) => BoundingBoxLayoutModule,
+            import('../../layouts/image-labelling-layout/image-labelling-layout.module').then(
+                ({ ImageLabellingLayoutModule }) => ImageLabellingLayoutModule,
             ),
     },
     {
         path: 'imglabel/seg',
         loadChildren: () =>
-            import('../../layouts/segmentation-layout/segmentation-layout.module').then(
-                ({ SegmentationLayoutModule }) => SegmentationLayoutModule,
+            import('../../layouts/image-labelling-layout/image-labelling-layout.module').then(
+                ({ ImageLabellingLayoutModule }) => ImageLabellingLayoutModule,
             ),
     },
     { path: '500', component: ServerErrorComponent },

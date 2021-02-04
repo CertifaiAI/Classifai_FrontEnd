@@ -21,7 +21,8 @@ export class ImageLabellingActionService {
 
     constructor() {}
 
-    public setState = (inComingState: Partial<ActionState>): void => {
+    // pass null value to reset state
+    public setState = (inComingState: Partial<ActionState> | null): void => {
         inComingState
             ? this.actionSubject.next({ ...initialValue, ...inComingState })
             : this.actionSubject.next(initialValue);

@@ -5,14 +5,15 @@ import { first, takeUntil } from 'rxjs/operators';
 import { HTMLElementEvent } from 'src/shared/types/field/field.model';
 import { ImageLabellingActionService } from 'src/components/image-labelling/image-labelling-action.service';
 import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
+import { ImageLabellingLayoutService } from 'src/layouts/image-labelling-layout/image-labelling-layout.service';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { uuid } from 'src/shared/types/message/message.model';
 import {
     AddSubLabel,
     BboxMetadata,
     ChangeAnnotationLabel,
+    CompleteMetadata,
     EventEmitter_Action,
     EventEmitter_ThumbnailDetails,
     EventEmitter_Url,
@@ -21,22 +22,23 @@ import {
     SelectedLabelProps,
     TabsProps,
 } from 'src/components/image-labelling/image-labelling.model';
+import { ImageLabellingModeService } from 'src/components/image-labelling/image-labelling-mode.service';
 
 @Component({
-    selector: 'bounding-box-layout',
-    templateUrl: './bounding-box-layout.component.html',
-    styleUrls: ['./bounding-box-layout.component.scss'],
+    selector: 'image-labelling-layout',
+    templateUrl: './image-labelling-layout.component.html',
+    styleUrls: ['./image-labelling-layout.component.scss'],
 })
-export class BoundingBoxLayoutComponent implements OnInit, OnDestroy {
+export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     onChangeSchema!: ImgLabelProps;
     inputProjectName: string = '';
     selectedProjectName: string = '';
     imgSrc: string = '';
     loading: boolean = false;
-    thumbnailList: BboxMetadata[] = [];
-    selectedMetaData!: BboxMetadata | PolyMetadata;
+    thumbnailList: CompleteMetadata[] = [];
+    selectedMetaData!: CompleteMetadata;
     unsubscribe$: Subject<any> = new Subject();
-    tabStatus: TabsProps<BboxMetadata>[] = [
+    tabStatus: TabsProps<CompleteMetadata>[] = [
         {
             name: 'Project',
             closed: false,
@@ -57,87 +59,66 @@ export class BoundingBoxLayoutComponent implements OnInit, OnDestroy {
     addedSubLabelList?: AddSubLabel[];
     subLabelValidateMsg = '';
     currentAnnotationLabel = '';
-    currentBBoxAnnotationIndex = -1;
+    currentAnnotationIndex = -1;
     currentImageDisplayIndex = -1;
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
 
     constructor(
-        private _router: Router,
+        public _router: Router,
         private _imgLblApiService: ImageLabellingApiService,
         private _modalService: ModalService,
         private _dataSetService: DataSetLayoutService,
         private _annotateService: AnnotateSelectionService,
-        private _imgLblStateService: ImageLabellingActionService,
+        private _imgLblActionService: ImageLabellingActionService,
+        private _imgLblLayoutService: ImageLabellingLayoutService,
+        private _imgLblModeService: ImageLabellingModeService,
     ) {}
 
     ngOnInit(): void {
-        // this._spinnerService
-        //     .returnAsObservable()
-        //     .pipe(takeUntil(this.unsubscribe$))
-        //     .subscribe((loading) => (this.loading = loading));
-
-        const {
-            thumbnailList = [],
-            labelList = [],
-            projectName,
-        }: { thumbnailList: BboxMetadata[]; labelList: string[]; projectName: string } = window.history.state;
-
+        const { thumbnailList, labelList, projectName } = this._imgLblLayoutService.getRouteState(history);
         this.thumbnailList = thumbnailList;
         this.selectedProjectName = projectName;
         this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: thumbnailList.length };
-        // console.log(window.history.state);
-        this.displayLabelList(labelList);
+
+        const newLabelList = this._imgLblLayoutService.displayLabelList<CompleteMetadata>(this.tabStatus, labelList);
+        this.tabStatus = newLabelList;
 
         this._annotateService.labelStaging$
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe(({ annotation: annnotationIndex, isDlbClick }) => {
                 if (isDlbClick) {
-                    this.currentBBoxAnnotationIndex = annnotationIndex;
+                    this.currentAnnotationIndex = annnotationIndex;
                     this.tabStatus.forEach(({ annotation }) =>
-                        annotation?.forEach(({ bnd_box }) => {
-                            const { label, region } = bnd_box[annnotationIndex];
-                            this.currentAnnotationLabel = label;
-                            this.mainLabelRegionVal = region || '';
+                        annotation?.forEach(({ bnd_box, polygons }) => {
+                            if (bnd_box) {
+                                const { label, region } = bnd_box[annnotationIndex];
+                                this.currentAnnotationLabel = label;
+                                this.mainLabelRegionVal = region || '';
+                            }
+                            if (polygons) {
+                                const { label, region } = polygons[annnotationIndex];
+                                this.currentAnnotationLabel = label;
+                                this.mainLabelRegionVal = region || '';
+                            }
                         }),
                     );
-                    this._imgLblStateService.setState({ isActiveModal: true, draw: false, drag: false, scroll: false });
+                    this._imgLblActionService.setState({
+                        isActiveModal: true,
+                        draw: false,
+                        drag: false,
+                        scroll: false,
+                    });
                     this.onDisplayModal();
                 } else {
                     this.currentAnnotationLabel = '';
-                    this.currentBBoxAnnotationIndex = -1;
+                    this.currentAnnotationIndex = -1;
                 }
             });
     }
 
     updateProjectProgress = (): void => {
-        this.tabStatus.forEach(({ annotation }) => {
-            annotation
-                ? (this._imgLblApiService.setLocalStorageProjectProgress(
-                      this.inputProjectName || this.selectedProjectName,
-                      annotation,
-                  ),
-                  annotation?.forEach((metadata) => {
-                      this._imgLblApiService
-                          .updateProjectProgress(
-                              this.inputProjectName || this.selectedProjectName,
-                              metadata.uuid,
-                              metadata,
-                          )
-                          .pipe(first())
-                          .subscribe(
-                              ({ error_code, message }) => {},
-                              // (err: Error) => {},
-                              // () => {
-                              //     console.log(
-                              //         this._imgLblApiService.getLocalStorageProjectProgress(
-                              //             this.inputProjectName || this.selectedProjectName,
-                              //         ),
-                              //     );
-                              // },
-                          );
-                  }))
-                : null;
-        });
+        const projectName = this.inputProjectName || this.selectedProjectName;
+        this._imgLblLayoutService.updateProjectProgress(this.tabStatus, projectName);
     };
 
     onChangeMetadata = (mutatedMetadata: BboxMetadata & PolyMetadata): void => {
@@ -166,7 +147,7 @@ export class BoundingBoxLayoutComponent implements OnInit, OnDestroy {
 
     navigateByAction = ({ thumbnailAction }: EventEmitter_Action): void => {
         if (thumbnailAction) {
-            const calculatedIndex = this.calculateIndex(
+            const calculatedIndex = this._imgLblLayoutService.calculateIndex(
                 thumbnailAction,
                 this.currentImageDisplayIndex,
                 this.thumbnailList.length,
@@ -181,24 +162,6 @@ export class BoundingBoxLayoutComponent implements OnInit, OnDestroy {
                     this.displayImage({ ...filteredThumbMetadata, thumbnailIndex });
             }
         }
-    };
-
-    calculateIndex = (
-        thumbnailAction: Required<Omit<EventEmitter_Action, 'thumbnailAction'>>,
-        currImageIndex: number,
-        thumbnailListLength: number,
-    ) => {
-        let calIndex = currImageIndex;
-        const finalIndex =
-            thumbnailAction === 1
-                ? calIndex >= thumbnailListLength - 1
-                    ? thumbnailListLength - 1
-                    : (calIndex += 1)
-                : calIndex <= 0
-                ? 0
-                : (currImageIndex -= 1);
-
-        return finalIndex;
     };
 
     displayImage = (
@@ -234,75 +197,25 @@ export class BoundingBoxLayoutComponent implements OnInit, OnDestroy {
         );
 
         updateLabel$.pipe(first()).subscribe(({ message }) => {
-            message === 1 ? this.displayLabelList(newLabelList) : console.error(`Error while updating label`);
+            if (message === 1) {
+                this.tabStatus = this._imgLblLayoutService.displayLabelList(this.tabStatus, newLabelList);
+                console.error(`Error while updating label`);
+            }
         });
 
         this.updateProjectProgress();
     };
 
-    displayLabelList = (newLabelList: string[]): void => {
-        this.tabStatus = this.tabStatus.map((tab) =>
-            tab.label_list
-                ? {
-                      ...tab,
-                      label_list: newLabelList,
-                  }
-                : tab,
-        );
-    };
-
-    onChangeAnnotationLabel = ({ label, index }: ChangeAnnotationLabel): void => {
-        this.tabStatus = this.tabStatus.map((tab) =>
-            tab.annotation
-                ? {
-                      ...tab,
-                      annotation: tab.annotation.map((metadata) => {
-                          return {
-                              ...metadata,
-                              bnd_box: metadata.bnd_box.map((box, i) =>
-                                  i === index
-                                      ? {
-                                            ...box,
-                                            label,
-                                        }
-                                      : box,
-                              ),
-                          };
-                      }),
-                  }
-                : tab,
-        );
+    onChangeAnnotationLabel = (changeAnnoLabel: ChangeAnnotationLabel): void => {
+        this.tabStatus = this._imgLblLayoutService.changeAnnotationLabel(this.tabStatus, changeAnnoLabel);
         this.updateStateToRenderChild();
         this.updateProjectProgress();
     };
 
     onDeleteAnnotation = (index: number) => {
-        this.tabStatus = this.tabStatus.map((tab) =>
-            tab.annotation
-                ? {
-                      ...tab,
-                      annotation: tab.annotation.map((metadata) => {
-                          return {
-                              ...metadata,
-                              bnd_box: metadata.bnd_box.filter((_, i) => i !== index),
-                          };
-                      }),
-                  }
-                : tab,
-        );
+        this.tabStatus = this._imgLblLayoutService.deleteAnnotation(this.tabStatus, index);
         this.updateStateToRenderChild();
         this.updateProjectProgress();
-    };
-
-    /**
-     * @function responsible for reusability of the function logic across layout comp. with minimal codebase
-     *            also responsible to check whether uuid exist in state and whether same uuid as current selected thumbnail state
-     *            this behavior helps to prevent unnecessary API calls, thus maintain the health of performances for front & backend
-     */
-    validateUuid = (uuid: uuid) => {
-        return (currentUuid?: uuid): boolean => {
-            return (this.thumbnailList.find((thumbnail) => thumbnail.uuid === uuid) || false) && currentUuid !== uuid;
-        };
     };
 
     onDisplayModal = (id = 'modal-image-labelling') => {
@@ -312,7 +225,7 @@ export class BoundingBoxLayoutComponent implements OnInit, OnDestroy {
     };
 
     onCloseModal = (id = 'modal-image-labelling') => {
-        this._imgLblStateService.setState({ isActiveModal: false, draw: true, scroll: true });
+        this._imgLblActionService.setState({ isActiveModal: false, draw: true, scroll: true });
         this._modalService.close(id);
     };
 
@@ -328,42 +241,26 @@ export class BoundingBoxLayoutComponent implements OnInit, OnDestroy {
         let isDupSubLabel: boolean = false;
 
         this.tabStatus.forEach(({ annotation }) =>
-            annotation?.forEach(({ bnd_box }) => {
-                const { subLabel } = bnd_box[this.currentBBoxAnnotationIndex];
-                isPreExistSubLabel = subLabel && subLabel?.length > 0 ? true : false;
-                isPreExistSubLabel ? subLabel?.some(({ label }) => (isDupSubLabel = label === value)) : null;
+            annotation?.forEach(({ bnd_box, polygons }) => {
+                if (bnd_box) {
+                    const { subLabel } = bnd_box[this.currentAnnotationIndex];
+                    isPreExistSubLabel = subLabel && subLabel?.length > 0 ? true : false;
+                    isPreExistSubLabel ? subLabel?.some(({ label }) => (isDupSubLabel = label === value)) : null;
+                }
+                if (polygons) {
+                    const { subLabel } = polygons[this.currentAnnotationIndex];
+                    isPreExistSubLabel = subLabel && subLabel?.length > 0 ? true : false;
+                    isPreExistSubLabel ? subLabel?.some(({ label }) => (isDupSubLabel = label === value)) : null;
+                }
             }),
         );
         // console.log(isDupSubLabel);
 
         if (!isDupSubLabel) {
-            this.tabStatus = this.tabStatus.map((tab) =>
-                tab.annotation
-                    ? {
-                          ...tab,
-                          annotation: tab.annotation.map((metadata) => {
-                              return {
-                                  ...metadata,
-                                  bnd_box: metadata.bnd_box.map((bb, i) => {
-                                      return i === this.currentBBoxAnnotationIndex
-                                          ? {
-                                                ...bb,
-                                                region: this.mainLabelRegionVal,
-                                                subLabel:
-                                                    bb.subLabel && bb.subLabel.length > 0
-                                                        ? [
-                                                              ...bb.subLabel,
-                                                              { label: value, region: this.subLabelRegionVal },
-                                                          ]
-                                                        : [{ label: value, region: this.subLabelRegionVal }],
-                                            }
-                                          : bb;
-                                  }),
-                              };
-                          }),
-                      }
-                    : tab,
-            );
+            this.tabStatus = this._imgLblLayoutService.submitLabel(this.tabStatus, value, this.currentAnnotationIndex, {
+                mainLabelRegion: this.mainLabelRegionVal,
+                subLabelRegion: this.subLabelRegionVal,
+            });
             this.subLabelValidateMsg = '';
             this.updateStateToRenderChild();
             this.updateProjectProgress();
@@ -373,27 +270,11 @@ export class BoundingBoxLayoutComponent implements OnInit, OnDestroy {
         this.subLabelRegionVal = '';
     };
 
-    onRemoveSubLabel = (selectedBBIndex: number, selectedSubLabelIndex: number) => {
-        this.tabStatus = this.tabStatus.map((tab) =>
-            tab.annotation
-                ? {
-                      ...tab,
-                      annotation: tab.annotation.map((metadata) => {
-                          return {
-                              ...metadata,
-                              bnd_box: metadata.bnd_box.map((bb, bbIndex) => {
-                                  return bbIndex === selectedBBIndex
-                                      ? {
-                                            ...bb,
-                                            subLabel: bb.subLabel?.filter((_, i) => i !== selectedSubLabelIndex),
-                                        }
-                                      : bb;
-                              }),
-                          };
-                      }),
-                  }
-                : tab,
-        );
+    onRemoveSubLabel = (selectedAnnoIndex: number, selectedSubLabelIndex: number) => {
+        this.tabStatus = this._imgLblLayoutService.removeSubLabel(this.tabStatus, {
+            selectedAnnoIndex,
+            selectedSubLabelIndex,
+        });
         this.updateStateToRenderChild();
         this.updateProjectProgress();
     };
@@ -427,6 +308,8 @@ export class BoundingBoxLayoutComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.unsubscribe$.next();
         this.unsubscribe$.complete();
+        this._imgLblModeService.setState(null);
+        this._imgLblActionService.setState(null);
         this.resetProjectStatus(this.inputProjectName || this.selectedProjectName);
     }
 }

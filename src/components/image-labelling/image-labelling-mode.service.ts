@@ -14,6 +14,7 @@ export class ImageLabellingModeService {
 
     constructor() {}
 
+    // pass null value to reset state
     public setState = (inComingMode: ImageLabellingMode) => {
         inComingMode
             ? this.imgLabellingModeSubject.next(inComingMode)

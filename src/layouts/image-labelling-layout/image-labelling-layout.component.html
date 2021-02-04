@@ -7,11 +7,21 @@
     <div class="content-container">
         <image-labelling-left-sidebar [_onChange]="onChangeSchema"></image-labelling-left-sidebar>
 
-        <image-labelling-object-detection
-            [_selectMetadata]="selectedMetaData"
-            [_imgSrc]="imgSrc"
-            (_onChangeMetadata)="onChangeMetadata($event)"
-        ></image-labelling-object-detection>
+        <!-- !! Not enough time to implement router outlet service, as many changes needed for object detection's code -->
+        <ng-container *ngIf="_router.url.includes('imglabel/bndbox')">
+            <image-labelling-object-detection
+                [_selectMetadata]="selectedMetaData"
+                [_imgSrc]="imgSrc"
+                (_onChangeMetadata)="onChangeMetadata($event)"
+            ></image-labelling-object-detection>
+        </ng-container>
+        <ng-container *ngIf="_router.url.includes('imglabel/seg')">
+            <image-labelling-segmentation
+                [_selectMetadata]="selectedMetaData"
+                [_imgSrc]="imgSrc"
+                (_onChangeMetadata)="onChangeMetadata($event)"
+            ></image-labelling-segmentation>
+        </ng-container>
 
         <image-labelling-project
             [_thumbnailList]="thumbnailList"
@@ -90,8 +100,8 @@
 
     <ng-container *ngFor="let tab of tabStatus">
         <ng-container *ngFor="let annotation of tab.annotation">
-            <ng-container *ngFor="let bb of annotation?.bnd_box; index as bbIndex">
-                <ng-container *ngIf="bb?.subLabel?.length > 0 && bbIndex === currentBBoxAnnotationIndex">
+            <ng-container *ngFor="let bb of annotation?.bnd_box; index as annotationIndex">
+                <ng-container *ngIf="bb?.subLabel?.length > 0 && annotationIndex === currentAnnotationIndex">
                     <h2 class="font-title">Added Sub Label</h2>
                     <ng-container *ngFor="let sublabel of bb.subLabel; index as subLabelIndex">
                         <div class="sub-label-flex-container sub-label-padding">
@@ -99,7 +109,10 @@
 
                             <label class="font-label flex-second">Region Info: {{ sublabel.region }}</label>
                             <span class="flex-third"></span>
-                            <button class="modal-butto flex-fourth" (click)="onRemoveSubLabel(bbIndex, subLabelIndex)">
+                            <button
+                                class="modal-butto flex-fourth"
+                                (click)="onRemoveSubLabel(annotationIndex, subLabelIndex)"
+                            >
                                 X
                             </button>
                         </div>

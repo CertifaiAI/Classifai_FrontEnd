@@ -100,7 +100,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     }
 
     annotateStateMakeChange(newState?: AnnotateActionState) {
-        newState && this._annotateSelectState.mutateState(newState);
+        newState && this._annotateSelectState.setState(newState);
     }
 
     annotateStateOnChange() {

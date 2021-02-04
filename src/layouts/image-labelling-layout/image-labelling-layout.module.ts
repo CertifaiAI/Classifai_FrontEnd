@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
+import { ImageLabellingLayoutComponent } from './image-labelling-layout.component';
+import { ImageLabellingLayoutRoutingModule } from './image-labelling-layout-routing.module';
 import { ImageLabellingModule } from 'src/components/image-labelling/image-labelling.module';
 import { ModalModule } from 'src/components/modal/modal.module';
 import { NgModule } from '@angular/core';
 import { PageHeaderModule } from 'src/components/page-header/page-header.module';
 import { RouterModule } from '@angular/router';
-import { SegmentationLayoutComponent } from './segmentation-layout.component';
-import { SegmentationRoutingModule } from './segmentation-layout-routing.module';
 import { SharedModule } from 'src/shared/shared.module';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -14,12 +14,12 @@ import { TranslateModule } from '@ngx-translate/core';
         CommonModule,
         SharedModule,
         TranslateModule,
-        SegmentationRoutingModule,
+        ImageLabellingLayoutRoutingModule,
         ModalModule,
         RouterModule,
         PageHeaderModule,
         ImageLabellingModule,
     ],
-    declarations: [SegmentationLayoutComponent],
+    declarations: [ImageLabellingLayoutComponent],
 })
-export class SegmentationLayoutModule {}
+export class ImageLabellingLayoutModule {}

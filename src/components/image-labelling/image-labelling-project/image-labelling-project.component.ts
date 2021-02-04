@@ -10,6 +10,7 @@ import {
     BboxMetadata,
     Boundingbox,
     ChangeAnnotationLabel,
+    CompleteMetadata,
     EventEmitter_ThumbnailDetails,
     Polygons,
     PolyMetadata,
@@ -24,7 +25,7 @@ import {
     // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDestroy {
-    @Input() _thumbnailList: BboxMetadata[] & PolyMetadata[] = [];
+    @Input() _thumbnailList: CompleteMetadata[] = [];
     @Input() _tabStatus: TabsProps[] = [];
     @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
     @Output() _onClickThumbNail: EventEmitter<EventEmitter_ThumbnailDetails> = new EventEmitter();

@@ -1,4 +1,3 @@
-import { BboxMetadata, ImageLabellingMode, PolyMetadata } from 'src/components/image-labelling/image-labelling.model';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { environment } from 'src/environments/environment.prod';
 import { HttpClient } from '@angular/common/http';
@@ -7,11 +6,12 @@ import { Injectable } from '@angular/core';
 import { Message, MessageBase64Img, MessageProjectProgress, uuid } from 'src/shared/types/message/message.model';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { CompleteMetadata, ImageLabellingMode } from 'src/components/image-labelling/image-labelling.model';
 
 @Injectable({ providedIn: 'any' })
 export class ImageLabellingApiService {
     private hostPort: string = environment.baseURL;
-    private imageLabellingMode: ImageLabellingMode = null;
+    public imageLabellingMode: ImageLabellingMode = null;
 
     constructor(private http: HttpClient, private mode: ImageLabellingModeService, private router: Router) {
         this.mode.imgLabelMode$
@@ -33,10 +33,10 @@ export class ImageLabellingApiService {
         });
     };
 
-    updateProjectProgress = <T extends BboxMetadata | PolyMetadata>(
+    updateProjectProgress = (
         projectName: string,
         uuid: uuid,
-        metadata: T,
+        metadata: CompleteMetadata,
     ): Observable<MessageProjectProgress> => {
         return this.http.put<MessageProjectProgress>(
             `${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/uuid/${uuid}/update`,
@@ -47,29 +47,12 @@ export class ImageLabellingApiService {
     };
 
     checkIfBboxMetaType(
-        metadata: BboxMetadata | PolyMetadata | BboxMetadata[] | PolyMetadata[],
-    ): metadata is BboxMetadata | BboxMetadata[] {
+        metadata: CompleteMetadata | CompleteMetadata[],
+    ): metadata is CompleteMetadata | CompleteMetadata[] {
         if (Array.isArray(metadata)) {
-            return (metadata as BboxMetadata[])[0].bnd_box !== undefined;
+            return (metadata as CompleteMetadata[])[0].bnd_box !== undefined;
         } else {
-            return (metadata as BboxMetadata).bnd_box !== undefined;
+            return (metadata as CompleteMetadata).bnd_box !== undefined;
         }
     }
-
-    setLocalStorageProjectProgress = <T extends BboxMetadata[] | PolyMetadata[]>(
-        projectName: string,
-        annotation: T,
-    ) => {
-        // this.checkIfBboxMetaType(annotation)
-        //     ? localStorage.setItem(`${projectName}_bndbox`, JSON.stringify({ cache: annotation }))
-        //     : localStorage.setItem(`${projectName}_seg`, JSON.stringify({ cache: annotation }));
-
-        localStorage.setItem(`${projectName}_${this.imageLabellingMode}`, JSON.stringify({ cache: annotation }));
-    };
-
-    getLocalStorageProjectProgress = <T extends BboxMetadata | PolyMetadata>(projectName: string) => {
-        const result = localStorage.getItem(`${projectName}_${this.imageLabellingMode}`);
-        const jsonResult: T | null = result ? JSON.parse(result) : null;
-        return jsonResult;
-    };
 }
