@@ -26,14 +26,14 @@ export class HomeLayoutComponent implements OnInit {
         fields: [
             {
                 enabled: true,
-                title: this._languageService._translate.instant('imageOpt.boundingBoxes'),
+                title: 'imageOpt.boundingBoxes',
                 urlPath: 'boundingbox',
                 imgPath: '../../assets/landing-page/Classifai_Thumbnail_Band_Labeling.jpg',
                 imgAlt: 'Bounding Box',
             },
             {
                 enabled: true,
-                title: this._languageService._translate.instant('imageOpt.polygons'),
+                title: 'imageOpt.polygons',
                 urlPath: 'segmentation',
                 imgPath: '../../assets/landing-page/Classifai_Thumbnail_Band_Segmentation.jpg',
                 imgAlt: 'Segmentation',

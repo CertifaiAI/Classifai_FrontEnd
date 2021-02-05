@@ -20,7 +20,7 @@
                     <ng-container *ngIf="hover">
                         <div>
                             <span [ngClass]="field.title ? null : 'label-hidden'">
-                                {{ conditionalHoverPlaceholder(i, field.title) }}
+                                {{ conditionalHoverPlaceholder(i, field.title) | translate }}
                             </span>
                         </div></ng-container
                     >
