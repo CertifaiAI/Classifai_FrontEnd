@@ -3,5 +3,10 @@
     "tabular": "表格",
     "image": "图片",
     "video": "视频",
-    "voice": "语音"
+    "voice": "语音",
+    "imageOpt": {
+        "selection": "Please select one of the below:",
+        "boundingBoxes": "Bounding Boxes",
+        "polygons": "Polygons"
+    }
 }

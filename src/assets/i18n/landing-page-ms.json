@@ -3,5 +3,10 @@
     "tabular": "Jadual",
     "image": "Imej",
     "video": "Video",
-    "voice": "Suara"
+    "voice": "Suara",
+    "imageOpt": {
+        "selection": "Sila pilih salah satu daripada pilihan berikut:",
+        "boundingBoxes": "Kotak",
+        "polygons": "Poligon"
+    }
 }

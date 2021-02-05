@@ -5,6 +5,7 @@ import { ModalBodyStyle } from 'src/components/modal/modal.model';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { ImageLabellingMode } from 'src/components/image-labelling/image-labelling.model';
+import { LanguageService } from 'src/shared/services/language.service';
 
 @Component({
     selector: 'home-layout',
@@ -25,14 +26,14 @@ export class HomeLayoutComponent implements OnInit {
         fields: [
             {
                 enabled: true,
-                title: 'Bounding Boxes',
+                title: this._languageService._translate.instant('imageOpt.boundingBoxes'),
                 urlPath: 'boundingbox',
                 imgPath: '../../assets/landing-page/Classifai_Thumbnail_Band_Labeling.jpg',
                 imgAlt: 'Bounding Box',
             },
             {
                 enabled: true,
-                title: 'Polygons',
+                title: this._languageService._translate.instant('imageOpt.polygons'),
                 urlPath: 'segmentation',
                 imgPath: '../../assets/landing-page/Classifai_Thumbnail_Band_Segmentation.jpg',
                 imgAlt: 'Segmentation',
@@ -47,7 +48,11 @@ export class HomeLayoutComponent implements OnInit {
         private _modalService: ModalService,
         private _router: Router,
         private _imgLblMode: ImageLabellingModeService,
-    ) {}
+        private _languageService: LanguageService,
+    ) {
+        const langsArr: string[] = ['landing-page-en', 'landing-page-cn', 'landing-page-ms'];
+        this._languageService.initializeLanguage(`landing-page`, langsArr);
+    }
 
     ngOnInit() {}
 
