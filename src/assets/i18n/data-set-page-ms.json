@@ -1,3 +1,38 @@
 {
-    "createNewProject": "Bina Projek Baru"
+    "createNewProject": "Reka Projek Baru",
+    "newProjectName": "Nama Projek Baru:",
+    "projectNameExist": "* Nama projek telah tersedia! Sila cuba nama lain",
+    "projectNameRequired": "* Sila isi nama projek",
+    "labelListFile": "Fail senarai label(*.txt):",
+    "createButton": "Reka",
+    "cancelButton": "Batal",
+    "menuName": {
+        "newProject": "Projek Baru",
+        "myProject": "Projek Saya",
+        "starred": "Dibintangi",
+        "recent": "Terbaru",
+        "trash": "Sampah"
+    },
+    "pageHeader": {
+        "home": "Laman Utama",
+        "datasetManagement": "Pengurusan Set Data",
+        "revision": "Semakan"
+    },
+    "datasetHeader": {
+        "datasetManagement": "Pengurusan Set Data"
+    },
+    "datasetCard": {
+        "fetchingProject": "Mengambil projek anda...",
+        "pleaseWait": "Sila tunggu sebentar... sementara kami menyediakan hidangan",
+        "uploading": "Memuat naik",
+        "new": "Terbaru",
+        "available": "Tersedia",
+        "notAvailable": "Tidak Tersedia",
+        "uploadFolder": "Memuat naik folder",
+        "uploadPhotos": "Memuat naik foto",
+        "created": "Dibuat pada:",
+        "totalPhoto": "Jumlah foto:",
+        "noProject": "Tunggu sekejap... tidak ada projek pun",
+        "createNew": "Bersedia dan jom mulakan projek baru!"
+    }
 }

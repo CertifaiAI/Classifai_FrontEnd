@@ -6,7 +6,7 @@
         <ng-container *ngFor="let label of headerLabels"
             ><a class="link" [routerLink]="label.url">
                 <div class="btn-container" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
-                    <label class="label">{{ label.name }}</label>
+                    <label class="label">{{ label.name | translate }}</label>
                 </div></a
             >
         </ng-container>

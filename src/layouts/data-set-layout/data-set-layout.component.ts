@@ -48,8 +48,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         private _imgLblModeService: ImageLabellingModeService,
         private _languageService: LanguageService,
     ) {
-        const langsArr: string[] = ['data-set-page-en', 'data-set-page-cn', 'data-set-page-ms'];
-        this._languageService.initializeLanguage(`data-set-page`, langsArr);
         this._imgLblModeService.imgLabelMode$
             .pipe(distinctUntilChanged())
             .subscribe((modeVal) => (this.imgLblMode = modeVal));
@@ -63,6 +61,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        const langsArr: string[] = ['data-set-page-en', 'data-set-page-cn', 'data-set-page-ms'];
+        this._languageService.initializeLanguage(`data-set-page`, langsArr);
         this.getProjectList();
     }
 

@@ -13,23 +13,23 @@ export class DataSetSideMenuComponent implements OnInit {
     menuSchema: MenuSchema[] = [
         {
             src: '../../../assets/icons/add.svg',
-            name: 'New Project',
+            name: 'menuName.newProject',
         },
         {
             src: '../../../assets/icons/project.svg',
-            name: 'My Project',
+            name: 'menuName.myProject',
         },
         {
             src: '../../../assets/icons/starred.svg',
-            name: 'Starred',
+            name: 'menuName.starred',
         },
         {
             src: '../../../assets/icons/history.svg',
-            name: 'Recent',
+            name: 'menuName.recent',
         },
         {
             src: '../../../assets/icons/trash.svg',
-            name: 'Trash',
+            name: 'menuName.trash',
         },
     ];
     @Output() _onClick: EventEmitter<boolean> = new EventEmitter();
