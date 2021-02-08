@@ -23,6 +23,7 @@ import {
     TabsProps,
 } from 'src/components/image-labelling/image-labelling.model';
 import { ImageLabellingModeService } from 'src/components/image-labelling/image-labelling-mode.service';
+import { LanguageService } from 'src/shared/services/language.service';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -40,16 +41,16 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     unsubscribe$: Subject<any> = new Subject();
     tabStatus: TabsProps<CompleteMetadata>[] = [
         {
-            name: 'Project',
+            name: 'labellingProject.project',
             closed: false,
         },
         {
-            name: 'Label',
+            name: 'labellingProject.label',
             closed: false,
             label_list: [],
         },
         {
-            name: 'Annotation',
+            name: 'labellingProject.annotation',
             closed: false,
             annotation: [],
         },
@@ -72,9 +73,12 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         private _imgLblActionService: ImageLabellingActionService,
         private _imgLblLayoutService: ImageLabellingLayoutService,
         private _imgLblModeService: ImageLabellingModeService,
+        private _languageService: LanguageService,
     ) {}
 
     ngOnInit(): void {
+        const langsArr: string[] = ['image-labelling-en', 'image-labelling-cn', 'image-labelling-ms'];
+        this._languageService.initializeLanguage(`image-labelling`, langsArr);
         const { thumbnailList, labelList, projectName } = this._imgLblLayoutService.getRouteState(history);
         this.thumbnailList = thumbnailList;
         this.selectedProjectName = projectName;

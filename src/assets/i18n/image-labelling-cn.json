@@ -27,5 +27,14 @@
         "imgList": "图片清单",
         "labelList": "标签清单",
         "boundBox": "边界框"
+    },
+
+    "labellingProject": {
+        "project": "Project",
+        "label": "Label",
+        "annotation": "Annotation"
+    },
+    "rightSideBar": {
+        "folderFiles": "Folder / files"
     }
 }
