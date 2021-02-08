@@ -144,7 +144,7 @@ export type PolyMetadata = Metadata & {
 export type CompleteMetadata = WithOptional<BboxMetadata, 'bnd_box' | 'img_depth'> &
     WithOptional<PolyMetadata, 'polygons'>;
 
-type Method = 'zoom' | 'draw' | 'pan';
+export type Method = 'zoom' | 'draw' | 'pan';
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
 

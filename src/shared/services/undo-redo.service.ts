@@ -1,12 +1,13 @@
+import { Injectable } from '@angular/core';
+import { Utils } from '../types/utils/utils';
 import {
     BboxMetadata,
     Boundingbox,
+    Method,
     Polygons,
     PolyMetadata,
     UndoState,
 } from 'src/components/image-labelling/image-labelling.model';
-import { Injectable } from '@angular/core';
-import { Utils } from '../types/utils/utils';
 
 @Injectable({
     providedIn: 'any',
@@ -92,7 +93,7 @@ export class UndoRedoService {
         return this.allowUndo;
     }
 
-    public isMethodChange(currMethod: string): boolean {
+    public isMethodChange(currMethod: Method): boolean {
         if (this.currentArr[0]?.method !== currMethod) {
             return true;
         }

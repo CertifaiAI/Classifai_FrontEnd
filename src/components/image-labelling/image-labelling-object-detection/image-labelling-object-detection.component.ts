@@ -110,7 +110,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     isFitCenter() {
         try {
-            this.boundingBoxState.fitCenter ? this.imgFitToCenter() : {};
+            this.boundingBoxState.fitCenter && this.imgFitToCenter();
         } catch (err) {}
     }
 
