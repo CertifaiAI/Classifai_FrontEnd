@@ -33,8 +33,5 @@
         "project": "Project",
         "label": "Label",
         "annotation": "Annotation"
-    },
-    "rightSideBar": {
-        "folderFiles": "Folder / files"
     }
 }
