@@ -48,7 +48,7 @@ export class DataSetLayoutService {
         );
     };
 
-    manualCloseProject = (projectName: string, status: 'closed' = 'closed'): Observable<Message> => {
+    manualCloseProject = (projectName: string, status = 'closed'): Observable<Message> => {
         return this.http.put<Message>(`${this.hostPort}${this.imageLabellingMode}/projects/${projectName}`, {
             status,
         });
