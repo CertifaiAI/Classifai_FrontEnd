@@ -50,9 +50,12 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     ) {}
 
     ngOnInit(): void {
-        //     this._imgLblStateService.segmentation$.subscribe(
-        //         (val) => ((this.segState = val), this.isFitCenter(), this.isClearCanvas()),
-        //     );
+        this._imgLblStateService.action$.subscribe(
+            (val) => ((this.segState = val), this.isFitCenter(), this.isClearCanvas()),
+        );
+        this._annotateSelectState.labelStaging$.subscribe(
+            (state) => ((this.annotateState = state), this.annotateStateOnChange()),
+        );
     }
 
     ngOnChanges(changes: SimpleChanges): void {

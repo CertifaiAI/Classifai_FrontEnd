@@ -6,6 +6,7 @@ import { HTMLElementEvent } from 'src/shared/types/field/field.model';
 import { ImageLabellingActionService } from 'src/components/image-labelling/image-labelling-action.service';
 import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
 import { ImageLabellingLayoutService } from 'src/layouts/image-labelling-layout/image-labelling-layout.service';
+import { ImageLabellingModeService } from 'src/components/image-labelling/image-labelling-mode.service';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -22,7 +23,6 @@ import {
     SelectedLabelProps,
     TabsProps,
 } from 'src/components/image-labelling/image-labelling.model';
-import { ImageLabellingModeService } from 'src/components/image-labelling/image-labelling-mode.service';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -61,6 +61,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     currentAnnotationLabel = '';
     currentAnnotationIndex = -1;
     currentImageDisplayIndex = -1;
+
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
 
     constructor(
@@ -293,12 +294,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     /** @event fires whenever browser is closing */
     @HostListener('window:beforeunload', ['$event'])
     resetProjectStatus = (projectName: string) => {
-        projectName
-            ? this._dataSetService
-                  .manualCloseProject(projectName)
-                  .pipe(first())
-                  .subscribe(({ message }) => {})
-            : null;
+        this._dataSetService
+            .manualCloseProject(projectName)
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe(({ message }) => {});
     };
 
     ngOnDestroy(): void {
