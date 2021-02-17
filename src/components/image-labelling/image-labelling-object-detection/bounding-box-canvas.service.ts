@@ -584,7 +584,7 @@ export class BoundingBoxCanvasService {
 
     public getCurrentClickBox(mouseX: number, mouseY: number, box: Boundingbox[]): { box: number; pos: string } {
         try {
-            this.currentClickedBox = this.mouseClickOnBoxeses(mouseX, mouseY, box);
+            this.currentClickedBox = this.mouseClickOnBoxes(mouseX, mouseY, box);
             return this.currentClickedBox;
         } catch (err) {
             console.log(
@@ -596,7 +596,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    private mouseClickOnBoxeses(mouseX: number, mouseY: number, box: Boundingbox[]): { box: number; pos: string } {
+    private mouseClickOnBoxes(mouseX: number, mouseY: number, box: Boundingbox[]): { box: number; pos: string } {
         try {
             for (let i = 0; i < box.length; ++i) {
                 const xCenter: number = box[i].x1 + (box[i].x2 - box[i].x1) / 2;
@@ -634,7 +634,7 @@ export class BoundingBoxCanvasService {
             return { box: -1, pos: 'o' };
         } catch (err) {
             console.log(
-                'ObjectDetection mouseClickonBoxeses(MouseX:number, MouseY:number, box:Boundingbox[]):{box:number,pos:string}',
+                'ObjectDetection mouseClickOnBoxes(MouseX:number, MouseY:number, box:Boundingbox[]):{box:number,pos:string}',
                 err.name + ': ',
                 err.message,
             );

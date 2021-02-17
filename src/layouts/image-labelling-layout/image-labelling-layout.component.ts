@@ -31,7 +31,6 @@ import {
 })
 export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     onChangeSchema!: ImgLabelProps;
-    inputProjectName: string = '';
     selectedProjectName: string = '';
     imgSrc: string = '';
     loading: boolean = false;
@@ -76,6 +75,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
+        // this._beforeUnloadService.beforeUnload(true, () => this.resetProjectStatus());
         const { thumbnailList, labelList, projectName } = this._imgLblLayoutService.getRouteState(history);
         this.thumbnailList = thumbnailList;
         this.selectedProjectName = projectName;
@@ -116,7 +116,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     }
 
     updateProjectProgress = (): void => {
-        const projectName = this.inputProjectName || this.selectedProjectName;
+        const projectName = this.selectedProjectName;
         this._imgLblLayoutService.updateProjectProgress(this.tabStatus, projectName);
     };
 
@@ -293,11 +293,18 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     /** @event fires whenever browser is closing */
     @HostListener('window:beforeunload', ['$event'])
-    resetProjectStatus = (projectName: string) => {
+    onWindowClose(event: BeforeUnloadEvent): void {
+        this.resetProjectStatus();
+        event.preventDefault();
+    }
+
+    resetProjectStatus = (projectName = this.selectedProjectName) => {
         this._dataSetService
             .manualCloseProject(projectName)
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(({ message }) => {});
+            .subscribe(({ message }) => {
+                this._router.navigate(['/']);
+            });
     };
 
     ngOnDestroy(): void {
@@ -305,6 +312,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.unsubscribe$.complete();
         this._imgLblModeService.setState(null);
         this._imgLblActionService.setState(null);
-        this.resetProjectStatus(this.inputProjectName || this.selectedProjectName);
+        this.resetProjectStatus();
     }
 }
