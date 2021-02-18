@@ -159,3 +159,9 @@ export type Panloc = {
 export type ProgressTuple = { url: string; data: Metadata };
 export type Stages = { stage: Metadata; method: string };
 export type xyCoordinate = { x: number; y: number };
+
+export type FitScreenCalc = {
+    factor: number;
+    newX: number;
+    newY: number;
+};
