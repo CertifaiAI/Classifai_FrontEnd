@@ -173,15 +173,17 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
         getImage$.pipe(first()).subscribe(
             ({ message, img_src }) => {
-                message === 1 &&
-                    ((this.selectedMetaData = thumbnail),
-                    (this.imgSrc = img_src),
-                    (this.onChangeSchema = {
+                if (message === 1) {
+                    this.selectedMetaData = thumbnail;
+                    this.imgSrc = img_src;
+                    this.currentImageDisplayIndex = thumbnailIndex;
+                    this.onChangeSchema = {
                         ...this.onChangeSchema,
                         // + 1 to prevent showing photo but info comp shows 0/2 on UI
                         currentThumbnailIndex: thumbnailIndex + 1,
                         thumbnailName: thumbnail.img_path,
-                    }));
+                    };
+                }
             },
             (err: Error) => console.error(err),
         );
