@@ -21,6 +21,7 @@ import {
 })
 export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     @Input() _onChange!: ImgLabelProps;
+    @Input() _currentUrl: string = '';
     @Output() _navigate: EventEmitter<any> = new EventEmitter();
     jsonSchema!: IconSchema;
     iconIndex!: number;
@@ -55,15 +56,25 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                         this._imgLabelState.setState({ draw: false, drag: true });
                     },
                 },
-                {
-                    imgPath: `../../../assets/icons/rec_bounding_box.svg`,
-                    hoverLabel: `Rectangular Bounding Box`,
-                    alt: `RectangularBB`,
-                    toggleable: true,
-                    onClick: () => {
-                        this._imgLabelState.setState({ draw: true, drag: false, scroll: false });
-                    },
-                },
+                this._currentUrl === 'imglabel/bndbox'
+                    ? {
+                          imgPath: `../../../assets/icons/rec_bounding_box.svg`,
+                          hoverLabel: `Rectangular Bounding Box`,
+                          alt: `RectangularBB`,
+                          toggleable: true,
+                          onClick: () => {
+                              this._imgLabelState.setState({ draw: true, drag: false, scroll: false });
+                          },
+                      }
+                    : {
+                          imgPath: `../../../assets/icons/polygon.svg`,
+                          hoverLabel: `Polygon`,
+                          alt: `Polygon`,
+                          toggleable: true,
+                          onClick: () => {
+                              this._imgLabelState.setState({ draw: true, drag: false, scroll: false });
+                          },
+                      },
                 // {
                 //   imgPath: `../../../assets/icons/bounding_box.svg`,
                 //   hoverLabel: `Bounding Box`,

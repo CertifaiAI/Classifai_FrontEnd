@@ -31,6 +31,7 @@ import {
 })
 export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     onChangeSchema!: ImgLabelProps;
+    currentUrl: string = '';
     selectedProjectName: string = '';
     imgSrc: string = '';
     loading: boolean = false;
@@ -75,7 +76,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        // this._beforeUnloadService.beforeUnload(true, () => this.resetProjectStatus());
+        this.currentUrl = this._router.url;
         const { thumbnailList, labelList, projectName } = this._imgLblLayoutService.getRouteState(history);
         this.thumbnailList = thumbnailList;
         this.selectedProjectName = projectName;
@@ -299,12 +300,14 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     }
 
     resetProjectStatus = (projectName = this.selectedProjectName) => {
-        this._dataSetService
-            .manualCloseProject(projectName)
-            .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(({ message }) => {
-                this._router.navigate(['/']);
-            });
+        // prevents when comp destroyed yet still sending empty string to service
+        projectName.trim() &&
+            this._dataSetService
+                .manualCloseProject(projectName)
+                .pipe(takeUntil(this.unsubscribe$))
+                .subscribe(({ message }) => {
+                    this._router.navigate(['/']);
+                });
     };
 
     ngOnDestroy(): void {

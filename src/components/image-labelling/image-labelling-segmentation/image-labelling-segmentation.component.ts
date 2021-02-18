@@ -75,10 +75,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     }
 
     loadImages(base64: string) {
-        let { src, onload } = this.image;
-        src = base64;
-
-        onload = () => {
+        this.image.src = base64;
+        this.image.onload = () => {
             // tslint:disable-next-line: prefer-const
             let { img_w, img_h, img_ori_w, img_ori_h } = this._selectMetadata;
             img_w = img_w < 1 ? img_ori_w : img_w;
@@ -169,7 +167,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
             if (this.context) {
                 this.context.drawImage(this.image, img_x, img_y, img_w, img_h);
 
-                this._segCanvasService.drawAllPolygons(
+                this._segCanvasService.drawAllPolygon(
                     this._selectMetadata,
                     this.context,
                     this.annotateState.annotation,
@@ -387,7 +385,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                     this._segCanvasService.setPanXY(event);
                 }
                 if (this.segState.draw && this.context) {
-                    const tmpPoly: number = this._segCanvasService.whenMouseDownEvent(
+                    const tmpPoly = this._segCanvasService.whenMouseDownEvent(
                         event,
                         this._selectMetadata,
                         this.mycanvas.nativeElement,
