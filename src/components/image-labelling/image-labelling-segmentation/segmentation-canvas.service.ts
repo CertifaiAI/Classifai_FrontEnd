@@ -1,5 +1,5 @@
 import { cloneDeep } from 'lodash-es';
-import { Coordinate, Direction, Polygons, PolyMetadata, xyCoordinate } from '../image-labelling.model';
+import { Coordinate, Direction, FitScreenCalc, Polygons, PolyMetadata, xyCoordinate } from '../image-labelling.model';
 import { Injectable } from '@angular/core';
 import { Utils } from '../../../shared/types/utils/utils';
 
@@ -7,6 +7,11 @@ import { Utils } from '../../../shared/types/utils/utils';
     providedIn: 'any',
 })
 export class SegmentationCanvasService {
+    private globalXY: xyCoordinate = { x: -1, y: -1 };
+    private panXY: xyCoordinate = { x: 0, y: 0 };
+    private clickPoint: { polygonIndex: number; PointIndex: number } = { polygonIndex: -1, PointIndex: -1 };
+    private radius: number = 3.5;
+    private distanceOffset: number = 8;
     private tmpPolygon: Polygons | null = {
         color: '',
         coorPt: [],
@@ -16,52 +21,43 @@ export class SegmentationCanvasService {
         region: '',
         subLabel: [],
     };
-    private radius: number = 3.5;
+    private selectedPolygon: number = -1;
     private util: Utils = new Utils();
-    private globalXY: xyCoordinate = { x: -1, y: -1 };
-    private panXY: xyCoordinate = { x: 0, y: 0 };
     private isNewPoly: boolean = false;
     // private currentSelectedImg = { uid: -1, idx: -1 };
-    private distanceOffset: number = 8;
-    private selectedPolygon: number = -1;
-    private clickPoint: { polygonIndex: number; PointIndex: number } = { polygonIndex: -1, PointIndex: -1 };
 
     constructor() {}
 
     public whenMouseDownEvent(
-        newX: number,
-        newY: number,
-        imgX: number,
-        imgY: number,
-        canvasW: number,
-        canvasH: number,
-        pol: PolyMetadata,
+        { offsetX, offsetY }: MouseEvent,
+        metadata: PolyMetadata,
+        { width, height }: HTMLCanvasElement,
         img: HTMLImageElement,
         context: CanvasRenderingContext2D,
         ctrldown: boolean,
         altdown: boolean,
     ): number {
-        this.setGlobalXY(newX, newY);
-        const polArea = this.findPolygonArea(newX, newY, pol);
-        this.clickPoint = this.findClickPoint(newX, newY, pol);
+        this.setGlobalXY({ img_x: offsetX, img_y: offsetY });
+        const polArea = this.findPolygonArea(offsetX, offsetY, metadata);
+        this.clickPoint = this.findClickPoint(offsetX, offsetY, metadata);
         if (this.isNewPolygon() && ctrldown) {
-            this.setPanXY(newX, newY);
+            this.setPanXY({ offsetX, offsetY });
         } else if ((this.tmpPolygon === null && this.selectedPolygon < 0) || altdown) {
-            this.setpolygonslineWidth(pol, -1);
+            this.setPolygonsLineWidth(metadata, -1);
             this.selectedPolygon = -1;
             this.setNewpolygon(true);
-            this.pushTmpPoint(newX, newY, imgX, imgY, pol.polygons.length);
+            this.pushTmpPoint(offsetX, offsetY, offsetX, offsetY, metadata.polygons.length);
         } else if (this.isNewPolygon()) {
-            this.pushTmpPoint(newX, newY, imgX, imgY, pol.polygons.length);
-            this.drawNewPolygon(pol, img, context, canvasW, canvasH, false);
-            this.drawfromPreviousPoint(newX, newY, context);
+            this.pushTmpPoint(offsetX, offsetY, offsetX, offsetY, metadata.polygons.length);
+            this.drawNewPolygon(metadata, img, context, width, height, false);
+            this.drawfromPreviousPoint(offsetX, offsetY, context);
         } else {
             this.setNewpolygon(false);
             this.selectedPolygon =
-                this.findPolygonArea(newX, newY, pol) > -1
-                    ? this.findPolygonArea(newX, newY, pol)
-                    : this.findClickPoint(newX, newY, pol).polygonIndex;
-            this.setpolygonslineWidth(pol, this.selectedPolygon);
+                this.findPolygonArea(offsetX, offsetY, metadata) > -1
+                    ? this.findPolygonArea(offsetX, offsetY, metadata)
+                    : this.findClickPoint(offsetX, offsetY, metadata).polygonIndex;
+            this.setPolygonsLineWidth(metadata, this.selectedPolygon);
         }
         return this.selectedPolygon;
     }
@@ -98,60 +94,53 @@ export class SegmentationCanvasService {
         }
     }
 
-    public setPanXY(newX: number, newY: number): boolean {
+    setPanXY({ offsetX, offsetY }: Pick<MouseEvent, 'offsetX' | 'offsetY'>) {
         try {
-            return newX && newY ? ((this.panXY.x = newX), (this.panXY.y = newY), true) : false;
+            return offsetX && offsetY ? ((this.panXY.x = offsetX), (this.panXY.y = offsetY), true) : false;
         } catch (err) {
-            console.log('ObjectDetection setPanXY(newX: number, newY: number):boolean', err.name + ': ', err.message);
+            console.log('setPanXY', err);
             return false;
         }
     }
 
-    public getPanX() {
+    getPanX() {
         return this.panXY.x;
     }
 
-    public getPanY() {
+    getPanY() {
         return this.panXY.y;
     }
 
-    public setSelectedPolygon(index: number): void {
-        index ? (this.selectedPolygon = index) : {};
+    setSelectedPolygon(index: number) {
+        index && (this.selectedPolygon = index);
     }
 
-    public getSelectedPolygon(): number {
+    getSelectedPolygon() {
         return this.selectedPolygon;
     }
 
-    public mouseClickWithinPointPath(
-        imgX: number,
-        imgY: number,
-        imgW: number,
-        imgH: number,
-        coorX: number,
-        coorY: number,
-    ): boolean {
-        return coorX > imgX && coorX < imgX + imgW && coorY > imgY && coorY < imgY + imgH ? true : false;
+    mouseClickWithinPointPath({ img_x, img_y, img_w, img_h }: PolyMetadata, { offsetX, offsetY }: MouseEvent): boolean {
+        const resultX = offsetX > img_x && offsetX < img_x + img_w;
+        const resultY = offsetY > img_y && offsetY < img_y + img_h;
+        const result = resultX && resultY;
+        return result;
     }
 
-    public calScaleTofitScreen(
-        imgW: number,
-        imgH: number,
-        canvasW: number,
-        canvasH: number,
-    ): {
-        factor: number;
-        newX: number;
-        newY: number;
-    } {
+    calScaleToFitScreen(
+        { img_w, img_h }: PolyMetadata,
+        { offsetWidth, offsetHeight }: HTMLCanvasElement,
+    ): FitScreenCalc {
         try {
             const obj = { factor: -1, newX: -1, newY: -1 };
-            obj.factor = Math.min(canvasW / imgW, canvasH / imgH);
-            obj.factor = obj.factor - obj.factor * 0.05;
-            obj.newX = canvasW / 2 - (imgW / 2) * obj.factor;
-            obj.newY = canvasH / 2 - (imgH / 2) * obj.factor;
+            let { factor, newX, newY } = obj;
+
+            const factorCalc = Math.min(offsetWidth / img_w, offsetHeight / img_h);
+            factor = factorCalc - factorCalc * 0.05;
+            newX = offsetWidth / 2 - (img_w / 2) * factor;
+            newY = offsetHeight / 2 - (img_h / 2) * factor;
             return obj;
         } catch (err) {
+            console.log(`calScaleToFitScreen`, err);
             return { factor: -1, newX: -1, newY: -1 };
         }
     }
@@ -428,16 +417,12 @@ export class SegmentationCanvasService {
         }
     }
 
-    public setGlobalXY(offsetX: number, offsetY: number) {
+    public setGlobalXY({ img_x, img_y }: Pick<PolyMetadata, 'img_x' | 'img_y'>) {
         try {
-            this.globalXY.x = offsetX;
-            this.globalXY.y = offsetY;
+            this.globalXY.x = img_x;
+            this.globalXY.y = img_y;
         } catch (err) {
-            console.log(
-                'segmentation setGlobalXY(offsetX:number, offsetY:number) ----> ',
-                err.name + ': ',
-                err.message,
-            );
+            console.log('setGlobalXY', err);
         }
     }
 
@@ -537,7 +522,7 @@ export class SegmentationCanvasService {
                         break;
                 }
                 this.redraw(pol, img, context, canvasW, canvasH, pol.img_w, pol.img_h, pol.img_x, pol.img_y, polyIndex);
-                this.validateXYDistance(pol, pol.img_x, pol.img_y);
+                this.validateXYDistance(pol);
                 callback(true);
             }
             return true;
@@ -578,26 +563,22 @@ export class SegmentationCanvasService {
         }
     }
 
-    public validateXYDistance(pol: PolyMetadata, imgX: number, imgY: number) {
+    validateXYDistance({ polygons, img_x, img_y }: PolyMetadata) {
         try {
-            for (const [i] of pol.polygons.entries()) {
-                for (const [j] of pol.polygons[i].coorPt.entries()) {
-                    const distancetoX = pol.polygons[i].coorPt[j].x - imgX;
-                    const distancetoY = pol.polygons[i].coorPt[j].y - imgY;
-                    pol.polygons[i].coorPt[j].distancetoImg.x = distancetoX;
-                    pol.polygons[i].coorPt[j].distancetoImg.y = distancetoY;
+            for (const [i] of polygons.entries()) {
+                for (const [j] of polygons[i].coorPt.entries()) {
+                    const distancetoX = polygons[i].coorPt[j].x - img_x;
+                    const distancetoY = polygons[i].coorPt[j].y - img_y;
+                    polygons[i].coorPt[j].distancetoImg.x = distancetoX;
+                    polygons[i].coorPt[j].distancetoImg.y = distancetoY;
                 }
             }
         } catch (err) {
-            console.log(
-                'segmentation validateXYDistance(imgX:number, imgY:number) ----> ',
-                err.name + ': ',
-                err.message,
-            );
+            console.log('validateXYDistance', err);
         }
     }
 
-    public setpolygonslineWidth(pol: PolyMetadata, selectedpolygon: number) {
+    public setPolygonsLineWidth(pol: PolyMetadata, selectedpolygon: number) {
         try {
             for (let i = 0; i < pol.polygons.length; ++i) {
                 if (i === selectedpolygon) {
@@ -649,7 +630,7 @@ export class SegmentationCanvasService {
                 context.stroke();
                 if (this.tmpPolygon !== null && this.tmpPolygon !== undefined) {
                     pol.polygons.push(cloneDeep(this.tmpPolygon));
-                    this.setpolygonslineWidth(pol, pol.polygons.length - 1);
+                    this.setPolygonsLineWidth(pol, pol.polygons.length - 1);
                     this.tmpPolygon = null;
                 }
                 this.setNewpolygon(false);
@@ -822,38 +803,29 @@ export class SegmentationCanvasService {
         try {
             return this.isNewPoly;
         } catch (err) {
-            console.log('segmentation isNewPolygon():Boolean ----> ', err.name + ': ', err.message);
+            console.log('isNewPolygon', err);
             return false;
         }
     }
 
     public deleteSinglePolygon(pol: PolyMetadata, index: number, callback: (agrs: boolean) => any) {}
 
-    public scalePolygons(
-        pol: PolyMetadata,
-        scaleFactor: number,
-        imgX: number,
-        imgY: number,
-        callback?: (args: boolean) => any,
-    ) {
+    scalePolygons(metadata: PolyMetadata, { factor, newX, newY }: FitScreenCalc, callback?: (arg: boolean) => any) {
         try {
-            console.log(pol);
-            for (const [i] of pol.polygons.entries()) {
-                for (const [j] of pol.polygons[i].coorPt.entries()) {
-                    pol.polygons[i].coorPt[j].x = pol.polygons[i].coorPt[j].distancetoImg.x * scaleFactor + imgX;
-                    pol.polygons[i].coorPt[j].y = pol.polygons[i].coorPt[j].distancetoImg.y * scaleFactor + imgY;
-                    pol.polygons[i].coorPt[j].distancetoImg.x = pol.polygons[i].coorPt[j].x - imgX;
-                    pol.polygons[i].coorPt[j].distancetoImg.y = pol.polygons[i].coorPt[j].y - imgY;
+            const { polygons } = metadata;
+            for (const [i] of polygons.entries()) {
+                for (const [j] of polygons[i].coorPt.entries()) {
+                    polygons[i].coorPt[j].x = polygons[i].coorPt[j].distancetoImg.x * factor + newX;
+                    polygons[i].coorPt[j].y = polygons[i].coorPt[j].distancetoImg.y * factor + newY;
+                    polygons[i].coorPt[j].distancetoImg.x = polygons[i].coorPt[j].x - newX;
+                    polygons[i].coorPt[j].distancetoImg.y = polygons[i].coorPt[j].y - newY;
                 }
             }
-            this.setpolygonslineWidth(pol, -1);
+
+            this.setPolygonsLineWidth(metadata, -1);
             callback && callback(true);
         } catch (err) {
-            console.log(
-                'segmentation scalePolygons(scaleFactor:number, imgX:number, imgY:number) ----> ',
-                err.name + ': ',
-                err.message,
-            );
+            console.log('scalePolygons', err);
         }
     }
 

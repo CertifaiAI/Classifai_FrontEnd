@@ -23,7 +23,7 @@ export class BoundingBoxCanvasService {
     };
     private tmpbox!: Boundingbox | null;
     private currentSelectedBndBox: number = -1;
-    private utility: Utils = new Utils();
+    private util: Utils = new Utils();
     constructor() {}
 
     public getdiffXY(offsetX: number, offsetY: number): { diffX: number; diffY: number } {
@@ -541,7 +541,7 @@ export class BoundingBoxCanvasService {
             const boxX2: number = x1 > x2 ? x1 : x2;
             const boxY2: number = y1 > y2 ? y1 : y2;
             if (boxX2 - boxX1 > this.lineOffset && boxY2 - boxY1 > this.lineOffset) {
-                const newID: number = this.utility.generateUniquesID();
+                const newID: number = this.util.generateUniquesID();
                 return {
                     x1: boxX1,
                     y1: boxY1,

@@ -358,7 +358,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this._selectMetadata,
                         (isDone: boolean) => {
                             isDone
-                                ? this._undoRedoService.isStatgeChange(this._selectMetadata.bnd_box)
+                                ? this._undoRedoService.isStateChange(this._selectMetadata.bnd_box)
                                     ? this._undoRedoService.appendStages({
                                           meta: cloneDeep(this._selectMetadata),
                                           method: 'draw',
