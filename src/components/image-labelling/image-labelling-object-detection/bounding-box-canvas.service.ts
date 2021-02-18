@@ -219,7 +219,7 @@ export class BoundingBoxCanvasService {
 
     public setCurrentSelectedbBox(newNUM: number): void {
         try {
-            newNUM ? (this.currentSelectedBndBox = newNUM) : {};
+            this.currentSelectedBndBox = newNUM;
         } catch (err) {
             console.log('ObjectDetection setCurrentSelectedbBox(newNUM:number):void', err.name + ': ', err.message);
         }

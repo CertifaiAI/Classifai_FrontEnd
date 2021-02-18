@@ -18,6 +18,7 @@ import {
     EventEmitter_Action,
     EventEmitter_ThumbnailDetails,
     EventEmitter_Url,
+    ImageLabelUrl,
     ImgLabelProps,
     PolyMetadata,
     SelectedLabelProps,
@@ -31,7 +32,7 @@ import {
 })
 export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     onChangeSchema!: ImgLabelProps;
-    currentUrl: string = '';
+    currentUrl: ImageLabelUrl = '';
     selectedProjectName: string = '';
     imgSrc: string = '';
     loading: boolean = false;
@@ -76,7 +77,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        this.currentUrl = this._router.url;
+        this.currentUrl = this._router.url as ImageLabelUrl;
         const { thumbnailList, labelList, projectName } = this._imgLblLayoutService.getRouteState(history);
         this.thumbnailList = thumbnailList;
         this.selectedProjectName = projectName;
@@ -111,7 +112,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     this.onDisplayModal();
                 } else {
                     this.currentAnnotationLabel = '';
-                    this.currentAnnotationIndex = -1;
+                    this.currentAnnotationIndex = annnotationIndex;
                 }
             });
     }

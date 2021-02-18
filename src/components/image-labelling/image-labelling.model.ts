@@ -1,6 +1,8 @@
 import { uuid } from 'src/shared/types/message/message.model';
 import { WithOptional } from 'src/shared/types/with-optional/with-optional';
 
+export type ImageLabelUrl = '/imglabel/bndbox' | '/imglabel/seg' | '';
+
 export type ImgLabelProps = {
     status?: boolean;
     currentThumbnailIndex: number;
@@ -43,7 +45,7 @@ export type TabsProps<TMetadata = undefined> = {
     name: string;
     closed: boolean;
     label_list?: string[];
-    annotation?: TMetadata extends undefined ? BboxMetadata[] & PolyMetadata[] : TMetadata[];
+    annotation?: TMetadata extends undefined ? BboxMetadata[] | PolyMetadata[] : TMetadata[];
 };
 
 type TabAction = {

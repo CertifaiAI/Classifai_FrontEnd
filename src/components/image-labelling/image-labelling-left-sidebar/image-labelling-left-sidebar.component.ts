@@ -1,7 +1,7 @@
 import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { IconSchema } from 'src/shared/types/icon/icon.model';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
-import { ImgLabelProps } from '../image-labelling.model';
+import { ImageLabelUrl, ImgLabelProps } from '../image-labelling.model';
 import {
     Component,
     OnInit,
@@ -21,7 +21,7 @@ import {
 })
 export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     @Input() _onChange!: ImgLabelProps;
-    @Input() _currentUrl: string = '';
+    @Input() _currentUrl: ImageLabelUrl = '';
     @Output() _navigate: EventEmitter<any> = new EventEmitter();
     jsonSchema!: IconSchema;
     iconIndex!: number;
@@ -35,6 +35,10 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
         this.bindImagePath();
     }
 
+    resetSelectedAnnotate = () => {
+        this._annotateService.setState({ annotation: -1 });
+    };
+
     bindImagePath = () => {
         this.jsonSchema = {
             logos: [
@@ -44,25 +48,27 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     alt: `Pointer`,
                     toggleable: true,
                     onClick: () => {
-                        this._imgLabelState.setState({ draw: false, drag: true });
+                        this.resetSelectedAnnotate();
+                        this._imgLabelState.setState({ draw: false, drag: true, scroll: true });
                     },
                 },
-                {
-                    imgPath: `../../../assets/icons/move.svg`,
-                    hoverLabel: `Move Image`,
-                    alt: `Move Image`,
-                    toggleable: true,
-                    onClick: () => {
-                        this._imgLabelState.setState({ draw: false, drag: true });
-                    },
-                },
-                this._currentUrl === 'imglabel/bndbox'
+                // {
+                //     imgPath: `../../../assets/icons/move.svg`,
+                //     hoverLabel: `Move Image`,
+                //     alt: `Move Image`,
+                //     toggleable: true,
+                //     onClick: () => {
+                //         this._imgLabelState.setState({ draw: false, drag: true, scroll: false });
+                //     },
+                // },
+                this._currentUrl === '/imglabel/bndbox'
                     ? {
                           imgPath: `../../../assets/icons/rec_bounding_box.svg`,
                           hoverLabel: `Rectangular Bounding Box`,
                           alt: `RectangularBB`,
                           toggleable: true,
                           onClick: () => {
+                              this.resetSelectedAnnotate();
                               this._imgLabelState.setState({ draw: true, drag: false, scroll: false });
                           },
                       }
@@ -72,6 +78,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                           alt: `Polygon`,
                           toggleable: true,
                           onClick: () => {
+                              this.resetSelectedAnnotate();
                               this._imgLabelState.setState({ draw: true, drag: false, scroll: false });
                           },
                       },
@@ -106,7 +113,14 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     alt: `Eraser`,
                     toggleable: true,
                     onClick: () => {
-                        this._annotateService.setState({ annotation: -1 });
+                        this.resetSelectedAnnotate();
+                        this._imgLabelState.setState({
+                            draw: false,
+                            drag: false,
+                            fitCenter: true,
+                            scroll: false,
+                            clear: true,
+                        });
                     },
                 },
                 {
@@ -115,7 +129,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     alt: `Fit Center`,
                     toggleable: false,
                     onClick: () => {
-                        this._annotateService.setState({ annotation: -1 });
+                        this.resetSelectedAnnotate();
                         this._imgLabelState.setState({ draw: false, drag: false, fitCenter: true, scroll: false });
                     },
                 },
@@ -125,7 +139,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     alt: `Save`,
                     toggleable: false,
                     onClick: () => {
-                        this._annotateService.setState({ annotation: -1 });
+                        this.resetSelectedAnnotate();
                         this._imgLabelState.setState({
                             draw: false,
                             drag: false,

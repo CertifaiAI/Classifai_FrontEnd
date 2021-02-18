@@ -60,7 +60,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         console.log(changes);
-        if (changes._imgSrc.currentValue) {
+        if (changes._imgSrc?.currentValue) {
             this.initializeCanvas();
             this.loadImages(changes._imgSrc.currentValue);
         }
@@ -97,7 +97,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     }
 
     annotateStateOnChange() {
-        this.annotateState && this._segCanvasService.setSelectedPolygon(cloneDeep(this.annotateState.annotation));
+        this.annotateState && this._segCanvasService.setSelectedPolygon(this.annotateState.annotation);
     }
 
     rulesMakeChange(scroll?: boolean, fitToScreen?: boolean, clearScreen?: boolean) {
@@ -217,8 +217,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                 // tslint:disable-next-line: prefer-const
                 let { img_w, img_h, img_x, img_y } = this._selectMetadata;
                 // zoom up
-                img_w *= factor;
-                img_h *= factor;
+                this._selectMetadata.img_w *= factor;
+                this._selectMetadata.img_h *= factor;
                 this._segCanvasService.scalePolygons(
                     this._selectMetadata,
                     { factor, newX: img_x, newY: img_y },
@@ -406,10 +406,11 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     @HostListener('mouseup', ['$event'])
     mouseUp(event: MouseEvent) {
         try {
-            const isMouseClickWithinPoint = this._segCanvasService.mouseClickWithinPointPath(
-                this._selectMetadata,
-                event,
-            );
+            // this._selectMetadata as truefy value
+            // as user can click on image but img not yet loaded onto screen
+            // but mouse has already moving into canvas, thus getting error
+            const isMouseClickWithinPoint =
+                this._selectMetadata && this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
             if (isMouseClickWithinPoint) {
                 this.mousedown = true;
                 if (
@@ -442,10 +443,11 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     @HostListener('mousemove', ['$event'])
     mouseMove(event: MouseEvent) {
         try {
-            const isMouseClickWithinPoint = this._segCanvasService.mouseClickWithinPointPath(
-                this._selectMetadata,
-                event,
-            );
+            // this._selectMetadata as truefy value
+            // as user can click on image but img not yet loaded onto screen
+            // but mouse has already moving into canvas, thus getting error
+            const isMouseClickWithinPoint =
+                this._selectMetadata && this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
             if (isMouseClickWithinPoint) {
                 this.mousedown = true;
                 if (this.segState.drag && this.mousedown) {
@@ -498,7 +500,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                     );
                 }
             } else {
-                console.log(this.crossh);
+                // console.log(this.crossh);
                 if (
                     this.crossh.nativeElement.style.zIndex !== '-1' ||
                     this.crossh.nativeElement.style.visibility !== 'hidden' ||

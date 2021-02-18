@@ -301,21 +301,27 @@ export class SegmentationCanvasService {
         }
     }
 
+    private validatePolygonMetadata(polygons: Polygons[]) {
+        return polygons.length > 0 ? true : false;
+    }
+
     private drawAllPolygonLine({ polygons }: PolyMetadata, context: CanvasRenderingContext2D, length: number) {
         try {
-            for (let i = 0; i < length; ++i) {
-                context.lineWidth = polygons[i].lineWidth;
-                context.strokeStyle = polygons[i].color;
-                context.fillStyle = polygons[i].color;
-                context.beginPath();
-                context.moveTo(polygons[i].coorPt[0].x, polygons[i].coorPt[0].y);
-                for (let j = 0; j < polygons[i].coorPt.length; ++j) {
-                    if (j + 1 < polygons[i].coorPt.length) {
-                        context.lineTo(polygons[i].coorPt[j + 1].x, polygons[i].coorPt[j + 1].y);
+            if (this.validatePolygonMetadata(polygons)) {
+                for (let i = 0; i < length; ++i) {
+                    context.lineWidth = polygons[i].lineWidth;
+                    context.strokeStyle = polygons[i].color;
+                    context.fillStyle = polygons[i].color;
+                    context.beginPath();
+                    context.moveTo(polygons[i].coorPt[0].x, polygons[i].coorPt[0].y);
+                    for (let j = 0; j < polygons[i].coorPt.length; ++j) {
+                        if (j + 1 < polygons[i].coorPt.length) {
+                            context.lineTo(polygons[i].coorPt[j + 1].x, polygons[i].coorPt[j + 1].y);
+                        }
                     }
+                    context.closePath();
+                    context.stroke();
                 }
-                context.closePath();
-                context.stroke();
             }
         } catch (err) {
             console.log('drawAllPolygonLine', err);
@@ -354,20 +360,22 @@ export class SegmentationCanvasService {
 
     private plotAllFloatLabel(metadata: PolyMetadata, len: number) {
         try {
-            this.clearAllDIV(metadata, 1);
-            for (let i = 0; i < len; ++i) {
-                // this.util.RemoveHTMLElement("float_" + pol[this.getCurrentSelectedimgidx()].polygons[i].id.toString());
-                const region = metadata.polygons[i].region.toString();
-                const uuids = metadata.polygons[i].id;
-                const tempdiv = this.createDIV(
-                    region,
-                    uuids,
-                    metadata.polygons[i].coorPt[0].x,
-                    metadata.polygons[i].coorPt[0].y,
-                );
+            if (this.validatePolygonMetadata(metadata.polygons)) {
+                this.clearAllDIV(metadata, 1);
+                for (let i = 0; i < len; ++i) {
+                    // this.util.RemoveHTMLElement("float_" + pol[this.getCurrentSelectedimgidx()].polygons[i].id.toString());
+                    const region = metadata.polygons[i].region.toString();
+                    const uuids = metadata.polygons[i].id;
+                    const tempdiv = this.createDIV(
+                        region,
+                        uuids,
+                        metadata.polygons[i].coorPt[0].x,
+                        metadata.polygons[i].coorPt[0].y,
+                    );
 
-                const element = document.getElementById('');
-                element && tempdiv && element.appendChild(tempdiv);
+                    const element = document.getElementById('');
+                    element && tempdiv && element.appendChild(tempdiv);
+                }
             }
         } catch (err) {
             console.log('plotAllFloatLabel', err);
@@ -376,8 +384,10 @@ export class SegmentationCanvasService {
 
     public clearAllDIV({ polygons }: PolyMetadata, len: number) {
         try {
-            for (let i = 0; i < len; ++i) {
-                this.util.RemoveHTMLElement('float_' + polygons[i].id.toString());
+            if (this.validatePolygonMetadata(polygons)) {
+                for (let i = 0; i < len; ++i) {
+                    this.util.RemoveHTMLElement('float_' + polygons[i].id.toString());
+                }
             }
         } catch (err) {
             console.log('clearAllDIV', err);

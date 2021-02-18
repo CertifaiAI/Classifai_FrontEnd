@@ -74,7 +74,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     annotateStateMakeChange(newState: AnnotateActionState | null) {
-        newState !== null ? this._annotateSelectState.setState(newState) : {};
+        newState !== null && this._annotateSelectState.setState(newState);
     }
 
     rulesMakeChange(
@@ -115,16 +115,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     annotateStateOnChange() {
-        this.annotateState && this._boundingBoxCanvas.setCurrentSelectedbBox(cloneDeep(this.annotateState.annotation));
-        // this.annotateState
-        //     ? (this._boundingBoxCanvas.setCurrentSelectedbBox(cloneDeep(this.annotateState.selectedAnnotate)),
-        //       this.annotateState.label && this.annotateState.selectedAnnotate > -1
-        //           ? this._boundingBoxCanvas.changeLabel(
-        //                 this._selectMetadata.bnd_box[this.annotateState.selectedAnnotate],
-        //                 cloneDeep(this.annotateState.label!),
-        //             )
-        //           : {})
-        //     : {};
+        this.annotateState && this._boundingBoxCanvas.setCurrentSelectedbBox(this.annotateState.annotation);
     }
 
     imgFitToCenter() {
@@ -323,7 +314,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this._selectMetadata.bnd_box,
                     );
                     // this.rulesMakeChange(null, tmpBox, null, null, null);
-                    this.annotateStateMakeChange(cloneDeep({ annotation: tmpBox, isDlbClick: false }));
+                    this.annotateStateMakeChange({ annotation: tmpBox, isDlbClick: false });
                     this.redrawImages(
                         this._selectMetadata.img_x,
                         this._selectMetadata.img_y,
