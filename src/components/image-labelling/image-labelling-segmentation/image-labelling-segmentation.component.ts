@@ -1,4 +1,4 @@
-import { ActionState, Direction, Method, Polygons, PolyMetadata, UndoState } from '../image-labelling.model';
+import { ActionState, Direction, Polygons, PolyMetadata, UndoState } from '../image-labelling.model';
 import { AnnotateActionState, AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { cloneDeep } from 'lodash-es';
 import { CopyPasteService } from 'src/shared/services/copy-paste.service';
@@ -31,7 +31,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     @ViewChild('crossh') crossh!: ElementRef<HTMLDivElement>;
     @ViewChild('crossv') crossv!: ElementRef<HTMLDivElement>;
     private context!: CanvasRenderingContext2D | null;
-    private image: HTMLImageElement = new Image();
+    private img: HTMLImageElement = new Image();
     private mousedown: boolean = false;
     private altdown: boolean = false;
     private isctrlHold: boolean = false;
@@ -59,32 +59,43 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes._imgSrc.currentValue) {
-            this.initializeCanvas();
-            this.loadImages(changes._imgSrc.currentValue);
-        }
+        try {
+            console.log(changes);
+            changes._imgSrc.currentValue
+                ? (this.initCanvas(),
+                  (this.context = this.mycanvas?.nativeElement?.getContext('2d')
+                      ? this.mycanvas.nativeElement.getContext('2d')
+                      : null),
+                  this.loadImages(changes._imgSrc.currentValue))
+                : {};
+        } catch (err) {}
     }
 
-    initializeCanvas() {
-        this.mycanvas.nativeElement.style.width = '80%';
-        this.mycanvas.nativeElement.style.height = '90%';
-        this.mycanvas.nativeElement.width = this.mycanvas.nativeElement.offsetWidth;
-        this.mycanvas.nativeElement.height = this.mycanvas.nativeElement.offsetHeight;
-        this.context = this.mycanvas.nativeElement.getContext('2d');
+    initCanvas() {
+        try {
+            this.mycanvas.nativeElement.style.width = '80%';
+            this.mycanvas.nativeElement.style.height = '90%';
+            this.mycanvas.nativeElement.width = this.mycanvas.nativeElement.offsetWidth;
+            this.mycanvas.nativeElement.height = this.mycanvas.nativeElement.offsetHeight;
+        } catch (err) {}
     }
 
-    loadImages(base64: string) {
-        this.image.src = base64;
-        this.image.onload = () => {
-            // tslint:disable-next-line: prefer-const
-            let { img_w, img_h, img_ori_w, img_ori_h } = this._selectMetadata;
-            img_w = img_w < 1 ? img_ori_w : img_w;
-            img_h = img_h < 1 ? img_ori_h : img_h;
-
-            this._segCanvasService.setGlobalXY(this._selectMetadata);
-            this.imgFitToCenter();
-            this._undoRedoService.appendStages({ meta: cloneDeep(this._selectMetadata), method: 'draw' });
-        };
+    loadImages(bit64STR: string) {
+        try {
+            this.img.src = bit64STR;
+            this.img.onload = () => {
+                this._selectMetadata.img_w =
+                    this._selectMetadata.img_w < 1 ? this._selectMetadata.img_ori_w : this._selectMetadata.img_w;
+                this._selectMetadata.img_h =
+                    this._selectMetadata.img_h < 1 ? this._selectMetadata.img_ori_h : this._selectMetadata.img_h;
+                this._segCanvasService.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
+                this.imgFitToCenter();
+                this._undoRedoService.appendStages({
+                    meta: cloneDeep(this._selectMetadata),
+                    method: 'draw',
+                });
+            };
+        } catch (err) {}
     }
 
     emitMetadata() {
@@ -96,36 +107,44 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     }
 
     annotateStateOnChange() {
-        this.annotateState && this._segCanvasService.setSelectedPolygon(this.annotateState.annotation);
+        this.annotateState && this._segCanvasService.setSelectedPolygon(cloneDeep(this.annotateState.annotation));
     }
 
-    rulesMakeChange(scroll?: boolean, fitToScreen?: boolean, clearScreen?: boolean) {
+    rulesMakeChange(scroll?: boolean, fitToscreen?: boolean, clearScreen?: boolean) {
         try {
-            const tempRules = cloneDeep(this.segState);
+            const tempRules: ActionState = cloneDeep(this.segState);
             scroll && (tempRules.scroll = scroll);
-            fitToScreen && (tempRules.fitCenter = fitToScreen);
+            fitToscreen && (tempRules.fitCenter = fitToscreen);
             clearScreen && (tempRules.clear = clearScreen);
             this._imgLblStateService.setState(tempRules);
-        } catch (err) {
-            console.log('rulesMakeChange', err);
-        }
+        } catch (err) {}
     }
 
     imgFitToCenter() {
         try {
-            const tmpObj = this._segCanvasService.calScaleToFitScreen(
-                this._selectMetadata,
-                this.mycanvas.nativeElement,
+            const tmpObj = this._segCanvasService.calScaleTofitScreen(
+                this._selectMetadata.img_w,
+                this._selectMetadata.img_h,
+                this.mycanvas.nativeElement.offsetWidth,
+                this.mycanvas.nativeElement.offsetHeight,
             );
-            // tslint:disable-next-line: prefer-const
-            let { img_w, img_h, img_x, img_y } = this._selectMetadata;
-            img_w *= tmpObj.factor;
-            img_h *= tmpObj.factor;
-            this._segCanvasService.scalePolygons(this._selectMetadata, tmpObj);
-            img_x = tmpObj.newX;
-            img_y = tmpObj.newY;
-            this._segCanvasService.setGlobalXY({ img_x: tmpObj.newX, img_y: tmpObj.newY });
-            this._segCanvasService.panPolygons(this._selectMetadata, img_x, img_y, false);
+            this._selectMetadata.img_w *= tmpObj.factor;
+            this._selectMetadata.img_h *= tmpObj.factor;
+            this._segCanvasService.scalePolygons(
+                this._selectMetadata,
+                tmpObj.factor,
+                this._selectMetadata.img_x,
+                this._selectMetadata.img_y,
+            );
+            this._selectMetadata.img_x = tmpObj.newX;
+            this._selectMetadata.img_y = tmpObj.newY;
+            this._segCanvasService.setGlobalXY(tmpObj.newX, tmpObj.newY);
+            this._segCanvasService.panPolygons(
+                this._selectMetadata,
+                this._selectMetadata.img_x,
+                this._selectMetadata.img_y,
+                false,
+            );
             const meta = cloneDeep(this._selectMetadata);
             this._undoRedoService.isMethodChange('zoom')
                 ? this._undoRedoService.appendStages({
@@ -136,51 +155,57 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                       meta,
                       method: 'zoom',
                   });
-            this.redrawImages(this._selectMetadata);
+            this.redrawImages(
+                this._selectMetadata.img_x,
+                this._selectMetadata.img_y,
+                this._selectMetadata.img_w,
+                this._selectMetadata.img_h,
+            );
             this.emitMetadata();
-        } catch (err) {
-            console.log('imgFitToCenter', err);
-        }
+        } catch (err) {}
     }
 
     isClearCanvas() {
         try {
-            if (this.segState.clear) {
-                this._selectMetadata.polygons = [];
-                this.redrawImages(this._selectMetadata);
-                this.rulesMakeChange(undefined, undefined, false);
-                this.emitMetadata();
-            }
-        } catch (err) {
-            console.log('isClearCanvas', err);
-        }
+            this.segState.clear &&
+                ((this._selectMetadata.polygons = []),
+                this.redrawImages(
+                    this._selectMetadata.img_x,
+                    this._selectMetadata.img_y,
+                    this._selectMetadata.img_w,
+                    this._selectMetadata.img_h,
+                ),
+                this.rulesMakeChange(undefined, undefined, false),
+                this.emitMetadata());
+        } catch (err) {}
     }
 
     isFitCenter() {
-        this.segState.fitCenter && this.imgFitToCenter();
+        try {
+            this.segState.fitCenter && this.imgFitToCenter();
+        } catch (err) {}
     }
 
-    redrawImages({ img_x, img_y, img_w, img_h }: PolyMetadata) {
+    redrawImages(newX: number, newY: number, newW: number, newH: number) {
         try {
             this.clearcanvas();
             if (this.context) {
-                this.context.drawImage(this.image, img_x, img_y, img_w, img_h);
+                this.context?.drawImage(this.img, newX, newY, newW, newH);
 
-                this._segCanvasService.drawAllPolygon(
+                this._segCanvasService.drawAllPolygons(
                     this._selectMetadata,
                     this.context,
                     this.annotateState.annotation,
                 );
                 this.mycanvas.nativeElement.focus();
             }
-        } catch (err) {
-            console.log('redrawImages', err);
-        }
+        } catch (err) {}
     }
 
     clearcanvas() {
-        const { width, height } = this.mycanvas.nativeElement;
-        this.context?.clearRect(0, 0, width, height);
+        try {
+            this.context?.clearRect(0, 0, this.mycanvas.nativeElement.width, this.mycanvas.nativeElement.height);
+        } catch (err) {}
     }
 
     keyMoveBox(direction: Direction) {
@@ -191,69 +216,64 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                     direction,
                     this.annotateState.annotation,
                     this.context,
-                    this.image,
+                    this.img,
                     this._selectMetadata.img_w,
                     this._selectMetadata.img_h,
-                    (isCompleted) => {
-                        if (isCompleted) {
-                            this._undoRedoService.appendStages({
-                                meta: cloneDeep(this._selectMetadata),
-                                method: 'draw',
-                            });
-                            this.emitMetadata();
-                        }
+                    (isDone: boolean) => {
+                        isDone
+                            ? (this._undoRedoService.appendStages({
+                                  meta: cloneDeep(this._selectMetadata),
+                                  method: 'draw',
+                              }),
+                              this.emitMetadata())
+                            : {};
                     },
                 );
-        } catch (err) {
-            console.log('keyMoveBox', err);
-        }
+        } catch (err) {}
     }
 
-    zoomImage(delta: number) {
+    zoomImage(del: number) {
         try {
-            if (delta > 0) {
-                const factor = 1.1;
-                // tslint:disable-next-line: prefer-const
-                let { img_w, img_h, img_x, img_y } = this._selectMetadata;
+            if (del > 0) {
                 // zoom up
-                this._selectMetadata.img_w *= factor;
-                this._selectMetadata.img_h *= factor;
+                this._selectMetadata.img_w *= 1.1;
+                this._selectMetadata.img_h *= 1.1;
                 this._segCanvasService.scalePolygons(
                     this._selectMetadata,
-                    { factor, newX: img_x, newY: img_y },
-                    (isCompleted) => {
-                        if (isCompleted) {
-                            this._undoRedoService.appendStages({
-                                meta: cloneDeep(this._selectMetadata),
-                                method: 'zoom',
-                            });
-                            this.emitMetadata();
-                        }
+                    1.1,
+                    this._selectMetadata.img_x,
+                    this._selectMetadata.img_y,
+                    (isDone: boolean) => {
+                        isDone
+                            ? (this._undoRedoService.appendStages({
+                                  meta: cloneDeep(this._selectMetadata),
+                                  method: 'zoom',
+                              }),
+                              this.emitMetadata())
+                            : {};
                     },
                 );
             } else {
                 // zoom down
-                const factor = 0.9;
-                // tslint:disable-next-line: prefer-const
-                let { img_w, img_h, img_x, img_y } = this._selectMetadata;
-                const widthExceedHeight = img_w * factor > 100 && img_h * factor > 100;
-                if (widthExceedHeight) {
-                    img_w *= factor;
-                    img_h *= factor;
+                if (this._selectMetadata.img_w * 0.9 > 100 && this._selectMetadata.img_h * 0.9 > 100) {
+                    this._selectMetadata.img_w *= 0.9;
+                    this._selectMetadata.img_h *= 0.9;
                     this._segCanvasService.scalePolygons(
                         this._selectMetadata,
-                        { factor, newX: img_x, newY: img_y },
-                        (isCompleted) => {
-                            if (isCompleted) {
-                                const clonedMeta = cloneDeep(this._selectMetadata);
+                        0.9,
+                        this._selectMetadata.img_x,
+                        this._selectMetadata.img_y,
+                        (isDone: boolean) => {
+                            if (isDone) {
+                                const meta = cloneDeep(this._selectMetadata);
                                 this.emitMetadata();
                                 this._undoRedoService.isMethodChange('zoom')
                                     ? this._undoRedoService.appendStages({
-                                          meta: clonedMeta,
+                                          meta,
                                           method: 'zoom',
                                       })
                                     : this._undoRedoService.replaceStages({
-                                          meta: clonedMeta,
+                                          meta,
                                           method: 'zoom',
                                       });
                             }
@@ -261,272 +281,311 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                     );
                 }
             }
-            this._copyPasteService.isAvailable() && this._copyPasteService.clear();
-            this.redrawImages(this._selectMetadata);
-        } catch (err) {
-            console.log('zoomImage', err);
-        }
+            this._copyPasteService.isAvailable() ? this._copyPasteService.clear() : {};
+            this.redrawImages(
+                this._selectMetadata.img_x,
+                this._selectMetadata.img_y,
+                this._selectMetadata.img_w,
+                this._selectMetadata.img_h,
+            );
+        } catch (err) {}
     }
 
     @HostListener('mousewheel', ['$event'])
     @HostListener('DOMMouseScroll', ['$event'])
-    mouseScroll({ detail, deltaY }: WheelEvent) {
+    mouseScroll(event: WheelEvent) {
         try {
             // let delta = event.deltaY ? event.deltaY / 40 : 0;
-            const delta = Math.max(-1, Math.min(1, -deltaY || -detail));
+            const delta = Math.max(-1, Math.min(1, -event.deltaY || -event.detail));
             if (delta && this.segState.scroll) {
                 this.zoomImage(delta);
             }
         } catch (err) {
-            console.log('mouseScroll', err);
+            console.log('MouseScroll(event: WheelEvent)', err.name + ': ', err.message);
         }
     }
 
     @HostListener('dblclick', ['$event'])
-    toggleEvent(_: MouseEvent) {
+    toggleEvent(event: MouseEvent) {
         try {
-            if (this.annotateState.annotation > -1) {
-                this._undoRedoService.clearRedundantStages();
-                this.annotateStateMakeChange({ annotation: this.annotateState.annotation, isDlbClick: true });
-            }
-        } catch (err) {
-            console.log('toggleEvent', err);
-        }
+            this.annotateState.annotation > -1
+                ? (this._undoRedoService.clearRedundantStages(),
+                  this.annotateStateMakeChange({ annotation: this.annotateState.annotation, isDlbClick: true }))
+                : {};
+        } catch (err) {}
     }
 
     @HostListener('window:keydown', ['$event'])
-    keyStrokeEvent({ ctrlKey, shiftKey, key }: KeyboardEvent) {
+    keyStrokeEvent(event: KeyboardEvent) {
         try {
             if (!this.mousedown) {
                 const { isActiveModal } = this.segState;
-                if (ctrlKey && (key === 'c' || key === 'C') && !isActiveModal) {
+                if (event.ctrlKey && (event.key === 'c' || event.key === 'C') && !isActiveModal) {
                     // copy
-                    this.annotateState.annotation > -1 &&
-                        this._copyPasteService.copy(this._selectMetadata.polygons[this.annotateState.annotation]);
-                } else if (ctrlKey && (key === 'v' || key === 'V') && !isActiveModal) {
+                    // this.boundingBoxState.selectedBox > -1
+                    this.annotateState.annotation > -1
+                        ? this._copyPasteService.copy(this._selectMetadata.polygons[this.annotateState.annotation])
+                        : // ? this._copyPasteService.copy(this._selectMetadata.bnd_box[this.boundingBoxState.selectedBox])
+                          {};
+                } else if (event.ctrlKey && (event.key === 'v' || event.key === 'V') && !isActiveModal) {
                     // paste
-                    if (this._copyPasteService.isAvailable()) {
-                        this._selectMetadata.polygons.push(this._copyPasteService.paste() as Polygons);
-                        // this.rulesMakeChange(null, this._selectMetadata.bnd_box.length - 1, null, null, null),
-                        this.annotateStateMakeChange({
-                            annotation: this._selectMetadata.polygons.length - 1,
-                            isDlbClick: false,
-                        });
-                        this._segCanvasService.validateXYDistance(this._selectMetadata);
-                    }
-
+                    this._copyPasteService.isAvailable()
+                        ? (this._selectMetadata.polygons.push(this._copyPasteService.paste() as Polygons),
+                          // this.rulesMakeChange(null, this._selectMetadata.bnd_box.length - 1, null, null, null),
+                          this.annotateStateMakeChange({
+                              annotation: this._selectMetadata.polygons.length - 1,
+                              isDlbClick: false,
+                          }),
+                          this._segCanvasService.validateXYDistance(
+                              this._selectMetadata,
+                              this._selectMetadata.img_x,
+                              this._selectMetadata.img_y,
+                          ))
+                        : {};
                     this._undoRedoService.appendStages({
                         meta: cloneDeep(this._selectMetadata),
                         method: 'draw',
                     });
                     this.emitMetadata();
                     this.mycanvas.nativeElement.focus();
-                } else if (ctrlKey && shiftKey && (key === 'z' || key === 'Z') && !isActiveModal) {
+                } else if (
+                    event.ctrlKey &&
+                    event.shiftKey &&
+                    (event.key === 'z' || event.key === 'Z') &&
+                    !isActiveModal
+                ) {
                     // redo
                     if (this._undoRedoService.isAllowRedo()) {
                         const rtStages: UndoState = this._undoRedoService.redo();
                         this._selectMetadata = cloneDeep(rtStages?.meta as PolyMetadata);
-                        this.redrawImages(this._selectMetadata);
+                        this.redrawImages(
+                            this._selectMetadata.img_x,
+                            this._selectMetadata.img_y,
+                            this._selectMetadata.img_w,
+                            this._selectMetadata.img_h,
+                        );
                         this.emitMetadata();
                     }
-                } else if (ctrlKey && (key === 'z' || key === 'Z') && !isActiveModal) {
+                } else if (event.ctrlKey && (event.key === 'z' || event.key === 'Z') && !isActiveModal) {
                     // undo
                     if (this._undoRedoService.isAllowUndo()) {
                         const rtStages: UndoState = this._undoRedoService.undo();
                         this._selectMetadata = cloneDeep(rtStages?.meta as PolyMetadata);
-                        this.redrawImages(this._selectMetadata);
+                        this.redrawImages(
+                            this._selectMetadata.img_x,
+                            this._selectMetadata.img_y,
+                            this._selectMetadata.img_w,
+                            this._selectMetadata.img_h,
+                        );
                         this.emitMetadata();
                     }
-                } else if (!isActiveModal && (key === 'Delete' || key === 'Backspace')) {
+                } else if (!isActiveModal && (event.key === 'Delete' || event.key === 'Backspace')) {
                     // delete single annotation
                     this._segCanvasService.deleteSinglePolygon(
                         this._selectMetadata,
                         // this.boundingBoxState.selectedBox,
                         this.annotateState.annotation,
-                        (isCompleted: boolean) => {
-                            if (isCompleted) {
-                                this.annotateStateMakeChange({ annotation: -1, isDlbClick: false });
+                        (isDone) => {
+                            isDone &&
+                                (this.annotateStateMakeChange({ annotation: -1, isDlbClick: false }),
                                 // ? (this.rulesMakeChange(null, -1, null, null, null),
                                 this._undoRedoService.appendStages({
                                     meta: cloneDeep(this._selectMetadata),
                                     method: 'draw',
-                                });
-                                this.emitMetadata();
-                            }
+                                }),
+                                this.emitMetadata());
                         },
                     );
                 } else {
-                    key === 'ArrowLeft' && !isActiveModal
+                    event.key === 'ArrowLeft' && !isActiveModal
                         ? this.keyMoveBox('left')
-                        : key === 'ArrowRight' && !isActiveModal
+                        : event.key === 'ArrowRight' && !isActiveModal
                         ? this.keyMoveBox('right')
-                        : key === 'ArrowUp' && !isActiveModal
+                        : event.key === 'ArrowUp' && !isActiveModal
                         ? this.keyMoveBox('up')
-                        : key === 'ArrowDown' && !isActiveModal && this.keyMoveBox('down');
+                        : event.key === 'ArrowDown' && !isActiveModal && this.keyMoveBox('down');
                 }
             }
-        } catch (err) {
-            console.log('keyStrokeEvent', err);
-        }
+        } catch (err) {}
     }
 
     @HostListener('mousedown', ['$event'])
     mouseDown(event: MouseEvent) {
-        try {
-            const isMouseClickWithinPoint = this._segCanvasService.mouseClickWithinPointPath(
-                this._selectMetadata,
-                event,
-            );
-
-            if (isMouseClickWithinPoint) {
-                this.mousedown = true;
-                if (this.segState.drag) {
-                    this._segCanvasService.setPanXY(event);
-                }
-                if (this.segState.draw && this.context) {
-                    const tmpPoly = this._segCanvasService.whenMouseDownEvent(
-                        event,
-                        this._selectMetadata,
-                        this.mycanvas.nativeElement,
-                        this.image,
-                        this.context,
-                        this.isctrlHold,
-                        this.altdown,
-                    );
-                    this.annotateStateMakeChange(cloneDeep({ annotation: tmpPoly, isDlbClick: false }));
-                    this.redrawImages(this._selectMetadata);
-                }
+        if (
+            this._segCanvasService.mouseClickWithinPointPath(
+                this._selectMetadata.img_x,
+                this._selectMetadata.img_y,
+                this._selectMetadata.img_w,
+                this._selectMetadata.img_h,
+                event.offsetX,
+                event.offsetY,
+            )
+        ) {
+            this.mousedown = true;
+            if (this.segState.drag) {
+                this._segCanvasService.setPanXY(event.offsetX, event.offsetY);
             }
-        } catch (err) {
-            console.log('mouseDown', err);
+            if (this.segState.draw && this.context) {
+                const tmpPoly: number = this._segCanvasService.whenMouseDownEvent(
+                    event.offsetX,
+                    event.offsetY,
+                    this._selectMetadata.img_x,
+                    this._selectMetadata.img_y,
+                    this.mycanvas.nativeElement.width,
+                    this.mycanvas.nativeElement.height,
+                    this._selectMetadata,
+                    this.img,
+                    this.context,
+                    this.isctrlHold,
+                    this.altdown,
+                );
+                this.annotateStateMakeChange(cloneDeep({ annotation: tmpPoly, isDlbClick: false }));
+                this.redrawImages(
+                    this._selectMetadata.img_x,
+                    this._selectMetadata.img_y,
+                    this._selectMetadata.img_w,
+                    this._selectMetadata.img_h,
+                );
+            }
         }
     }
 
     @HostListener('mouseup', ['$event'])
     mouseUp(event: MouseEvent) {
-        try {
-            // this._selectMetadata as truefy value
-            // as user can click on image but img not yet loaded onto screen
-            // but mouse has already moving into canvas, thus getting error
-            const isMouseClickWithinPoint =
-                this._selectMetadata && this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
-            if (isMouseClickWithinPoint) {
-                this.mousedown = true;
-                if (
-                    (this.segState.drag && this.mousedown) ||
-                    (this._segCanvasService.isNewPolygon() && this.isctrlHold && this.mousedown)
-                ) {
-                    this._segCanvasService.setGlobalXY(this._selectMetadata);
-                }
-                if (
-                    this.segState.draw &&
-                    !this._segCanvasService.isNewPolygon() &&
-                    this.annotateState.annotation > -1
-                ) {
-                    if (this._undoRedoService.isStateChange(this._selectMetadata.polygons)) {
-                        this._undoRedoService.appendStages({
-                            meta: cloneDeep(this._selectMetadata),
-                            method: 'draw',
-                        });
-                    }
-                }
-                this._segCanvasService.setGlobalXY({ img_x: -1, img_y: -1 });
-                this._segCanvasService.validateXYDistance(this._selectMetadata);
-                this.emitMetadata();
+        if (
+            this._segCanvasService.mouseClickWithinPointPath(
+                this._selectMetadata.img_x,
+                this._selectMetadata.img_y,
+                this._selectMetadata.img_w,
+                this._selectMetadata.img_h,
+                event.offsetX,
+                event.offsetY,
+            )
+        ) {
+            this.mousedown = true;
+            if (
+                (this.segState.drag && this.mousedown) ||
+                (this._segCanvasService.isNewPolygon() && this.isctrlHold && this.mousedown)
+            ) {
+                this._segCanvasService.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
             }
-        } catch (err) {
-            console.log('mouseUp', err);
+            if (this.segState.draw && !this._segCanvasService.isNewPolygon() && this.annotateState.annotation > -1) {
+                if (this._undoRedoService.isStateChange(this._selectMetadata.polygons)) {
+                    this._undoRedoService.appendStages({
+                        meta: cloneDeep(this._selectMetadata),
+                        method: 'draw',
+                    });
+                }
+            }
+            this._segCanvasService.setGlobalXY(-1, -1);
+            this._segCanvasService.validateXYDistance(
+                this._selectMetadata,
+                this._selectMetadata.img_x,
+                this._selectMetadata.img_y,
+            );
+            this.emitMetadata();
         }
     }
 
     @HostListener('mousemove', ['$event'])
     mouseMove(event: MouseEvent) {
-        try {
-            // this._selectMetadata as truefy value
-            // as user can click on image but img not yet loaded onto screen
-            // but mouse has already moving into canvas, thus getting error
-            const isMouseClickWithinPoint =
-                this._selectMetadata && this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
-            if (isMouseClickWithinPoint) {
-                this.mousedown = true;
-                if (this.segState.drag && this.mousedown) {
-                    const diffX = event.offsetX - this._segCanvasService.getPanX();
-                    const diffy = event.offsetY - this._segCanvasService.getPanY();
-                    this._selectMetadata.img_x = this._segCanvasService.getGlobalX() + diffX;
-                    this._selectMetadata.img_y = this._segCanvasService.getGlobalY() + diffy;
-                    this._segCanvasService.panPolygons(
-                        this._selectMetadata,
-                        this._selectMetadata.img_x,
-                        this._selectMetadata.img_y,
-                        false,
-                    );
-                    this.redrawImages(this._selectMetadata);
-                    this._undoRedoService.isMethodChange('pan')
-                        ? this._undoRedoService.appendStages({
-                              meta: this._selectMetadata,
-                              method: 'pan',
-                          })
-                        : this._undoRedoService.replaceStages({
-                              meta: this._selectMetadata,
-                              method: 'pan',
-                          });
-                }
-                if (this.segState.draw && this.mousedown && this.context) {
-                    this._segCanvasService.whenMouseMoveEvent(
-                        this._selectMetadata,
-                        this.image,
-                        this.context,
-                        this.mycanvas.nativeElement.width,
-                        this.mycanvas.nativeElement.height,
-                        event.offsetX,
-                        event.offsetY,
-                        this.isctrlHold,
-                        this.mousedown,
-                        (method) => {
-                            this.redrawImages(this._selectMetadata);
-                            if (method === 'pan') {
-                                this._undoRedoService.isMethodChange('pan')
-                                    ? this._undoRedoService.appendStages({
-                                          meta: this._selectMetadata,
-                                          method: 'pan',
-                                      })
-                                    : this._undoRedoService.replaceStages({
-                                          meta: this._selectMetadata,
-                                          method: 'pan',
-                                      });
-                            }
-                        },
-                    );
-                }
-            } else {
-                // console.log(this.crossh);
-                if (
-                    this.crossh.nativeElement.style.zIndex !== '-1' ||
-                    this.crossh.nativeElement.style.visibility !== 'hidden' ||
-                    this.crossv.nativeElement.style.zIndex !== '-1' ||
-                    this.crossv.nativeElement.style.visibility !== 'hidden'
-                ) {
-                    this.crossh.nativeElement.style.zIndex = '-1';
-                    this.crossh.nativeElement.style.visibility = 'hidden';
-                    this.crossv.nativeElement.style.zIndex = '-1';
-                    this.crossv.nativeElement.style.visibility = 'hidden';
-                }
+        if (
+            this._segCanvasService.mouseClickWithinPointPath(
+                this._selectMetadata.img_x,
+                this._selectMetadata.img_y,
+                this._selectMetadata.img_w,
+                this._selectMetadata.img_h,
+                event.offsetX,
+                event.offsetY,
+            )
+        ) {
+            this.mousedown = true;
+            if (this.segState.drag && this.mousedown) {
+                const diffX = event.offsetX - this._segCanvasService.getPanX();
+                const diffy = event.offsetY - this._segCanvasService.getPanY();
+                this._selectMetadata.img_x = this._segCanvasService.getGlobalX() + diffX;
+                this._selectMetadata.img_y = this._segCanvasService.getGlobalY() + diffy;
+                this._segCanvasService.panPolygons(
+                    this._selectMetadata,
+                    this._selectMetadata.img_x,
+                    this._selectMetadata.img_y,
+                    false,
+                );
+                this.redrawImages(
+                    this._selectMetadata.img_x,
+                    this._selectMetadata.img_y,
+                    this._selectMetadata.img_w,
+                    this._selectMetadata.img_h,
+                );
+                this._undoRedoService.isMethodChange('pan')
+                    ? this._undoRedoService.appendStages({
+                          meta: this._selectMetadata,
+                          method: 'pan',
+                      })
+                    : this._undoRedoService.replaceStages({
+                          meta: this._selectMetadata,
+                          method: 'pan',
+                      });
             }
-        } catch (err) {
-            console.log('mouseMove', err);
+            if (this.segState.draw && this.mousedown && this.context) {
+                this._segCanvasService.whenMouseMoveEvent(
+                    this._selectMetadata,
+                    this.img,
+                    this.context,
+                    this.mycanvas.nativeElement.width,
+                    this.mycanvas.nativeElement.height,
+                    event.offsetX,
+                    event.offsetY,
+                    this.isctrlHold,
+                    this.mousedown,
+                    (method) => {
+                        this.redrawImages(
+                            this._selectMetadata.img_x,
+                            this._selectMetadata.img_y,
+                            this._selectMetadata.img_w,
+                            this._selectMetadata.img_h,
+                        );
+                        if (method === 'pan') {
+                            this._undoRedoService.isMethodChange('pan')
+                                ? this._undoRedoService.appendStages({
+                                      meta: this._selectMetadata,
+                                      method: 'pan',
+                                  })
+                                : this._undoRedoService.replaceStages({
+                                      meta: this._selectMetadata,
+                                      method: 'pan',
+                                  });
+                        }
+                    },
+                );
+            }
+        } else {
+            console.log(this.crossh);
+            if (
+                this.crossh.nativeElement.style.zIndex !== '-1' ||
+                this.crossh.nativeElement.style.visibility !== 'hidden' ||
+                this.crossv.nativeElement.style.zIndex !== '-1' ||
+                this.crossv.nativeElement.style.visibility !== 'hidden'
+            ) {
+                this.crossh.nativeElement.style.zIndex = '-1';
+                this.crossh.nativeElement.style.visibility = 'hidden';
+                this.crossv.nativeElement.style.zIndex = '-1';
+                this.crossv.nativeElement.style.visibility = 'hidden';
+            }
         }
     }
 
     @HostListener('mouseout', ['$event'])
-    mouseOut(_: MouseEvent) {
-        try {
-            if (this.segState.drag && this.mousedown) {
-                this._segCanvasService.setGlobalXY(this._selectMetadata);
-                this.redrawImages(this._selectMetadata);
-            }
-            this.mousedown = false;
-        } catch (err) {
-            console.log('mouseOut', err);
+    mouseOut(event: MouseEvent) {
+        if (this.segState.drag && this.mousedown) {
+            this._segCanvasService.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
+            this.redrawImages(
+                this._selectMetadata.img_x,
+                this._selectMetadata.img_y,
+                this._selectMetadata.img_w,
+                this._selectMetadata.img_h,
+            );
         }
+        this.mousedown = false;
     }
 }
