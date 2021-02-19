@@ -49,6 +49,7 @@ export class SegmentationCanvasService {
         ctrldown: boolean,
         altdown: boolean,
     ): number {
+        console.log('whenMouseDownEvent > setGlobalXY');
         this.setGlobalXY({ img_x: offsetX, img_y: offsetY });
         const polArea = this.findPolygonArea(offsetX, offsetY, metadata);
         this.clickPoint = this.findClickPoint(offsetX, offsetY, metadata);
@@ -422,10 +423,8 @@ export class SegmentationCanvasService {
 
     setGlobalXY({ img_x, img_y }: Pick<PolyMetadata, 'img_x' | 'img_y'>) {
         try {
-            console.log(img_x, img_y);
-            let { x, y } = this.globalXY;
-            x = img_x;
-            y = img_y;
+            this.globalXY.x = img_x;
+            this.globalXY.y = img_y;
         } catch (err) {
             console.log('setGlobalXY', err);
         }

@@ -65,40 +65,40 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         }
     }
 
-    initializeCanvas = () => {
+    initializeCanvas() {
         this.mycanvas.nativeElement.style.width = '80%';
         this.mycanvas.nativeElement.style.height = '90%';
         this.mycanvas.nativeElement.width = this.mycanvas.nativeElement.offsetWidth;
         this.mycanvas.nativeElement.height = this.mycanvas.nativeElement.offsetHeight;
         this.context = this.mycanvas.nativeElement.getContext('2d');
-    };
+    }
 
-    loadImages = (base64: string) => {
+    loadImages(base64: string) {
         this.image.src = base64;
         this.image.onload = () => {
             // tslint:disable-next-line: prefer-const
             let { img_w, img_h, img_ori_w, img_ori_h } = this._selectMetadata;
-            img_w = img_w < 1 ? img_ori_w : img_w;
-            img_h = img_h < 1 ? img_ori_h : img_h;
-            this._segCanvasService.setGlobalXY(this._selectMetadata);
+            this._selectMetadata.img_w = img_w < 1 ? img_ori_w : img_w;
+            this._selectMetadata.img_h = img_h < 1 ? img_ori_h : img_h;
+            // this._segCanvasService.setGlobalXY(this._selectMetadata);
             this.imgFitToCenter();
             this._undoRedoService.appendStages({ meta: cloneDeep(this._selectMetadata), method: 'draw' });
         };
-    };
+    }
 
-    emitMetadata = () => {
+    emitMetadata() {
         this._onChangeMetadata.emit(this._selectMetadata);
-    };
+    }
 
-    annotateStateMakeChange = (newState?: AnnotateActionState) => {
+    annotateStateMakeChange(newState?: AnnotateActionState) {
         newState && this._annotateSelectState.setState(newState);
-    };
+    }
 
-    annotateStateOnChange = () => {
+    annotateStateOnChange() {
         this.annotateState && this._segCanvasService.setSelectedPolygon(this.annotateState.annotation);
-    };
+    }
 
-    rulesMakeChange = (scroll?: boolean, fitToScreen?: boolean, clearScreen?: boolean) => {
+    rulesMakeChange(scroll?: boolean, fitToScreen?: boolean, clearScreen?: boolean) {
         try {
             const tempRules = clone(this.segState);
             scroll && (tempRules.scroll = scroll);
@@ -108,20 +108,21 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         } catch (err) {
             console.log('rulesMakeChange', err);
         }
-    };
+    }
 
-    imgFitToCenter = () => {
+    imgFitToCenter() {
         try {
             const tmpObj = this._segCanvasService.calScaleToFitScreen(
                 this._selectMetadata,
                 this.mycanvas.nativeElement,
             );
-            let { img_w, img_h, img_x, img_y } = this._selectMetadata;
-            img_w *= tmpObj.factor;
-            img_h *= tmpObj.factor;
-            img_x = tmpObj.newX;
-            img_y = tmpObj.newY;
+            this._selectMetadata.img_w *= tmpObj.factor;
+            this._selectMetadata.img_h *= tmpObj.factor;
+            this._selectMetadata.img_x = tmpObj.newX;
+            this._selectMetadata.img_y = tmpObj.newY;
             this._segCanvasService.scalePolygons(this._selectMetadata, tmpObj);
+
+            const { img_x, img_y } = this._selectMetadata;
             this._segCanvasService.setGlobalXY({ img_x: tmpObj.newX, img_y: tmpObj.newY });
             this._segCanvasService.panPolygons(this._selectMetadata, img_x, img_y, false);
             const meta = cloneDeep(this._selectMetadata);
@@ -139,9 +140,9 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         } catch (err) {
             console.log('imgFitToCenter', err);
         }
-    };
+    }
 
-    isClearCanvas = () => {
+    isClearCanvas() {
         try {
             if (this.segState.clear) {
                 this._selectMetadata.polygons = [];
@@ -152,13 +153,13 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         } catch (err) {
             console.log('isClearCanvas', err);
         }
-    };
+    }
 
-    isFitCenter = () => {
+    isFitCenter() {
         this.segState.fitCenter && this.imgFitToCenter();
-    };
+    }
 
-    redrawImages = ({ img_x, img_y, img_w, img_h }: PolyMetadata) => {
+    redrawImages({ img_x, img_y, img_w, img_h }: PolyMetadata) {
         try {
             this.clearcanvas();
             if (this.context) {
@@ -174,14 +175,14 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         } catch (err) {
             console.log('redrawImages', err);
         }
-    };
+    }
 
-    clearcanvas = () => {
+    clearcanvas() {
         const { width, height } = this.mycanvas.nativeElement;
         this.context?.clearRect(0, 0, width, height);
-    };
+    }
 
-    keyMoveBox = (direction: Direction) => {
+    keyMoveBox(direction: Direction) {
         try {
             this.context &&
                 this._segCanvasService.keyboardMovePolygon(
@@ -205,17 +206,16 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         } catch (err) {
             console.log('keyMoveBox', err);
         }
-    };
+    }
 
-    zoomImage = (delta: number) => {
+    zoomImage(delta: number) {
         try {
             if (delta > 0) {
                 const factor = 1.1;
-                // tslint:disable-next-line: prefer-const
-                let { img_w, img_h, img_x, img_y } = this._selectMetadata;
+                const { img_x, img_y } = this._selectMetadata;
                 // zoom up
-                img_w *= factor;
-                img_h *= factor;
+                this._selectMetadata.img_w *= factor;
+                this._selectMetadata.img_h *= factor;
                 this._segCanvasService.scalePolygons(
                     this._selectMetadata,
                     { factor, newX: img_x, newY: img_y },
@@ -236,8 +236,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                 let { img_w, img_h, img_x, img_y } = this._selectMetadata;
                 const widthExceedHeight = img_w * factor > 100 && img_h * factor > 100;
                 if (widthExceedHeight) {
-                    img_w *= factor;
-                    img_h *= factor;
+                    this._selectMetadata.img_w *= factor;
+                    this._selectMetadata.img_h *= factor;
                     this._segCanvasService.scalePolygons(
                         this._selectMetadata,
                         { factor, newX: img_x, newY: img_y },
@@ -264,11 +264,11 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         } catch (err) {
             console.log('zoomImage', err);
         }
-    };
+    }
 
     @HostListener('mousewheel', ['$event'])
     @HostListener('DOMMouseScroll', ['$event'])
-    mouseScroll = ({ detail, deltaY }: WheelEvent) => {
+    mouseScroll({ detail, deltaY }: WheelEvent) {
         try {
             // let delta = event.deltaY ? event.deltaY / 40 : 0;
             const delta = Math.max(-1, Math.min(1, -deltaY || -detail));
@@ -278,10 +278,10 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         } catch (err) {
             console.log('mouseScroll', err);
         }
-    };
+    }
 
     @HostListener('dblclick', ['$event'])
-    toggleEvent = (_: MouseEvent) => {
+    toggleEvent(_: MouseEvent) {
         try {
             if (this.annotateState.annotation > -1) {
                 this._undoRedoService.clearRedundantStages();
@@ -290,10 +290,10 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         } catch (err) {
             console.log('toggleEvent', err);
         }
-    };
+    }
 
     @HostListener('window:keydown', ['$event'])
-    keyStrokeEvent = ({ ctrlKey, shiftKey, key }: KeyboardEvent) => {
+    keyStrokeEvent({ ctrlKey, shiftKey, key }: KeyboardEvent) {
         try {
             if (!this.mousedown) {
                 const { isActiveModal } = this.segState;
@@ -366,10 +366,10 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         } catch (err) {
             console.log('keyStrokeEvent', err);
         }
-    };
+    }
 
     @HostListener('mousedown', ['$event'])
-    mouseDown = (event: MouseEvent) => {
+    mouseDown(event: MouseEvent) {
         try {
             const isMouseClickWithinPoint = this._segCanvasService.mouseClickWithinPointPath(
                 this._selectMetadata,
@@ -398,10 +398,10 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         } catch (err) {
             console.log('mouseDown', err);
         }
-    };
+    }
 
     @HostListener('mouseup', ['$event'])
-    mouseUp = (event: MouseEvent) => {
+    mouseUp(event: MouseEvent) {
         try {
             // this._selectMetadata as truefy value
             // as user can click on image but img not yet loaded onto screen
@@ -414,6 +414,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                     (this.segState.drag && this.mousedown) ||
                     (this._segCanvasService.isNewPolygon() && this.isctrlHold && this.mousedown)
                 ) {
+                    console.log('mouseUp inner if > setGlobalXY');
                     this._segCanvasService.setGlobalXY(this._selectMetadata);
                 }
                 if (
@@ -428,6 +429,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                         });
                     }
                 }
+                console.log('mouseUp outer if > setGlobalXY');
                 this._segCanvasService.setGlobalXY({ img_x: -1, img_y: -1 });
                 this._segCanvasService.validateXYDistance(this._selectMetadata);
                 this.emitMetadata();
@@ -435,10 +437,10 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         } catch (err) {
             console.log('mouseUp', err);
         }
-    };
+    }
 
     @HostListener('mousemove', ['$event'])
-    mouseMove = (event: MouseEvent) => {
+    mouseMove(event: MouseEvent) {
         try {
             // this._selectMetadata as truefy value
             // as user can click on image but img not yet loaded onto screen
@@ -513,12 +515,13 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         } catch (err) {
             console.log('mouseMove', err);
         }
-    };
+    }
 
     @HostListener('mouseout', ['$event'])
-    mouseOut = (_: MouseEvent) => {
+    mouseOut(_: MouseEvent) {
         try {
             if (this.segState.drag && this.mousedown) {
+                console.log('mouseOut > setGlobalXY');
                 this._segCanvasService.setGlobalXY(this._selectMetadata);
                 this.redrawImages(this._selectMetadata);
             }
@@ -526,5 +529,5 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         } catch (err) {
             console.log('mouseOut', err);
         }
-    };
+    }
 }
