@@ -18,7 +18,12 @@ import { SpinnerService } from 'src/components/spinner/spinner.service';
     styleUrls: ['./data-set-layout.component.scss'],
 })
 export class DataSetLayoutComponent implements OnInit, OnDestroy {
-    onChangeSchema!: DataSetProps;
+    onChangeSchema: DataSetProps = {
+        currentThumbnailIndex: -1,
+        thumbnailName: '',
+        totalNumThumbnail: 0,
+        status: undefined,
+    };
     projectList: ProjectSchema = {
         projects: [],
         isUploading: false,
@@ -30,7 +35,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     form!: FormGroup;
     displayModal: boolean = false;
     subject$: Subject<any> = new Subject();
-    subjectSubscription!: Subscription;
+    subjectSubscription?: Subscription;
     thumbnailList: BboxMetadata[] & PolyMetadata[] = [];
     labelList: string[] = [];
     unsubscribe$: Subject<any> = new Subject();

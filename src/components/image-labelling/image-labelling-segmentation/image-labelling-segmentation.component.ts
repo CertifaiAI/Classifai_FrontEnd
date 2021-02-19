@@ -1,4 +1,4 @@
-import { ActionState, Direction, Polygons, PolyMetadata, UndoState } from '../image-labelling.model';
+import { ActionState, Direction, Method, Polygons, PolyMetadata, UndoState } from '../image-labelling.model';
 import { AnnotateActionState, AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { cloneDeep } from 'lodash-es';
 import { CopyPasteService } from 'src/shared/services/copy-paste.service';
@@ -59,8 +59,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log(changes);
-        if (changes._imgSrc?.currentValue) {
+        if (changes._imgSrc.currentValue) {
             this.initializeCanvas();
             this.loadImages(changes._imgSrc.currentValue);
         }
@@ -483,9 +482,9 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                         event.offsetY,
                         this.isctrlHold,
                         this.mousedown,
-                        (met: string) => {
+                        (method) => {
                             this.redrawImages(this._selectMetadata);
-                            if (met === 'pan') {
+                            if (method === 'pan') {
                                 this._undoRedoService.isMethodChange('pan')
                                     ? this._undoRedoService.appendStages({
                                           meta: this._selectMetadata,

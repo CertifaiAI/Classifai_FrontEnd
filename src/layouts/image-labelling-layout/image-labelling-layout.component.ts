@@ -37,7 +37,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     imgSrc: string = '';
     loading: boolean = false;
     thumbnailList: CompleteMetadata[] = [];
-    selectedMetaData!: CompleteMetadata;
+    selectedMetaData?: CompleteMetadata;
     unsubscribe$: Subject<any> = new Subject();
     tabStatus: TabsProps<CompleteMetadata>[] = [
         {

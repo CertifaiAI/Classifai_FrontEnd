@@ -1,5 +1,13 @@
 import { cloneDeep } from 'lodash-es';
-import { Coordinate, Direction, FitScreenCalc, Polygons, PolyMetadata, xyCoordinate } from '../image-labelling.model';
+import {
+    Coordinate,
+    Direction,
+    FitScreenCalc,
+    Method,
+    Polygons,
+    PolyMetadata,
+    xyCoordinate,
+} from '../image-labelling.model';
 import { Injectable } from '@angular/core';
 import { Utils } from '../../../shared/types/utils/utils';
 
@@ -32,7 +40,7 @@ export class SegmentationCanvasService {
 
     constructor() {}
 
-    public whenMouseDownEvent(
+    whenMouseDownEvent(
         { offsetX, offsetY }: MouseEvent,
         metadata: PolyMetadata,
         { width, height }: HTMLCanvasElement,
@@ -66,7 +74,7 @@ export class SegmentationCanvasService {
         return this.selectedPolygon;
     }
 
-    public whenMouseMoveEvent(
+    whenMouseMoveEvent(
         pol: PolyMetadata,
         img: HTMLImageElement,
         context: CanvasRenderingContext2D,
@@ -76,7 +84,7 @@ export class SegmentationCanvasService {
         newY: number,
         ctrldown: boolean,
         isMouseDown: boolean,
-        redrawCallback: (...agrs: any) => any,
+        redrawCallback: (arg: Method) => void,
     ) {
         if (this.isNewPolygon() && ctrldown && isMouseDown) {
             const diffX = newX - this.getPanX();
@@ -149,7 +157,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public pushTmpPoint(mouseX: number, mouseY: number, imgX: number, imgY: number, len: number) {
+    pushTmpPoint(mouseX: number, mouseY: number, imgX: number, imgY: number, len: number) {
         try {
             const distancetoX = mouseX - imgX;
             const distancetoY = mouseY - imgY;
@@ -179,7 +187,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public removeLastPoint(
+    removeLastPoint(
         metadata: PolyMetadata,
         context: CanvasRenderingContext2D,
         img: HTMLImageElement,
@@ -200,7 +208,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public calculatePointDistance(p1x: number, p1y: number, p2x: number, p2y: number) {
+    calculatePointDistance(p1x: number, p1y: number, p2x: number, p2y: number) {
         try {
             const xdis: number = p1x - p2x;
             const ydis: number = p1y - p2y;
@@ -212,7 +220,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public generateNewtmpPolygon(len: number) {
+    generateNewtmpPolygon(len: number) {
         try {
             const uuid: number = this.util.generateUniquesID();
             const tmpregion: string = (len + 1).toString();
@@ -230,7 +238,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public resetDrawing(
+    resetDrawing(
         metadata: PolyMetadata,
         context: CanvasRenderingContext2D,
         img: HTMLImageElement,
@@ -257,11 +265,11 @@ export class SegmentationCanvasService {
         }
     }
 
-    public setNewpolygon(state: boolean) {
+    setNewpolygon(state: boolean) {
         this.isNewPoly = state;
     }
 
-    public redraw(
+    redraw(
         pol: PolyMetadata,
         img: HTMLImageElement,
         context: CanvasRenderingContext2D,
@@ -288,7 +296,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public drawAllPolygon(metadata: PolyMetadata, context: CanvasRenderingContext2D, selectedPolygon: number) {
+    drawAllPolygon(metadata: PolyMetadata, context: CanvasRenderingContext2D, selectedPolygon: number) {
         try {
             // if(pol.polygons.length < 1 || selectpolygon === -1){return;}
             // else{
@@ -382,7 +390,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public clearAllDIV({ polygons }: PolyMetadata, len: number) {
+    clearAllDIV({ polygons }: PolyMetadata, len: number) {
         try {
             if (this.validatePolygonMetadata(polygons)) {
                 for (let i = 0; i < len; ++i) {
@@ -394,7 +402,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public createDIV(textinfo: string, uuid: number, posX: number, posY: number) {
+    createDIV(textinfo: string, uuid: number, posX: number, posY: number) {
         try {
             const divtag = document.createElement('div');
             divtag.id = 'float_' + uuid.toString();
@@ -429,7 +437,7 @@ export class SegmentationCanvasService {
         return this.globalXY.y;
     }
 
-    public mouseMovePolygon(
+    mouseMovePolygon(
         mouseX: number,
         mouseY: number,
         pol: PolyMetadata,
@@ -464,7 +472,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public keyboardMovePolygon(
+    keyboardMovePolygon(
         pol: PolyMetadata,
         direction: Direction,
         polyIndex: number,
@@ -566,7 +574,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public setPolygonsLineWidth({ polygons }: PolyMetadata, selectedPolygon: number) {
+    setPolygonsLineWidth({ polygons }: PolyMetadata, selectedPolygon: number) {
         try {
             for (let i = 0; i < polygons.length; ++i) {
                 if (i === selectedPolygon) {
@@ -580,7 +588,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public drawNewPolygon(
+    drawNewPolygon(
         pol: PolyMetadata,
         img: HTMLImageElement,
         context: CanvasRenderingContext2D,
@@ -658,7 +666,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public returnTempPoly() {
+    returnTempPoly() {
         try {
             if (this.tmpPolygon !== null && this.tmpPolygon !== undefined) {
                 return this.tmpPolygon;
@@ -671,7 +679,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public setPolygonCoordinate(
+    setPolygonCoordinate(
         mouseX: number,
         mouseY: number,
         { polygons }: PolyMetadata,
@@ -723,7 +731,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public findPolygonArea(mouseX: number, mouseY: number, { polygons }: PolyMetadata): number {
+    findPolygonArea(mouseX: number, mouseY: number, { polygons }: PolyMetadata): number {
         try {
             let polyindex: number = -1;
             let area: number = 10000000;
@@ -743,7 +751,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public findClickPoint(mouseX: number, mouseY: number, pol: PolyMetadata): ClickPoint {
+    findClickPoint(mouseX: number, mouseY: number, pol: PolyMetadata): ClickPoint {
         try {
             let dist: number;
             const clickarea = { polygonIndex: -1, pointIndex: -1 };
@@ -776,7 +784,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public deleteSinglePolygon(pol: PolyMetadata, index: number, callback: (agrs: boolean) => any) {}
+    deleteSinglePolygon(pol: PolyMetadata, index: number, callback: (agrs: boolean) => any) {}
 
     scalePolygons(metadata: PolyMetadata, { factor, newX, newY }: FitScreenCalc, callback?: (arg: boolean) => any) {
         try {
@@ -797,7 +805,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    public panPolygons({ polygons }: PolyMetadata, imgX: number, imgY: number, isDraw: boolean) {
+    panPolygons({ polygons }: PolyMetadata, imgX: number, imgY: number, isDraw: boolean) {
         try {
             if (isDraw && this.tmpPolygon) {
                 for (const [i] of this.tmpPolygon.coorPt.entries()) {
@@ -818,7 +826,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    // public setCurrentSelectedimgidx(idx: number | undefined) {
+    //  setCurrentSelectedimgidx(idx: number | undefined) {
     //     try {
     //         this.CurrentSelectedImg.idx = idx!;
     //     } catch (err) {
@@ -826,7 +834,7 @@ export class SegmentationCanvasService {
     //     }
     // }
 
-    // public setCurrentSelectedimguid(uid: number) {
+    //  setCurrentSelectedimguid(uid: number) {
     //     try {
     //         this.CurrentSelectedImg.uid = uid;
     //     } catch (err) {
