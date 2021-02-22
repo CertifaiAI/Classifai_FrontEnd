@@ -202,6 +202,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         updateLabel$.pipe(first()).subscribe(({ message }) => {
             if (message === 1) {
                 this.tabStatus = this._imgLblLayoutService.displayLabelList(this.tabStatus, newLabelList);
+            } else {
                 console.error(`Error while updating label`);
             }
         });

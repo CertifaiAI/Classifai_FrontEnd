@@ -33,14 +33,14 @@ export class SegmentationCanvasService {
         region: '',
         subLabel: [],
     };
-    private selectedPolygon: number = -1;
+    private selectedPolygonIndex: number = -1;
     private util: Utils = new Utils();
     private isNewPoly: boolean = false;
     // private currentSelectedImg = { uid: -1, idx: -1 };
 
     constructor() {}
 
-    whenMouseDownEvent(
+    mouseDownDraw(
         { offsetX, offsetY }: MouseEvent,
         metadata: PolyMetadata,
         { width, height }: HTMLCanvasElement,
@@ -49,33 +49,32 @@ export class SegmentationCanvasService {
         ctrldown: boolean,
         altdown: boolean,
     ): number {
-        console.log('whenMouseDownEvent > setGlobalXY');
         this.setGlobalXY({ img_x: offsetX, img_y: offsetY });
-        const polArea = this.findPolygonArea(offsetX, offsetY, metadata);
+        this.selectedPolygonIndex = this.findPolygonArea(offsetX, offsetY, metadata);
         this.clickPoint = this.findClickPoint(offsetX, offsetY, metadata);
         if (this.isNewPolygon() && ctrldown) {
             this.setPanXY({ offsetX, offsetY });
-        } else if ((this.tmpPolygon === null && this.selectedPolygon < 0) || altdown) {
+        } else if ((!this.tmpPolygon && this.selectedPolygonIndex < 0) || altdown) {
             this.setPolygonsLineWidth(metadata, -1);
-            this.selectedPolygon = -1;
+            this.selectedPolygonIndex = -1;
             this.setNewpolygon(true);
-            this.pushTmpPoint(offsetX, offsetY, offsetX, offsetY, metadata.polygons.length);
+            this.pushTmpPoint(offsetX, offsetY, metadata.img_x, metadata.img_y, metadata.polygons.length);
         } else if (this.isNewPolygon()) {
-            this.pushTmpPoint(offsetX, offsetY, offsetX, offsetY, metadata.polygons.length);
+            this.pushTmpPoint(offsetX, offsetY, metadata.img_x, metadata.img_y, metadata.polygons.length);
             this.drawNewPolygon(metadata, img, context, width, height, false);
             this.drawfromPreviousPoint(offsetX, offsetY, context);
         } else {
             this.setNewpolygon(false);
-            this.selectedPolygon =
+            this.selectedPolygonIndex =
                 this.findPolygonArea(offsetX, offsetY, metadata) > -1
                     ? this.findPolygonArea(offsetX, offsetY, metadata)
                     : this.findClickPoint(offsetX, offsetY, metadata).polygonIndex;
-            this.setPolygonsLineWidth(metadata, this.selectedPolygon);
+            this.setPolygonsLineWidth(metadata, this.selectedPolygonIndex);
         }
-        return this.selectedPolygon;
+        return this.selectedPolygonIndex;
     }
 
-    whenMouseMoveEvent(
+    mouseMoveDraw(
         pol: PolyMetadata,
         img: HTMLImageElement,
         context: CanvasRenderingContext2D,
@@ -99,8 +98,8 @@ export class SegmentationCanvasService {
         } else if (this.isNewPolygon()) {
             this.drawNewPolygon(pol, img, context, canvasW, canvasH, false);
             this.drawfromPreviousPoint(newX, newY, context);
-        } else if (this.selectedPolygon > -1 && isMouseDown) {
-            this.mouseMovePolygon(newX, newY, pol, context, this.selectedPolygon, img, canvasW, canvasH);
+        } else if (this.selectedPolygonIndex > -1 && isMouseDown) {
+            this.mouseMovePolygon(newX, newY, pol, context, this.selectedPolygonIndex, img, canvasW, canvasH);
         } else {
             this.setPolygonCoordinate(newX, newY, pol, this.clickPoint.polygonIndex, this.clickPoint.pointIndex);
             redrawCallback('draw');
@@ -130,12 +129,12 @@ export class SegmentationCanvasService {
         return this.panXY.y;
     }
 
-    setSelectedPolygon(index: number) {
-        index && (this.selectedPolygon = index);
+    setSelectedPolygonIndex(index: number) {
+        index && (this.selectedPolygonIndex = index);
     }
 
-    getSelectedPolygon() {
-        return this.selectedPolygon;
+    getselectedPolygonIndex() {
+        return this.selectedPolygonIndex;
     }
 
     mouseClickWithinPointPath({ img_x, img_y, img_w, img_h }: PolyMetadata, { offsetX, offsetY }: MouseEvent): boolean {
@@ -166,29 +165,17 @@ export class SegmentationCanvasService {
         try {
             const distancetoX = mouseX - imgX;
             const distancetoY = mouseY - imgY;
-            if (this.tmpPolygon !== null && this.tmpPolygon !== undefined) {
-                const lastX: number = this.tmpPolygon.coorPt[this.tmpPolygon.coorPt.length - 1].x;
-                const lastY: number = this.tmpPolygon.coorPt[this.tmpPolygon.coorPt.length - 1].y;
-                const calPointDistnace = this.calculatePointDistance(lastX, lastY, mouseX, mouseY);
-                if (calPointDistnace && calPointDistnace > this.distanceOffset) {
-                    this.tmpPolygon.coorPt.push({
-                        x: mouseX,
-                        y: mouseY,
-                        distancetoImg: { x: distancetoX, y: distancetoY },
-                    });
-                }
-            } else {
-                this.generateNewtmpPolygon(len);
-
-                // !! Why is the below code using tmpPolygon in the else statement ????
-                this.tmpPolygon!.coorPt.push({
+            if (this.tmpPolygon) {
+                this.tmpPolygon.coorPt.push({
                     x: mouseX,
                     y: mouseY,
                     distancetoImg: { x: distancetoX, y: distancetoY },
                 });
+            } else {
+                this.generateNewtmpPolygon(len);
             }
         } catch (err) {
-            console.log('!! pushTmpPoint', err);
+            console.log('pushTmpPoint', err);
         }
     }
 
@@ -228,14 +215,14 @@ export class SegmentationCanvasService {
     generateNewtmpPolygon(len: number) {
         try {
             const uuid: number = this.util.generateUniquesID();
-            const tmpregion: string = (len + 1).toString();
+            const tmpRegion: string = (len + 1).toString();
             this.tmpPolygon = {
                 coorPt: [],
                 label: 'default',
                 id: uuid,
                 lineWidth: 2,
                 color: '#FFFAFA',
-                region: tmpregion,
+                region: tmpRegion,
                 subLabel: [],
             };
         } catch (err) {
@@ -266,7 +253,7 @@ export class SegmentationCanvasService {
                 -1,
             );
         } catch (err) {
-            console.log('!! resetDrawing', err);
+            console.log('resetDrawing', err);
         }
     }
 
@@ -284,7 +271,7 @@ export class SegmentationCanvasService {
         imgH: number,
         imgX: number,
         imgY: number,
-        selectedpolygon: number,
+        selectedPolygonIndex: number,
     ) {
         try {
             context.restore();
@@ -295,19 +282,19 @@ export class SegmentationCanvasService {
             context.clip();
             context.beginPath();
             context.drawImage(img, imgX, imgY, imgW, imgH);
-            this.drawAllPolygon(pol, context, selectedpolygon);
+            this.drawAllPolygon(pol, context, selectedPolygonIndex);
         } catch (err) {
-            console.log('!! redraw', err);
+            console.log('redraw', err);
         }
     }
 
-    drawAllPolygon(metadata: PolyMetadata, context: CanvasRenderingContext2D, selectedPolygon: number) {
+    drawAllPolygon(metadata: PolyMetadata, context: CanvasRenderingContext2D, selectedPolygonIndex: number) {
         try {
             // if(pol.polygons.length < 1 || selectpolygon === -1){return;}
             // else{
             if (this.validatePolygonMetadata(metadata.polygons)) {
                 this.drawAllPolygonLine(metadata, context, 1);
-                this.drawAllPolygonsDots(metadata, context, selectedPolygon, this.radius, 1);
+                this.drawAllPolygonsDots(metadata, context, selectedPolygonIndex, this.radius, 1);
                 this.plotAllFloatLabel(metadata, 1);
             }
             // }
@@ -344,7 +331,7 @@ export class SegmentationCanvasService {
     private drawAllPolygonsDots(
         { polygons }: PolyMetadata,
         context: CanvasRenderingContext2D,
-        selectedpolygon: number,
+        selectedPolygonIndex: number,
         radius: number,
         len: number,
     ) {
@@ -352,7 +339,7 @@ export class SegmentationCanvasService {
             for (let q = 0; q < len; ++q) {
                 // context.strokeStyle = pol.polygons[q].color;
                 // context.fillStyle = pol.polygons[q].color;
-                if (q !== selectedpolygon) {
+                if (q !== selectedPolygonIndex) {
                     continue;
                 }
                 context.strokeStyle = 'green';
@@ -370,16 +357,16 @@ export class SegmentationCanvasService {
             console.log('drawAllPolygonsDots', err);
         }
     }
-
+    // !! missing id for getElementById
     private plotAllFloatLabel(metadata: PolyMetadata, len: number) {
         try {
             this.clearAllDIV(metadata, 1);
             for (let i = 0; i < len; ++i) {
                 // this.util.RemoveHTMLElement("float_" + pol[this.getCurrentSelectedimgidx()].polygons[i].id.toString());
-                const region = metadata.polygons[i].region.toString();
+                const regionAttr = metadata.polygons[i].region.toString();
                 const uuids = metadata.polygons[i].id;
                 const tempdiv = this.createDIV(
-                    region,
+                    regionAttr,
                     uuids,
                     metadata.polygons[i].coorPt[0].x,
                     metadata.polygons[i].coorPt[0].y,
@@ -448,7 +435,7 @@ export class SegmentationCanvasService {
         canvasW: number,
         canvasH: number,
     ) {
-        // , selectedpolygon:number){
+        // , selectedPolygonIndex:number){
         try {
             // ! Don't remove the below const variables, it's used for other function to do calculations
             const img_X = pol.img_x;
@@ -467,10 +454,10 @@ export class SegmentationCanvasService {
                 }
 
                 this.redraw(pol, img, context, canvasW, canvasH, pol.img_w, pol.img_h, pol.img_x, pol.img_y, polyIndex);
-                // selectedpolygon);
+                // selectedPolygonIndex);
             }
         } catch (err) {
-            console.log('!! mouseMovePolygon', err);
+            console.log('mouseMovePolygon', err);
         }
     }
 
@@ -529,7 +516,7 @@ export class SegmentationCanvasService {
             }
             return true;
         } catch (err) {
-            console.log('!! keyboardMovePolygon', err);
+            console.log('keyboardMovePolygon', err);
             return true;
         }
     }
@@ -576,10 +563,10 @@ export class SegmentationCanvasService {
         }
     }
 
-    setPolygonsLineWidth({ polygons }: PolyMetadata, selectedPolygon: number) {
+    setPolygonsLineWidth({ polygons }: PolyMetadata, selectedPolygonIndex: number) {
         try {
             for (let i = 0; i < polygons.length; ++i) {
-                if (i === selectedPolygon) {
+                if (i === selectedPolygonIndex) {
                     polygons[i].lineWidth = 2;
                 } else {
                     polygons[i].lineWidth = 1;
@@ -628,7 +615,7 @@ export class SegmentationCanvasService {
             } else {
                 context.closePath();
                 context.stroke();
-                if (this.tmpPolygon !== null && this.tmpPolygon !== undefined) {
+                if (this.tmpPolygon) {
                     pol.polygons.push(cloneDeep(this.tmpPolygon));
                     this.setPolygonsLineWidth(pol, pol.polygons.length - 1);
                     this.tmpPolygon = null;
@@ -648,7 +635,7 @@ export class SegmentationCanvasService {
                 );
             }
         } catch (err) {
-            console.log('!! drawNewPolygon', err);
+            console.log('drawNewPolygon', err);
         }
     }
 
@@ -735,18 +722,18 @@ export class SegmentationCanvasService {
 
     findPolygonArea(mouseX: number, mouseY: number, { polygons }: PolyMetadata): number {
         try {
-            let polyindex: number = -1;
+            let polyIndex: number = -1;
             let area: number = 10000000;
             for (let i = 0; i < polygons.length; ++i) {
                 if (this.insidePolygonArea(polygons[i].coorPt, mouseX, mouseY)) {
                     const polyarea: number = this.calPolygonArea(polygons[i]);
                     if (polyarea < area) {
-                        polyindex = i;
+                        polyIndex = i;
                         area = polyarea;
                     }
                 }
             }
-            return polyindex;
+            return polyIndex;
         } catch (err) {
             console.log('findPolygonArea', err);
             return -1;

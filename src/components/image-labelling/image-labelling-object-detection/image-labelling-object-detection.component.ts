@@ -84,7 +84,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         // dbClick: boolean | null,
     ) {
         try {
-            const tempRules: ActionState = cloneDeep(this.boundingBoxState);
+            const tempRules = cloneDeep(this.boundingBoxState);
             scroll !== null ? (tempRules.scroll = scroll) : {};
             fitToscreen !== null ? (tempRules.fitCenter = fitToscreen) : {};
             clearScreen !== null ? (tempRules.clear = clearScreen) : {};
@@ -480,6 +480,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     loadImages(bit64STR: string) {
         try {
+            console.log(this.context);
             this.img.src = bit64STR;
             // this.clearcanvas();
             this.img.onload = () => {
