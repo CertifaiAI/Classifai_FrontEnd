@@ -380,7 +380,7 @@ export class BoundingBoxCanvasService {
     }
 
     public changeLabel(bbox: Boundingbox, newLabel: string) {
-        bbox && newLabel ? (bbox.label = cloneDeep(newLabel)) : {};
+        bbox && newLabel && (bbox.label = newLabel);
     }
 
     public moveBoxWithinPointPath(
@@ -461,69 +461,74 @@ export class BoundingBoxCanvasService {
             if (context) {
                 const xCenter = box.x1 + (box.x2 - box.x1) / 2;
                 const yCenter = box.y1 + (box.y2 - box.y1) / 2;
+                context.strokeStyle = 'white';
+                context.fillStyle = 'black';
+                context.font = 'bold 12px Arial';
+                context.strokeText(box.label, box.x1 + 10, box.y1 + 15);
+                context.fillText(box.label, box.x1 + 10, box.y1 + 15);
                 context.strokeStyle = box.color;
-                context.fillStyle = box.color;
                 context.beginPath();
                 context.rect(box.x1, box.y1, box.x2 - box.x1, box.y2 - box.y1);
                 context.lineWidth = box.lineWidth;
                 context.stroke();
-                isSelected
-                    ? (context.beginPath(),
-                      context.fillRect(
-                          box.x1 - this.anchrSize,
-                          box.y1 - this.anchrSize,
-                          2 * this.anchrSize,
-                          2 * this.anchrSize,
-                      ),
-                      context.fillRect(
-                          box.x1 - this.anchrSize,
-                          yCenter - this.anchrSize,
-                          2 * this.anchrSize,
-                          2 * this.anchrSize,
-                      ),
-                      context.fillRect(
-                          box.x1 - this.anchrSize,
-                          box.y2 - this.anchrSize,
-                          2 * this.anchrSize,
-                          2 * this.anchrSize,
-                      ),
-                      context.fillRect(
-                          xCenter - this.anchrSize,
-                          box.y1 - this.anchrSize,
-                          2 * this.anchrSize,
-                          2 * this.anchrSize,
-                      ),
-                      context.fillRect(
-                          xCenter - this.anchrSize,
-                          yCenter - this.anchrSize,
-                          2 * this.anchrSize,
-                          2 * this.anchrSize,
-                      ),
-                      context.fillRect(
-                          xCenter - this.anchrSize,
-                          box.y2 - this.anchrSize,
-                          2 * this.anchrSize,
-                          2 * this.anchrSize,
-                      ),
-                      context.fillRect(
-                          box.x2 - this.anchrSize,
-                          box.y1 - this.anchrSize,
-                          2 * this.anchrSize,
-                          2 * this.anchrSize,
-                      ),
-                      context.fillRect(
-                          box.x2 - this.anchrSize,
-                          yCenter - this.anchrSize,
-                          2 * this.anchrSize,
-                          2 * this.anchrSize,
-                      ),
-                      context.fillRect(
-                          box.x2 - this.anchrSize,
-                          box.y2 - this.anchrSize,
-                          2 * this.anchrSize,
-                          2 * this.anchrSize,
-                      ))
-                    : null;
+                context.fillStyle = box.color;
+                if (isSelected) {
+                    context.beginPath(),
+                        context.fillRect(
+                            box.x1 - this.anchrSize,
+                            box.y1 - this.anchrSize,
+                            2 * this.anchrSize,
+                            2 * this.anchrSize,
+                        );
+                    context.fillRect(
+                        box.x1 - this.anchrSize,
+                        yCenter - this.anchrSize,
+                        2 * this.anchrSize,
+                        2 * this.anchrSize,
+                    );
+                    context.fillRect(
+                        box.x1 - this.anchrSize,
+                        box.y2 - this.anchrSize,
+                        2 * this.anchrSize,
+                        2 * this.anchrSize,
+                    );
+                    context.fillRect(
+                        xCenter - this.anchrSize,
+                        box.y1 - this.anchrSize,
+                        2 * this.anchrSize,
+                        2 * this.anchrSize,
+                    );
+                    context.fillRect(
+                        xCenter - this.anchrSize,
+                        yCenter - this.anchrSize,
+                        2 * this.anchrSize,
+                        2 * this.anchrSize,
+                    );
+                    context.fillRect(
+                        xCenter - this.anchrSize,
+                        box.y2 - this.anchrSize,
+                        2 * this.anchrSize,
+                        2 * this.anchrSize,
+                    );
+                    context.fillRect(
+                        box.x2 - this.anchrSize,
+                        box.y1 - this.anchrSize,
+                        2 * this.anchrSize,
+                        2 * this.anchrSize,
+                    );
+                    context.fillRect(
+                        box.x2 - this.anchrSize,
+                        yCenter - this.anchrSize,
+                        2 * this.anchrSize,
+                        2 * this.anchrSize,
+                    );
+                    context.fillRect(
+                        box.x2 - this.anchrSize,
+                        box.y2 - this.anchrSize,
+                        2 * this.anchrSize,
+                        2 * this.anchrSize,
+                    );
+                }
             }
         } catch (err) {
             console.log(
