@@ -5,7 +5,7 @@ import { CopyPasteService } from 'src/shared/services/copy-paste.service';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
 import { SegmentationCanvasService } from './segmentation-canvas.service';
 import { UndoRedoService } from 'src/shared/services/undo-redo.service';
-
+import { distinctUntilChanged } from 'rxjs/operators';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -32,9 +32,9 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     @ViewChild('crossv') crossv!: ElementRef<HTMLDivElement>;
     private context!: CanvasRenderingContext2D | null;
     private image: HTMLImageElement = new Image();
-    private mousedown: boolean = false;
-    private altDown: boolean = false;
-    private ctrlHold: boolean = false;
+    private isMouseWithinPoint: boolean = false;
+    private altKey: boolean = false;
+    private ctrlKey: boolean = false;
     private segState!: ActionState;
     private annotateState!: AnnotateActionState;
     @Input() _selectMetadata!: PolyMetadata;
@@ -50,12 +50,12 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     ) {}
 
     ngOnInit(): void {
-        this._imgLblStateService.action$.subscribe(
-            (val) => ((this.segState = val), this.isFitCenter(), this.isClearCanvas()),
-        );
-        this._annotateSelectState.labelStaging$.subscribe(
-            (state) => ((this.annotateState = state), this.annotateStateOnChange()),
-        );
+        this._imgLblStateService.action$
+            .pipe(distinctUntilChanged())
+            .subscribe((val) => ((this.segState = val), this.isFitCenter(), this.isClearCanvas()));
+        this._annotateSelectState.labelStaging$
+            .pipe(distinctUntilChanged())
+            .subscribe((state) => ((this.annotateState = state), this.annotateStateOnChange()));
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -295,7 +295,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     @HostListener('window:keydown', ['$event'])
     keyStrokeEvent({ ctrlKey, shiftKey, key }: KeyboardEvent) {
         try {
-            if (!this.mousedown) {
+            if (!this.isMouseWithinPoint) {
                 const { isActiveModal } = this.segState;
                 if (ctrlKey && (key === 'c' || key === 'C') && !isActiveModal) {
                     // copy
@@ -377,7 +377,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
             );
 
             if (isMouseClickWithinPoint) {
-                this.mousedown = true;
+                this.isMouseWithinPoint = true;
                 if (this.segState.drag) {
                     this._segCanvasService.setPanXY(event);
                 }
@@ -388,10 +388,10 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                         this.mycanvas.nativeElement,
                         this.image,
                         this.context,
-                        this.ctrlHold,
-                        this.altDown,
+                        this.ctrlKey,
+                        this.altKey,
                     );
-                    this.annotateStateMakeChange(clone({ annotation: tmpPoly, isDlbClick: false }));
+                    this.annotateStateMakeChange({ annotation: tmpPoly, isDlbClick: false });
                     this.redrawImage(this._selectMetadata);
                 }
             }
@@ -409,10 +409,10 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
             const isMouseClickWithinPoint =
                 this._selectMetadata && this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
             if (isMouseClickWithinPoint) {
-                this.mousedown = true;
+                this.isMouseWithinPoint = true;
                 if (
-                    (this.segState.drag && this.mousedown) ||
-                    (this._segCanvasService.isNewPolygon() && this.ctrlHold && this.mousedown)
+                    (this.segState.drag && this.isMouseWithinPoint) ||
+                    (this._segCanvasService.isNewPolygon() && this.ctrlKey && this.isMouseWithinPoint)
                 ) {
                     this._segCanvasService.setGlobalXY(this._selectMetadata);
                 }
@@ -446,8 +446,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
             const isMouseClickWithinPoint =
                 this._selectMetadata && this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
             if (isMouseClickWithinPoint) {
-                this.mousedown = true;
-                if (this.segState.drag && this.mousedown) {
+                this.isMouseWithinPoint = true;
+                if (this.segState.drag && this.isMouseWithinPoint) {
                     const diffX = event.offsetX - this._segCanvasService.getPanX();
                     const diffy = event.offsetY - this._segCanvasService.getPanY();
                     this._selectMetadata.img_x = this._segCanvasService.getGlobalX() + diffX;
@@ -469,7 +469,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                               method: 'pan',
                           });
                 }
-                if (this.segState.draw && this.mousedown && this.context) {
+                if (this.segState.draw && this.isMouseWithinPoint && this.context) {
                     this._segCanvasService.mouseMoveDraw(
                         this._selectMetadata,
                         this.image,
@@ -478,8 +478,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                         this.mycanvas.nativeElement.height,
                         event.offsetX,
                         event.offsetY,
-                        this.ctrlHold,
-                        this.mousedown,
+                        this.ctrlKey,
+                        this.isMouseWithinPoint,
                         (method) => {
                             this.redrawImage(this._selectMetadata);
                             if (method === 'pan') {
@@ -518,11 +518,11 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     @HostListener('mouseout', ['$event'])
     mouseOut(_: MouseEvent) {
         try {
-            if (this.segState.drag && this.mousedown) {
+            if (this.segState.drag && this.isMouseWithinPoint) {
                 this._segCanvasService.setGlobalXY(this._selectMetadata);
                 this.redrawImage(this._selectMetadata);
             }
-            this.mousedown = false;
+            this.isMouseWithinPoint = false;
         } catch (err) {
             console.log('mouseOut', err);
         }
