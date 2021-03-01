@@ -389,21 +389,15 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                             },
                         );
                 } else if (key === 'Enter' && this._segCanvasService.isNewPolygon()) {
+                    const { width, height } = this.canvas.nativeElement;
                     this._segCanvasService.drawNewPolygon(
                         this._selectMetadata,
                         this.image,
                         this.canvasContext,
-                        this.canvas.nativeElement.width,
-                        this.canvas.nativeElement.height,
+                        width,
+                        height,
                         true,
                     );
-                    // this.seg.DrawNewPolygon(
-                    //     this.images,
-                    //     this.CanvasDrawingCtx,
-                    //     this.canvasarea.width,
-                    //     this.canvasarea.height,
-                    //     true,
-                    // );
                     // this.CurrentSelectedPolygon =
                     //     this.seg.Metadata[this.seg.getCurrentSelectedimgidx()].polygons.length - 1;
                     // this.seg.validateXYDistance(
