@@ -1,0 +1,77 @@
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    overflow: hidden;
+    /* flex-wrap: wrap; */
+}
+
+.card-container {
+    display: table;
+    /* width: 33rem;
+  height: 35rem; */
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+    /* height: 75vh; */
+    height: 74.8vh;
+    /* height: 100vh; */
+    /* width: 100%; */
+    /* width: 50vh; */
+    width: 25vw;
+    object-fit: contain;
+    border: 0.01vh solid black;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+}
+
+.header-container {
+    color: white;
+    padding: 10vh;
+    font-size: xxx-large;
+    display: grid;
+    justify-items: center;
+    height: 58.7vh;
+    line-height: 10vh;
+    font-size: 2.5vh;
+    text-align: center;
+    white-space: nowrap; /* prevent new line */
+}
+
+.label-hidden {
+    visibility: hidden;
+}
+
+.img {
+    position: absolute;
+}
+
+.image-container {
+    display: flex;
+    justify-content: center;
+}
+
+.logo {
+    position: relative;
+    /* height: 10rem; */
+    height: 15vh;
+    margin-top: 10vh;
+}
+
+.banner {
+    position: absolute;
+    background: white;
+    opacity: 0.9;
+    width: inherit;
+
+    display: flex;
+    justify-content: center;
+    bottom: 5vh; /* Prevent screen size resize */
+    font-size: 2.5vh; /* Prevent screen size resize */
+    height: 10vh;
+    min-height: 10vh;
+    line-height: 5vh;
+}

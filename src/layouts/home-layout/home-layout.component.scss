@@ -1,0 +1,55 @@
+@mixin button-style() {
+    line-height: 1vh;
+    font-size: 1vw;
+    padding: 0.5vw;
+}
+
+@mixin font-size() {
+    font-size: 2.4vh;
+}
+
+.modal-button {
+    @include button-style();
+}
+
+.float-right {
+    float: right;
+}
+
+.label-hidden {
+    visibility: hidden;
+}
+
+.modal-header-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    @include button-style();
+}
+
+.modal-body-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.card-container {
+    position: relative;
+    text-align: center;
+    font-weight: bold;
+    @include button-style();
+}
+
+.card-image {
+    max-width: 14vw;
+    min-width: 14vw;
+    min-height: 25vh;
+    max-height: 25vh;
+    transition: transform 0.2s; /* Animation */
+    padding-bottom: 3vh;
+}
+
+.card-image:hover {
+    transform: scale(1.1); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}

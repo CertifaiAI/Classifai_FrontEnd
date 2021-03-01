@@ -1,0 +1,234 @@
+@use '../../../shared/scss/_variables.scss' as color;
+@use '../../../shared/scss/_scrollbar.scss' as *;
+@use '../../../shared/scss/_ellipsis' as ellipsis;
+@use '../../../shared/scss/fadeIn' as fadeIn;
+
+$fadeInEaseDuration: ease 1.5s;
+$hoverBackground: #393838;
+
+@mixin project-status($color) {
+    color: whitesmoke;
+    background-color: $color;
+    font-size: 1.5vh;
+    padding: 0.3vh 1.5vw 0.6vh 1vw;
+}
+
+.fade-in {
+    animation: fadeIn $fadeInEaseDuration;
+    -webkit-animation: fadeIn $fadeInEaseDuration;
+    -moz-animation: fadeIn $fadeInEaseDuration;
+    -o-animation: fadeIn $fadeInEaseDuration;
+    -ms-animation: fadeIn $fadeInEaseDuration;
+}
+
+.card-layout-container {
+    width: 80vw;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 0 0 1vw;
+    overflow-y: scroll;
+    position: relative;
+    height: 80vh;
+}
+
+.scroll::-webkit-scrollbar-track {
+    @include scrollbar-track(color.$blackColor);
+}
+
+.scroll::-webkit-scrollbar {
+    @include scrollbar();
+}
+
+.scroll::-webkit-scrollbar-thumb {
+    @include scrollbar-thumb(color.$greyColor);
+}
+
+.card-container {
+    min-width: 11vw;
+    max-width: 11vw;
+    min-height: 30vh;
+    max-height: 30vh;
+    border-style: solid;
+    font-size: 2.2vh;
+    // background: #404040;
+    background: rgb(46, 45, 45);
+    position: relative;
+}
+
+.card-container:hover {
+    background: rgb(64, 64, 64);
+}
+
+.card-container::before {
+    content: '';
+    display: block;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0.3vw;
+    background-color: rgb(54, 54, 54);
+}
+
+.enabled {
+    cursor: pointer;
+}
+
+.disabled {
+    cursor: not-allowed;
+}
+
+.project-status-new {
+    @include project-status(#f59221);
+}
+
+.project-status-available {
+    @include project-status(#4bf521);
+}
+
+.project-status-not-available {
+    @include project-status(#f52121);
+}
+
+.project-status-uploading {
+    @include project-status(#f5219d);
+}
+
+.card-icon-container {
+    display: flex;
+}
+
+.card-icon-style {
+    min-width: 1.5vw;
+    max-width: 1.5vw;
+    min-height: 3vh;
+    max-height: 3vh;
+}
+
+.card-icon-style:hover {
+    // cursor: pointer;
+    border-radius: 5vh;
+    background-color: $hoverBackground;
+}
+
+.card-header-style {
+    margin-top: 1vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    position: relative;
+}
+
+.card-title-style {
+    margin-left: 1vw;
+}
+
+.card-title-txt {
+    font-size: 1.3vh;
+    color: #656667;
+}
+
+.project-name-style {
+    margin-left: 1vw;
+    padding: 1vh 0 1vh 0;
+}
+
+.project-name {
+    color: #dbdbda;
+    font-size: 2.3vh;
+    @include ellipsis.ellipsis();
+}
+
+.tag-container {
+    display: flex;
+    flex-direction: row;
+    border-radius: 10vw;
+    background: #363636;
+    width: 4.5vw;
+    padding: 0.2vw 0.3vh;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    margin: 0.8vh 0 0 1vw;
+}
+
+.tag-img {
+    min-height: 2vh;
+    max-height: 2vh;
+    min-width: 1vw;
+    max-width: 1vw;
+    margin-left: 0.35vw;
+}
+
+.tag-txt {
+    font-size: 1.2vh;
+    color: white;
+    padding: 0.2vh 0 0 0.3vw;
+    cursor: pointer;
+}
+
+//#########################
+//    Start - Modal PopUp
+//#########################
+
+.popup-container {
+    overflow: hidden;
+    position: absolute;
+    margin: 4vh 0 0 -10vw;
+    padding: 0.5vw;
+    border-radius: 0.2vw;
+    box-shadow: 0 2px 5px 0 rgba(var(--shadow-rgb), 0.26), 0 2px 10px 0 rgba(var(--shadow-rgb), 0.16);
+    transform-origin: left top;
+    transform: scale(1);
+    opacity: 1;
+    white-space: nowrap;
+    background: white;
+    font-size: 1.5vh;
+    animation: appear 350ms ease-in 1;
+}
+
+@keyframes appear {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+.popup-label {
+    font-size: 2vh;
+    padding: 0.5vw;
+    // margin: 0.5vw;
+}
+
+.popup-label:hover {
+    background: #e9e9e9;
+}
+
+//#########################
+//    Start - No Project Template
+//#########################
+
+.no-project-title {
+    font-size: 4vh;
+    color: black;
+    white-space: nowrap;
+}
+
+.no-project-title-padding {
+    padding: 2vw;
+}
+
+.no-project-subtitle {
+    font-size: 2vh;
+    color: #656667;
+    white-space: nowrap;
+}
+
+.no-project-card-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #c8c6c6;
+    width: 100%;
+}

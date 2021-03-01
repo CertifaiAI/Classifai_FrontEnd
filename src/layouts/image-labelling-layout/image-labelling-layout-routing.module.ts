@@ -2,14 +2,14 @@ import { ImageLabellingLayoutComponent } from './image-labelling-layout.componen
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-const imageLabellingRoutes: Routes = [
-  {
-    path: '',
-    component: ImageLabellingLayoutComponent,
-  },
+const imageLabellingLayoutRoutes: Routes = [
+    {
+        path: '',
+        component: ImageLabellingLayoutComponent,
+    },
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(imageLabellingRoutes)],
+    imports: [RouterModule.forChild(imageLabellingLayoutRoutes)],
 })
-export class ImageLabellingRoutingModule {}
+export class ImageLabellingLayoutRoutingModule {}

@@ -1,146 +1,228 @@
-import { environment } from 'src/environments/environment.prod';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { first } from 'rxjs/operators';
+import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
 import {
-  IContent,
-  ILabelList,
-  IMessage,
-  IThumbnailMetadata,
-  IMessageUuidList,
-  IBase64Img,
-} from './image-labelling-layout.model';
+    BboxMetadata,
+    ChangeAnnotationLabel,
+    CompleteMetadata,
+    EventEmitter_Action,
+    TabsProps,
+} from '../../components/image-labelling/image-labelling.model';
 
-@Injectable({ providedIn: 'any' })
-export class ImageLabellingService {
-  private hostPort: string = environment.baseURL;
+type CustomHistory = Omit<History, 'state'> & {
+    state: { thumbnailList: BboxMetadata[]; labelList: string[]; projectName: string };
+};
 
-  // /** @state mainly used for set state */
-  // private loadingSubject = new BehaviorSubject<ILoading>({
-  //   submitLoading: false,
-  //   createLoading: false,
-  // });
+type LabelRegion = {
+    mainLabelRegion: string;
+    subLabelRegion: string;
+};
 
-  // /** @state mainly used to get state */
-  // loading$ = this.loadingSubject.asObservable();
+type AnnotationIndex = {
+    selectedAnnoIndex: number;
+    selectedSubLabelIndex: number;
+};
 
-  // private readonly responseOptions = {
-  //   // responseType: 'json' as const,
-  //   observe: 'response' as const,
-  // };
+@Injectable({
+    providedIn: 'any',
+})
+export class ImageLabellingLayoutService {
+    constructor(private _imgLblApiService: ImageLabellingApiService) {}
 
-  private readonly headers = {
-    headers: new HttpHeaders({
-      'Content-type': 'application/json',
-    }),
-  };
+    getRouteState = (history: CustomHistory) => {
+        const { state } = history;
+        return { ...state };
+    };
 
-  constructor(private http: HttpClient) {}
+    displayLabelList = <T>(tabs: TabsProps<T>[], newLabelList: string[]) => {
+        return tabs.map((tab) =>
+            tab.label_list
+                ? {
+                      ...tab,
+                      label_list: newLabelList,
+                  }
+                : tab,
+        );
+    };
 
-  mapToJson = (res: Response): Promise<any> => res.json();
+    calculateIndex = (
+        thumbnailAction: Required<Omit<EventEmitter_Action, 'thumbnailAction'>>,
+        currImageIndex: number,
+        thumbnailListLength: number,
+    ) => {
+        let calIndex = currImageIndex;
+        const finalIndex =
+            thumbnailAction === 1
+                ? calIndex >= thumbnailListLength - 1
+                    ? thumbnailListLength - 1
+                    : (calIndex += 1)
+                : calIndex <= 0
+                ? 0
+                : (currImageIndex -= 1);
 
-  private handleError(error: any) {
-    // In a real world app, we might use a remote logging infrastructure
-    // We'd also dig deeper into the error to get a better message
-    let errMsg = error.message
-      ? error.message
-      : error.status
-      ? `${error.status} - ${error.statusText}`
-      : 'Server error';
-    console.log(errMsg); // log to console instead
-    return throwError(error);
-  }
+        return finalIndex;
+    };
 
-  // /**
-  //  * @function responsible for setting state for loading
-  //  * @param {boolean} submitLoading - State indicates whether submit btn is loading
-  //  * @param {boolean} createLoading - State indicates whether create btn is loading
-  //  */
-  // setLoadingtate({ submitLoading, createLoading }: ILoading): void {
-  //   this.loadingSubject.next({
-  //     submitLoading,
-  //     createLoading,
-  //   });
-  // }
+    checkAnnotationMetadataProp = ({ bnd_box, polygons }: CompleteMetadata) => {
+        // null assertion used due to guarantee either one of the prop exists
+        // tslint:disable-next-line: no-non-null-assertion
+        return (bnd_box ?? polygons)!;
+    };
 
-  // /**
-  //  * @function responsible for getting state for loading
-  //  * @return {Object.<boolean>} getValue() is used due to not an async request
-  //  */
-  // getLoadingState = () => {
-  //   return this.loadingSubject.getValue();
-  // };
+    changeAnnotationLabel = (tabs: TabsProps<CompleteMetadata>[], { label, index }: ChangeAnnotationLabel) => {
+        return tabs.map((tab) =>
+            tab.annotation
+                ? {
+                      ...tab,
+                      annotation: tab.annotation.map(({ bnd_box, polygons, ...metadata }) => {
+                          return {
+                              ...metadata,
+                              bnd_box: bnd_box?.map((box, i) =>
+                                  i === index
+                                      ? {
+                                            ...box,
+                                            label,
+                                        }
+                                      : box,
+                              ),
+                              polygons: polygons?.map((poly, i) =>
+                                  i === index
+                                      ? {
+                                            ...poly,
+                                            label,
+                                        }
+                                      : poly,
+                              ),
+                          };
+                      }),
+                  }
+                : tab,
+        );
+    };
 
-  getProjectList = (): Observable<IContent> => {
-    return this.http.get<IContent>(`${this.hostPort}bndbox/projects`);
-    // .pipe(catchError(this.handleError));
-  };
+    deleteAnnotation = (tabs: TabsProps<CompleteMetadata>[], index: number) => {
+        return tabs.map((tab) =>
+            tab.annotation
+                ? {
+                      ...tab,
+                      annotation: tab.annotation.map(({ bnd_box, polygons, ...metadata }) => {
+                          return {
+                              ...metadata,
+                              bnd_box: bnd_box?.filter((_, i) => i !== index),
+                              polygons: polygons?.filter((_, i) => i !== index),
+                          };
+                      }),
+                  }
+                : tab,
+        );
+    };
 
-  createNewProject = (projectName: string): Observable<IMessage> => {
-    return this.http.put<IMessage>(
-      `${this.hostPort}bndbox/newproject/${projectName}`,
-      {
-        newprojectid: projectName,
-      }
-    );
-  };
+    submitLabel = (
+        tabs: TabsProps<CompleteMetadata>[],
+        value: string,
+        currentAnnoIndex: number,
+        { mainLabelRegion, subLabelRegion }: LabelRegion,
+    ) => {
+        return tabs.map((tab) =>
+            tab.annotation
+                ? {
+                      ...tab,
+                      annotation: tab.annotation.map(({ bnd_box, polygons, ...metadata }) => {
+                          return {
+                              ...metadata,
+                              bnd_box: bnd_box?.map((bb, i) => {
+                                  return i === currentAnnoIndex
+                                      ? {
+                                            ...bb,
+                                            region: mainLabelRegion,
+                                            subLabel:
+                                                bb.subLabel && bb.subLabel.length > 0
+                                                    ? [...bb.subLabel, { label: value, region: subLabelRegion }]
+                                                    : [{ label: value, region: subLabelRegion }],
+                                        }
+                                      : bb;
+                              }),
+                              polygons: polygons?.map((poly, i) => {
+                                  return i === currentAnnoIndex
+                                      ? {
+                                            ...poly,
+                                            region: mainLabelRegion,
+                                            subLabel:
+                                                poly.subLabel && poly.subLabel.length > 0
+                                                    ? [...poly.subLabel, { label: value, region: subLabelRegion }]
+                                                    : [{ label: value, region: subLabelRegion }],
+                                        }
+                                      : poly;
+                              }),
+                          };
+                      }),
+                  }
+                : tab,
+        );
+    };
 
-  updateLabel = (
-    projectName: string,
-    labellist: string[] = ['default']
-  ): Observable<IMessage> => {
-    return this.http.put<IMessage>(
-      `${this.hostPort}bndbox/projects/${projectName}/newlabels`,
-      {
-        label_list: [...labellist],
-      }
-    );
-  };
+    removeSubLabel = (
+        tabs: TabsProps<CompleteMetadata>[],
+        { selectedAnnoIndex, selectedSubLabelIndex }: AnnotationIndex,
+    ) => {
+        return tabs.map((tab) =>
+            tab.annotation
+                ? {
+                      ...tab,
+                      annotation: tab.annotation.map(({ bnd_box, polygons, ...metadata }) => {
+                          return {
+                              ...metadata,
+                              bnd_box: bnd_box?.map((bb, bbIndex) => {
+                                  return bbIndex === selectedAnnoIndex
+                                      ? {
+                                            ...bb,
+                                            subLabel: bb.subLabel?.filter((_, i) => i !== selectedSubLabelIndex),
+                                        }
+                                      : bb;
+                              }),
+                              polygons: polygons?.map((poly, polyIndex) => {
+                                  return polyIndex === selectedAnnoIndex
+                                      ? {
+                                            ...poly,
+                                            subLabel: poly.subLabel?.filter((_, i) => i !== selectedSubLabelIndex),
+                                        }
+                                      : poly;
+                              }),
+                          };
+                      }),
+                  }
+                : tab,
+        );
+    };
 
-  checkExistProject = (projectName: string): Observable<IMessage> => {
-    return this.http.get<IMessage>(
-      `${this.hostPort}bndbox/projects/${projectName}`
-    );
-  };
+    setLocalStorageProjectProgress = (projectName: string, annotation: CompleteMetadata[]) => {
+        // this.checkIfBboxMetaType(annotation)
+        //     ? localStorage.setItem(`${projectName}_bndbox`, JSON.stringify({ cache: annotation }))
+        //     : localStorage.setItem(`${projectName}_seg`, JSON.stringify({ cache: annotation }));
 
-  checkExistProjectStatus = (projectName: string): Observable<ILabelList> => {
-    return this.http.get<ILabelList>(
-      `${this.hostPort}bndbox/projects/${projectName}/loadingstatus`
-    );
-  };
+        localStorage.setItem(
+            `${projectName}_${this._imgLblApiService.imageLabellingMode}`,
+            JSON.stringify({ cache: annotation }),
+        );
+    };
 
-  getThumbnailList = (
-    projectName: string,
-    uuid: number
-  ): Observable<IThumbnailMetadata> => {
-    return projectName && uuid
-      ? this.http.get<IThumbnailMetadata>(
-          `${this.hostPort}bndbox/projects/${projectName}/uuid/${uuid}/thumbnail`
-        )
-      : null;
-  };
+    getLocalStorageProjectProgress = <T extends CompleteMetadata>(projectName: string) => {
+        const result = localStorage.getItem(`${projectName}_${this._imgLblApiService.imageLabellingMode}`);
+        const jsonResult: T | null = result ? JSON.parse(result) : null;
+        return jsonResult;
+    };
 
-  localUploadThumbnail = (
-    projectName: string,
-    fileType: string = 'folder'
-  ): Observable<IMessage> => {
-    return this.http.get<IMessage>(
-      `${this.hostPort}bndbox/projects/${projectName}/filesys/${fileType}`
-    );
-  };
-
-  localUploadStatus = (projectName: string): Observable<IMessageUuidList> => {
-    return this.http.get<IMessageUuidList>(
-      `${this.hostPort}bndbox/projects/${projectName}/filesysstatus`
-    );
-  };
-
-  getBase64Thumbnail = (
-    projectName: string,
-    uuid: number
-  ): Observable<IBase64Img> => {
-    return this.http.get<IBase64Img>(
-      `${this.hostPort}bndbox/projects/${projectName}/uuid/${uuid}/imgsrc`
-    );
-  };
+    updateProjectProgress = (tabs: TabsProps<CompleteMetadata>[], projectName: string) => {
+        tabs.forEach(({ annotation }) => {
+            annotation
+                ? (this.setLocalStorageProjectProgress(projectName, annotation),
+                  annotation?.forEach((metadata) => {
+                      this._imgLblApiService
+                          .updateProjectProgress(projectName, metadata.uuid, metadata)
+                          .pipe(first())
+                          .subscribe(({ error_code, message }) => {});
+                  }))
+                : null;
+        });
+    };
 }

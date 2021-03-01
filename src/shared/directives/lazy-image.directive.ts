@@ -1,54 +1,54 @@
-// import { Directive, ElementRef } from '@angular/core';
-
-// @Directive({ selector: 'img' })
-// export class LazyImgDirective {
-//   constructor({ nativeElement }: ElementRef<HTMLImageElement>) {
-//     const supports = 'loading' in HTMLImageElement.prototype;
-
-//     if (supports) {
-//       nativeElement.setAttribute('loading', 'lazy');
-//     }
-//   }
-// }
-
-import {
-  AfterViewInit,
-  Directive,
-  ElementRef,
-  HostBinding,
-  Input,
-} from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, HostBinding, Input } from '@angular/core';
 
 @Directive({
-  selector: 'img[appLazyLoad]',
+    selector: 'img[imgLazyLoad]',
 })
-export class LazyImgDirective implements AfterViewInit {
-  @HostBinding('attr.src') srcAttr = null;
-  @Input() src: string;
+export class LazyLoadImgDirective implements AfterViewInit {
+    // stop the image from loading immediately with the use of @HostBinding()
+    // As long as srcAttr is set to null, the image will not attempt to load
+    // also expose the src @Input() property to capture the reference to the intended image’s source. (set hostbinding property to input property)
+    @HostBinding('attr.src') srcAttr: any = null;
+    @Input() src!: string;
 
-  constructor(private el: ElementRef) {}
+    constructor(private el: ElementRef) {}
 
-  ngAfterViewInit() {
-    this.canLazyLoad() ? this.lazyLoadImage() : this.loadImage();
-  }
+    ngAfterViewInit(): void {
+        this.canLazyLoad() ? this.lazyLoadImage() : this.loadImage();
+    }
 
-  private canLazyLoad() {
-    return window && 'IntersectionObserver' in window;
-  }
+    private canLazyLoad = (): boolean => {
+        return window && 'IntersectionObserver' in window;
+    };
 
-  private lazyLoadImage() {
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach(({ isIntersecting }) => {
-        if (isIntersecting) {
-          this.loadImage();
-          obs.unobserve(this.el.nativeElement);
-        }
-      });
-    });
-    obs.observe(this.el.nativeElement);
-  }
+    // The Intersection Observer API lets code register a callback function
+    // that is executed whenever an element they wish to monitor enters or exits another element (or the viewport).
+    // The Intersection Observer constructor takes two arguments.
+    // First argument is a callback function that will be called when the image enters or leaves the viewport.
 
-  private loadImage() {
-    this.srcAttr = this.src;
-  }
+    // The second argument, is an options object that lets you control the circumstances under which the observer’s callback is invoked.
+    // chose not to pass the options as second argument to Intersection Observer constructor,
+    // because the defaults work very well enough.
+    private lazyLoadImage = (): void => {
+        const obs = new IntersectionObserver((entries) => {
+            // Inside the callback function, check if image isIntersecting with current viewport.
+            // If it is, we load the image else unload the image.
+            entries.forEach(({ isIntersecting }) => {
+                // console.log(isIntersecting);
+                isIntersecting ? this.loadImage() : this.unloadImage();
+            });
+        });
+        // To kick off observing process, call observe method on observer instance with reference to image element,
+        // that the img[imgLazyLoad] directive is attached to.
+        obs.observe(this.el.nativeElement);
+    };
+
+    /** @function responsible to load the image, must set the srcAttr to the value stored in the src property. */
+    private loadImage = (): void => {
+        this.srcAttr = this.src;
+    };
+
+    /** @function responsible to unload the image, must set the srcAttr to empty string. */
+    private unloadImage = (): void => {
+        this.srcAttr = '';
+    };
 }

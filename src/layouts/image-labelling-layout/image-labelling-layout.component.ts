@@ -1,427 +1,324 @@
-import { catchError, first, flatMap, map, mergeMap } from 'rxjs/operators';
-import { ClassifaiModalService } from 'src/shared/classifai-modal/classifai-modal.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { ImageLabellingService } from './image-labelling-layout.service';
+import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DataSetLayoutService } from '../data-set-layout/data-set-layout-api.service';
+import { first, takeUntil } from 'rxjs/operators';
+import { HTMLElementEvent } from 'src/shared/types/field/field.model';
+import { ImageLabellingActionService } from 'src/components/image-labelling/image-labelling-action.service';
+import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
+import { ImageLabellingLayoutService } from 'src/layouts/image-labelling-layout/image-labelling-layout.service';
+import { ImageLabellingModeService } from 'src/components/image-labelling/image-labelling-mode.service';
+import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
-import { ThemeService } from 'src/shared/services/theme.service';
+import { Subject } from 'rxjs';
 import {
-  forkJoin,
-  interval,
-  of,
-  Subject,
-  Subscription,
-  Observable,
-} from 'rxjs';
-import {
-  ILabelList,
-  IThumbnailMetadata,
-  Props,
-  IMessage,
-  TabsProps,
-} from './image-labelling-layout.model';
-import {
-  Component,
-  HostListener,
-  OnInit,
-  ChangeDetectorRef,
-} from '@angular/core';
+    AddSubLabel,
+    BboxMetadata,
+    ChangeAnnotationLabel,
+    CompleteMetadata,
+    EventEmitter_Action,
+    EventEmitter_ThumbnailDetails,
+    EventEmitter_Url,
+    ImageLabelUrl,
+    ImgLabelProps,
+    PolyMetadata,
+    SelectedLabelProps,
+    TabsProps,
+} from 'src/components/image-labelling/image-labelling.model';
 
 @Component({
-  selector: 'image-labelling-layout',
-  templateUrl: './image-labelling-layout.component.html',
-  styleUrls: ['./image-labelling-layout.component.css'],
+    selector: 'image-labelling-layout',
+    templateUrl: './image-labelling-layout.component.html',
+    styleUrls: ['./image-labelling-layout.component.scss'],
 })
-export class ImageLabellingLayoutComponent implements OnInit {
-  /** @prop default as 'dark-theme', prevent undefined prop pass to child comps.*/
-  // theme: string;
-  // status: boolean;
-  onChangeSchema: Props = {
-    theme: '',
-    status: false,
-  };
-  projects: string[] = [];
-  inputProjectName: string = '';
-  labelTextUpload: FileList;
-  labelArr: any[] = [];
-  form: FormGroup;
-  subject$: Subject<any> = new Subject();
-  subjectSubscription: Subscription;
-  // timerSubscription: Subscription;
-  // labelList: ILabelList;
-  selectedProjectName: string = '';
-  thumbnailList: IThumbnailMetadata[] = [];
-  selectedThumbnail: string = '';
-  tabStatus: TabsProps[] = [
-    {
-      name: 'Project',
-      closed: false,
-    },
-    {
-      name: 'Label',
-      closed: false,
-    },
-    {
-      name: 'Annotation',
-      closed: false,
-    },
-  ];
+export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
+    onChangeSchema!: ImgLabelProps;
+    currentUrl: ImageLabelUrl = '';
+    selectedProjectName: string = '';
+    imgSrc: string = '';
+    loading: boolean = false;
+    thumbnailList: CompleteMetadata[] = [];
+    selectedMetaData?: CompleteMetadata;
+    unsubscribe$: Subject<any> = new Subject();
+    tabStatus: TabsProps<CompleteMetadata>[] = [
+        {
+            name: 'Project',
+            closed: false,
+        },
+        {
+            name: 'Label',
+            closed: false,
+            label_list: [],
+        },
+        {
+            name: 'Annotation',
+            closed: false,
+            annotation: [],
+        },
+    ];
+    mainLabelRegionVal = '';
+    subLabelRegionVal = '';
+    addedSubLabelList?: AddSubLabel[];
+    subLabelValidateMsg = '';
+    currentAnnotationLabel = '';
+    currentAnnotationIndex = -1;
+    currentImageDisplayIndex = -1;
 
-  constructor(
-    private _router: Router,
-    private _fb: FormBuilder,
-    private _cd: ChangeDetectorRef,
-    private _themeService: ThemeService,
-    private _modalService: ClassifaiModalService,
-    private _imgLabelService: ImageLabellingService
-  ) {
-    this.setState();
-    this.createFormControls();
-    this._imgLabelService
-      .getProjectList()
-      .pipe(first())
-      .subscribe(
-        ({ message, content, errormessage }) => (this.projects = content)
-      ),
-      (error: Error) => {
-        console.error(error);
-      },
-      () => this._modalService.open();
-  }
+    @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
 
-  setState = (): Props => {
-    return (this.onChangeSchema = {
-      ...this.onChangeSchema,
-      theme: this._themeService.getThemeState(),
-    });
-  };
+    constructor(
+        public _router: Router,
+        private _imgLblApiService: ImageLabellingApiService,
+        private _modalService: ModalService,
+        private _dataSetService: DataSetLayoutService,
+        private _annotateService: AnnotateSelectionService,
+        private _imgLblActionService: ImageLabellingActionService,
+        private _imgLblLayoutService: ImageLabellingLayoutService,
+        private _imgLblModeService: ImageLabellingModeService,
+    ) {}
 
-  ngOnInit(): void {
-    window
-      .matchMedia('(prefers-color-scheme: light)')
-      .addEventListener('change', this.detectBrowserTheme, false);
-  }
+    ngOnInit(): void {
+        this.currentUrl = this._router.url as ImageLabelUrl;
+        const { thumbnailList, labelList, projectName } = this._imgLblLayoutService.getRouteState(history);
+        this.thumbnailList = thumbnailList;
+        this.selectedProjectName = projectName;
+        this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: thumbnailList.length };
 
-  createFormControls = (): void => {
-    this.form = this._fb.group({
-      inputProjectName: [''],
-      selectExistProject: [''],
-      label: [''],
-    });
-    // this.form = this._formService.createControl(this.formJsonSchema);
-  };
+        const newLabelList = this._imgLblLayoutService.displayLabelList<CompleteMetadata>(this.tabStatus, labelList);
+        this.tabStatus = newLabelList;
 
-  onChange = (val: string): void => {
-    this.inputProjectName = val;
-  };
-
-  onFileChange = (event): void => {
-    const { files }: { files: any[] } = event.target;
-    const reader = new FileReader();
-
-    if (files && files.length) {
-      const [file] = files;
-
-      reader.onload = () => {
-        this.form.patchValue({
-          label: reader.result,
-        });
-        // need to run CD since file load runs outside of zone
-        this._cd.markForCheck();
-      };
-      reader.onloadend = () => {
-        const labelResult = reader.result as string;
-        const labelSplitArr = labelResult.split('\n');
-        if (labelSplitArr.length > 0) {
-          const newLabelArray = labelSplitArr.reduce((prev, curr) => {
-            const clearCharLabel = curr
-              .replace(/[^A-Z0-9]+/gi, '')
-              .toLowerCase();
-            prev.push(clearCharLabel);
-            return prev;
-          }, []);
-          this.labelArr.push(...newLabelArray);
-          // console.log(this.labelArr);
-        }
-      };
-      // console.log(file);
-      reader.readAsText(file);
+        this._annotateService.labelStaging$
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe(({ annotation: annnotationIndex, isDlbClick }) => {
+                if (isDlbClick) {
+                    this.currentAnnotationIndex = annnotationIndex;
+                    this.tabStatus.forEach(({ annotation }) =>
+                        annotation?.forEach(({ bnd_box, polygons }) => {
+                            const dynamicProp = bnd_box ?? polygons;
+                            if (dynamicProp) {
+                                const { label, region } = dynamicProp[annnotationIndex];
+                                this.currentAnnotationLabel = label;
+                                this.mainLabelRegionVal = region || '';
+                            } else {
+                                console.log('missing prop bnd_box OR polygons');
+                            }
+                        }),
+                    );
+                    this._imgLblActionService.setState({
+                        isActiveModal: true,
+                        draw: false,
+                        drag: false,
+                        scroll: false,
+                    });
+                    this.onDisplayModal();
+                } else {
+                    this.currentAnnotationLabel = '';
+                    this.currentAnnotationIndex = annnotationIndex;
+                }
+            });
     }
-  };
 
-  onSubmit = (isNewProject: boolean): void => {
-    this.form.markAllAsTouched();
+    updateProjectProgress = (): void => {
+        const projectName = this.selectedProjectName;
+        this._imgLblLayoutService.updateProjectProgress(this.tabStatus, projectName);
+    };
 
-    if (!isNewProject) {
-      if (this.form.get('selectExistProject').value) {
-        this.startProject(this.form.get('selectExistProject').value);
-        this.selectedProjectName = this.form.get('selectExistProject').value;
-      } else {
-        this.form.get('selectExistProject').setErrors({ required: true });
-      }
-    }
-    if (isNewProject) {
-      if (this.inputProjectName) {
-        const checkExistProject = this.projects
-          ? this.projects.find((project) =>
-              project ? project === this.inputProjectName : null
-            )
-          : null;
-        checkExistProject
-          ? this.form.get('inputProjectName').setErrors({ exist: true })
-          : (this.createProject(this.inputProjectName),
-            (this.selectedProjectName = this.form.get(
-              'inputProjectName'
-            ).value));
-        // null;
-      } else {
-        this.form.get('inputProjectName').setErrors({ required: true });
-      }
-    }
-  };
-
-  startProject = (projectName: string): void => {
-    const streamProj$ = this._imgLabelService.checkExistProject(projectName);
-    const streamProjStatus$ = this._imgLabelService.checkExistProjectStatus(
-      projectName
-    );
-    const thumbnail$ = this._imgLabelService.getThumbnailList;
-
-    this.subjectSubscription = this.subject$
-      .pipe(
-        first(),
-        flatMap(() => forkJoin([streamProj$, streamProjStatus$])),
-        mergeMap(([resExist, { message, uuid_list }]) => {
-          if (message === 2) {
-            return uuid_list.length > 0
-              ? uuid_list.map((uuid) => thumbnail$(projectName, uuid))
-              : [];
-          } else {
-            const ThumbnailResponse = interval(500).pipe(
-              flatMap(() => streamProjStatus$),
-              first(({ message }) => message === 2),
-              mergeMap(({ uuid_list }) =>
-                uuid_list.length > 0
-                  ? uuid_list.map((uuid) => thumbnail$(projectName, uuid))
-                  : []
-              )
-            );
-            return ThumbnailResponse;
-          }
-        }),
-        // * this flatMap responsible for flaten all observable into one layer
-        flatMap((data) => data)
-      )
-      .subscribe(
-        (res) => (this.thumbnailList = [...this.thumbnailList, res]),
-        (error: Error) => console.error(error),
-        () => {
-          this._modalService.close();
-          console.log(this.thumbnailList);
-        }
-      );
-
-    // make initial call
-    this.subject$.next();
-  };
-
-  onToggleTab = <T extends TabsProps>({ name, closed }: T): void => {
-    this.tabStatus = this.tabStatus.map((tab) =>
-      tab.name.toLowerCase() === name.toLowerCase()
-        ? { ...tab, closed }
-        : { ...tab }
-    );
-  };
-
-  uploadThumbnail = (
-    projectName: string = this.selectedProjectName || this.inputProjectName
-  ): void => {
-    const uploadType$ = this._imgLabelService.localUploadThumbnail(projectName);
-    const uploadStatus$ = this._imgLabelService.localUploadStatus(projectName);
-    const thumbnail$ = this._imgLabelService.getThumbnailList;
-
-    const returnResponse = <T extends IMessage>({
-      message,
-    }: T): Observable<IThumbnailMetadata> => {
-      if (message === 1) {
-        const uploadTypeResponse = interval(500).pipe(
-          flatMap(() => uploadStatus$),
-          first(({ message }) => message === 4),
-          mergeMap(({ uuid_list }) =>
-            uuid_list.length > 0
-              ? uuid_list.map((uuid) => thumbnail$(projectName, uuid))
-              : []
-          ),
-          // * this flatMap responsible for flaten all observable into one layer
-          flatMap((data) => data)
+    onChangeMetadata = (mutatedMetadata: BboxMetadata & PolyMetadata): void => {
+        this.tabStatus = this.tabStatus.map((tab) =>
+            tab.annotation ? { ...tab, annotation: [mutatedMetadata] } : tab,
         );
-        return uploadTypeResponse;
-      }
-      if (message === 5) {
-        catchError((err) => {
-          console.error(err);
-          return of(err);
+        this.updateProjectProgress();
+    };
+
+    onToggleTab = ({ name, closed }: TabsProps): void => {
+        // console.log(name, closed);
+        const isExactTabState: boolean = this.tabStatus.some(
+            (tab) => tab.name.toLowerCase() === name.toLowerCase() && tab.closed === closed,
+        );
+        isExactTabState
+            ? null
+            : (this.tabStatus = this.tabStatus.map((tab) =>
+                  tab.name.toLowerCase() === name.toLowerCase() ? { ...tab, closed } : { ...tab },
+              ));
+    };
+
+    navigateByUrl = ({ url }: EventEmitter_Url): void => {
+        // console.log(url);
+        url ? this._router.navigate([url]) : console.error(`No url received from child component`);
+    };
+
+    navigateByAction = ({ thumbnailAction }: EventEmitter_Action): void => {
+        if (thumbnailAction) {
+            const calculatedIndex = this._imgLblLayoutService.calculateIndex(
+                thumbnailAction,
+                this.currentImageDisplayIndex,
+                this.thumbnailList.length,
+            );
+
+            if (calculatedIndex !== this.currentImageDisplayIndex) {
+                this.currentImageDisplayIndex = calculatedIndex;
+                const filteredThumbMetadata = this.thumbnailList.find((_, i) => i === calculatedIndex);
+                const thumbnailIndex = this.thumbnailList.findIndex((_, i) => i === calculatedIndex);
+                filteredThumbMetadata &&
+                    thumbnailIndex !== -1 &&
+                    this.displayImage({ ...filteredThumbMetadata, thumbnailIndex });
+            }
+        }
+    };
+
+    displayImage = (
+        { thumbnailIndex, ...thumbnail }: EventEmitter_ThumbnailDetails,
+        projectName = this.selectedProjectName,
+    ): void => {
+        const getImage$ = this._imgLblApiService.getBase64Thumbnail(projectName, thumbnail.uuid);
+
+        getImage$.pipe(first()).subscribe(
+            ({ message, img_src }) => {
+                if (message === 1) {
+                    this.selectedMetaData = thumbnail;
+                    this.imgSrc = img_src;
+                    this.currentImageDisplayIndex = thumbnailIndex;
+                    this.onChangeSchema = {
+                        ...this.onChangeSchema,
+                        // + 1 to prevent showing photo but info comp shows 0/2 on UI
+                        currentThumbnailIndex: thumbnailIndex + 1,
+                        thumbnailName: thumbnail.img_path,
+                    };
+                }
+            },
+            (err: Error) => console.error(err),
+        );
+    };
+
+    onProcessLabel = ({ selectedLabel, label_list, action }: SelectedLabelProps) => {
+        // console.log(selectedLabel, label_list, action);
+        const newLabelList: string[] =
+            selectedLabel && !action ? label_list.filter((label) => label !== selectedLabel) : label_list;
+        const projectName: string = this.selectedProjectName;
+        const updateLabel$ = this._imgLblApiService.updateLabelList(
+            projectName,
+            newLabelList.length > 0 ? newLabelList : [],
+        );
+
+        updateLabel$.pipe(first()).subscribe(({ message }) => {
+            if (message === 1) {
+                this.tabStatus = this._imgLblLayoutService.displayLabelList(this.tabStatus, newLabelList);
+            } else {
+                console.error(`Error while updating label`);
+            }
         });
-      }
+
+        this.updateProjectProgress();
     };
 
-    this.subjectSubscription = this.subject$
-      .pipe(
-        first(),
-        flatMap(() => uploadType$),
-        mergeMap((val) => returnResponse(val))
-      )
-      .subscribe(
-        (res) => (this.thumbnailList = [...this.thumbnailList, res]),
-        (error: Error) => console.error(error),
-        () => this._modalService.close()
-      );
-    // make initial call
-    this.subject$.next();
-
-    // /** @constant uses Array.from due to props 'type' of FileList are type of Iterable  */
-    // const arrFiles: File[] = Array.from(files);
-    // console.log(arrFiles);
-    // const filteredFiles = arrFiles.filter((file) => {
-    //   const { type } = file;
-    //   const validateFileType =
-    //     type && (type === 'image/jpeg' || type === 'image/png') ? file : null;
-    //   return validateFileType;
-    // });
-    // console.log(filteredFiles);
-  };
-
-  showBase64Image = (
-    uuid: number,
-    projectName: string = this.selectedProjectName || this.inputProjectName
-  ): void => {
-    const getImage$ = this._imgLabelService.getBase64Thumbnail(
-      projectName,
-      uuid
-    );
-
-    getImage$.pipe(first()).subscribe(
-      ({ message, img_src, errormessage }) => {
-        message === 1
-          ? (this.selectedThumbnail = img_src)
-          : console.error(errormessage);
-      },
-      (err: Error) => console.error(err),
-      () => {}
-    );
-  };
-
-  setLabelListLocalStorage = (labelList: ILabelList): void => {
-    console.log(labelList);
-  };
-
-  createProject = (projectName: string): void => {
-    const createProj$ = this._imgLabelService.createNewProject(projectName);
-    const updateLabel$ = this._imgLabelService.updateLabel(
-      projectName,
-      this.labelArr
-    );
-
-    createProj$
-      .pipe(
-        first(),
-        map(({ message }) => message),
-        mergeMap((message) => updateLabel$)
-      )
-      .subscribe(({ message }) => {
-        console.log(message === 1);
-        message === 1 ? this._modalService.close() : null;
-      });
-  };
-
-  //#region Archived createProject & updateProjectLabel function
-
-  // createProject = (projectName: string): void => {
-  //   this._imgLabelService
-  //     .createNewProject(projectName)
-  //     .pipe(first())
-  //     .subscribe(
-  //       ({ message }) => {
-  //         message ? this.updateProjectLabel(projectName) : null;
-  //       },
-  //       (error: Error) => console.error(error)
-  //       // () => this.updateProjectLabel(projectName)
-  //     );
-  // };
-
-  // updateProjectLabel = (projectName: string): void => {
-  //   this._imgLabelService
-  //     .updateLabel(projectName, this.labelArr)
-  //     .pipe(first())
-  //     .subscribe(
-  //       (res) => {
-  //         console.log(res);
-  //       },
-  //       (error: Error) => {},
-  //       () => {
-  //         this.closeModal('custom-modal-1');
-  //       }
-  //     );
-  // };
-
-  //#endregion
-
-  navigate(url: string): void {
-    // console.log(url);
-    this._router.navigate([url]);
-  }
-
-  detectBrowserTheme = (e: MediaQueryListEvent): void => {
-    this.onChangeSchema = {
-      ...this.onChangeSchema,
-      theme: e.matches ? 'dark-theme' : 'light-theme',
+    onChangeAnnotationLabel = (changeAnnoLabel: ChangeAnnotationLabel): void => {
+        this.tabStatus = this._imgLblLayoutService.changeAnnotationLabel(this.tabStatus, changeAnnoLabel);
+        this.updateStateToRenderChild();
+        this.updateProjectProgress();
     };
-  };
 
-  /**
-   * @param {KeyboardEvent} event keyboard keydown
-   */
-  @HostListener('window:keydown', ['$event'])
-  handleKeyboardEvent(event: KeyboardEvent): void {
-    /**toggle in between move image and draw boxes */
-    if (event.ctrlKey && event.shiftKey) {
-      console.log('success');
-      this.onChangeSchema = {
-        ...this.onChangeSchema,
-        status: true,
-      };
-    }
-    /**toggle move image by pixel */
-    if (event.ctrlKey && event.altKey) {
-      console.log('toggle image by px');
-    }
-    /**undo */
-    if ((event.ctrlKey || event.metaKey) && event.key === 'z') {
-      /**todo */
-      console.log('undo test');
-    }
-    /**delete */
-    if (event.key === 'Delete') {
-      console.log('delete');
-    }
-    /**right arrow key */
-    if (event.key === 'ArrowRight') {
-      console.log('right arrow key');
-    }
-    /**left arrow key */
-    if (event.key === 'ArrowLeft') {
-      console.log('left arrow key');
-    }
-  }
+    onDeleteAnnotation = (index: number) => {
+        this.tabStatus = this._imgLblLayoutService.deleteAnnotation(this.tabStatus, index);
+        this.updateStateToRenderChild();
+        this.updateProjectProgress();
+    };
 
-  /** @callback method used by Angular to clean up eventListener after comp. is destroyed */
-  ngOnDestroy(): void {
-    window.removeEventListener(
-      '(prefers-color-scheme: light)',
-      this.detectBrowserTheme,
-      false
-    );
-    this._modalService.remove();
-    this.subjectSubscription ? this.subjectSubscription.unsubscribe() : null;
-    // this.timerSubscription ? this.timerSubscription.unsubscribe() : null;
-  }
+    onDisplayModal = (id = 'modal-image-labelling') => {
+        this.subLabelRegionVal = '';
+        this.subLabelValidateMsg = '';
+        this._modalService.open(id);
+    };
+
+    onCloseModal = (id = 'modal-image-labelling') => {
+        this._imgLblActionService.setState({ isActiveModal: false, draw: true, scroll: true });
+        this._modalService.close(id);
+    };
+
+    onChangeInput = (event: HTMLElementEvent<HTMLTextAreaElement>, type: 'main' | 'sub') => {
+        const { value } = event.target;
+        type === 'main' ? (this.mainLabelRegionVal = value) : (this.subLabelRegionVal = value);
+    };
+
+    onSubmitLabel = () => {
+        const { value } = this._subLabelSelect.nativeElement;
+
+        let isPreExistSubLabel: boolean = false;
+        let isDupSubLabel: boolean = false;
+
+        this.tabStatus.forEach(({ annotation }) =>
+            annotation?.forEach(({ bnd_box, polygons }) => {
+                const dynamicProp = bnd_box ?? polygons;
+                if (dynamicProp) {
+                    const { subLabel } = dynamicProp[this.currentAnnotationIndex];
+                    isPreExistSubLabel = subLabel && subLabel?.length > 0 ? true : false;
+                    isPreExistSubLabel ? subLabel?.some(({ label }) => (isDupSubLabel = label === value)) : null;
+                } else {
+                    console.log('missing prop bnd_box OR polygons');
+                }
+            }),
+        );
+        // console.log(isDupSubLabel);
+
+        if (!isDupSubLabel) {
+            this.tabStatus = this._imgLblLayoutService.submitLabel(this.tabStatus, value, this.currentAnnotationIndex, {
+                mainLabelRegion: this.mainLabelRegionVal,
+                subLabelRegion: this.subLabelRegionVal,
+            });
+            this.subLabelValidateMsg = '';
+            this.updateStateToRenderChild();
+            this.updateProjectProgress();
+        } else {
+            this.subLabelValidateMsg = `Invalid of duplicate label: ${value}`;
+        }
+        this.subLabelRegionVal = '';
+    };
+
+    onRemoveSubLabel = (selectedAnnoIndex: number, selectedSubLabelIndex: number) => {
+        this.tabStatus = this._imgLblLayoutService.removeSubLabel(this.tabStatus, {
+            selectedAnnoIndex,
+            selectedSubLabelIndex,
+        });
+        this.updateStateToRenderChild();
+        this.updateProjectProgress();
+    };
+
+    /** @function responsible for updating state to re-render child comp(s) */
+    updateStateToRenderChild = () => {
+        this.tabStatus.forEach(({ annotation }) => {
+            if (annotation) {
+                // re-render project comp
+                this.thumbnailList = this.thumbnailList.map(
+                    (thumbnail) =>
+                        annotation.find(({ uuid: incomingUuid }) => thumbnail.uuid === incomingUuid) ?? thumbnail,
+                );
+                // re-render object-detection comp
+                this.selectedMetaData = annotation[0];
+            }
+        });
+    };
+
+    /** @event fires whenever browser is closing */
+    @HostListener('window:beforeunload', ['$event'])
+    onWindowClose(event: BeforeUnloadEvent): void {
+        this.resetProjectStatus();
+        event.preventDefault();
+    }
+
+    resetProjectStatus = (projectName = this.selectedProjectName) => {
+        // prevents when comp destroyed yet still sending empty string to service
+        projectName.trim() &&
+            this._dataSetService
+                .manualCloseProject(projectName)
+                .pipe(takeUntil(this.unsubscribe$))
+                .subscribe(({ message }) => {
+                    this._router.navigate(['/']);
+                });
+    };
+
+    ngOnDestroy(): void {
+        this.unsubscribe$.next();
+        this.unsubscribe$.complete();
+        this._imgLblModeService.setState(null);
+        this._imgLblActionService.setState(null);
+        this.resetProjectStatus();
+    }
 }

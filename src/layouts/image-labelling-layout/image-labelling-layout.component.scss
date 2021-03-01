@@ -1,0 +1,149 @@
+.layout-container {
+    user-select: none;
+}
+
+.content-container {
+    display: flex;
+    justify-content: space-between;
+    min-width: 97.8vw;
+    max-width: 97.8vw;
+}
+
+/*
+#########################
+******** Modal **********
+#########################
+*/
+
+@mixin container-flex-width($width) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-width: $width;
+    max-width: $width;
+}
+
+@mixin static-width-height($height: '') {
+    @if $height {
+        min-height: $height;
+        max-height: $height;
+        min-width: 10vw;
+        max-width: 10vw;
+        line-height: 3vh;
+        font-size: 0.9vw;
+    } @else {
+        min-height: 3vh;
+        max-height: 3vh;
+        min-width: 10vw;
+        max-width: 10vw;
+        line-height: 3vh;
+        font-size: 2vh;
+    }
+}
+
+@mixin button-style() {
+    line-height: 1vh;
+    font-size: 1vw;
+    padding: 0.5vw;
+}
+
+.modal-button {
+    @include button-style();
+}
+
+.float-right {
+    float: right;
+}
+
+.font-title {
+    font-size: 1.7vw;
+}
+
+.font-label {
+    line-height: 4vh;
+    font-size: 1vw;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.main-label-container {
+    @include container-flex-width(35vw);
+}
+
+.sub-label-container {
+    @include container-flex-width(40vw);
+}
+
+.sub-label-flex-container {
+    display: flex;
+    align-items: center;
+    flex: 1 1 100%;
+    min-width: 0;
+}
+
+.static-select {
+    @include static-width-height(4vh);
+    appearance: none;
+    border-radius: 5vh;
+    margin: 0rem;
+    -moz-text-align-last: center;
+    text-align-last: center;
+    background: #262a2e;
+    color: white;
+    box-shadow: inset -0.5vw 6.25vw 1vw 0 rgba(0, 0, 0, 0.2), inset -0.5vw -0.5vw 1vw 0 rgba(255, 255, 255, 0.4);
+}
+
+.static-select:hover {
+    box-shadow: inset -0.375vw -0.375vw 0.625vw 0 rgba(0, 0, 0, 0.2),
+        inset 0.375vw 0.375vw 0.625vw 0 rgba(255, 255, 255, 0.5);
+}
+
+.static-select:active {
+    box-shadow: inset 0.375vw 0.375vw 0.625vw 0 rgba(0, 0, 0, 0.2),
+        inset -0.375vw -0.375vw 0.625vw 0 rgba(255, 255, 255, 0.5);
+}
+
+.static-input {
+    @include static-width-height(4vh);
+    border-radius: 2vw;
+    border: none;
+    outline: none;
+    background-color: #363636;
+    color: white;
+    padding: 0 1vw 0 1vw;
+}
+
+.hr-line {
+    height: 0.5vh;
+    color: black;
+    background: #8c8b8b;
+    margin: 5vh 0 5vh 0;
+}
+
+.sub-label-padding {
+    padding: 0 0 2vh 0;
+}
+
+.validate-msg {
+    color: red;
+    padding: 5vh 0 0 0;
+    font-size: 1vw;
+}
+
+.flex-first {
+    flex: 1 1 35%;
+}
+
+.flex-second {
+    flex: 1 1 55%;
+}
+
+.flex-third {
+    flex: 0 0 5%;
+}
+
+.flex-fourth {
+    @include button-style();
+    flex: 0 0 5%;
+}

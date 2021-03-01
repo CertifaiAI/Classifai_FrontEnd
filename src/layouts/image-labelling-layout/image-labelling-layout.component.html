@@ -1,112 +1,127 @@
 <div class="layout-container">
-  <div>
-    <image-labelling-header
-      [_onChange]="onChangeSchema"
-      (_navigate)="navigate($event)"
-    ></image-labelling-header>
-    <image-labelling-info [_onChange]="onChangeSchema"></image-labelling-info>
-  </div>
+    <div>
+        <page-header [_onChange]="onChangeSchema"></page-header>
+        <image-labelling-info [_onChange]="onChangeSchema" (_onClick)="navigateByAction($event)"></image-labelling-info>
+    </div>
 
-  <div class="content-container">
-    <image-labelling-left-sidebar
-      [_onChange]="onChangeSchema"
-    ></image-labelling-left-sidebar>
-    <image-labelling-image
-      [_thumbnail]="selectedThumbnail"
-    ></image-labelling-image>
+    <div class="content-container">
+        <image-labelling-left-sidebar
+            [_onChange]="onChangeSchema"
+            [_currentUrl]="currentUrl"
+        ></image-labelling-left-sidebar>
 
-    <image-labelling-project
-      [_thumbnailList]="thumbnailList"
-      [_tabStatus]="tabStatus"
-      (_onClose)="onToggleTab($event)"
-      (_onClick)="showBase64Image($event)"
-    ></image-labelling-project>
+        <!-- !! Not enough time to implement router outlet service, as many changes needed for object detection's code -->
+        <ng-container *ngIf="_router.url.includes('imglabel/bndbox')">
+            <image-labelling-object-detection
+                [_selectMetadata]="selectedMetaData"
+                [_imgSrc]="imgSrc"
+                (_onChangeMetadata)="onChangeMetadata($event)"
+            ></image-labelling-object-detection>
+        </ng-container>
+        <ng-container *ngIf="_router.url.includes('imglabel/seg')">
+            <image-labelling-segmentation
+                [_selectMetadata]="selectedMetaData"
+                [_imgSrc]="imgSrc"
+                (_onChangeMetadata)="onChangeMetadata($event)"
+            ></image-labelling-segmentation>
+        </ng-container>
 
-    <image-labelling-right-sidebar
-      [_onChange]="onChangeSchema"
-      (_onClick)="onToggleTab($event)"
-    ></image-labelling-right-sidebar>
-  </div>
-  <image-labelling-footer></image-labelling-footer>
+        <image-labelling-project
+            [_thumbnailList]="thumbnailList"
+            [_tabStatus]="tabStatus"
+            (_onClose)="onToggleTab($event)"
+            (_onClickThumbNail)="displayImage($event)"
+            (_onClickLabel)="onProcessLabel($event)"
+            (_onEnterLabel)="onProcessLabel($event)"
+            (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
+            (_onDeleteAnnotation)="onDeleteAnnotation($event)"
+        ></image-labelling-project>
+        <image-labelling-right-sidebar
+            [_onChange]="onChangeSchema"
+            (_onClick)="onToggleTab($event)"
+        ></image-labelling-right-sidebar>
+    </div>
+    <image-labelling-footer [_thumbnailInfo]="selectedMetaData" [_imgSrc]="imgSrc"></image-labelling-footer>
 </div>
 
-<!-- <modal id="custom-modal-1">
-  <h1 class="modal-center">Classifai Image Labelling Tools</h1>
-  <form [formGroup]="form">
-    <div class="modal-inner-container">
-      <div class="existing-container">
-        <div>
-          <h2 class="h2-styling">From Existing Project</h2>
+<modal id="modal-image-labelling">
+    <button class="modal-button float-right" (click)="onCloseModal()">X</button>
+    <div>
+        <h2 class="font-title">Main Label</h2>
+        <div class="main-label-container">
+            <label class="font-label">Label: </label>
+            <select class="static-select">
+                <ng-container *ngFor="let tab of tabStatus">
+                    <ng-container *ngFor="let label of tab.label_list">
+                        <option [value]="label" [selected]="label === currentAnnotationLabel">
+                            {{ label }}
+                        </option>
+                    </ng-container>
+                </ng-container>
+            </select>
+            <label class="font-label">Region Info: </label>
+            <input
+                class="static-input"
+                type="text"
+                [value]="mainLabelRegionVal"
+                placeholder="Input Main Region Info"
+                (change)="onChangeInput($event, 'main')"
+            />
         </div>
-        <div class="project-name-style">
-          <label class="project-name-font-size">Project Name : </label>
-          <select class="select-style" formControlName="selectExistProject">
-            <option value="">None</option>
-            <ng-container *ngFor="let project of projects">
-              <option value="{{ project }}">{{ project }}</option>
-            </ng-container>
-          </select>
-        </div>
-        <div class="existing-validation">
-          <ng-container *ngIf="form.get('selectExistProject').touched">
-            <span *ngIf="form.get('selectExistProject').getError('required')">
-              <small> * Project is required </small>
-            </span>
-          </ng-container>
-        </div>
-        <div>
-          <button
-            class="button-style submit-btn-style"
-            type="button"
-            (click)="onSubmit(false)"
-          >
-            Submit
-          </button>
-        </div>
-      </div>
-      <div class="hr-container"><hr /></div>
-      <div class="new-project-container">
-        <h2 class="h2-styling">Create New Project</h2>
-        <div class="new-project-name-style">
-          <label class="new-project-style">New Project Name : </label>
-          <input
-            class="project-id-style"
-            type="text"
-            formControlName="inputProjectName"
-            [value]="inputProjectName"
-            (input)="onChange($event.target.value)"
-            placeholder="Your new ID"
-          />
-        </div>
-        <div class="validation">
-          <ng-container *ngIf="form.get('inputProjectName').touched">
-            <span *ngIf="form.get('inputProjectName').getError('exist')">
-              <small> * Project name already exist! Try other name </small>
-            </span>
-            <span *ngIf="form.get('inputProjectName').getError('required')">
-              <small> * Project name is required </small>
-            </span>
-          </ng-container>
-        </div>
-        <div class="label-list-container">
-          <label class="label-list-style">Label List File (*.txt) : </label>
-          <input
-            class="input-file-style"
-            type="file"
-            accept=".txt"
-            (change)="onFileChange($event)"
-          />
-        </div>
-        <div>
-          <button
-            class="button-style input-btn-style"
-            type="submit"
-            (click)="onSubmit(true)"
-          >
-            Create
-          </button>
-        </div>
-      </div>
     </div>
-  </form>
-</modal> -->
+    <hr class="hr-line" />
+    <div>
+        <h2 class="font-title">Sub Label</h2>
+        <div class="sub-label-container">
+            <label class="font-label">Label: </label>
+            <select class="static-select" #subLabelSelect>
+                <ng-container *ngFor="let tab of tabStatus">
+                    <ng-container *ngFor="let label of tab.label_list">
+                        <option [value]="label" [selected]="tab.label_list[0].label">
+                            {{ label }}
+                        </option>
+                    </ng-container>
+                </ng-container>
+            </select>
+            <label class="font-label">Region Info: </label>
+            <input
+                class="static-input"
+                type="text"
+                [value]="subLabelRegionVal"
+                placeholder="Input Sub Region Info"
+                (change)="onChangeInput($event, 'sub')"
+            />
+            <button class="modal-button" (click)="onSubmitLabel()">Add</button>
+        </div>
+        <ng-container *ngIf="subLabelValidateMsg">
+            <div class="validate-msg">
+                {{ subLabelValidateMsg }}
+            </div>
+        </ng-container>
+    </div>
+    <hr class="hr-line" />
+
+    <ng-container *ngFor="let tab of tabStatus">
+        <ng-container *ngFor="let annotation of tab.annotation">
+            <ng-container *ngFor="let bb of annotation?.bnd_box; index as annotationIndex">
+                <ng-container *ngIf="bb?.subLabel?.length > 0 && annotationIndex === currentAnnotationIndex">
+                    <h2 class="font-title">Added Sub Label</h2>
+                    <ng-container *ngFor="let sublabel of bb.subLabel; index as subLabelIndex">
+                        <div class="sub-label-flex-container sub-label-padding">
+                            <label class="font-label flex-first">Label: {{ sublabel.label }}</label>
+
+                            <label class="font-label flex-second">Region Info: {{ sublabel.region }}</label>
+                            <span class="flex-third"></span>
+                            <button
+                                class="modal-butto flex-fourth"
+                                (click)="onRemoveSubLabel(annotationIndex, subLabelIndex)"
+                            >
+                                X
+                            </button>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </ng-container>
+        </ng-container>
+    </ng-container>
+</modal>

@@ -1,0 +1,319 @@
+@use '../../../shared/scss/_variables.scss' as color;
+@use '../../../shared/scss/_scrollbar.scss' as *;
+@use '../../../shared/scss/_ellipsis' as ellipsis;
+
+@mixin tab-after() {
+    position: absolute;
+    content: '';
+    top: 4vh;
+    min-width: 100vw;
+    max-width: 100vw;
+    min-height: 93vh;
+    max-height: 93vh;
+    background: #383535;
+    z-index: -1;
+}
+
+@mixin calHeight($height) {
+    max-height: $height;
+    min-height: calc(#{$height} - 60vh);
+}
+
+.tab-container {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    right: 0;
+    position: fixed;
+    z-index: 1000;
+    min-width: 18.5vw;
+    max-width: 18.5vw;
+}
+
+.utility-right-project-container {
+    height: 100%;
+    min-width: 16.3vw;
+    max-width: 16.3vw;
+    background: rgb(105, 105, 105);
+    outline: 0.0625vw inset white;
+    border: none;
+    z-index: 1000;
+    align-items: stretch;
+}
+
+.utility-right-project-container::after {
+    position: absolute;
+    content: '';
+    top: 0;
+    min-width: 8.5vw;
+    max-width: 8.5vw;
+    min-height: 4vh;
+    max-height: 4vh;
+    background: #383535;
+    z-index: -1;
+    font-size: 1.5vh;
+    line-height: 3vh;
+    color: white;
+    padding: 0.5vh 0 0 2vw;
+}
+
+.tab {
+    position: sticky;
+    overflow: hidden;
+}
+
+.tab::before {
+    @include tab-after();
+}
+
+.flex-fixed {
+    flex: 0 1 25vh;
+}
+
+.flex-fill-remaining {
+    flex: 1 1 auto;
+}
+
+// .content-height:first {
+//     @include calHeight(100vh);
+// }
+
+// .content-height:not(:first) {
+//     @include calHeight(80vh);
+// }
+
+.flex-content {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+}
+
+.tab-name {
+    font-size: 1.7vh;
+    padding: 0.5vw 2vw 0 2vw;
+    display: inline-block;
+    color: white;
+    position: absolute;
+}
+
+.tab-close-thumbnail {
+    float: right;
+    vertical-align: middle;
+    min-height: 4vh;
+    max-height: 4vh;
+    color: rgb(105, 105, 105);
+    font-size: 2vh;
+    line-height: 4vh;
+    text-align: center;
+    margin-left: 3vw;
+    justify-content: center;
+    display: inline-grid;
+}
+
+.div-close {
+    min-width: 1.6vw;
+    max-width: 1.6vw;
+    min-height: 4vh;
+    max-height: 4vh;
+    color: white;
+    cursor: pointer;
+    text-align: center;
+    /* float is needed due to flex direction column would glitch the close button to left side permanently */
+    float: right;
+}
+
+.div-close:active {
+    background: grey;
+}
+
+.utility-inner-container {
+    padding: 2.5vh 0 0 0.2vw;
+    scroll-behavior: smooth;
+    overflow: hidden auto;
+    z-index: 100;
+    min-width: 16vw;
+    max-width: 16vw;
+}
+
+.scroll::-webkit-scrollbar-track {
+    @include scrollbar-track(color.$blackColor);
+}
+
+.scroll::-webkit-scrollbar {
+    @include scrollbar();
+}
+
+.scroll::-webkit-scrollbar-thumb {
+    @include scrollbar-thumb(color.$greyColor);
+}
+
+.utility-icon-container {
+    min-height: 5vh;
+    max-height: 5vh;
+}
+
+.img-container {
+    font-size: 1.5vh;
+    color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 5vh;
+    max-height: 5vh;
+    cursor: pointer;
+}
+
+.img {
+    // border-radius: 1vh;
+    max-height: 4.3vh;
+    min-height: 4.3vh;
+    min-width: 3vw;
+    max-width: 3vw;
+    outline: 0.0625vw inset white;
+}
+
+.img-name {
+    margin-left: 0.5vw;
+    @include ellipsis.ellipsis();
+}
+
+.closed {
+    display: none;
+}
+
+.utility-icon-light,
+.utility-icon-dark {
+    min-width: 1.5vw;
+    max-width: 1.5vw;
+    min-height: 3vh;
+    max-height: 3vh;
+    padding: 0.3vw;
+    position: absolute;
+}
+
+.flex-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 1.5vh;
+    color: white;
+    @include ellipsis.ellipsis();
+}
+
+.flex-center-width {
+    display: flex;
+    justify-content: center;
+    width: 90%;
+    flex-wrap: wrap;
+}
+
+.label {
+    flex: 1 1 80%;
+    display: flex;
+    justify-content: center;
+    margin: 0.25vh 0 0.25vh 0;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.label-active,
+.annotation-active {
+    border: 0.15vw solid yellow;
+}
+
+.action {
+    flex: 1 1 20%;
+}
+
+.utility-info-btn {
+    font-size: 1vw;
+    min-width: 0vw;
+    max-width: 0vw;
+    min-height: 2.5vh;
+    max-height: 2.5vh;
+    line-height: 0vh;
+    right: 21vh;
+    position: absolute;
+    background: #383535;
+    border: none;
+    color: white;
+}
+
+.flex-tab-icons {
+    display: flex;
+    width: 100%;
+}
+
+.tab-close-thumbnailless {
+    float: right;
+    vertical-align: middle;
+    min-height: 4vh;
+    max-height: 4vh;
+    color: rgb(105, 105, 105);
+    font-size: 2vh;
+    line-height: 4vh;
+    text-align: center;
+    flex: 1 0 60%;
+    justify-content: right;
+    display: inline-grid;
+}
+
+.extra-icons {
+    cursor: pointer;
+}
+
+.extra-icons:active {
+    background: grey;
+}
+
+.tab-extra-icons {
+    float: right;
+    vertical-align: middle;
+    font-size: 1.7vh;
+    line-height: 4vh;
+    // cursor: pointer;
+    text-align: center;
+    color: white;
+    flex: 1 0 15%;
+}
+
+.tab-text {
+    font-size: 1.7vh;
+    min-width: 6vw;
+    max-width: 6vw;
+}
+
+.inner-content {
+    max-height: 25vh;
+    min-height: 25vh;
+    min-width: 3vw;
+    max-width: 3vw;
+}
+
+.label-input {
+    position: absolute;
+    z-index: 1000;
+    margin-left: -4vw;
+}
+
+.input {
+    border-radius: 10vw;
+    border: none;
+    outline: none;
+    padding: 0.3vw 0 0.3vw 1vw;
+    box-shadow: 0 0 0.3vw;
+    min-height: 2vh;
+    max-height: 2vh;
+    min-width: 6vw;
+    max-width: 6vw;
+    font-size: 1.7vh;
+    // font-size: 2vh;
+}
+
+.input-invalid {
+    border: 0.2vw solid red;
+}

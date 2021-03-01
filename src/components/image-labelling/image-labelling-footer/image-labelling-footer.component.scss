@@ -1,0 +1,31 @@
+.footer-container {
+    position: absolute;
+    background: #525353;
+    outline: 0.0625vw inset white;
+    border: none;
+    min-height: 2.3vh;
+    max-height: 2.3vh;
+    min-width: 100vw;
+    max-width: 100vw;
+    bottom: 0;
+}
+
+.footer-label-container {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    width: 40%;
+}
+
+.footer-label {
+    font-size: 1.6vh;
+    color: white;
+    flex: 0 1 30%;
+    outline: none;
+    border-right: 1px solid white;
+    text-align: center;
+}
+
+.border-right {
+    border-right: 1rem white;
+}

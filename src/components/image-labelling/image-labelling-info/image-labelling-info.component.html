@@ -1,0 +1,61 @@
+<div class="header-container">
+    <div class="container-flex-start">
+        <ng-container *ngIf="_onChange.thumbnailName; else defaultName">
+            <div class="indicator"></div>
+            <label class="imageTitle">{{ _onChange.thumbnailName | fileNameSlice }}</label>
+        </ng-container>
+        <ng-template #defaultName>
+            <label class="imageTitle"></label>
+        </ng-template>
+    </div>
+    <div class="container-flex-center">
+        <ng-container *ngFor="let logo of jsonSchema.logosCenter; index as i">
+            <ng-container *ngIf="i === 0; else renderOtherIcons">
+                <div class="utility-icon-container">
+                    <img
+                        [ngClass]="conditionalIconTheme()"
+                        [attr.data-index]="i + logo.alt"
+                        [src]="logo.imgPath"
+                        [alt]="logo.alt"
+                        [title]="logo.hoverLabel"
+                        (click)="logo.onClick()"
+                    />
+                </div>
+                <div class="totalThumbnail">
+                    <ng-container *ngIf="_onChange && _onChange.totalNumThumbnail">
+                        <label>{{ _onChange.currentThumbnailIndex || 0 }} / {{ _onChange.totalNumThumbnail }}</label>
+                    </ng-container>
+                </div>
+            </ng-container>
+            <ng-template #renderOtherIcons>
+                <div class="utility-icon-container">
+                    <img
+                        [ngClass]="conditionalIconTheme()"
+                        [attr.data-index]="i + logo.alt"
+                        [src]="logo.imgPath"
+                        [alt]="logo.alt"
+                        [title]="logo.hoverLabel"
+                        (click)="logo.onClick()"
+                    />
+                </div>
+            </ng-template>
+        </ng-container>
+    </div>
+    <div class="container-flex-end">
+        <ng-container *ngFor="let logo of jsonSchema.logosEnd; index as i">
+            <div class="utility-icon-container">
+                <img
+                    [ngClass]="conditionalIconTheme()"
+                    [attr.data-index]="i + logo.alt"
+                    [src]="logo.imgPath"
+                    [alt]="logo.alt"
+                    [title]="logo.hoverLabel"
+                    (click)="logo.onClick()"
+                />
+            </div>
+            <ng-container *ngIf="i === 1">
+                <hr class="horizontal-line" />
+            </ng-container>
+        </ng-container>
+    </div>
+</div>

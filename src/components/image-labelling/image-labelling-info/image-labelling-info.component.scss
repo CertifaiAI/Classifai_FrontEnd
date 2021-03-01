@@ -1,0 +1,114 @@
+@use '../../../shared/scss/_ellipsis' as ellipsis;
+
+.header-container {
+    min-width: 100vw;
+    max-width: 100vw;
+    min-height: 3.5vh;
+    max-height: 3.5vh;
+    background: #525353;
+    outline: 0.0625vw inset white;
+    display: flex;
+    justify-content: space-between;
+    z-index: 1000;
+    position: absolute;
+}
+
+.container-flex-start {
+    display: flex;
+    align-items: baseline;
+    margin-left: 3vw;
+    min-height: inherit;
+    max-height: inherit;
+}
+
+.container-flex-center {
+    display: flex;
+    margin-left: 8vw;
+}
+
+.container-flex-end {
+    display: flex;
+    margin-right: 19vw;
+}
+
+/* div.utility-icon-container:nth-last-child(3) {
+    border-right: 0.1vw solid;
+    border-right-color: darkgray;
+    max-height: 4.2vh;
+} */
+
+.logo-container {
+    min-width: 2.2vw;
+    max-width: 2.2vw;
+}
+
+.logo,
+.utility-icon-light,
+.utility-icon-dark {
+    min-width: 1.5vw;
+    max-width: 1.5vw;
+    min-height: 3vh;
+    max-height: 3vh;
+    padding: 0.1vw;
+    cursor: pointer;
+}
+
+.utility-icon-light:active {
+    background: rgb(105, 105, 105);
+}
+
+.utility-icon-dark:active {
+    background: darkgray;
+}
+
+.position-absolute {
+    position: absolute;
+}
+
+.utility-icon-container {
+    display: flex;
+    min-height: 3.5vh;
+    max-height: 3.5vh;
+}
+
+.totalThumbnail {
+    font-size: 1.7vh;
+    padding: 0.4vw 1vw 0 1vw;
+    display: inline-block;
+    color: white;
+    width: fit-content;
+}
+
+.img-container:hover .img-description {
+    visibility: visible;
+    opacity: 1;
+}
+
+.imageTitle {
+    font-size: 2vh;
+    color: white;
+    align-items: center;
+    margin-left: 1vw;
+    max-width: 20vw;
+    min-width: 20vw;
+    min-height: inherit;
+    max-height: inherit;
+    position: absolute;
+    margin-top: 0.5vh;
+    @include ellipsis.ellipsis();
+}
+
+.indicator {
+    height: 0.8vh;
+    width: 0.4vw;
+    background-color: #bbb;
+    border-radius: 50%;
+    position: absolute;
+    top: 1.2vh;
+}
+
+.horizontal-line {
+    padding: 1vh 0 1vh 0;
+    margin: 0 1vw 0 1vw;
+    border: 0.01rem solid #707070;
+}

@@ -1,64 +1,166 @@
-.header-container{
-  margin-top: 7.3vh;
-  margin-left: 5vw;
-  font-size: 2.3vh;
+$fontSize: 2vh;
+
+.upper-container {
+    display: flex;
+    margin-top: 5vh;
 }
 
-.layout-container{
-  display: flex;
-  flex-direction: row;
+.model {
+    position: fixed; /* Stay in place */
+    z-index: 1000; /*Sit on top*/
+    padding-top: 10vh; /* Location of the box */
+    // left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: transparent;
+    scrollbar-width: none;
+    position: fixed;
+    background: rgba(0, 0, 0, 0.7);
 }
 
-.container {
-  display: none;
-  position: fixed;
-  z-index: 1;
-  padding-top: 100px;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+.model-content {
+    background-color: #525353;
+    margin: auto;
+    padding: 1vw;
+    border: solid;
+    max-width: 30vw;
+    min-width: 30vw;
+    border-radius: 1vw;
+    margin-top: 15vh;
+    // min-height: 30vh;
+    // max-height: 30vh;
 }
 
-.content {
-  background-color: #fefefe;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
+.content-container {
+    margin-left: 1.3vw;
 }
 
-#model-content {
-  background-color: #fefefe;
-  margin: auto;
-  padding: 1vw;
-  border: 1px solid #888;
-  max-width: 30vw;
-  min-width: 30vw;
-  border-radius: 10px;
-  margin-top: 15vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: inset 0 0 1vh #000000;
+.content-header {
+    color: white;
+    font-size: 3vh;
 }
 
-#model {
-  /* display: none; */
-  position: fixed; /* Stay in place */
-  z-index: 2; /*Sit on top*/
-  padding-top: 100px; /* Location of the box */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  /* background-color: rgb(0,0,0);
-  background-color: rgba(34, 19, 19, 0.8); */
-  background-color: transparent;
-  scrollbar-width: none;
-  position: fixed;
-  background: rgba(0, 0, 0, 0.7);
+.new-project-container {
+    display: flex;
+    flex-direction: row;
+    margin: 3vh 0 0 0;
+    align-items: baseline;
 }
+
+.label {
+    color: white;
+    font-size: $fontSize;
+    margin-right: 1vw;
+}
+
+.input-style {
+    border-radius: 2vw;
+    border: none;
+    outline: none;
+    background-color: #363636;
+    min-width: 11vw;
+    max-width: 11vw;
+    min-height: 4vh;
+    max-height: 4vh;
+    font-size: $fontSize;
+    color: white;
+    padding: 0 1vw 0 1vw;
+}
+
+.validation {
+    color: red;
+}
+
+.error-msg {
+    font-size: $fontSize;
+}
+
+.select-folder-container {
+    display: flex;
+    flex-direction: row;
+    margin: 2vh 0 0 0;
+}
+
+.input {
+    color: aquamarine;
+}
+
+.horizontal-line {
+    background-color: white;
+    min-height: 0.3vh;
+    max-height: 0.3vh;
+    margin: 2vh auto;
+    margin-top: 2vh;
+}
+
+.model-button-container {
+    display: flex;
+    flex-direction: row-reverse;
+    padding: 1vw;
+}
+
+.button-style {
+    padding: 1vh 1.5vw 1vh 1.5vw;
+    border-radius: 1vh;
+    border: none;
+    outline: none;
+    color: white;
+    cursor: pointer;
+    font-size: $fontSize;
+}
+
+.create-btn {
+    background-color: #169887;
+}
+
+.cancel-btn {
+    background-color: #444444;
+    margin-right: 0.7vw;
+}
+
+// .file-input {
+//     color: transparent;
+//     color: transparent;
+//     min-height: 2vh;
+//     max-height: 2vh;
+//     min-width: 4vw;
+//     max-width: 5vw;
+// }
+
+// .file-input::-webkit-file-upload-button {
+//     visibility: hidden;
+// }
+
+// .file-input::before {
+//     content: 'Choose File';
+//     color: black;
+//     display: block;
+//     position: absolute;
+//     background: white;
+//     border-radius: 1vw;
+//     padding: 0.2vw;
+//     outline: none;
+//     white-space: nowrap;
+//     -webkit-user-select: none;
+//     cursor: pointer;
+//     text-shadow: 1px 1px #fff;
+//     font-size: 1.5vh;
+//     min-height: inherit;
+//     max-height: inherit;
+//     min-width: inherit;
+//     max-width: inherit;
+// }
+
+// .file-input:hover::before {
+//     border-color: black;
+// }
+
+// .file-input:active {
+//     outline: 0;
+// }
+
+// .file-input:active::before {
+//     background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+// }
