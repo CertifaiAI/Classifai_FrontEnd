@@ -367,53 +367,53 @@ export class SegmentationCanvasService {
     // !! missing id for getElementById
     private plotAllFloatLabel(metadata: PolyMetadata, len: number) {
         try {
-            this.clearAllDIV(metadata, 1);
+            // this.clearAllDIV(metadata, 1);
             for (let i = 0; i < len; ++i) {
                 // this.util.RemoveHTMLElement("float_" + pol[this.getCurrentSelectedimgidx()].polygons[i].id.toString());
                 const regionAttr = metadata.polygons[i].region.toString();
                 const uuids = metadata.polygons[i].id;
-                const tempdiv = this.createDIV(
-                    regionAttr,
-                    uuids,
-                    metadata.polygons[i].coorPt[0].x,
-                    metadata.polygons[i].coorPt[0].y,
-                );
+                // const tempdiv = this.createDIV(
+                //     regionAttr,
+                //     uuids,
+                //     metadata.polygons[i].coorPt[0].x,
+                //     metadata.polygons[i].coorPt[0].y,
+                // );
 
-                const element = document.getElementById('');
-                element && tempdiv && element.appendChild(tempdiv);
+                // const element = document.getElementById('');
+                // element && tempdiv && element.appendChild(tempdiv);
             }
         } catch (err) {
             console.log('plotAllFloatLabel', err);
         }
     }
 
-    clearAllDIV({ polygons }: PolyMetadata, len: number) {
-        try {
-            for (let i = 0; i < len; ++i) {
-                this.util.RemoveHTMLElement('float_' + polygons[i].id.toString());
-            }
-        } catch (err) {
-            console.log('clearAllDIV', err);
-        }
-    }
+    // clearAllDIV({ polygons }: PolyMetadata, len: number) {
+    //     try {
+    //         for (let i = 0; i < len; ++i) {
+    //             this.util.RemoveHTMLElement('float_' + polygons[i].id.toString());
+    //         }
+    //     } catch (err) {
+    //         console.log('clearAllDIV', err);
+    //     }
+    // }
 
-    createDIV(textinfo: string, uuid: number, posX: number, posY: number) {
-        try {
-            const divtag = document.createElement('div');
-            divtag.id = 'float_' + uuid.toString();
-            divtag.style.position = 'absolute';
-            divtag.style.top = (posY + this.radius + 0.5).toString() + 'px';
-            divtag.style.left = (posX + this.radius + 0.5).toString() + 'px';
-            divtag.style.backgroundColor = 'rgba(255,255,255,0.5)';
-            divtag.style.pointerEvents = 'none';
-            divtag.style.color = 'black';
-            divtag.innerText = textinfo;
+    // createDIV(textinfo: string, uuid: number, posX: number, posY: number) {
+    //     try {
+    //         const divtag = document.createElement('div');
+    //         divtag.id = 'float_' + uuid.toString();
+    //         divtag.style.position = 'absolute';
+    //         divtag.style.top = (posY + this.radius + 0.5).toString() + 'px';
+    //         divtag.style.left = (posX + this.radius + 0.5).toString() + 'px';
+    //         divtag.style.backgroundColor = 'rgba(255,255,255,0.5)';
+    //         divtag.style.pointerEvents = 'none';
+    //         divtag.style.color = 'black';
+    //         divtag.innerText = textinfo;
 
-            return divtag;
-        } catch (err) {
-            console.log('createDIV', err);
-        }
-    }
+    //         return divtag;
+    //     } catch (err) {
+    //         console.log('createDIV', err);
+    //     }
+    // }
 
     setGlobalXY({ img_x, img_y }: Pick<PolyMetadata, 'img_x' | 'img_y'>) {
         try {
