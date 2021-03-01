@@ -130,7 +130,7 @@ export class SegmentationCanvasService {
     }
 
     setSelectedPolygonIndex(index: number) {
-        index && (this.selectedPolygonIndex = index);
+        this.selectedPolygonIndex = index;
     }
 
     getselectedPolygonIndex() {
@@ -783,7 +783,16 @@ export class SegmentationCanvasService {
         }
     }
 
-    deleteSinglePolygon(pol: PolyMetadata, index: number, callback: (agrs: boolean) => any) {}
+    deleteSinglePolygon(pol: PolyMetadata, index: number, callback: (agrs: boolean) => any) {
+        try {
+            // this.ClearallBoundingboxList(this.seg.Metadata[this.seg.getCurrentSelectedimgidx()].polygons);
+            // this.seg.Metadata[this.seg.getCurrentSelectedimgidx()].polygons.splice(this.CurrentSelectedPolygon, 1);
+            // this.CreateNewBoundingBoxList(this.seg.Metadata[this.seg.getCurrentSelectedimgidx()].polygons);
+            // this.CurrentSelectedPolygon = undefined;
+        } catch (err) {
+            console.log('deleteSinglePolygon', err);
+        }
+    }
 
     scalePolygons(metadata: PolyMetadata, { factor, newX, newY }: FitScreenCalc, callback?: (arg: boolean) => any) {
         try {
