@@ -34,5 +34,15 @@
         "totalPhoto": "Total Photo:",
         "noProject": "Wait a minute... there's no project",
         "createNew": "Gear up and start creating new project!"
+    },
+    "labellingProject": {
+        "project": "Project",
+        "label": "Label",
+        "annotation": "Annotation"
+    },
+    "footer": {
+        "size": "Size",
+        "image": "Image",
+        "dimension": "Dimension"
     }
 }

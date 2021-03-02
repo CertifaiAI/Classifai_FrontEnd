@@ -27,11 +27,5 @@
         "imgList": "Image List",
         "labelList": "Label List",
         "boundBox": "Bounding Box"
-    },
-
-    "labellingProject": {
-        "project": "Project",
-        "label": "Label",
-        "annotation": "Annotation"
     }
 }

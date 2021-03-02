@@ -34,5 +34,15 @@
         "totalPhoto": "Jumlah foto:",
         "noProject": "Tunggu sekejap... tidak ada projek pun",
         "createNew": "Bersedia dan jom mulakan projek baru!"
+    },
+    "labellingProject": {
+        "project": "Projek",
+        "label": "Label",
+        "annotation": "Anotasi"
+    },
+    "footer": {
+        "size": "Saiz",
+        "image": "Imej",
+        "dimension": "Dimensi"
     }
 }
