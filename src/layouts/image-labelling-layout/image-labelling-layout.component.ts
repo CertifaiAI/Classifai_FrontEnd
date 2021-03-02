@@ -146,6 +146,20 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         url ? this._router.navigate([url]) : console.error(`No url received from child component`);
     };
 
+    @HostListener('window:keydown', ['$event'])
+    keyboardNavigate = ({ key }: KeyboardEvent): void => {
+        switch (key) {
+            case 'ArrowLeft':
+                this.navigateByAction({ thumbnailAction: -1 });
+                break;
+            case 'ArrowRight':
+                this.navigateByAction({ thumbnailAction: 1 });
+                break;
+            default:
+                break;
+        }
+    };
+
     navigateByAction = ({ thumbnailAction }: EventEmitter_Action): void => {
         if (thumbnailAction) {
             const calculatedIndex = this._imgLblLayoutService.calculateIndex(

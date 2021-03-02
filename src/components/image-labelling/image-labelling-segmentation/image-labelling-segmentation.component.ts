@@ -371,57 +371,79 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     canvasKeyDownEvent({ ctrlKey, shiftKey, key }: KeyboardEvent) {
         try {
             const { isActiveModal } = this.segState;
-            if (!isActiveModal && this.canvasContext && this.canvasContext.canvas.style.pointerEvents !== 'none') {
-                if ((key === 'Delete' || key === 'Backspace') && !this.mouseDown) {
-                    !this._segCanvasService.isNewPolygon() &&
-                        this._segCanvasService.deleteSinglePolygon(
-                            this._selectMetadata,
-                            this.annotateState.annotation,
-                            (isCompleted: boolean) => {
-                                if (isCompleted) {
-                                    this.annotateStateMakeChange({ annotation: -1, isDlbClick: false });
-                                    this._undoRedoService.appendStages({
-                                        meta: cloneDeep(this._selectMetadata),
-                                        method: 'draw',
-                                    });
-                                    this.emitMetadata();
-                                }
-                            },
-                        );
-                } else if (key === 'Enter' && this._segCanvasService.isNewPolygon()) {
-                    this._segCanvasService.drawNewPolygon(
-                        this._selectMetadata,
-                        this.image,
-                        this.canvasContext,
-                        this.canvas.nativeElement.width,
-                        this.canvas.nativeElement.height,
-                        true,
-                    );
-                    // this.seg.DrawNewPolygon(
-                    //     this.images,
-                    //     this.CanvasDrawingCtx,
-                    //     this.canvasarea.width,
-                    //     this.canvasarea.height,
-                    //     true,
-                    // );
-                    // this.CurrentSelectedPolygon =
-                    //     this.seg.Metadata[this.seg.getCurrentSelectedimgidx()].polygons.length - 1;
-                    // this.seg.validateXYDistance(
-                    //     this.seg.Metadata[this.seg.getCurrentSelectedimgidx()].img_x,
-                    //     this.seg.Metadata[this.seg.getCurrentSelectedimgidx()].img_y,
-                    // );
-                    // this.ClearallBoundingboxList(this.seg.Metadata[this.seg.getCurrentSelectedimgidx()].polygons);
-                    // this.RefreshBoundingBoxList();
-                    this.canvasContext?.canvas.focus();
-                    // let selectedpoly: MetadataPoly = this.seg.Metadata[this.seg.getCurrentSelectedimgidx()];
-                    // this.ResetClippath(selectedpoly.img_x, selectedpoly.img_y, selectedpoly.img_w, selectedpoly.img_h);
-                    // this.appendQueue(this.seg.getCurrentSelectedimgidx());
-                    // this.appendCache(this.seg.Metadata[this.seg.getCurrentSelectedimgidx()]);
-                    // this.stages.SaveStages({
-                    //     stage: this.seg.Metadata[this.seg.getCurrentSelectedimgidx()],
-                    //     method: 'draw',
-                    // });
+            console.log('isMouseWithinPoint', this.isMouseWithinPoint);
+            if (
+                !isActiveModal &&
+                // !this.isMouseWithinPoint &&
+                this.canvasContext &&
+                this.canvasContext.canvas.style.pointerEvents !== 'none'
+            ) {
+                if (this._segCanvasService.isNewPolygon()) {
+                    const { width, height } = this.canvas.nativeElement;
+                    const { annotation } = this.annotateState;
+                    switch (key) {
+                        case 'Enter':
+                            this._segCanvasService.drawNewPolygon(
+                                this._selectMetadata,
+                                this.image,
+                                this.canvasContext,
+                                width,
+                                height,
+                                true,
+                            );
+                            this._segCanvasService.setSelectedPolygonIndex(annotation);
+                            this._segCanvasService.validateXYDistance(this._selectMetadata);
+
+                            // this.ClearallBoundingboxList(this.seg.Metadata[this.seg.getCurrentSelectedimgidx()].polygons);
+                            // this.RefreshBoundingBoxList();
+
+                            // let selectedpoly: MetadataPoly = this.seg.Metadata[this.seg.getCurrentSelectedimgidx()];
+                            // this.ResetClippath(selectedpoly.img_x, selectedpoly.img_y, selectedpoly.img_w, selectedpoly.img_h);
+                            // this.appendQueue(this.seg.getCurrentSelectedimgidx());
+                            // this.appendCache(this.seg.Metadata[this.seg.getCurrentSelectedimgidx()]);
+                            // this.stages.SaveStages({
+                            //     stage: this.seg.Metadata[this.seg.getCurrentSelectedimgidx()],
+                            //     method: 'draw',
+                            // });
+                            break;
+                        case 'Escape':
+                            this._segCanvasService.resetDrawing(
+                                this._selectMetadata,
+                                this.canvasContext,
+                                this.image,
+                                width,
+                                height,
+                            );
+                            this._segCanvasService.setSelectedPolygonIndex(annotation);
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    switch (key) {
+                        case 'Delete':
+                        case 'Backspace':
+                            this._segCanvasService.deleteSinglePolygon(
+                                this._selectMetadata,
+                                this.annotateState.annotation,
+                                (isCompleted: boolean) => {
+                                    if (isCompleted) {
+                                        this.annotateStateMakeChange({ annotation: -1, isDlbClick: false });
+                                        this._undoRedoService.appendStages({
+                                            meta: cloneDeep(this._selectMetadata),
+                                            method: 'draw',
+                                        });
+                                        this.emitMetadata();
+                                    }
+                                },
+                            );
+                            break;
+
+                        default:
+                            break;
+                    }
                 }
+                this.canvasContext.canvas.focus();
             }
         } catch (err) {
             console.log('canvasKeyDownEvent', err);

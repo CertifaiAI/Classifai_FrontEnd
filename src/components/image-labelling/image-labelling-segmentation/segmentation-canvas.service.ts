@@ -300,9 +300,9 @@ export class SegmentationCanvasService {
             // if(pol.polygons.length < 1 || selectpolygon === -1){return;}
             // else{
             if (this.validatePolygonMetadata(metadata.polygons)) {
-                this.drawAllPolygonLine(metadata, context, 1);
-                this.drawAllPolygonsDots(metadata, context, selectedPolygonIndex, this.radius, 1);
-                this.plotAllFloatLabel(metadata, 1);
+                this.drawAllPolygonLine(metadata, context);
+                this.drawAllPolygonsDots(metadata, context, selectedPolygonIndex, this.radius);
+                this.plotAllFloatLabel(metadata, context);
             }
             // }
         } catch (err) {
@@ -314,18 +314,16 @@ export class SegmentationCanvasService {
         return polygons.length > 0 ? true : false;
     }
 
-    private drawAllPolygonLine({ polygons }: PolyMetadata, context: CanvasRenderingContext2D, length: number) {
+    private drawAllPolygonLine({ polygons }: PolyMetadata, context: CanvasRenderingContext2D) {
         try {
-            for (let i = 0; i < length; ++i) {
-                context.lineWidth = polygons[i].lineWidth;
-                context.strokeStyle = polygons[i].color || 'white';
-                context.fillStyle = polygons[i].color || 'white';
+            for (const [_, { lineWidth, color, coorPt }] of polygons.entries()) {
+                context.lineWidth = lineWidth;
+                context.strokeStyle = color || 'white';
+                context.fillStyle = color || 'white';
                 context.beginPath();
-                context.moveTo(polygons[i].coorPt[0].x, polygons[i].coorPt[0].y);
-                for (let j = 0; j < polygons[i].coorPt.length; ++j) {
-                    if (j + 1 < polygons[i].coorPt.length) {
-                        context.lineTo(polygons[i].coorPt[j + 1].x, polygons[i].coorPt[j + 1].y);
-                    }
+                context.moveTo(coorPt[0].x, coorPt[0].y);
+                for (const [j] of coorPt.entries()) {
+                    j + 1 < coorPt.length && context.lineTo(coorPt[j + 1].x, coorPt[j + 1].y);
                 }
                 context.closePath();
                 context.stroke();
@@ -338,26 +336,21 @@ export class SegmentationCanvasService {
     private drawAllPolygonsDots(
         { polygons }: PolyMetadata,
         context: CanvasRenderingContext2D,
-        selectedPolygonIndex: number,
+        polygonIndex: number,
         radius: number,
-        len: number,
     ) {
         try {
-            for (let q = 0; q < len; ++q) {
-                // context.strokeStyle = pol.polygons[q].color;
-                // context.fillStyle = pol.polygons[q].color;
-                if (q !== selectedPolygonIndex) {
-                    continue;
-                }
-                context.strokeStyle = 'green';
-                context.fillStyle = 'green';
-
-                for (const [k] of polygons[q].coorPt.entries()) {
-                    context.beginPath();
-                    context.arc(polygons[q].coorPt[k].x, polygons[q].coorPt[k].y, radius, 0, 2 * Math.PI);
-                    context.fill();
-                    context.closePath();
-                    context.stroke();
+            for (const [i, { coorPt }] of polygons.entries()) {
+                if (polygonIndex === i) {
+                    context.strokeStyle = 'green';
+                    context.fillStyle = 'green';
+                    for (const [j] of coorPt.entries()) {
+                        context.beginPath();
+                        context.arc(coorPt[j].x, coorPt[j].y, radius, 0, 2 * Math.PI);
+                        context.fill();
+                        context.closePath();
+                        context.stroke();
+                    }
                 }
             }
         } catch (err) {
@@ -365,53 +358,18 @@ export class SegmentationCanvasService {
         }
     }
     // !! missing id for getElementById
-    private plotAllFloatLabel(metadata: PolyMetadata, len: number) {
+    private plotAllFloatLabel({ polygons }: PolyMetadata, context: CanvasRenderingContext2D) {
         try {
-            this.clearAllDIV(metadata, 1);
-            for (let i = 0; i < len; ++i) {
-                // this.util.RemoveHTMLElement("float_" + pol[this.getCurrentSelectedimgidx()].polygons[i].id.toString());
-                const regionAttr = metadata.polygons[i].region.toString();
-                const uuids = metadata.polygons[i].id;
-                const tempdiv = this.createDIV(
-                    regionAttr,
-                    uuids,
-                    metadata.polygons[i].coorPt[0].x,
-                    metadata.polygons[i].coorPt[0].y,
-                );
-
-                const element = document.getElementById('');
-                element && tempdiv && element.appendChild(tempdiv);
-            }
+            polygons.forEach(({ label, coorPt }) => {
+                const { x, y } = coorPt[0];
+                context.strokeStyle = 'white';
+                context.fillStyle = 'black';
+                context.font = 'bold 12px Arial';
+                context.strokeText(label, x + 10, y + 15);
+                context.fillText(label, x + 10, y + 15);
+            });
         } catch (err) {
             console.log('plotAllFloatLabel', err);
-        }
-    }
-
-    clearAllDIV({ polygons }: PolyMetadata, len: number) {
-        try {
-            for (let i = 0; i < len; ++i) {
-                this.util.RemoveHTMLElement('float_' + polygons[i].id.toString());
-            }
-        } catch (err) {
-            console.log('clearAllDIV', err);
-        }
-    }
-
-    createDIV(textinfo: string, uuid: number, posX: number, posY: number) {
-        try {
-            const divtag = document.createElement('div');
-            divtag.id = 'float_' + uuid.toString();
-            divtag.style.position = 'absolute';
-            divtag.style.top = (posY + this.radius + 0.5).toString() + 'px';
-            divtag.style.left = (posX + this.radius + 0.5).toString() + 'px';
-            divtag.style.backgroundColor = 'rgba(255,255,255,0.5)';
-            divtag.style.pointerEvents = 'none';
-            divtag.style.color = 'black';
-            divtag.innerText = textinfo;
-
-            return divtag;
-        } catch (err) {
-            console.log('createDIV', err);
         }
     }
 
