@@ -18,13 +18,24 @@
     width: 40%;
 }
 
-.footer-label {
+@mixin footer-texts($flex) {
     font-size: 1.6vh;
     color: white;
-    flex: 0 1 30%;
+    flex: 0 1 $flex;
     outline: none;
     border-right: 0.05vw solid white;
     text-align: center;
+    padding: 0 1vw 0 1vw;
+}
+.footer-label {
+    @include footer-texts(30%);
+}
+
+.footer-image-path {
+    @include footer-texts(60%);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .border-right {
