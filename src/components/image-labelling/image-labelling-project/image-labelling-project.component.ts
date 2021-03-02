@@ -26,7 +26,7 @@ import {
 })
 export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDestroy {
     @Input() _thumbnailList: CompleteMetadata[] = [];
-    @Input() _tabStatus: TabsProps[] = [];
+    @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
     @Output() _onClickThumbNail: EventEmitter<EventEmitter_ThumbnailDetails> = new EventEmitter();
     @Output() _onClickLabel: EventEmitter<SelectedLabelProps> = new EventEmitter();
@@ -60,9 +60,14 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
 
                       this.selectedIndexAnnotation = annnotationIndex;
                       const [{ annotation }] = this._tabStatus.filter((tab) => tab.annotation);
-                      const resultLabel = annotation?.map(({ bnd_box }) =>
-                          bnd_box.find((_, i) => i === annnotationIndex),
-                      )[0];
+                      const resultLabel = annotation?.map(({ bnd_box, polygons }) => {
+                          if (bnd_box) {
+                              return bnd_box.find((_, i) => i === annnotationIndex);
+                          }
+                          if (polygons) {
+                              return polygons.find((_, i) => i === annnotationIndex);
+                          }
+                      })[0];
                       this.selectedLabel = resultLabel?.label ?? '';
                       // this.selectedIndexAnnotation = this._tabStatus.reduce((prev, { annotation }) => {
                       //     const currentIndex =
@@ -185,7 +190,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
             changes._tabStatus &&
             this.checkStateEqual(changes._tabStatus.currentValue, changes._tabStatus.previousValue)
         ) {
-            const { currentValue }: { currentValue: TabsProps[] } = changes._tabStatus;
+            const { currentValue }: { currentValue: TabsProps<CompleteMetadata>[] } = changes._tabStatus;
             this._tabStatus = [...currentValue];
         }
     }

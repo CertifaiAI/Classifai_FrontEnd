@@ -1,12 +1,13 @@
+import { Injectable } from '@angular/core';
+import { Utils } from '../types/utils/utils';
 import {
     BboxMetadata,
     Boundingbox,
+    Method,
     Polygons,
     PolyMetadata,
     UndoState,
 } from 'src/components/image-labelling/image-labelling.model';
-import { Injectable } from '@angular/core';
-import { Utils } from '../types/utils/utils';
 
 @Injectable({
     providedIn: 'any',
@@ -76,7 +77,7 @@ export class UndoRedoService {
         if (this.currentArr[0]?.meta && 'Polygons' in this.currentArr[0].meta) {
         } else {
             if (this.undoArr.length > 0) {
-                const last2Stages: boolean = this.isStatgeChange(
+                const last2Stages: boolean = this.isStateChange(
                     (this.undoArr[this.undoArr.length - 1]?.meta as BboxMetadata).bnd_box,
                 );
                 last2Stages ? (this.currentArr.pop(), this.currentArr.push(this.removeLastArray(this.undoArr))) : {};
@@ -92,7 +93,7 @@ export class UndoRedoService {
         return this.allowUndo;
     }
 
-    public isMethodChange(currMethod: string): boolean {
+    public isMethodChange(currMethod: Method): boolean {
         if (this.currentArr[0]?.method !== currMethod) {
             return true;
         }
@@ -103,7 +104,7 @@ export class UndoRedoService {
         stages ? (this.currentArr[0] = this.utility.deepCloneVariable(stages)) : {};
     }
 
-    public isStatgeChange(notate: Boundingbox[] | Polygons[] | null): boolean {
+    public isStateChange(notate: Boundingbox[] | Polygons[] | null) {
         if (notate === null || notate === undefined) {
             return false;
         }

@@ -1,6 +1,8 @@
 import { uuid } from 'src/shared/types/message/message.model';
 import { WithOptional } from 'src/shared/types/with-optional/with-optional';
 
+export type ImageLabelUrl = '/imglabel/bndbox' | '/imglabel/seg' | '';
+
 export type ImgLabelProps = {
     status?: boolean;
     currentThumbnailIndex: number;
@@ -43,7 +45,7 @@ export type TabsProps<TMetadata = undefined> = {
     name: string;
     closed: boolean;
     label_list?: string[];
-    annotation?: TMetadata extends undefined ? BboxMetadata[] & PolyMetadata[] : TMetadata[];
+    annotation?: TMetadata extends undefined ? BboxMetadata[] | PolyMetadata[] : TMetadata[];
 };
 
 type TabAction = {
@@ -144,7 +146,7 @@ export type PolyMetadata = Metadata & {
 export type CompleteMetadata = WithOptional<BboxMetadata, 'bnd_box' | 'img_depth'> &
     WithOptional<PolyMetadata, 'polygons'>;
 
-type Method = 'zoom' | 'draw' | 'pan';
+export type Method = 'zoom' | 'draw' | 'pan';
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
 
@@ -159,3 +161,9 @@ export type Panloc = {
 export type ProgressTuple = { url: string; data: Metadata };
 export type Stages = { stage: Metadata; method: string };
 export type xyCoordinate = { x: number; y: number };
+
+export type FitScreenCalc = {
+    factor: number;
+    newX: number;
+    newY: number;
+};

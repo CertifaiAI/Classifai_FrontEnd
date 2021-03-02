@@ -23,7 +23,7 @@ export class BoundingBoxCanvasService {
     };
     private tmpbox!: Boundingbox | null;
     private currentSelectedBndBox: number = -1;
-    private utility: Utils = new Utils();
+    private util: Utils = new Utils();
     constructor() {}
 
     public getdiffXY(offsetX: number, offsetY: number): { diffX: number; diffY: number } {
@@ -219,7 +219,7 @@ export class BoundingBoxCanvasService {
 
     public setCurrentSelectedbBox(newNUM: number): void {
         try {
-            newNUM ? (this.currentSelectedBndBox = newNUM) : {};
+            this.currentSelectedBndBox = newNUM;
         } catch (err) {
             console.log('ObjectDetection setCurrentSelectedbBox(newNUM:number):void', err.name + ': ', err.message);
         }
@@ -380,7 +380,7 @@ export class BoundingBoxCanvasService {
     }
 
     public changeLabel(bbox: Boundingbox, newLabel: string) {
-        bbox && newLabel ? (bbox.label = cloneDeep(newLabel)) : {};
+        bbox && newLabel && (bbox.label = newLabel);
     }
 
     public moveBoxWithinPointPath(
@@ -461,69 +461,74 @@ export class BoundingBoxCanvasService {
             if (context) {
                 const xCenter = box.x1 + (box.x2 - box.x1) / 2;
                 const yCenter = box.y1 + (box.y2 - box.y1) / 2;
+                context.strokeStyle = 'white';
+                context.fillStyle = 'black';
+                context.font = 'bold 12px Arial';
+                context.strokeText(box.label, box.x1 + 10, box.y1 + 15);
+                context.fillText(box.label, box.x1 + 10, box.y1 + 15);
                 context.strokeStyle = box.color;
-                context.fillStyle = box.color;
                 context.beginPath();
                 context.rect(box.x1, box.y1, box.x2 - box.x1, box.y2 - box.y1);
                 context.lineWidth = box.lineWidth;
                 context.stroke();
-                isSelected
-                    ? (context.beginPath(),
-                      context.fillRect(
-                          box.x1 - this.anchrSize,
-                          box.y1 - this.anchrSize,
-                          2 * this.anchrSize,
-                          2 * this.anchrSize,
-                      ),
-                      context.fillRect(
-                          box.x1 - this.anchrSize,
-                          yCenter - this.anchrSize,
-                          2 * this.anchrSize,
-                          2 * this.anchrSize,
-                      ),
-                      context.fillRect(
-                          box.x1 - this.anchrSize,
-                          box.y2 - this.anchrSize,
-                          2 * this.anchrSize,
-                          2 * this.anchrSize,
-                      ),
-                      context.fillRect(
-                          xCenter - this.anchrSize,
-                          box.y1 - this.anchrSize,
-                          2 * this.anchrSize,
-                          2 * this.anchrSize,
-                      ),
-                      context.fillRect(
-                          xCenter - this.anchrSize,
-                          yCenter - this.anchrSize,
-                          2 * this.anchrSize,
-                          2 * this.anchrSize,
-                      ),
-                      context.fillRect(
-                          xCenter - this.anchrSize,
-                          box.y2 - this.anchrSize,
-                          2 * this.anchrSize,
-                          2 * this.anchrSize,
-                      ),
-                      context.fillRect(
-                          box.x2 - this.anchrSize,
-                          box.y1 - this.anchrSize,
-                          2 * this.anchrSize,
-                          2 * this.anchrSize,
-                      ),
-                      context.fillRect(
-                          box.x2 - this.anchrSize,
-                          yCenter - this.anchrSize,
-                          2 * this.anchrSize,
-                          2 * this.anchrSize,
-                      ),
-                      context.fillRect(
-                          box.x2 - this.anchrSize,
-                          box.y2 - this.anchrSize,
-                          2 * this.anchrSize,
-                          2 * this.anchrSize,
-                      ))
-                    : null;
+                context.fillStyle = box.color;
+                if (isSelected) {
+                    context.beginPath(),
+                        context.fillRect(
+                            box.x1 - this.anchrSize,
+                            box.y1 - this.anchrSize,
+                            2 * this.anchrSize,
+                            2 * this.anchrSize,
+                        );
+                    context.fillRect(
+                        box.x1 - this.anchrSize,
+                        yCenter - this.anchrSize,
+                        2 * this.anchrSize,
+                        2 * this.anchrSize,
+                    );
+                    context.fillRect(
+                        box.x1 - this.anchrSize,
+                        box.y2 - this.anchrSize,
+                        2 * this.anchrSize,
+                        2 * this.anchrSize,
+                    );
+                    context.fillRect(
+                        xCenter - this.anchrSize,
+                        box.y1 - this.anchrSize,
+                        2 * this.anchrSize,
+                        2 * this.anchrSize,
+                    );
+                    context.fillRect(
+                        xCenter - this.anchrSize,
+                        yCenter - this.anchrSize,
+                        2 * this.anchrSize,
+                        2 * this.anchrSize,
+                    );
+                    context.fillRect(
+                        xCenter - this.anchrSize,
+                        box.y2 - this.anchrSize,
+                        2 * this.anchrSize,
+                        2 * this.anchrSize,
+                    );
+                    context.fillRect(
+                        box.x2 - this.anchrSize,
+                        box.y1 - this.anchrSize,
+                        2 * this.anchrSize,
+                        2 * this.anchrSize,
+                    );
+                    context.fillRect(
+                        box.x2 - this.anchrSize,
+                        yCenter - this.anchrSize,
+                        2 * this.anchrSize,
+                        2 * this.anchrSize,
+                    );
+                    context.fillRect(
+                        box.x2 - this.anchrSize,
+                        box.y2 - this.anchrSize,
+                        2 * this.anchrSize,
+                        2 * this.anchrSize,
+                    );
+                }
             }
         } catch (err) {
             console.log(
@@ -541,7 +546,7 @@ export class BoundingBoxCanvasService {
             const boxX2: number = x1 > x2 ? x1 : x2;
             const boxY2: number = y1 > y2 ? y1 : y2;
             if (boxX2 - boxX1 > this.lineOffset && boxY2 - boxY1 > this.lineOffset) {
-                const newID: number = this.utility.generateUniquesID();
+                const newID: number = this.util.generateUniquesID();
                 return {
                     x1: boxX1,
                     y1: boxY1,
@@ -584,7 +589,7 @@ export class BoundingBoxCanvasService {
 
     public getCurrentClickBox(mouseX: number, mouseY: number, box: Boundingbox[]): { box: number; pos: string } {
         try {
-            this.currentClickedBox = this.mouseClickOnBoxeses(mouseX, mouseY, box);
+            this.currentClickedBox = this.mouseClickOnBoxes(mouseX, mouseY, box);
             return this.currentClickedBox;
         } catch (err) {
             console.log(
@@ -596,7 +601,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    private mouseClickOnBoxeses(mouseX: number, mouseY: number, box: Boundingbox[]): { box: number; pos: string } {
+    private mouseClickOnBoxes(mouseX: number, mouseY: number, box: Boundingbox[]): { box: number; pos: string } {
         try {
             for (let i = 0; i < box.length; ++i) {
                 const xCenter: number = box[i].x1 + (box[i].x2 - box[i].x1) / 2;
@@ -634,7 +639,7 @@ export class BoundingBoxCanvasService {
             return { box: -1, pos: 'o' };
         } catch (err) {
             console.log(
-                'ObjectDetection mouseClickonBoxeses(MouseX:number, MouseY:number, box:Boundingbox[]):{box:number,pos:string}',
+                'ObjectDetection mouseClickOnBoxes(MouseX:number, MouseY:number, box:Boundingbox[]):{box:number,pos:string}',
                 err.name + ': ',
                 err.message,
             );

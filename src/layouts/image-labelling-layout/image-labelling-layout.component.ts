@@ -6,6 +6,7 @@ import { HTMLElementEvent } from 'src/shared/types/field/field.model';
 import { ImageLabellingActionService } from 'src/components/image-labelling/image-labelling-action.service';
 import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
 import { ImageLabellingLayoutService } from 'src/layouts/image-labelling-layout/image-labelling-layout.service';
+import { ImageLabellingModeService } from 'src/components/image-labelling/image-labelling-mode.service';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -17,12 +18,12 @@ import {
     EventEmitter_Action,
     EventEmitter_ThumbnailDetails,
     EventEmitter_Url,
+    ImageLabelUrl,
     ImgLabelProps,
     PolyMetadata,
     SelectedLabelProps,
     TabsProps,
 } from 'src/components/image-labelling/image-labelling.model';
-import { ImageLabellingModeService } from 'src/components/image-labelling/image-labelling-mode.service';
 import { LanguageService } from 'src/shared/services/language.service';
 
 @Component({
@@ -32,12 +33,12 @@ import { LanguageService } from 'src/shared/services/language.service';
 })
 export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     onChangeSchema!: ImgLabelProps;
-    inputProjectName: string = '';
+    currentUrl: ImageLabelUrl = '';
     selectedProjectName: string = '';
     imgSrc: string = '';
     loading: boolean = false;
     thumbnailList: CompleteMetadata[] = [];
-    selectedMetaData!: CompleteMetadata;
+    selectedMetaData?: CompleteMetadata;
     unsubscribe$: Subject<any> = new Subject();
     tabStatus: TabsProps<CompleteMetadata>[] = [
         {
@@ -62,6 +63,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     currentAnnotationLabel = '';
     currentAnnotationIndex = -1;
     currentImageDisplayIndex = -1;
+
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
 
     constructor(
@@ -79,6 +81,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         const langsArr: string[] = ['image-labelling-en', 'image-labelling-cn', 'image-labelling-ms'];
         this._languageService.initializeLanguage(`image-labelling`, langsArr);
+        this.currentUrl = this._router.url as ImageLabelUrl;
         const { thumbnailList, labelList, projectName } = this._imgLblLayoutService.getRouteState(history);
         this.thumbnailList = thumbnailList;
         this.selectedProjectName = projectName;
@@ -113,13 +116,13 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     this.onDisplayModal();
                 } else {
                     this.currentAnnotationLabel = '';
-                    this.currentAnnotationIndex = -1;
+                    this.currentAnnotationIndex = annnotationIndex;
                 }
             });
     }
 
     updateProjectProgress = (): void => {
-        const projectName = this.inputProjectName || this.selectedProjectName;
+        const projectName = this.selectedProjectName;
         this._imgLblLayoutService.updateProjectProgress(this.tabStatus, projectName);
     };
 
@@ -174,15 +177,17 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
         getImage$.pipe(first()).subscribe(
             ({ message, img_src }) => {
-                message === 1 &&
-                    ((this.selectedMetaData = thumbnail),
-                    (this.imgSrc = img_src),
-                    (this.onChangeSchema = {
+                if (message === 1) {
+                    this.selectedMetaData = thumbnail;
+                    this.imgSrc = img_src;
+                    this.currentImageDisplayIndex = thumbnailIndex;
+                    this.onChangeSchema = {
                         ...this.onChangeSchema,
                         // + 1 to prevent showing photo but info comp shows 0/2 on UI
                         currentThumbnailIndex: thumbnailIndex + 1,
                         thumbnailName: thumbnail.img_path,
-                    }));
+                    };
+                }
             },
             (err: Error) => console.error(err),
         );
@@ -201,6 +206,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         updateLabel$.pipe(first()).subscribe(({ message }) => {
             if (message === 1) {
                 this.tabStatus = this._imgLblLayoutService.displayLabelList(this.tabStatus, newLabelList);
+            } else {
                 console.error(`Error while updating label`);
             }
         });
@@ -296,13 +302,20 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     /** @event fires whenever browser is closing */
     @HostListener('window:beforeunload', ['$event'])
-    resetProjectStatus = (projectName: string) => {
-        projectName
-            ? this._dataSetService
-                  .manualCloseProject(projectName)
-                  .pipe(first())
-                  .subscribe(({ message }) => {})
-            : null;
+    onWindowClose(event: BeforeUnloadEvent): void {
+        this.resetProjectStatus();
+        event.preventDefault();
+    }
+
+    resetProjectStatus = (projectName = this.selectedProjectName) => {
+        // prevents when comp destroyed yet still sending empty string to service
+        projectName.trim() &&
+            this._dataSetService
+                .manualCloseProject(projectName)
+                .pipe(takeUntil(this.unsubscribe$))
+                .subscribe(({ message }) => {
+                    this._router.navigate(['/']);
+                });
     };
 
     ngOnDestroy(): void {
@@ -310,6 +323,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.unsubscribe$.complete();
         this._imgLblModeService.setState(null);
         this._imgLblActionService.setState(null);
-        this.resetProjectStatus(this.inputProjectName || this.selectedProjectName);
+        this.resetProjectStatus();
     }
 }

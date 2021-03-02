@@ -3,7 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
 
 const initialValue: ActionState = {
-    scroll: true,
+    scroll: false,
     drag: false,
     draw: false,
     fitCenter: false,

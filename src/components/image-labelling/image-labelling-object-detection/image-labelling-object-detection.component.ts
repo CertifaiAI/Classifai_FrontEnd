@@ -57,7 +57,15 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     ngOnChanges(changes: SimpleChanges): void {
         try {
-            console.log(changes);
+            // console.log(changes);
+            if (changes._selectMetadata) {
+                this.redrawImages(
+                    this._selectMetadata.img_x,
+                    this._selectMetadata.img_y,
+                    this._selectMetadata.img_w,
+                    this._selectMetadata.img_h,
+                );
+            }
             changes._imgSrc.currentValue
                 ? (this.initCanvas(),
                   (this.context = this.mycanvas?.nativeElement?.getContext('2d')
@@ -74,7 +82,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     annotateStateMakeChange(newState: AnnotateActionState | null) {
-        newState !== null ? this._annotateSelectState.setState(newState) : {};
+        newState !== null && this._annotateSelectState.setState(newState);
     }
 
     rulesMakeChange(
@@ -84,7 +92,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         // dbClick: boolean | null,
     ) {
         try {
-            const tempRules: ActionState = cloneDeep(this.boundingBoxState);
+            const tempRules = cloneDeep(this.boundingBoxState);
             scroll !== null ? (tempRules.scroll = scroll) : {};
             fitToscreen !== null ? (tempRules.fitCenter = fitToscreen) : {};
             clearScreen !== null ? (tempRules.clear = clearScreen) : {};
@@ -110,21 +118,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     isFitCenter() {
         try {
-            this.boundingBoxState.fitCenter ? this.imgFitToCenter() : {};
+            this.boundingBoxState.fitCenter && this.imgFitToCenter();
         } catch (err) {}
     }
 
     annotateStateOnChange() {
-        this.annotateState && this._boundingBoxCanvas.setCurrentSelectedbBox(cloneDeep(this.annotateState.annotation));
-        // this.annotateState
-        //     ? (this._boundingBoxCanvas.setCurrentSelectedbBox(cloneDeep(this.annotateState.selectedAnnotate)),
-        //       this.annotateState.label && this.annotateState.selectedAnnotate > -1
-        //           ? this._boundingBoxCanvas.changeLabel(
-        //                 this._selectMetadata.bnd_box[this.annotateState.selectedAnnotate],
-        //                 cloneDeep(this.annotateState.label!),
-        //             )
-        //           : {})
-        //     : {};
+        this.annotateState && this._boundingBoxCanvas.setCurrentSelectedbBox(this.annotateState.annotation);
     }
 
     imgFitToCenter() {
@@ -323,7 +322,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this._selectMetadata.bnd_box,
                     );
                     // this.rulesMakeChange(null, tmpBox, null, null, null);
-                    this.annotateStateMakeChange(cloneDeep({ annotation: tmpBox, isDlbClick: false }));
+                    this.annotateStateMakeChange({ annotation: tmpBox, isDlbClick: false });
                     this.redrawImages(
                         this._selectMetadata.img_x,
                         this._selectMetadata.img_y,
@@ -358,7 +357,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this._selectMetadata,
                         (isDone: boolean) => {
                             isDone
-                                ? this._undoRedoService.isStatgeChange(this._selectMetadata.bnd_box)
+                                ? this._undoRedoService.isStateChange(this._selectMetadata.bnd_box)
                                     ? this._undoRedoService.appendStages({
                                           meta: cloneDeep(this._selectMetadata),
                                           method: 'draw',
@@ -489,6 +488,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     loadImages(bit64STR: string) {
         try {
+            console.log(this.context);
             this.img.src = bit64STR;
             // this.clearcanvas();
             this.img.onload = () => {
