@@ -38,25 +38,31 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     // inputType: 'file',
                     // accept: 'image/x-png,image/jpeg',
                     // onUpload: () => this._onClick.emit(),
-                    onClick: () => this._onClick.emit({ name: 'project', closed: false }),
+                    onClick: () => {
+                        this._onClick.emit({ name: 'project', closed: false });
+                    },
                 },
                 {
                     imgPath: `../../../assets/icons/tag.svg`,
                     hoverLabel: `Label`,
                     alt: `Label`,
-                    onClick: () => this._onClick.emit({ name: 'label', closed: false }),
+                    onClick: () => {
+                        this._onClick.emit({ name: 'label', closed: false });
+                    },
                 },
                 {
                     imgPath: `../../../assets/icons/bounding_box.svg`,
                     hoverLabel: `Annotation`,
                     alt: `Annotation`,
-                    onClick: () => this._onClick.emit({ name: 'annotation', closed: false }),
+                    onClick: () => {
+                        this._onClick.emit({ name: 'annotation', closed: false });
+                    },
                 },
                 {
                     imgPath: `../../../assets/icons/statistic.svg`,
                     hoverLabel: `Statistic`,
                     alt: `Statistic`,
-                    onClick: () => null,
+                    onClick: () => {},
                 },
             ],
         };
