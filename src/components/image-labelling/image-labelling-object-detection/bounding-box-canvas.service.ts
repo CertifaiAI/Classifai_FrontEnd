@@ -133,19 +133,47 @@ export class BoundingBoxCanvasService {
             const bBoxW: number = bBox.y2 - bBox.y1;
             if (direction === 'up') {
                 this.moveBoxWithinPointPath(imX, imY, imW, imH, 0, -3, bBox) &&
-                    ((bBox.y1 -= 3), (bBox.y2 = cloneDeep(bBox.y1 + bBoxH)));
+                    ((bBox.y1 = bBox.y1 - 3), (bBox.y2 = bBox.y1 + bBoxH));
             } else if (direction === 'down') {
                 this.moveBoxWithinPointPath(imX, imY, imW, imH, 0, 3, bBox) &&
-                    ((bBox.y1 += 3), (bBox.y2 = cloneDeep(bBox.y1 + bBoxH)));
+                    ((bBox.y1 = bBox.y1 + 3), (bBox.y2 = bBox.y1 + bBoxH));
             } else if (direction === 'left') {
                 this.moveBoxWithinPointPath(imX, imY, imW, imH, -3, 0, bBox) &&
-                    ((bBox.x1 -= 3), (bBox.x2 = cloneDeep(bBox.x1 + bBoxW)));
+                    ((bBox.x1 = bBox.x1 - 3), (bBox.x2 = bBox.x1 + bBoxW));
             } else if (direction === 'right') {
                 this.moveBoxWithinPointPath(imX, imY, imW, imH, 3, 0, bBox) &&
-                    ((bBox.x1 += 3), (bBox.x2 = cloneDeep(bBox.x1 + bBoxW)));
+                    ((bBox.x1 = bBox.x1 + 3), (bBox.x2 = bBox.x1 + bBoxW));
             }
             callback(true);
         } catch (err) {}
+    }
+
+    public moveBoxWithinPointPath(
+        imgX: number,
+        imgY: number,
+        imgW: number,
+        imgH: number,
+        addX: number,
+        addY: number,
+        box: Boundingbox,
+    ): boolean {
+        try {
+            const result =
+                box.x1 + addX < imgX ||
+                box.x2 + addX > imgX + imgW ||
+                box.y1 + addY < imgY ||
+                box.y2 + addY > imgY + imgH
+                    ? false
+                    : true;
+            return result;
+        } catch (err) {
+            console.log(
+                'ObjectDetection isWithinPointPath(imgx:number, imgy:number, imgw:number, imgh:number, addx:number, addy:number, box:Boundingbox):Boolean',
+                err.name + ': ',
+                err.message,
+            );
+            return false;
+        }
     }
 
     private mouseMoveBox(mouseX: number, mouseY: number, currMeta: BboxMetadata): void {
@@ -320,12 +348,12 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public mouseMoveDrawEnable(mouseX: number, mouseY: number, selectedMeta: BboxMetadata): void {
+    public mouseMoveDrawEnable(mouseX: number, mouseY: number, metadata: BboxMetadata): void {
         try {
             if (this.currentClickedBox.box === -1) {
                 this.setCurrentX2Y2(mouseX, mouseY);
             } else {
-                this.mouseMoveBox(mouseX, mouseY, selectedMeta);
+                this.mouseMoveBox(mouseX, mouseY, metadata);
             }
         } catch (err) {
             console.log(
@@ -381,32 +409,6 @@ export class BoundingBoxCanvasService {
 
     public changeLabel(bbox: Boundingbox, newLabel: string) {
         bbox && newLabel && (bbox.label = newLabel);
-    }
-
-    public moveBoxWithinPointPath(
-        imgX: number,
-        imgY: number,
-        imgW: number,
-        imgH: number,
-        addX: number,
-        addY: number,
-        box: Boundingbox,
-    ): boolean {
-        try {
-            return box.x1 + addX < imgX ||
-                box.x2 + addX > imgX + imgW ||
-                box.y1 + addY < imgY ||
-                box.y2 + addY > imgY + imgH
-                ? false
-                : true;
-        } catch (err) {
-            console.log(
-                'ObjectDetection isWithinPointPath(imgx:number, imgy:number, imgw:number, imgh:number, addx:number, addy:number, box:Boundingbox):Boolean',
-                err.name + ': ',
-                err.message,
-            );
-            return false;
-        }
     }
 
     public mouseClickWithinPointPath(

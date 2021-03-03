@@ -187,17 +187,17 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     @HostListener('window:keydown', ['$event'])
-    keyStrokeEvent(event: KeyboardEvent) {
+    keyStrokeEvent({ ctrlKey, shiftKey, key }: KeyboardEvent) {
         try {
             const { isActiveModal } = this.boundingBoxState;
             if (!this.mousedown && !isActiveModal) {
-                if (event.ctrlKey && (event.key === 'c' || event.key === 'C')) {
+                if (ctrlKey && (key === 'c' || key === 'C')) {
                     // copy
                     // this.boundingBoxState.selectedBox > -1
                     this.annotateState.annotation > -1 &&
                         this._copyPasteService.copy(this._selectMetadata.bnd_box[this.annotateState.annotation]);
                     // ? this._copyPasteService.copy(this._selectMetadata.bnd_box[this.boundingBoxState.selectedBox])
-                } else if (event.ctrlKey && (event.key === 'v' || event.key === 'V')) {
+                } else if (ctrlKey && (key === 'v' || key === 'V')) {
                     // paste
                     this._copyPasteService.isAvailable() &&
                         (this._selectMetadata.bnd_box.push(this._copyPasteService.paste() as Boundingbox),
@@ -218,7 +218,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     });
                     this.emitMetadata();
                     this.canvas.nativeElement.focus();
-                } else if (event.ctrlKey && event.shiftKey && (event.key === 'z' || event.key === 'Z')) {
+                } else if (ctrlKey && shiftKey && (key === 'z' || key === 'Z')) {
                     // redo
                     if (this._undoRedoService.isAllowRedo()) {
                         const rtStages: UndoState = this._undoRedoService.redo();
@@ -231,7 +231,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         );
                         this.emitMetadata();
                     }
-                } else if (event.ctrlKey && (event.key === 'z' || event.key === 'Z')) {
+                } else if (ctrlKey && (key === 'z' || key === 'Z')) {
                     // undo
                     if (this._undoRedoService.isAllowUndo()) {
                         const rtStages: UndoState = this._undoRedoService.undo();
@@ -244,7 +244,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         );
                         this.emitMetadata();
                     }
-                } else if (!isActiveModal && (event.key === 'Delete' || event.key === 'Backspace')) {
+                } else if (!isActiveModal && (key === 'Delete' || key === 'Backspace')) {
                     // delete single annotation
                     this._boundingBoxCanvas.deleteSingleBox(
                         this._selectMetadata.bnd_box,
@@ -263,13 +263,13 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         },
                     );
                 } else {
-                    event.key === 'ArrowLeft'
+                    key === 'ArrowLeft'
                         ? this.keyMoveBox('left')
-                        : event.key === 'ArrowRight'
+                        : key === 'ArrowRight'
                         ? this.keyMoveBox('right')
-                        : event.key === 'ArrowUp'
+                        : key === 'ArrowUp'
                         ? this.keyMoveBox('up')
-                        : event.key === 'ArrowDown' && this.keyMoveBox('down');
+                        : key === 'ArrowDown' && this.keyMoveBox('down');
                 }
             }
         } catch (err) {}
@@ -389,16 +389,15 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     mouseMove(event: MouseEvent) {
         try {
             if (this._selectMetadata) {
-                if (
-                    this._boundingBoxCanvas.mouseClickWithinPointPath(
-                        this._selectMetadata.img_x,
-                        this._selectMetadata.img_y,
-                        this._selectMetadata.img_w,
-                        this._selectMetadata.img_h,
-                        event.offsetX,
-                        event.offsetY,
-                    )
-                ) {
+                const mouseWithinPointPath = this._boundingBoxCanvas.mouseClickWithinPointPath(
+                    this._selectMetadata.img_x,
+                    this._selectMetadata.img_y,
+                    this._selectMetadata.img_w,
+                    this._selectMetadata.img_h,
+                    event.offsetX,
+                    event.offsetY,
+                );
+                if (mouseWithinPointPath) {
                     if (this.boundingBoxState.drag && this.mousedown) {
                         const diff: {
                             diffX: number;
@@ -457,11 +456,11 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         // }
                     }
                 } else {
-                    // this.mouseCursor = {
-                    //     grab: false,
-                    //     pointer: false,
-                    //     move: false,
-                    // };
+                    this.mouseCursor = {
+                        grab: false,
+                        pointer: false,
+                        move: false,
+                    };
                     if (
                         this.crossh.nativeElement.style.zIndex !== '-1' ||
                         this.crossh.nativeElement.style.visibility !== 'hidden' ||
@@ -500,7 +499,6 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     loadImage(bit64STR: string) {
         try {
-            console.log(this.canvasContext);
             this.img.src = bit64STR;
             // this.clearcanvas();
             this.img.onload = () => {
@@ -537,20 +535,25 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         try {
             this._boundingBoxCanvas.keyboardMoveBox(
                 direction,
-                // this._selectMetadata.bnd_box[this.boundingBoxState.selectedBox],
                 this._selectMetadata.bnd_box[this.annotateState.annotation],
                 this._selectMetadata.img_x,
                 this._selectMetadata.img_y,
                 this._selectMetadata.img_w,
                 this._selectMetadata.img_h,
-                (isDone: boolean) => {
-                    isDone
-                        ? (this._undoRedoService.appendStages({
-                              meta: cloneDeep(this._selectMetadata),
-                              method: 'draw',
-                          }),
-                          this.emitMetadata())
-                        : {};
+                (isDone) => {
+                    this._undoRedoService.appendStages({
+                        meta: cloneDeep(this._selectMetadata),
+                        method: 'draw',
+                    });
+                    if (isDone) {
+                        this.redrawImages(
+                            this._selectMetadata.img_x,
+                            this._selectMetadata.img_y,
+                            this._selectMetadata.img_w,
+                            this._selectMetadata.img_h,
+                        );
+                        this.emitMetadata();
+                    }
                 },
             );
         } catch (err) {}
