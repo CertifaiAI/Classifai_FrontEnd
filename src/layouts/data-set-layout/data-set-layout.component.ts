@@ -1,5 +1,5 @@
 import { BboxMetadata, ImageLabellingMode, PolyMetadata } from 'src/components/image-labelling/image-labelling.model';
-import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { cloneDeep } from 'lodash-es';
 import { DataSetLayoutService } from './data-set-layout-api.service';
 import { DataSetProps, ProjectSchema, StarredProps, UploadThumbnailProps } from './data-set-layout.model';
@@ -370,8 +370,13 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 mergeMap(() => updateLabel$),
             )
             .subscribe(({ message }) => {
-                message === 1 ? (this.getProjectList(), (this.displayModal = false)) : null;
+                message === 1 ? (this.getProjectList(), this.toggleModalDisplay(false)) : null;
             });
+    };
+
+    @HostListener('window:keydown', ['$event'])
+    keyDownEvent = ({ key }: KeyboardEvent): void => {
+        key === 'Escape' && this.displayModal && this.toggleModalDisplay(false);
     };
 
     ngOnDestroy(): void {
