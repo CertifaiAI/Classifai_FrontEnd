@@ -172,3 +172,9 @@ export type LabelInfo = {
     name: string;
     count: number;
 };
+
+export type MouseCursor = {
+    move: boolean;
+    pointer: boolean;
+    grab: boolean;
+};
