@@ -1,5 +1,24 @@
 <div>
     <!-- <ng-container *ngIf="imgInput"> -->
+    <div #floatdiv class="floatdiv">
+        <input
+            #lbltypetxt
+            type="text"
+            class="lbltypetxt"
+            [(ngModel)]="labelSearch"
+            (ngModelChange)="labelTypeTextChange($event)"
+        />
+        <div #availablelbl class="availablelbl">
+            <ul class="lblList">
+                <li *ngFor="let label of labelList" class="lblName" (click)="labelNameClicked(label.name)">
+                    <span style="margin-left: 5px; overflow: hidden; text-overflow: ellipsis">{{ label.name }}</span>
+                    <span style="background-color: #222; margin-right: 5px; padding: 1px 5px; border-radius: 2px">{{
+                        label.count
+                    }}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
     <canvas #canvasdrawing class="canvasstyle"></canvas>
     <div #crossh class="crosses cross-h"></div>
     <div #crossv class="crosses cross-v"></div>

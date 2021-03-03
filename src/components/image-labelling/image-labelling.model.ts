@@ -167,3 +167,8 @@ export type FitScreenCalc = {
     newX: number;
     newY: number;
 };
+
+export type LabelInfo = {
+    name: string;
+    count: number;
+};

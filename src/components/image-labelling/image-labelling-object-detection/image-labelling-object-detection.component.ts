@@ -1,4 +1,14 @@
-import { ActionState, BboxMetadata, Boundingbox, Direction, UndoState } from '../image-labelling.model';
+import {
+    ActionState,
+    BboxMetadata,
+    Boundingbox,
+    ChangeAnnotationLabel,
+    CompleteMetadata,
+    Direction,
+    LabelInfo,
+    TabsProps,
+    UndoState,
+} from '../image-labelling.model';
 import { AnnotateActionState, AnnotateSelectionService } from '../../../shared/services/annotate-selection.service';
 import { BoundingBoxCanvasService } from './bounding-box-canvas.service';
 import { cloneDeep } from 'lodash-es';
@@ -29,14 +39,22 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @ViewChild('canvasdrawing') mycanvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('crossh') crossh!: ElementRef<HTMLDivElement>;
     @ViewChild('crossv') crossv!: ElementRef<HTMLDivElement>;
+    @ViewChild('floatdiv') floatdiv!: ElementRef<HTMLDivElement>;
+    @ViewChild('lbltypetxt') lbltypetxt!: ElementRef<HTMLInputElement>;
+    @ViewChild('availablelbl') availablelbl!: ElementRef<HTMLDivElement>;
     private context!: CanvasRenderingContext2D | null;
     private img: HTMLImageElement = new Image();
     private mousedown: boolean = false;
     private boundingBoxState!: ActionState;
     private annotateState!: AnnotateActionState;
+    labelSearch: string = '';
+    labelList: LabelInfo[] = [];
+    allLabelList: LabelInfo[] = [];
     @Input() _selectMetadata!: BboxMetadata;
     @Input() _imgSrc: string = '';
+    @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Output() _onChangeMetadata: EventEmitter<BboxMetadata> = new EventEmitter();
+    @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
 
     constructor(
         private _boundingBoxCanvas: BoundingBoxCanvasService,
@@ -47,6 +65,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     ) {}
 
     ngOnInit() {
+        this.getLabelList();
         this._imgLblStateService.action$.subscribe(
             (val) => ((this.boundingBoxState = val), this.isFitCenter(), this.isClearCanvas()),
         );
@@ -289,7 +308,9 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             // let delta = event.deltaY ? event.deltaY / 40 : 0;
             const delta = Math.max(-1, Math.min(1, -event.deltaY || -event.detail));
             if (delta && this.boundingBoxState.scroll) {
-                this.zoomImage(delta);
+                if (this.floatdiv.nativeElement.style.visibility !== 'visible') {
+                    this.zoomImage(delta);
+                }
             }
         } catch (err) {
             console.log('MouseScroll(event: WheelEvent)', err.name + ': ', err.message);
@@ -366,6 +387,20 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                                 : {};
                         },
                     );
+                    if (retObj.isNew) {
+                        this.getLabelList();
+                        const annotationList = this._tabStatus[2].annotation
+                            ? this._tabStatus[2].annotation[0].bnd_box
+                                ? this._tabStatus[2].annotation[0].bnd_box
+                                : []
+                            : [];
+                        this.sortingLabelList(this.labelList, annotationList);
+                        this.floatdiv.nativeElement.style.top = event.offsetY.toString() + 'px';
+                        this.floatdiv.nativeElement.style.left = event.offsetX.toString() + 'px';
+                        this.floatdiv.nativeElement.style.visibility = 'visible';
+                    } else {
+                        this.floatdiv.nativeElement.style.visibility = 'hidden';
+                    }
                     retObj.isNew ? this.annotateStateMakeChange({ annotation: retObj.selBox, isDlbClick: false }) : {};
                 }
                 this.mousedown = false;
@@ -616,5 +651,36 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 this._selectMetadata.img_h,
             );
         } catch (err) {}
+    }
+
+    getLabelList() {
+        this.labelList = [];
+        this.allLabelList = [];
+        (this._tabStatus[1].label_list ? this._tabStatus[1].label_list : []).forEach((name) => {
+            this.labelList.push({
+                name,
+                count: 0,
+            });
+            this.allLabelList.push({
+                name,
+                count: 0,
+            });
+        });
+    }
+
+    labelTypeTextChange(event: string) {
+        this.labelList = this.allLabelList.filter((label) => label.name.includes(event));
+    }
+
+    labelNameClicked(label: string) {
+        this.floatdiv.nativeElement.style.visibility = 'hidden';
+        this._onChangeAnnotationLabel.emit({ label, index: this.annotateState.annotation });
+    }
+
+    sortingLabelList(labelList: LabelInfo[], annotationList: any[]) {
+        labelList.forEach((label, index) => {
+            this.labelList[index].count = annotationList.filter((x) => x.label == label.name).length;
+        });
+        this.labelList.sort((a, b) => (a.count < b.count ? 1 : b.count < a.count ? -1 : 0));
     }
 }
