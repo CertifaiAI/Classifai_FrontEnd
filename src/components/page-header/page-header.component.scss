@@ -72,16 +72,16 @@
 .btn-container {
     min-height: 4.5vh;
     max-height: 4.5vh;
-    min-width: 9vw;
-    max-width: 12vw;
-    font-size: 1.7vh;
+    // min-width: 9vw;
+    // max-width: 12vw;
+    font-size: 2vh;
     background: #525353;
     outline: 0.0625vw inset white;
     cursor: pointer;
     align-items: center;
     justify-content: center;
     display: flex;
-    padding: 0 0.5vw 0 0.5vw;
+    padding: 0 1.5vw;
 }
 
 .link {
