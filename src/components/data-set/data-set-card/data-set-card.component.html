@@ -75,19 +75,21 @@
                         </div>
                     </div>
                     <div class="card-title-style">
-                        <label class="card-title-txt" [title]="project.created_date"
-                            >Created: {{ project.created_date }}</label
+                        <label [title]="project.created_date"
+                            ><div class="card-title-txt">Created: {{ project.created_date }}</div></label
                         >
                     </div>
                     <div class="project-name-style">
-                        <label class="project-info" [title]="project.project_name">
-                            {{ project.project_name }}
+                        <label [title]="project.project_name">
+                            <div class="project-info">
+                                {{ project.project_name }}
+                            </div>
                         </label>
                     </div>
 
                     <div class="project-name-style">
-                        <label class="project-info" [title]="'Total Photo: ' + project.total_uuid">
-                            Total Photo: {{ project.total_uuid }}
+                        <label [title]="'Total Photo: ' + project.total_uuid">
+                            <div class="project-info">Total Photo: {{ project.total_uuid }}</div>
                         </label>
                     </div>
                     <!-- <div class="tag-container">

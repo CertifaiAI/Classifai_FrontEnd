@@ -1,3 +1,5 @@
+@use '../../../shared/scss/_ellipsis' as ellipsis;
+
 .footer-container {
     position: absolute;
     background: #525353;
@@ -33,9 +35,7 @@
 
 .footer-image-path {
     @include footer-texts(60%);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    @include ellipsis.ellipsis();
 }
 
 .border-right {

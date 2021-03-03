@@ -147,13 +147,16 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     @HostListener('window:keydown', ['$event'])
-    keyboardNavigate = ({ key }: KeyboardEvent): void => {
+    keyDownEvent = ({ key }: KeyboardEvent): void => {
         switch (key) {
             case 'ArrowLeft':
                 this.navigateByAction({ thumbnailAction: -1 });
                 break;
             case 'ArrowRight':
                 this.navigateByAction({ thumbnailAction: 1 });
+                break;
+            case 'Escape':
+                this.onCloseModal();
                 break;
             default:
                 break;
