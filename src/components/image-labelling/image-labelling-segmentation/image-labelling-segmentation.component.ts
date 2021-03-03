@@ -1,11 +1,11 @@
-import { ActionState, Direction, Polygons, PolyMetadata, UndoState } from '../image-labelling.model';
+import { ActionState, Direction, MouseCursor, Polygons, PolyMetadata, UndoState } from '../image-labelling.model';
 import { AnnotateActionState, AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { clone, cloneDeep } from 'lodash-es';
 import { CopyPasteService } from 'src/shared/services/copy-paste.service';
+import { distinctUntilChanged } from 'rxjs/operators';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
 import { SegmentationCanvasService } from './segmentation-canvas.service';
 import { UndoRedoService } from 'src/shared/services/undo-redo.service';
-import { distinctUntilChanged } from 'rxjs/operators';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -37,6 +37,11 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     private ctrlKey: boolean = false;
     private segState!: ActionState;
     private annotateState!: AnnotateActionState;
+    mouseCursor: MouseCursor = {
+        move: false,
+        pointer: false,
+        grab: false,
+    };
     @Input() _selectMetadata!: PolyMetadata;
     @Input() _imgSrc: string = '';
     @Output() _onChangeMetadata: EventEmitter<PolyMetadata> = new EventEmitter();
@@ -453,17 +458,14 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     @HostListener('mousedown', ['$event'])
     mouseDown(event: MouseEvent) {
         try {
-            const isMouseClickWithinPoint = this._segCanvasService.mouseClickWithinPointPath(
-                this._selectMetadata,
-                event,
-            );
+            this.isMouseWithinPoint = this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
 
-            if (isMouseClickWithinPoint) {
-                this.isMouseWithinPoint = true;
+            if (this.isMouseWithinPoint) {
                 if (this.segState.drag) {
                     this._segCanvasService.setPanXY(event);
                 }
                 if (this.segState.draw && this.canvasContext) {
+                    console.log('draw');
                     const tmpPoly = this._segCanvasService.mouseDownDraw(
                         event,
                         this._selectMetadata,
@@ -491,9 +493,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
             const isMouseClickWithinPoint =
                 this._selectMetadata && this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
             if (isMouseClickWithinPoint) {
-                this.isMouseWithinPoint = true;
                 if (
-                    (this.segState.drag && this.isMouseWithinPoint) ||
+                    this.segState.drag ||
                     (this._segCanvasService.isNewPolygon() && this.ctrlKey && this.isMouseWithinPoint)
                 ) {
                     this._segCanvasService.setGlobalXY(this._selectMetadata);
@@ -525,11 +526,10 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
             // this._selectMetadata as truefy value
             // as user can click on image but img not yet loaded onto screen
             // but mouse has already moving into canvas, thus getting error
-            const isMouseClickWithinPoint =
+            this.isMouseWithinPoint =
                 this._selectMetadata && this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
-            if (isMouseClickWithinPoint) {
-                this.isMouseWithinPoint = true;
-                if (this.segState.drag && this.isMouseWithinPoint) {
+            if (this.isMouseWithinPoint) {
+                if (this.segState.drag) {
                     const diffX = event.offsetX - this._segCanvasService.getPanX();
                     const diffy = event.offsetY - this._segCanvasService.getPanY();
                     this._selectMetadata.img_x = this._segCanvasService.getGlobalX() + diffX;
@@ -551,8 +551,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                               method: 'pan',
                           });
                 }
-                if (this.segState.draw && this.isMouseWithinPoint && this.canvasContext) {
-                    this._segCanvasService.mouseMoveDraw(
+                if (this.segState.draw && this.canvasContext) {
+                    const mouseWithinShape = this._segCanvasService.mouseMoveDraw(
                         this._selectMetadata,
                         this.image,
                         this.canvasContext,
@@ -577,8 +577,27 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                             }
                         },
                     );
+                    if (mouseWithinShape) {
+                        this.mouseCursor = {
+                            grab: false,
+                            pointer: false,
+                            move: true,
+                        };
+                    } else {
+                        this.mouseCursor = {
+                            grab: false,
+                            pointer: true,
+                            move: false,
+                        };
+                    }
                 }
             } else {
+                this.mouseCursor = {
+                    grab: false,
+                    pointer: false,
+                    move: false,
+                };
+
                 // console.log(this.crossh);
                 if (
                     this.crossh.nativeElement.style.zIndex !== '-1' ||
@@ -608,5 +627,10 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         } catch (err) {
             console.log('mouseOut', err);
         }
+    }
+
+    currentCursor() {
+        const { grab, move, pointer } = this.mouseCursor;
+        return grab ? 'cursor-grab' : move ? 'cursor-move' : pointer ? 'cursor-pointer' : null;
     }
 }

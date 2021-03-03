@@ -56,10 +56,10 @@ export class SegmentationCanvasService {
             this.setPolygonLineWidth(metadata, -1);
             this.selectedPolygonIndex = -1;
             this.setNewPolygon(true);
-            this.pushTmpPoint(offsetX, offsetY, metadata.img_x, metadata.img_y, metadata.polygons.length);
+            this.pushTempPoint(offsetX, offsetY, metadata.img_x, metadata.img_y, metadata.polygons.length);
         } else if (this.isNewPolygon()) {
             console.log('else if 2');
-            this.pushTmpPoint(offsetX, offsetY, metadata.img_x, metadata.img_y, metadata.polygons.length);
+            this.pushTempPoint(offsetX, offsetY, metadata.img_x, metadata.img_y, metadata.polygons.length);
             this.drawNewPolygon(metadata, img, context, width, height, false);
             this.drawfromPreviousPoint(offsetX, offsetY, context);
         } else {
@@ -75,35 +75,52 @@ export class SegmentationCanvasService {
     }
 
     mouseMoveDraw(
-        pol: PolyMetadata,
+        metadata: PolyMetadata,
         img: HTMLImageElement,
         context: CanvasRenderingContext2D,
         canvasW: number,
         canvasH: number,
-        newX: number,
-        newY: number,
+        offsetX: number,
+        offsetY: number,
         ctrlDown: boolean,
         isMouseDown: boolean,
         redrawCallback: (arg: Method) => void,
     ) {
+        const detectedPolygon = this.findPolygonArea(offsetX, offsetY, metadata);
         if (this.isNewPolygon() && ctrlDown && isMouseDown) {
-            const diffX = newX - this.getPanX();
-            const diffY = newY - this.getPanY();
-            if (pol) {
-                pol.img_x = this.getGlobalX() + diffX;
-                pol.img_y = this.getGlobalY() + diffY;
-                this.panPolygons(pol, pol.img_x, pol.img_y, true);
+            const diffX = offsetX - this.getPanX();
+            const diffY = offsetY - this.getPanY();
+            if (metadata) {
+                metadata.img_x = this.getGlobalX() + diffX;
+                metadata.img_y = this.getGlobalY() + diffY;
+                this.panPolygons(metadata, metadata.img_x, metadata.img_y, true);
                 redrawCallback('pan');
             }
         } else if (this.isNewPolygon()) {
-            this.drawNewPolygon(pol, img, context, canvasW, canvasH, false);
-            this.drawfromPreviousPoint(newX, newY, context);
+            this.drawNewPolygon(metadata, img, context, canvasW, canvasH, false);
+            this.drawfromPreviousPoint(offsetX, offsetY, context);
         } else if (this.selectedPolygonIndex > -1 && isMouseDown) {
-            this.mouseMovePolygon(newX, newY, pol, context, this.selectedPolygonIndex, img, canvasW, canvasH);
+            this.mouseMovePolygon(
+                offsetX,
+                offsetY,
+                metadata,
+                context,
+                this.selectedPolygonIndex,
+                img,
+                canvasW,
+                canvasH,
+            );
         } else {
-            this.setPolygonCoordinate(newX, newY, pol, this.clickPoint.polygonIndex, this.clickPoint.pointIndex);
+            this.setPolygonCoordinate(
+                offsetX,
+                offsetY,
+                metadata,
+                this.clickPoint.polygonIndex,
+                this.clickPoint.pointIndex,
+            );
             redrawCallback('draw');
         }
+        return detectedPolygon > -1 ? true : false;
     }
 
     setPanXY({ offsetX, offsetY }: Pick<MouseEvent, 'offsetX' | 'offsetY'>) {
@@ -133,7 +150,7 @@ export class SegmentationCanvasService {
         this.selectedPolygonIndex = index;
     }
 
-    getselectedPolygonIndex() {
+    getSelectedPolygonIndex() {
         return this.selectedPolygonIndex;
     }
 
@@ -161,7 +178,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    pushTmpPoint(mouseX: number, mouseY: number, imgX: number, imgY: number, len: number) {
+    pushTempPoint(mouseX: number, mouseY: number, imgX: number, imgY: number, len: number) {
         try {
             const distancetoX = mouseX - imgX;
             const distancetoY = mouseY - imgY;
@@ -172,7 +189,7 @@ export class SegmentationCanvasService {
                     distancetoImg: { x: distancetoX, y: distancetoY },
                 });
             } else {
-                this.generateNewtmpPolygon(len);
+                this.generateNewTempPolygon(len);
                 // !! original code by bobby, cannot remove below code or else no polygon coorPt metadata for canvas to draw
                 // tslint:disable-next-line: no-non-null-assertion
                 this.tmpPolygon!.coorPt.push({
@@ -182,7 +199,7 @@ export class SegmentationCanvasService {
                 });
             }
         } catch (err) {
-            console.log('pushTmpPoint', err);
+            console.log('pushTempPoint', err);
         }
     }
 
@@ -219,7 +236,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    generateNewtmpPolygon(len: number) {
+    generateNewTempPolygon(len: number) {
         try {
             const uuid: number = this.util.generateUniquesID();
             const tmpRegion: string = (len + 1).toString();
@@ -233,7 +250,7 @@ export class SegmentationCanvasService {
                 subLabel: [],
             };
         } catch (err) {
-            console.log('generateNewtmpPolygon', err);
+            console.log('generateNewTempPolygon', err);
         }
     }
 
