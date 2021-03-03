@@ -13,6 +13,12 @@ $hoverBackground: #393838;
     padding: 0.3vh 1.5vw 0.6vh 1vw;
 }
 
+@mixin text-ellipsis($fontSize, $color) {
+    color: $color;
+    font-size: $fontSize;
+    @include ellipsis.ellipsis();
+}
+
 .fade-in {
     animation: fadeIn $fadeInEaseDuration;
     -webkit-animation: fadeIn $fadeInEaseDuration;
@@ -124,8 +130,7 @@ $hoverBackground: #393838;
 }
 
 .card-title-txt {
-    font-size: 1.3vh;
-    color: #656667;
+    @include text-ellipsis(1.3vh, #656667);
 }
 
 .project-name-style {
@@ -133,13 +138,8 @@ $hoverBackground: #393838;
     padding: 1vh 0 0 0;
 }
 
-@mixin project-texts($fontSize) {
-    color: #dbdbda;
-    font-size: $fontSize;
-    @include ellipsis.ellipsis();
-}
 .project-info {
-    @include project-texts(2vh);
+    @include text-ellipsis(2vh, #dbdbda);
 }
 
 .tag-container {
