@@ -8,8 +8,12 @@ export class FileNamePipe implements PipeTransform {
      * @return filename with extension
      */
     transform(name: string): string {
-        // console.log(name);
-        const newName = name ? name.split('\\').slice(-1)[0] : '';
+        const newName = name
+            ? // if browser detected OS that starts with Mac just trim in OS's path
+              window.navigator.platform.startsWith('Mac')
+                ? name.split('/').slice(-1)[0]
+                : name.split('\\').slice(-1)[0]
+            : '';
         return newName;
     }
 }
