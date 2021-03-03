@@ -16,7 +16,15 @@
                                 <img imgLazyLoad class="img" [src]="thumbnail.img_thumbnail" />
                             </div>
                             <div class="img-name">
-                                <label>{{ thumbnail.img_path | fileNameSlice }} </label>
+                                <label class="img-path">{{ thumbnail.img_path | fileNameSlice }}</label>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        [name]="thumbnail.img_path | fileNameSlice"
+                                        [checked]="thumbnail.bnd_box?.length > 0 || thumbnail.polygons?.length > 0"
+                                        disabled="true"
+                                    />
+                                </label>
                             </div>
                         </div>
                     </ng-container>

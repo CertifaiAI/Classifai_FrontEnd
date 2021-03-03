@@ -183,6 +183,7 @@
 .img-name {
     margin-left: 0.5vw;
     @include ellipsis.ellipsis();
+    width: 100%;
 }
 
 .closed {
@@ -323,4 +324,40 @@
 
 .input-invalid {
     border: 0.2vw solid red;
+}
+
+.img-path {
+    margin-top: 4vh;
+}
+
+input[type='radio'] {
+    float: right;
+}
+
+input[type='radio']:after {
+    width: 13px;
+    height: 13px;
+    border-radius: 13px;
+    top: -2px;
+    left: -1px;
+    position: relative;
+    background-color: #ffba54;
+    content: '';
+    display: inline-block;
+    visibility: visible;
+    border: 1px solid #e59000;
+}
+
+input[type='radio']:checked:after {
+    width: 13px;
+    height: 13px;
+    border-radius: 13px;
+    top: -2px;
+    left: -1px;
+    position: relative;
+    background-color: #75fe7c;
+    content: '';
+    display: inline-block;
+    visibility: visible;
+    border: 1px solid #4e9548;
 }
