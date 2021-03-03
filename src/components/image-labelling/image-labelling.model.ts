@@ -167,3 +167,9 @@ export type FitScreenCalc = {
     newX: number;
     newY: number;
 };
+
+export type MouseCursor = {
+    move: boolean;
+    pointer: boolean;
+    grab: boolean;
+};
