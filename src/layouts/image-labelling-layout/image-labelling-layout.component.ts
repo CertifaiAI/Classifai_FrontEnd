@@ -148,7 +148,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     @HostListener('window:keydown', ['$event'])
     keyDownEvent = ({ key }: KeyboardEvent): void => {
-        this._imgLblActionService.action$.pipe(takeUntil(this.unsubscribe$)).subscribe(({ draw }) => {
+        this._imgLblActionService.action$.pipe(first()).subscribe(({ draw }) => {
             if (!draw) {
                 switch (key) {
                     case 'ArrowLeft':
