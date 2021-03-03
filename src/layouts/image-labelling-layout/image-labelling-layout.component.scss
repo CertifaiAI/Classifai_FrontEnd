@@ -1,3 +1,5 @@
+@use '../../shared/scss/_ellipsis' as ellipsis;
+
 .layout-container {
     user-select: none;
 }
@@ -62,9 +64,7 @@
 .font-label {
     line-height: 4vh;
     font-size: 1vw;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
+    @include ellipsis.ellipsis();
 }
 
 .main-label-container {
