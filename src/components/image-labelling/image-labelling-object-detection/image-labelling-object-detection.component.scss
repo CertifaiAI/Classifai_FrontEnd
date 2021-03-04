@@ -31,6 +31,63 @@
     border: none;
 }
 
+.floatdiv {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    visibility: hidden;
+    z-index: 1;
+}
+
+.lbltypetxt {
+    width: 11em;
+    height: 2em;
+    color: snow;
+    font-size: 15px;
+    font-weight: bold;
+    border: 2px solid gray;
+    background-color: black;
+    outline: none;
+    border-radius: 5px;
+    border-bottom: none;
+}
+
+.availablelbl {
+    background-color: black;
+    width: 11.2em;
+    height: 8em;
+    color: snow;
+    font-size: 15px;
+    font-weight: bold;
+    border: 2px solid gray;
+    outline: none;
+    border-radius: 5px;
+    border-top: 1px dotted snow;
+    // text-align: center;
+    overflow: auto;
+    scrollbar-width: none;
+}
+
+.lblList {
+    padding: 0 5px;
+}
+
+.lblName {
+    list-style-type: none;
+    margin: 4px 0px;
+    padding: 0;
+    justify-content: space-between;
+    display: flex;
+}
+
+.lblName:hover {
+    background-color: #111;
+}
+
+.availablelbl::-webkit-scrollbar {
+    display: none;
+}
+
 .cursor-move {
     cursor: move;
 }

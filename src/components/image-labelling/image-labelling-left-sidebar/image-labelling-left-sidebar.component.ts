@@ -165,5 +165,5 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     conditionalIconTheme = (): string => `utility-icon-light-theme`;
 
     conditionalActiveIcon = (index: number): object | null =>
-        index === this.iconIndex ? { background: 'rgb(59 59 59)', outline: 'darkgrey inset 0.1vw' } : null;
+        index === this.iconIndex ? { background: 'rgb(59 59 59)' } : null;
 }

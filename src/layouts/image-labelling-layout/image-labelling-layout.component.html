@@ -15,7 +15,9 @@
             <image-labelling-object-detection
                 [_selectMetadata]="selectedMetaData"
                 [_imgSrc]="imgSrc"
+                [_tabStatus]="tabStatus"
                 (_onChangeMetadata)="onChangeMetadata($event)"
+                (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
             ></image-labelling-object-detection>
         </ng-container>
         <ng-container *ngIf="_router.url.includes('imglabel/seg')">
