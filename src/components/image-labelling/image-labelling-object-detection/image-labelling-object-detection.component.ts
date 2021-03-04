@@ -108,6 +108,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     emitMetadata() {
+        console.log(this._selectMetadata);
         this._onChangeMetadata.emit(this._selectMetadata);
     }
 
@@ -133,16 +134,17 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     isClearCanvas() {
         try {
-            this.boundingBoxState.clear &&
-                ((this._selectMetadata.bnd_box = []),
+            if (this.boundingBoxState.clear) {
+                this._selectMetadata.bnd_box = [];
                 this.redrawImages(
                     this._selectMetadata.img_x,
                     this._selectMetadata.img_y,
                     this._selectMetadata.img_w,
                     this._selectMetadata.img_h,
-                ),
-                this.rulesMakeChange(null, null, false),
-                this.emitMetadata());
+                );
+                this.rulesMakeChange(null, null, false);
+                this.emitMetadata();
+            }
         } catch (err) {}
     }
 

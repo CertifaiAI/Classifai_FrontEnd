@@ -126,6 +126,16 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.tabStatus = this.tabStatus.map((tab) =>
             tab.annotation ? { ...tab, annotation: [mutatedMetadata] } : tab,
         );
+
+        // whenever object-detection / segmentation adding new drawing
+        // mutate state in onChangeSchema to update child comp (info comp)
+        const hasAnnotation = mutatedMetadata.bnd_box
+            ? mutatedMetadata.bnd_box.length > 0
+            : mutatedMetadata.polygons && mutatedMetadata.polygons.length > 0;
+        this.onChangeSchema = {
+            ...this.onChangeSchema,
+            hasAnnotation,
+        };
         this.updateProjectProgress();
     };
 
@@ -198,11 +208,13 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     this.selectedMetaData = thumbnail;
                     this.imgSrc = img_src;
                     this.currentImageDisplayIndex = thumbnailIndex;
+                    console.log(thumbnail.bnd_box);
                     this.onChangeSchema = {
                         ...this.onChangeSchema,
                         // + 1 to prevent showing photo but info comp shows 0/2 on UI
                         currentThumbnailIndex: thumbnailIndex + 1,
                         thumbnailName: thumbnail.img_path,
+                        hasAnnotation: thumbnail.bnd_box && thumbnail.bnd_box?.length > 0 ? true : false,
                     };
                 }
             },

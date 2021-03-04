@@ -8,6 +8,7 @@ export type ImgLabelProps = {
     currentThumbnailIndex: number;
     totalNumThumbnail: number;
     thumbnailName: string | undefined;
+    hasAnnotation: boolean;
 };
 
 export type ImageProps = Omit<BboxMetadata, 'bnd_box'> & {
