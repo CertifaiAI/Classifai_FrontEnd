@@ -33,7 +33,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     private img: HTMLImageElement = new Image();
     private mousedown: boolean = false;
     private boundingBoxState!: ActionState;
-    private annotateState!: AnnotateActionState;
+    private annotateState: AnnotateActionState = {
+        annotation: -1,
+        isDlbClick: false,
+    };
     mouseCursor: MouseCursor = {
         move: false,
         pointer: false,
@@ -56,7 +59,9 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             (val) => ((this.boundingBoxState = val), this.isFitCenter(), this.isClearCanvas()),
         );
         this._annotateSelectState.labelStaging$.subscribe(
-            (state) => ((this.annotateState = state), this.annotateStateOnChange()),
+            (state) => (
+                (this.annotateState = state), this.annotateStateOnChange({ annotation: this.annotateState.annotation })
+            ),
         );
     }
 
@@ -74,6 +79,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             this.initializeCanvas();
             this._undoRedoService.clearAllStages();
             this.loadImage(changes._imgSrc.currentValue);
+            this.annotateStateOnChange({ annotation: -1 });
         }
     }
 
@@ -130,8 +136,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         } catch (err) {}
     }
 
-    annotateStateOnChange() {
-        this.annotateState && this._boundingBoxCanvas.setCurrentSelectedbBox(this.annotateState.annotation);
+    annotateStateOnChange({ annotation }: Pick<AnnotateActionState, 'annotation'>) {
+        this._boundingBoxCanvas.setCurrentSelectedbBox(annotation);
     }
 
     imgFitToCenter() {

@@ -97,6 +97,9 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
 
     onClick = (thumbnail: Omit<BboxMetadata & PolyMetadata, 'img_src'>, thumbnailIndex: number): void => {
         this._onClickThumbNail.emit({ ...thumbnail, thumbnailIndex });
+        // after switch photo display, also reset selectedIndexAnnotation & selectedLabel
+        this.selectedIndexAnnotation = -1;
+        this.selectedLabel = '';
     };
 
     onDisplayInputModal = (): void => {
