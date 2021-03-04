@@ -441,19 +441,27 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             this._selectMetadata.img_w,
                             this._selectMetadata.img_h,
                         );
-                        // if (mouseWithinShape) {
-                        //     this.mouseCursor = {
-                        //         grab: false,
-                        //         pointer: false,
-                        //         move: true,
-                        //     };
-                        // } else {
-                        //     this.mouseCursor = {
-                        //         grab: false,
-                        //         pointer: true,
-                        //         move: false,
-                        //     };
-                        // }
+                    }
+                    if (this.boundingBoxState.draw && !this.mousedown) {
+                        const { box } = this._boundingBoxCanvas.getCurrentClickBox(
+                            event.offsetX,
+                            event.offsetY,
+                            this._selectMetadata.bnd_box,
+                        );
+
+                        if (box !== -1) {
+                            this.mouseCursor = {
+                                grab: false,
+                                pointer: false,
+                                move: true,
+                            };
+                        } else {
+                            this.mouseCursor = {
+                                grab: false,
+                                pointer: true,
+                                move: false,
+                            };
+                        }
                     }
                 } else {
                     this.mouseCursor = {
