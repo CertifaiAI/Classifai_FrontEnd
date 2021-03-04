@@ -46,24 +46,24 @@ export class SegmentationCanvasService {
         this.polygonIndex = this.findPolygonArea(offsetX, offsetY, metadata);
         this.clickPoint = this.findClickPoint(offsetX, offsetY, metadata);
         if (this.isNewPolygon() && ctrlKey) {
-            console.log('if');
+            // console.log('if');
             this.setPanXY({ offsetX, offsetY });
         } else if (
             (this.returnTempPoly() === null && this.polygonIndex < 0 && this.clickPoint.pointIndex < 0) ||
             altKey
         ) {
-            console.log('else if 1');
+            // console.log('else if 1');
             this.setPolygonLineWidth(metadata, -1);
             this.selectedPolygonIndex = -1;
             this.setNewPolygon(true);
             this.pushTempPoint(offsetX, offsetY, metadata.img_x, metadata.img_y, metadata.polygons.length);
         } else if (this.isNewPolygon()) {
-            console.log('else if 2');
+            // console.log('else if 2');
             this.pushTempPoint(offsetX, offsetY, metadata.img_x, metadata.img_y, metadata.polygons.length);
             this.drawNewPolygon(metadata, img, context, width, height, false);
             this.drawfromPreviousPoint(offsetX, offsetY, context);
         } else {
-            console.log('else');
+            // console.log('else');
             this.setNewPolygon(false);
             this.selectedPolygonIndex =
                 this.findPolygonArea(offsetX, offsetY, metadata) > -1
@@ -465,14 +465,14 @@ export class SegmentationCanvasService {
                     case 'up':
                         if (this.withinPointPath(pol, img_X, img_Y, imgW, imgH, polyIndex, 0, offset)) {
                             for (const [i] of pol.polygons[polyIndex].coorPt.entries()) {
-                                pol.polygons[polyIndex].coorPt[i].y += offset;
+                                pol.polygons[polyIndex].coorPt[i].y = pol.polygons[polyIndex].coorPt[i].y + offset;
                             }
                         }
                         break;
                     case 'left':
                         if (this.withinPointPath(pol, img_X, img_Y, imgW, imgH, polyIndex, offset, 0)) {
                             for (const [i] of pol.polygons[polyIndex].coorPt.entries()) {
-                                pol.polygons[polyIndex].coorPt[i].x += offset;
+                                pol.polygons[polyIndex].coorPt[i].x = pol.polygons[polyIndex].coorPt[i].x + offset;
                             }
                         }
                         break;
@@ -480,14 +480,14 @@ export class SegmentationCanvasService {
                     case 'down':
                         if (this.withinPointPath(pol, img_X, img_Y, imgW, imgH, polyIndex, 0, offset)) {
                             for (const [i] of pol.polygons[polyIndex].coorPt.entries()) {
-                                pol.polygons[polyIndex].coorPt[i].y += offset;
+                                pol.polygons[polyIndex].coorPt[i].y = pol.polygons[polyIndex].coorPt[i].y + offset;
                             }
                         }
                         break;
                     case 'right':
                         if (this.withinPointPath(pol, img_X, img_Y, imgW, imgH, polyIndex, offset, 0)) {
                             for (const [i] of pol.polygons[polyIndex].coorPt.entries()) {
-                                pol.polygons[polyIndex].coorPt[i].x += offset;
+                                pol.polygons[polyIndex].coorPt[i].x = pol.polygons[polyIndex].coorPt[i].x + offset;
                             }
                         }
                         break;

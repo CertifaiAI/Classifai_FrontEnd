@@ -184,32 +184,6 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         this.canvasContext?.clearRect(0, 0, width, height);
     }
 
-    keyMoveBox(direction: Direction) {
-        try {
-            this.canvasContext &&
-                this._segCanvasService.keyboardMovePolygon(
-                    this._selectMetadata,
-                    direction,
-                    this.annotateState.annotation,
-                    this.canvasContext,
-                    this.image,
-                    this._selectMetadata.img_w,
-                    this._selectMetadata.img_h,
-                    (isCompleted) => {
-                        if (isCompleted) {
-                            this._undoRedoService.appendStages({
-                                meta: cloneDeep(this._selectMetadata),
-                                method: 'draw',
-                            });
-                            this.emitMetadata();
-                        }
-                    },
-                );
-        } catch (err) {
-            console.log('keyMoveBox', err);
-        }
-    }
-
     zoomImage(delta: number) {
         try {
             if (delta > 0) {
@@ -295,90 +269,12 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     }
 
     @HostListener('window:keydown', ['$event'])
-    keyboardKeyDownEvent({ ctrlKey, shiftKey, key }: KeyboardEvent) {
-        try {
-            const { isActiveModal } = this.segState;
-            if (!isActiveModal) {
-                if (!this.isMouseWithinPoint) {
-                    if (ctrlKey && (key === 'c' || key === 'C')) {
-                        // copy
-                        this.annotateState.annotation > -1 &&
-                            this._copyPasteService.copy(this._selectMetadata.polygons[this.annotateState.annotation]);
-                    } else if (ctrlKey && (key === 'v' || key === 'V')) {
-                        // paste
-                        if (this._copyPasteService.isAvailable()) {
-                            this._selectMetadata.polygons.push(this._copyPasteService.paste() as Polygons);
-                            // this.rulesMakeChange(null, this._selectMetadata.bnd_box.length - 1, null, null, null),
-                            this.annotateStateMakeChange({
-                                annotation: this._selectMetadata.polygons.length - 1,
-                                isDlbClick: false,
-                            });
-                            this._segCanvasService.validateXYDistance(this._selectMetadata);
-                        }
-
-                        this._undoRedoService.appendStages({
-                            meta: cloneDeep(this._selectMetadata),
-                            method: 'draw',
-                        });
-                        this.emitMetadata();
-                        this.canvas.nativeElement.focus();
-                    } else if (ctrlKey && shiftKey && (key === 'z' || key === 'Z')) {
-                        // redo
-                        if (this._undoRedoService.isAllowRedo()) {
-                            const rtStages: UndoState = this._undoRedoService.redo();
-                            this._selectMetadata = cloneDeep(rtStages?.meta as PolyMetadata);
-                            this.redrawImage(this._selectMetadata);
-                            this.emitMetadata();
-                        }
-                    } else if (ctrlKey && (key === 'z' || key === 'Z')) {
-                        // undo
-                        if (this._undoRedoService.isAllowUndo()) {
-                            const rtStages: UndoState = this._undoRedoService.undo();
-                            this._selectMetadata = cloneDeep(rtStages?.meta as PolyMetadata);
-                            this.redrawImage(this._selectMetadata);
-                            this.emitMetadata();
-                        }
-                    } else if (key === 'Delete' || key === 'Backspace') {
-                        // delete single annotation
-                        this._segCanvasService.deleteSinglePolygon(
-                            this._selectMetadata,
-                            // this.boundingBoxState.selectedBox,
-                            this.annotateState.annotation,
-                            (isCompleted: boolean) => {
-                                if (isCompleted) {
-                                    this.annotateStateMakeChange({ annotation: -1, isDlbClick: false });
-                                    // ? (this.rulesMakeChange(null, -1, null, null, null),
-                                    this._undoRedoService.appendStages({
-                                        meta: cloneDeep(this._selectMetadata),
-                                        method: 'draw',
-                                    });
-                                    this.emitMetadata();
-                                }
-                            },
-                        );
-                    }
-                } else {
-                    key === 'ArrowLeft'
-                        ? this.keyMoveBox('left')
-                        : key === 'ArrowRight'
-                        ? this.keyMoveBox('right')
-                        : key === 'ArrowUp'
-                        ? this.keyMoveBox('up')
-                        : key === 'ArrowDown' && this.keyMoveBox('down');
-                }
-            }
-        } catch (err) {
-            console.log('keyStrokeEvent', err);
-        }
-    }
-
-    @HostListener('window:keydown', ['$event'])
     canvasKeyDownEvent({ ctrlKey, shiftKey, key }: KeyboardEvent) {
         try {
-            const { isActiveModal } = this.segState;
-            console.log('isMouseWithinPoint', this.isMouseWithinPoint);
+            const { isActiveModal, draw } = this.segState;
             if (
                 !isActiveModal &&
+                draw &&
                 // !this.isMouseWithinPoint &&
                 this.canvasContext &&
                 this.canvasContext.canvas.style.pointerEvents !== 'none'
@@ -421,19 +317,19 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                             );
                             this._segCanvasService.setSelectedPolygonIndex(annotation);
                             break;
-                        default:
-                            break;
                     }
                 } else {
                     switch (key) {
                         case 'Delete':
                         case 'Backspace':
+                            // delete single annotation
                             this._segCanvasService.deleteSinglePolygon(
                                 this._selectMetadata,
                                 this.annotateState.annotation,
                                 (isCompleted: boolean) => {
                                     if (isCompleted) {
                                         this.annotateStateMakeChange({ annotation: -1, isDlbClick: false });
+                                        // ? (this.rulesMakeChange(null, -1, null, null, null),
                                         this._undoRedoService.appendStages({
                                             meta: cloneDeep(this._selectMetadata),
                                             method: 'draw',
@@ -443,15 +339,89 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                                 },
                             );
                             break;
-
-                        default:
-                            break;
                     }
                 }
                 this.canvasContext.canvas.focus();
             }
+            if (!this.isMouseWithinPoint) {
+                if (ctrlKey && (key === 'c' || key === 'C')) {
+                    // copy
+                    this.annotateState.annotation > -1 &&
+                        this._copyPasteService.copy(this._selectMetadata.polygons[this.annotateState.annotation]);
+                } else if (ctrlKey && (key === 'v' || key === 'V')) {
+                    // paste
+                    if (this._copyPasteService.isAvailable()) {
+                        this._selectMetadata.polygons.push(this._copyPasteService.paste() as Polygons);
+                        // this.rulesMakeChange(null, this._selectMetadata.bnd_box.length - 1, null, null, null),
+                        this.annotateStateMakeChange({
+                            annotation: this._selectMetadata.polygons.length - 1,
+                            isDlbClick: false,
+                        });
+                        this._segCanvasService.validateXYDistance(this._selectMetadata);
+                    }
+
+                    this._undoRedoService.appendStages({
+                        meta: cloneDeep(this._selectMetadata),
+                        method: 'draw',
+                    });
+                    this.emitMetadata();
+                    this.canvas.nativeElement.focus();
+                } else if (ctrlKey && shiftKey && (key === 'z' || key === 'Z')) {
+                    // redo
+                    if (this._undoRedoService.isAllowRedo()) {
+                        const rtStages: UndoState = this._undoRedoService.redo();
+                        this._selectMetadata = cloneDeep(rtStages?.meta as PolyMetadata);
+                        this.redrawImage(this._selectMetadata);
+                        this.emitMetadata();
+                    }
+                } else if (ctrlKey && (key === 'z' || key === 'Z')) {
+                    // undo
+                    if (this._undoRedoService.isAllowUndo()) {
+                        const rtStages: UndoState = this._undoRedoService.undo();
+                        this._selectMetadata = cloneDeep(rtStages?.meta as PolyMetadata);
+                        this.redrawImage(this._selectMetadata);
+                        this.emitMetadata();
+                    }
+                }
+            } else {
+                key === 'ArrowLeft'
+                    ? this.keyMoveBox('left')
+                    : key === 'ArrowRight'
+                    ? this.keyMoveBox('right')
+                    : key === 'ArrowUp'
+                    ? this.keyMoveBox('up')
+                    : key === 'ArrowDown' && this.keyMoveBox('down');
+            }
         } catch (err) {
             console.log('canvasKeyDownEvent', err);
+        }
+    }
+
+    keyMoveBox(direction: Direction) {
+        try {
+            this.canvasContext &&
+                this._segCanvasService.keyboardMovePolygon(
+                    this._selectMetadata,
+                    direction,
+                    this.annotateState.annotation,
+                    this.canvasContext,
+                    this.image,
+                    this._selectMetadata.img_w,
+                    this._selectMetadata.img_h,
+                    (isCompleted) => {
+                        this._undoRedoService.appendStages({
+                            meta: cloneDeep(this._selectMetadata),
+                            method: 'draw',
+                        });
+                        if (isCompleted) {
+                            console.log(isCompleted);
+                            this.redrawImage(this._selectMetadata);
+                            this.emitMetadata();
+                        }
+                    },
+                );
+        } catch (err) {
+            console.log('keyMoveBox', err);
         }
     }
 
@@ -465,7 +435,6 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                     this._segCanvasService.setPanXY(event);
                 }
                 if (this.segState.draw && this.canvasContext) {
-                    console.log('draw');
                     const tmpPoly = this._segCanvasService.mouseDownDraw(
                         event,
                         this._selectMetadata,
