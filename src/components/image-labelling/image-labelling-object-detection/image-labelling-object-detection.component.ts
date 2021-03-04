@@ -18,7 +18,6 @@ import {
     Output,
     EventEmitter,
 } from '@angular/core';
-
 @Component({
     selector: 'image-labelling-object-detection',
     templateUrl: './image-labelling-object-detection.component.html',
@@ -250,7 +249,11 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         );
                         this.emitMetadata();
                     }
-                } else if (!isActiveModal && (key === 'Delete' || key === 'Backspace')) {
+                } else if (
+                    !isActiveModal &&
+                    this.annotateState.annotation > -1 &&
+                    (key === 'Delete' || key === 'Backspace')
+                ) {
                     // delete single annotation
                     this._boundingBoxCanvas.deleteSingleBox(
                         this._selectMetadata.bnd_box,
