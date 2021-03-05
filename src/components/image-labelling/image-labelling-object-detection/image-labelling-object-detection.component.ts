@@ -712,7 +712,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     sortingLabelList(labelList: LabelInfo[], annotationList: any[]) {
         labelList.forEach((label, index) => {
-            this.labelList[index].count = annotationList.filter((x) => x.label == label.name).length;
+            this.labelList[index].count = annotationList.filter((x) => x.label === label.name).length;
         });
         this.labelList.sort((a, b) => (a.count < b.count ? 1 : b.count < a.count ? -1 : 0));
     }
