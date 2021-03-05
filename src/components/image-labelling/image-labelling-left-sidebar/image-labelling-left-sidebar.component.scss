@@ -17,14 +17,17 @@
     align-items: baseline;
 }
 
-.utility-icon-light-theme,
-.utility-icon-dark-theme {
+@mixin icon-styling() {
     min-width: 1.52vw;
     max-width: 1.52vw;
     min-height: 3vh;
     max-height: 3vh;
     padding: 0.3vw;
     position: absolute;
+}
+
+.utility-icon-light-theme {
+    @include icon-styling();
     cursor: pointer;
 }
 
@@ -34,8 +37,12 @@
     background: darkgray;
 }
 
-.utility-icon-dark-theme:focus,
-.utility-icon-dark-theme:active,
-.utility-icon-dark-theme-active {
-    background: rgb(59 59 59);
+.plain-icon {
+    @include icon-styling();
 }
+
+// .utility-icon-dark-theme:focus,
+// .utility-icon-dark-theme:active,
+// .utility-icon-dark-theme-active {
+//     background: rgb(59 59 59);
+// }

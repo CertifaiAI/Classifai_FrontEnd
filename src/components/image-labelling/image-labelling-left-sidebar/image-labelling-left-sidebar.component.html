@@ -5,7 +5,7 @@
             <ng-container *ngIf="logo">
                 <img
                     (click)="getIndex(i); logo.onClick()"
-                    [ngClass]="conditionalIconTheme()"
+                    [ngClass]="logo?.nonClickable ? conditionalIconTheme(true) : conditionalIconTheme(false)"
                     [ngStyle]="logo?.toggleable && conditionalActiveIcon(i)"
                     [attr.data-index]="i"
                     [src]="logo.imgPath"
