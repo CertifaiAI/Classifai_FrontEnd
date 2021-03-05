@@ -200,25 +200,27 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         { thumbnailIndex, ...thumbnail }: EventEmitter_ThumbnailDetails,
         projectName = this.selectedProjectName,
     ): void => {
-        const getImage$ = this._imgLblApiService.getBase64Thumbnail(projectName, thumbnail.uuid);
+        if (this.selectedMetaData?.uuid !== thumbnail.uuid) {
+            const getImage$ = this._imgLblApiService.getBase64Thumbnail(projectName, thumbnail.uuid);
 
-        getImage$.pipe(first()).subscribe(
-            ({ message, img_src }) => {
-                if (message === 1) {
-                    this.selectedMetaData = thumbnail;
-                    this.imgSrc = img_src;
-                    this.currentImageDisplayIndex = thumbnailIndex;
-                    this.onChangeSchema = {
-                        ...this.onChangeSchema,
-                        // + 1 to prevent showing photo but info comp shows 0/2 on UI
-                        currentThumbnailIndex: thumbnailIndex + 1,
-                        thumbnailName: thumbnail.img_path,
-                        hasAnnotation: thumbnail.bnd_box && thumbnail.bnd_box?.length > 0 ? true : false,
-                    };
-                }
-            },
-            (err: Error) => console.error(err),
-        );
+            getImage$.pipe(first()).subscribe(
+                ({ message, img_src }) => {
+                    if (message === 1) {
+                        this.selectedMetaData = thumbnail;
+                        this.imgSrc = img_src;
+                        this.currentImageDisplayIndex = thumbnailIndex;
+                        this.onChangeSchema = {
+                            ...this.onChangeSchema,
+                            // + 1 to prevent showing photo but info comp shows 0/2 on UI
+                            currentThumbnailIndex: thumbnailIndex + 1,
+                            thumbnailName: thumbnail.img_path,
+                            hasAnnotation: thumbnail.bnd_box && thumbnail.bnd_box?.length > 0 ? true : false,
+                        };
+                    }
+                },
+                (err: Error) => console.error(err),
+            );
+        }
     };
 
     onProcessLabel = ({ selectedLabel, label_list, action }: SelectedLabelProps) => {

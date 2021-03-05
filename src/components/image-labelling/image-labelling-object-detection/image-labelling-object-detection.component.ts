@@ -82,6 +82,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        // console.log(changes);
         if (changes._selectMetadata?.currentValue) {
             this.redrawImages(
                 this._selectMetadata.img_x,

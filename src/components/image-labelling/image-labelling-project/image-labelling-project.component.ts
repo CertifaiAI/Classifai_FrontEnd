@@ -28,7 +28,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     @Input() _thumbnailList: CompleteMetadata[] = [];
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
-    @Output() _onClickThumbNail: EventEmitter<EventEmitter_ThumbnailDetails> = new EventEmitter();
+    @Output() _onClickThumbnail: EventEmitter<EventEmitter_ThumbnailDetails> = new EventEmitter();
     @Output() _onClickLabel: EventEmitter<SelectedLabelProps> = new EventEmitter();
     @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
     @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
@@ -96,7 +96,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     };
 
     onClick = (thumbnail: Omit<BboxMetadata & PolyMetadata, 'img_src'>, thumbnailIndex: number): void => {
-        this._onClickThumbNail.emit({ ...thumbnail, thumbnailIndex });
+        this._onClickThumbnail.emit({ ...thumbnail, thumbnailIndex });
         // after switch photo display, also reset selectedIndexAnnotation & selectedLabel
         this.selectedIndexAnnotation = -1;
         this.selectedLabel = '';
@@ -161,7 +161,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     };
 
     onClickAnnotation = (index: number, { label }: Boundingbox & Polygons) => {
-        // this._onClickThumbNail.emit(thumbnail);
+        // this._onClickThumbnail.emit(thumbnail);
         // const bbLabel = bnd_box.map(({ label }) => label);
         this.selectedLabel = label;
         this._annotateService.setState({ annotation: index });
@@ -172,7 +172,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     };
 
     // onClickAnnotation = <T extends BboxMetadata>({ bnd_box }: T) => {
-    //     // this._onClickThumbNail.emit(thumbnail);
+    //     // this._onClickThumbnail.emit(thumbnail);
     //     const bbLabel = bnd_box.map(({ label }) => label);
     //     console.log(bbLabel);
     // };
