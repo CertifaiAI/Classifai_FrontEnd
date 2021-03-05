@@ -123,6 +123,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 this.thumbnailList[0].polygons
                     ? (this.thumbnailList[this.currentImageDisplayIndex].polygons = [])
                     : null;
+                this.onChangeSchema = {
+                    ...this.onChangeSchema,
+                    hasAnnotation: false,
+                };
             }
         });
     }
@@ -145,7 +149,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         // mutate state in onChangeSchema to update child comp (info comp)
         const hasAnnotation = mutatedMetadata.bnd_box
             ? mutatedMetadata.bnd_box.length > 0
-            : mutatedMetadata.polygons && mutatedMetadata.polygons.length > 0;
+            : mutatedMetadata.polygons.length > 0;
+
         this.onChangeSchema = {
             ...this.onChangeSchema,
             hasAnnotation,
