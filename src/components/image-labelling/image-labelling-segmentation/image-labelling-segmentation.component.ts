@@ -321,7 +321,6 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                             );
                             this._segCanvasService.setSelectedPolygonIndex(annotation);
                             this._segCanvasService.validateXYDistance(this._selectMetadata);
-
                             // this.ClearallBoundingboxList(this.seg.Metadata[this.seg.getCurrentSelectedimgidx()].polygons);
                             // this.RefreshBoundingBoxList();
 
@@ -333,6 +332,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                             //     stage: this.seg.Metadata[this.seg.getCurrentSelectedimgidx()],
                             //     method: 'draw',
                             // });
+                            this.emitMetadata();
                             break;
                         case 'Escape':
                             this._segCanvasService.resetDrawing(
