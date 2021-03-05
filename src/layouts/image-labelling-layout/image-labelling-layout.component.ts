@@ -115,6 +115,16 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     this.currentAnnotationIndex = annnotationIndex;
                 }
             });
+
+        // subscription logic to check if clear is true then empty the current display image's metadata
+        this._imgLblActionService.action$.pipe(takeUntil(this.unsubscribe$)).subscribe(({ clear }) => {
+            if (clear) {
+                this.thumbnailList[0].bnd_box ? (this.thumbnailList[this.currentImageDisplayIndex].bnd_box = []) : null;
+                this.thumbnailList[0].polygons
+                    ? (this.thumbnailList[this.currentImageDisplayIndex].polygons = [])
+                    : null;
+            }
+        });
     }
 
     updateProjectProgress = (): void => {
