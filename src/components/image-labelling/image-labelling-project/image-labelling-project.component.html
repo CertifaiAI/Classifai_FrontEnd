@@ -9,7 +9,7 @@
             >
                 <label class="tab-name">{{ tab.name }}</label>
                 <span class="tab-close-thumbnail"><div class="div-close" (click)="onClose(tab)">x</div></span>
-                <section class="utility-inner-container scroll">
+                <section class="utility-inner-container tab-height scroll">
                     <ng-container *ngFor="let thumbnail of _thumbnailList; index as i">
                         <div class="img-container" (click)="onClick(thumbnail, i)">
                             <div>
@@ -70,7 +70,7 @@
                         </span>
                     </div>
 
-                    <div class="utility-inner-container scroll" id="inner-container">
+                    <div class="utility-inner-container tab-height scroll" id="inner-container">
                         <div class="flex-item">
                             <ng-container *ngFor="let label of tab.label_list; index as i">
                                 <div
@@ -118,7 +118,7 @@
                             </ng-container>
                         </span>
                     </div>
-                    <div class="utility-inner-container scroll third-tab-height" id="inner-container">
+                    <div class="utility-inner-container scroll tab-smaller-height" id="inner-container">
                         <div class="flex-item">
                             <div class="flex-center-width">
                                 <ng-container *ngIf="tab?.annotation">
