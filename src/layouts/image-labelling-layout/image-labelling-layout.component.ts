@@ -208,7 +208,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     this.selectedMetaData = thumbnail;
                     this.imgSrc = img_src;
                     this.currentImageDisplayIndex = thumbnailIndex;
-                    console.log(thumbnail.bnd_box);
                     this.onChangeSchema = {
                         ...this.onChangeSchema,
                         // + 1 to prevent showing photo but info comp shows 0/2 on UI

@@ -108,7 +108,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     emitMetadata() {
-        console.log(this._selectMetadata);
+        // console.log(this._selectMetadata);
         this._onChangeMetadata.emit(this._selectMetadata);
     }
 
