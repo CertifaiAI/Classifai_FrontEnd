@@ -136,7 +136,11 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.tabStatus = this.tabStatus.map((tab) =>
             tab.annotation ? { ...tab, annotation: [mutatedMetadata] } : tab,
         );
-
+        // whenever object-detection / segmentation adding new drawing
+        // mutate state in thumbnailList to update child comp (project comp)
+        this.thumbnailList = this.thumbnailList.map((metadata, i) => {
+            return this.currentImageDisplayIndex === i ? mutatedMetadata : metadata;
+        });
         // whenever object-detection / segmentation adding new drawing
         // mutate state in onChangeSchema to update child comp (info comp)
         const hasAnnotation = mutatedMetadata.bnd_box
