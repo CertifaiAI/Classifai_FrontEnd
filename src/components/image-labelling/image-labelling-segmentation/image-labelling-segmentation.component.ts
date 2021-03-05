@@ -55,9 +55,11 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     ) {}
 
     ngOnInit(): void {
-        this._imgLblStateService.action$
-            .pipe(distinctUntilChanged())
-            .subscribe((val) => ((this.segState = val), this.isFitCenter(), this.isClearCanvas()));
+        this._imgLblStateService.action$.pipe(distinctUntilChanged()).subscribe((val) => {
+            this.segState = val;
+            val.fitCenter && this.isFitCenter();
+            val.clear && this.isClearCanvas();
+        });
         this._annotateSelectState.labelStaging$
             .pipe(distinctUntilChanged())
             .subscribe((state) => ((this.annotateState = state), this.annotateStateOnChange()));
@@ -103,17 +105,17 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         this.annotateState && this._segCanvasService.setSelectedPolygonIndex(this.annotateState.annotation);
     }
 
-    rulesMakeChange(scroll?: boolean, fitToScreen?: boolean, clearScreen?: boolean) {
-        try {
-            const tempRules = clone(this.segState);
-            scroll && (tempRules.scroll = scroll);
-            fitToScreen && (tempRules.fitCenter = fitToScreen);
-            clearScreen && (tempRules.clear = clearScreen);
-            this._imgLblStateService.setState(tempRules);
-        } catch (err) {
-            console.log('rulesMakeChange', err);
-        }
-    }
+    // rulesMakeChange(scroll?: boolean, fitToScreen?: boolean, clearScreen?: boolean) {
+    //     try {
+    //         const tempRules = clone(this.segState);
+    //         scroll && (tempRules.scroll = scroll);
+    //         fitToScreen && (tempRules.fitCenter = fitToScreen);
+    //         clearScreen && (tempRules.clear = clearScreen);
+    //         this._imgLblStateService.setState(tempRules);
+    //     } catch (err) {
+    //         console.log('rulesMakeChange', err);
+    //     }
+    // }
 
     imgFitToCenter() {
         try {
@@ -149,7 +151,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
             if (this.segState.clear) {
                 this._selectMetadata.polygons = [];
                 this.redrawImage(this._selectMetadata);
-                this.rulesMakeChange(undefined, undefined, false);
+                // this.rulesMakeChange(undefined, undefined, false);
                 this.emitMetadata();
             }
         } catch (err) {
