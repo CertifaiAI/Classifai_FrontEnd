@@ -1,0 +1,7 @@
+@mixin indicator-styling($color, $position) {
+    height: 1vh;
+    width: 0.5vw;
+    background-color: $color;
+    border-radius: 50%;
+    position: $position;
+}

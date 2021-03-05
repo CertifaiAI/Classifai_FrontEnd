@@ -1,6 +1,7 @@
 @use '../../../shared/scss/_variables.scss' as color;
 @use '../../../shared/scss/_scrollbar.scss' as *;
 @use '../../../shared/scss/_ellipsis' as ellipsis;
+@use '../../../shared/scss/_indicator' as indicator;
 
 @mixin tab-after() {
     position: absolute;
@@ -330,36 +331,12 @@
     margin-top: 4vh;
 }
 
-input[type='radio'] {
-    float: right;
+.indicator {
+    @include indicator.indicator-styling(#75fe7c, relative);
 }
 
-input[type='radio']:after {
-    width: 13px;
-    height: 13px;
-    border-radius: 13px;
-    top: -2px;
-    left: -1px;
-    position: relative;
-    background-color: #ffba54;
-    content: '';
-    display: inline-block;
-    visibility: visible;
-    border: 1px solid #e59000;
-}
-
-input[type='radio']:checked:after {
-    width: 13px;
-    height: 13px;
-    border-radius: 13px;
-    top: -2px;
-    left: -1px;
-    position: relative;
-    background-color: #75fe7c;
-    content: '';
-    display: inline-block;
-    visibility: visible;
-    border: 1px solid #4e9548;
+.no-indicator {
+    @include indicator.indicator-styling(#ffba54, relative);
 }
 
 .third-tab-height {

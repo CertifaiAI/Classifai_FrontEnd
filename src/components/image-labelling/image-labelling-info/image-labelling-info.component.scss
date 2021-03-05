@@ -1,4 +1,5 @@
 @use '../../../shared/scss/_ellipsis' as ellipsis;
+@use '../../../shared/scss/_indicator' as indicator;
 
 .header-container {
     min-width: 100vw;
@@ -96,19 +97,11 @@
 }
 
 .indicator {
-    height: 0.8vh;
-    width: 0.4vw;
-    background-color: #75fe7c;
-    border-radius: 50%;
-    position: absolute;
+    @include indicator.indicator-styling(#75fe7c, aboslute);
 }
 
 .no-indicator {
-    height: 0.8vh;
-    width: 0.4vw;
-    background-color: #ffba54;
-    border-radius: 50%;
-    position: absolute;
+    @include indicator.indicator-styling(#ffba54, aboslute);
 }
 
 .horizontal-line {

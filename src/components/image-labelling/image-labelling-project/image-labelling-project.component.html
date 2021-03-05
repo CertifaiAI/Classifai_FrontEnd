@@ -19,14 +19,13 @@
                                 <label class="img-path">{{ thumbnail.img_path | fileNameSlice }}</label>
                             </div>
                             <div>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        [name]="thumbnail.img_path | fileNameSlice"
-                                        [checked]="thumbnail.bnd_box?.length > 0 || thumbnail.polygons?.length > 0"
-                                        disabled="true"
-                                    />
-                                </label>
+                                <div
+                                    [ngClass]="
+                                        thumbnail.bnd_box?.length > 0 || thumbnail.polygons?.length > 0
+                                            ? 'indicator'
+                                            : 'no-indicator'
+                                    "
+                                ></div>
                             </div>
                         </div>
                     </ng-container>
