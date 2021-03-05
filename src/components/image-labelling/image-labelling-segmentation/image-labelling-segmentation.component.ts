@@ -1,6 +1,6 @@
 import { ActionState, Direction, MouseCursor, Polygons, PolyMetadata, UndoState } from '../image-labelling.model';
 import { AnnotateActionState, AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
-import { clone, cloneDeep } from 'lodash-es';
+import { cloneDeep } from 'lodash-es';
 import { CopyPasteService } from 'src/shared/services/copy-paste.service';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
