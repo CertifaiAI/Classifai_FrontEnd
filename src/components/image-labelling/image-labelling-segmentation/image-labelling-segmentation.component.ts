@@ -268,6 +268,33 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         }
     }
 
+    @HostListener('dblclick', ['$event'])
+    canvasDblClickEvent(_: MouseEvent) {
+        const { isActiveModal, draw } = this.segState;
+        if (
+            !isActiveModal &&
+            draw &&
+            // !this.isMouseWithinPoint &&
+            this.canvasContext &&
+            this.canvasContext.canvas.style.pointerEvents !== 'none'
+        ) {
+            if (this._segCanvasService.isNewPolygon()) {
+                const { width, height } = this.canvas.nativeElement;
+                const { annotation } = this.annotateState;
+                this._segCanvasService.drawNewPolygon(
+                    this._selectMetadata,
+                    this.image,
+                    this.canvasContext,
+                    width,
+                    height,
+                    true,
+                );
+                this._segCanvasService.setSelectedPolygonIndex(annotation);
+                this._segCanvasService.validateXYDistance(this._selectMetadata);
+            }
+        }
+    }
+
     @HostListener('window:keydown', ['$event'])
     canvasKeyDownEvent({ ctrlKey, shiftKey, key }: KeyboardEvent) {
         try {
