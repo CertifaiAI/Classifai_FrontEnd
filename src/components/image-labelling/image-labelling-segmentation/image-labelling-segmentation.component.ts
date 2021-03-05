@@ -58,7 +58,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         this._imgLblStateService.action$.pipe(distinctUntilChanged()).subscribe((val) => {
             this.segState = val;
             val.fitCenter && this.isFitCenter();
-            val.clear && this.isClearCanvas();
+            val.clear && this.isClearCanvas(this._selectMetadata);
         });
         this._annotateSelectState.labelStaging$
             .pipe(distinctUntilChanged())
@@ -146,11 +146,11 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         }
     }
 
-    isClearCanvas() {
+    isClearCanvas(metadata: PolyMetadata) {
         try {
             if (this.segState.clear) {
-                this._selectMetadata.polygons = [];
-                this.redrawImage(this._selectMetadata);
+                metadata.polygons = [];
+                this.redrawImage(metadata);
                 // this.rulesMakeChange(undefined, undefined, false);
                 this.emitMetadata();
             }
