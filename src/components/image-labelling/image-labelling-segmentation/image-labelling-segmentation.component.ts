@@ -105,17 +105,17 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         this.annotateState && this._segCanvasService.setSelectedPolygonIndex(this.annotateState.annotation);
     }
 
-    rulesMakeChange(scroll?: boolean, fitToScreen?: boolean, clearScreen?: boolean) {
-        try {
-            const tempRules = clone(this.segState);
-            scroll && (tempRules.scroll = scroll);
-            fitToScreen && (tempRules.fitCenter = fitToScreen);
-            clearScreen && (tempRules.clear = clearScreen);
-            this._imgLblStateService.setState(tempRules);
-        } catch (err) {
-            console.log('rulesMakeChange', err);
-        }
-    }
+    // rulesMakeChange(scroll?: boolean, fitToScreen?: boolean, clearScreen?: boolean) {
+    //     try {
+    //         const tempRules = clone(this.segState);
+    //         scroll && (tempRules.scroll = scroll);
+    //         fitToScreen && (tempRules.fitCenter = fitToScreen);
+    //         clearScreen && (tempRules.clear = clearScreen);
+    //         this._imgLblStateService.setState(tempRules);
+    //     } catch (err) {
+    //         console.log('rulesMakeChange', err);
+    //     }
+    // }
 
     imgFitToCenter() {
         try {
