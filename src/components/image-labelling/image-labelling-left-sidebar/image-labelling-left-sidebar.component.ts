@@ -111,7 +111,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     imgPath: `../../../assets/icons/eraser.svg`,
                     hoverLabel: `Eraser`,
                     alt: `Eraser`,
-                    toggleable: true,
+                    toggleable: false,
                     onClick: () => {
                         this.resetSelectedAnnotate();
                         this._imgLabelState.setState({
