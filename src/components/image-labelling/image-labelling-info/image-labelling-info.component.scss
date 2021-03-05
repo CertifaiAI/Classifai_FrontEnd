@@ -15,7 +15,7 @@
 
 .container-flex-start {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     margin-left: 3vw;
     min-height: inherit;
     max-height: inherit;
@@ -91,20 +91,24 @@
     margin-left: 1vw;
     max-width: 20vw;
     min-width: 20vw;
-    min-height: inherit;
-    max-height: inherit;
     position: absolute;
-    margin-top: 0.5vh;
     @include ellipsis.ellipsis();
 }
 
 .indicator {
     height: 0.8vh;
     width: 0.4vw;
-    background-color: #bbb;
+    background-color: #75fe7c;
     border-radius: 50%;
     position: absolute;
-    top: 1.2vh;
+}
+
+.no-indicator {
+    height: 0.8vh;
+    width: 0.4vw;
+    background-color: #ffba54;
+    border-radius: 50%;
+    position: absolute;
 }
 
 .horizontal-line {

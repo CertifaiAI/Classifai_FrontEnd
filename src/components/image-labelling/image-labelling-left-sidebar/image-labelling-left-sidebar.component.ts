@@ -117,7 +117,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                         this._imgLabelState.setState({
                             draw: false,
                             drag: false,
-                            fitCenter: true,
+                            fitCenter: false,
                             scroll: false,
                             clear: true,
                         });
