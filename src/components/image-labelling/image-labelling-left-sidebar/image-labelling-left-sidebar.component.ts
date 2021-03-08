@@ -129,6 +129,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                             scroll: false,
                             clear: true,
                         });
+                        this._imgLabelState.setState(null);
                     },
                 },
                 {
@@ -139,6 +140,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     onClick: () => {
                         this.resetSelectedAnnotate();
                         this._imgLabelState.setState({ draw: false, drag: false, fitCenter: true, scroll: false });
+                        this._imgLabelState.setState(null);
                     },
                 },
                 {
