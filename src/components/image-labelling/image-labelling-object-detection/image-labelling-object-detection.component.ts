@@ -534,8 +534,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     mouseOut(event: MouseEvent) {
         try {
             if (
-                (event.target as Element).className === 'canvasstyle' &&
-                !(event.relatedTarget as Element).className.includes('unclosedOut')
+                ((event.target as Element).className === 'canvasstyle' ||
+                    (event.target as Element).className.includes('unclosedOut')) &&
+                !(event.relatedTarget as Element).className.includes('unclosedOut') &&
+                !(event.relatedTarget as Element).className.includes('canvasstyle')
             ) {
                 this.showDropdownLabelBox = false;
             }
