@@ -255,6 +255,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         (isDone) => {
                             if (isDone) {
                                 this.annotateStateMakeChange({ annotation: -1, isDlbClick: false });
+                                this.redrawImages(this._selectMetadata);
                                 this._undoRedoService.appendStages({
                                     meta: cloneDeep(this._selectMetadata),
                                     method: 'draw',
