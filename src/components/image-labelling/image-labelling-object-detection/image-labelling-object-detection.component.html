@@ -1,20 +1,24 @@
 <div>
     <!-- <ng-container *ngIf="imgInput"> -->
-    <div #floatdiv class="floatdiv" [hidden]="!showDropdownLabelBox">
+    <div #floatdiv class="floatdiv unclosedOut" [hidden]="!showDropdownLabelBox">
         <input
             #lbltypetxt
             type="text"
-            class="lbltypetxt"
+            class="lbltypetxt unclosedOut"
             [(ngModel)]="labelSearch"
             (ngModelChange)="labelTypeTextChange($event)"
         />
-        <div #availablelbl class="availablelbl">
-            <ul class="lblList">
-                <li *ngFor="let label of labelList" class="lblName" (click)="labelNameClicked(label.name)">
-                    <span style="margin-left: 5px; overflow: hidden; text-overflow: ellipsis">{{ label.name }}</span>
-                    <span style="background-color: #222; margin-right: 5px; padding: 1px 5px; border-radius: 2px">{{
-                        label.count
+        <div #availablelbl class="availablelbl unclosedOut">
+            <ul class="lblList unclosedOut">
+                <li *ngFor="let label of labelList" class="lblName unclosedOut" (click)="labelNameClicked(label.name)">
+                    <span style="margin-left: 5px; overflow: hidden; text-overflow: ellipsis" class="unclosedOut">{{
+                        label.name
                     }}</span>
+                    <span
+                        style="background-color: #222; margin-right: 5px; padding: 1px 5px; border-radius: 2px"
+                        class="unclosedOut"
+                        >{{ label.count }}</span
+                    >
                 </li>
             </ul>
         </div>
