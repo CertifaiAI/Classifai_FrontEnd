@@ -425,6 +425,9 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this.floatdiv.nativeElement.style.top = event.offsetY.toString() + 'px';
                         this.floatdiv.nativeElement.style.left = event.offsetX.toString() + 'px';
                         this.showDropdownLabelBox = true;
+                        setTimeout(() => {
+                            this.lbltypetxt.nativeElement.focus();
+                        }, 100);
                     } else {
                         this.showDropdownLabelBox = false;
                     }
@@ -528,8 +531,14 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     @HostListener('mouseout', ['$event'])
-    mouseOut(_: MouseEvent) {
+    mouseOut(event: MouseEvent) {
         try {
+            if (
+                (event.target as Element).className === 'canvasstyle' &&
+                !(event.relatedTarget as Element).className.includes('unclosedOut')
+            ) {
+                this.showDropdownLabelBox = false;
+            }
             if (this.boundingBoxState.drag && this.mousedown) {
                 this._boundingBoxCanvas.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
                 this.redrawImages(this._selectMetadata);
