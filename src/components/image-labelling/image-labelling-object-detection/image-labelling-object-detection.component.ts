@@ -200,7 +200,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     keyStrokeEvent({ ctrlKey, shiftKey, key }: KeyboardEvent) {
         try {
             const { isActiveModal } = this.boundingBoxState;
-            if (!this.mousedown && !isActiveModal && !this.showDropdownLabelBox) {
+            if (!this.mousedown && !isActiveModal && !this.showDropdownLabelBox && this._selectMetadata) {
                 if (ctrlKey && (key === 'c' || key === 'C')) {
                     // copy
                     this.annotateState.annotation > -1 &&
@@ -535,7 +535,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         try {
             if (
                 (event.target as Element).className === 'canvasstyle' &&
-                !(event.relatedTarget as Element).className.includes('unclosedOut')
+                !(event.relatedTarget as Element)?.className.includes('unclosedOut')
             ) {
                 this.showDropdownLabelBox = false;
             }
