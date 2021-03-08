@@ -1,5 +1,5 @@
 import { BboxMetadata, Boundingbox, Direction, xyCoordinate } from '../image-labelling.model';
-import { cloneDeep } from 'lodash-es';
+import { clone, cloneDeep } from 'lodash-es';
 import { Injectable } from '@angular/core';
 import { Utils } from '../../../shared/types/utils/utils';
 
@@ -265,7 +265,7 @@ export class BoundingBoxCanvasService {
                 currMeta.bnd_box[this.currentSelectedBndBox].label = 'default';
                 ret.isNew = true;
                 ret.selBox = cloneDeep(this.currentSelectedBndBox);
-            } else {
+            } else if (this.currentClickedBox.box > -1 && this.tmpbox) {
                 if (currMeta.bnd_box[this.currentSelectedBndBox].x1 > currMeta.bnd_box[this.currentSelectedBndBox].x2) {
                     const previousX1: number = cloneDeep(currMeta.bnd_box[this.currentSelectedBndBox].x1);
                     currMeta.bnd_box[this.currentSelectedBndBox].x1 = cloneDeep(
@@ -329,14 +329,14 @@ export class BoundingBoxCanvasService {
                 const Y1: number = box.distancetoImg.y * scalefactor + imgY;
                 const X2: number = X1 + newW;
                 const Y2: number = Y1 + newH;
-                box.x1 = cloneDeep(X1);
-                box.y1 = cloneDeep(Y1);
-                box.x2 = cloneDeep(X2);
-                box.y2 = cloneDeep(Y2);
+                box.x1 = clone(X1);
+                box.y1 = clone(Y1);
+                box.x2 = clone(X2);
+                box.y2 = clone(Y2);
                 const newdistancex: number = box.x1 - imgX;
                 const newdistanceY: number = box.y1 - imgY;
-                box.distancetoImg.x = cloneDeep(newdistancex);
-                box.distancetoImg.y = cloneDeep(newdistanceY);
+                box.distancetoImg.x = clone(newdistancex);
+                box.distancetoImg.y = clone(newdistanceY);
             }
             callback(true);
         } catch (err) {
@@ -577,8 +577,8 @@ export class BoundingBoxCanvasService {
             for (const { x1, y1, distancetoImg } of boundingBoxes) {
                 const distX: number = x1 - imgX;
                 const distY: number = y1 - imgY;
-                distancetoImg.x = cloneDeep(distX);
-                distancetoImg.y = cloneDeep(distY);
+                distancetoImg.x = clone(distX);
+                distancetoImg.y = clone(distY);
             }
         } catch (err) {
             console.log(

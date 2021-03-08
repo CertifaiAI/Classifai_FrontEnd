@@ -1,6 +1,7 @@
 @use '../../../shared/scss/_variables.scss' as color;
 @use '../../../shared/scss/_scrollbar.scss' as *;
 @use '../../../shared/scss/_ellipsis' as ellipsis;
+@use '../../../shared/scss/_indicator' as indicator;
 
 @mixin tab-after() {
     position: absolute;
@@ -96,7 +97,7 @@
     position: absolute;
 }
 
-.tab-close-thumbnail {
+@mixin tab-close-styling {
     float: right;
     vertical-align: middle;
     min-height: 4vh;
@@ -105,9 +106,20 @@
     font-size: 2vh;
     line-height: 4vh;
     text-align: center;
+    display: inline-grid;
+    padding-bottom: 1vh;
+}
+
+.tab-close-thumbnail {
+    @include tab-close-styling();
     margin-left: 3vw;
     justify-content: center;
-    display: inline-grid;
+}
+
+.tab-close-thumbnailless {
+    @include tab-close-styling();
+    flex: 1 0 60%;
+    justify-content: right;
 }
 
 .div-close {
@@ -131,8 +143,16 @@
     scroll-behavior: smooth;
     overflow: hidden auto;
     z-index: 100;
-    min-width: 16vw;
-    max-width: 16vw;
+    min-width: 15.5vw;
+    max-width: 15.5vw;
+}
+
+.tab-height {
+    height: 75%;
+}
+
+.tab-smaller-height {
+    height: 60%;
 }
 
 .scroll::-webkit-scrollbar-track {
@@ -256,20 +276,6 @@
     width: 100%;
 }
 
-.tab-close-thumbnailless {
-    float: right;
-    vertical-align: middle;
-    min-height: 4vh;
-    max-height: 4vh;
-    color: rgb(105, 105, 105);
-    font-size: 2vh;
-    line-height: 4vh;
-    text-align: center;
-    flex: 1 0 60%;
-    justify-content: right;
-    display: inline-grid;
-}
-
 .extra-icons {
     cursor: pointer;
 }
@@ -330,38 +336,10 @@
     margin-top: 4vh;
 }
 
-input[type='radio'] {
-    float: right;
+.indicator {
+    @include indicator.indicator-styling(#75fe7c, relative);
 }
 
-input[type='radio']:after {
-    width: 13px;
-    height: 13px;
-    border-radius: 13px;
-    top: -2px;
-    left: -1px;
-    position: relative;
-    background-color: #ffba54;
-    content: '';
-    display: inline-block;
-    visibility: visible;
-    border: 1px solid #e59000;
-}
-
-input[type='radio']:checked:after {
-    width: 13px;
-    height: 13px;
-    border-radius: 13px;
-    top: -2px;
-    left: -1px;
-    position: relative;
-    background-color: #75fe7c;
-    content: '';
-    display: inline-block;
-    visibility: visible;
-    border: 1px solid #4e9548;
-}
-
-.third-tab-height {
-    height: 65%;
+.no-indicator {
+    @include indicator.indicator-styling(#ffba54, relative);
 }

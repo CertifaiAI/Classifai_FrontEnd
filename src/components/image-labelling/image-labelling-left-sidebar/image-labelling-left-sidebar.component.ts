@@ -43,6 +43,14 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
         this.jsonSchema = {
             logos: [
                 {
+                    imgPath: `../../../assets/icons/separator.svg`,
+                    hoverLabel: ``,
+                    alt: ``,
+                    nonClickable: true,
+                    toggleable: false,
+                    onClick: () => null,
+                },
+                {
                     imgPath: `../../../assets/icons/pointer.svg`,
                     hoverLabel: `Pointer`,
                     alt: `Pointer`,
@@ -121,6 +129,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                             scroll: false,
                             clear: true,
                         });
+                        this._imgLabelState.setState(null);
                     },
                 },
                 {
@@ -131,6 +140,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     onClick: () => {
                         this.resetSelectedAnnotate();
                         this._imgLabelState.setState({ draw: false, drag: false, fitCenter: true, scroll: false });
+                        this._imgLabelState.setState(null);
                     },
                 },
                 {
@@ -162,7 +172,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
         this.iconIndex = index;
     };
 
-    conditionalIconTheme = (): string => `utility-icon-light-theme`;
+    conditionalIconTheme = (isPlainIcon: boolean): string => (isPlainIcon ? `plain-icon` : `utility-icon-light-theme`);
 
     conditionalActiveIcon = (index: number): object | null =>
         index === this.iconIndex ? { background: 'rgb(59 59 59)' } : null;

@@ -1,6 +1,6 @@
 <div>
     <!-- <ng-container *ngIf="imgInput"> -->
-    <div #floatdiv class="floatdiv">
+    <div #floatdiv class="floatdiv" [hidden]="!showDropdownLabelBox">
         <input
             #lbltypetxt
             type="text"
