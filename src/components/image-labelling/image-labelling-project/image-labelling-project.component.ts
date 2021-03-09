@@ -177,7 +177,22 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     //     console.log(bbLabel);
     // };
 
-    checkCloseToggle = ({ closed }: TabsProps): string | null => (closed ? 'closed' : null);
+    checkCloseToggle = (tab: TabsProps): string | null => {
+        var classes = '';
+        if (
+            !(
+                (tab.name === 'Label' && this._tabStatus[2].closed) ||
+                (tab.name === 'Project' && this._tabStatus[1].closed && this._tabStatus[2].closed) ||
+                tab.name === 'Annotation'
+            )
+        ) {
+            classes = 'flex-content';
+        }
+        if (tab.closed) {
+            classes += ' closed';
+        }
+        return classes;
+    };
 
     checkStateEqual = (currObj: object, prevObj: object): boolean => !isEqual(currObj, prevObj);
 
