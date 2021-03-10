@@ -3,7 +3,7 @@
         <!-- <ng-container *ngIf="_thumbnailList.length > 0 && i === 0; else nonThumbnailTab"> -->
         <ng-container *ngIf="i === 0; else nonThumbnailTab">
             <div
-                class="utility-right-project-container tab flex-fill-remaining flex-content"
+                class="utility-right-project-container tab flex-fill-remaining"
                 [ngClass]="checkCloseToggle(tab)"
                 [attr.data-index]="i"
             >
@@ -36,7 +36,7 @@
         <ng-template #nonThumbnailTab>
             <ng-container *ngIf="i === 1; else annotationTab">
                 <div
-                    class="utility-right-project-container tab flex-fill-remaining flex-content"
+                    class="utility-right-project-container tab flex-fill-remaining"
                     [attr.data-index]="i"
                     [ngClass]="checkCloseToggle(tab)"
                 >
