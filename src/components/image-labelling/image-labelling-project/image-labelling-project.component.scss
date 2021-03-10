@@ -160,16 +160,16 @@
     height: 60%;
 }
 
-.scroll::-webkit-scrollbar-track {
-    @include scrollbar-track(color.$blackColor);
+.scroll::-webkit-scrollbartrack {
+    @include scrollbarTrack(color.$blackColor);
 }
 
 .scroll::-webkit-scrollbar {
     @include scrollbar();
 }
 
-.scroll::-webkit-scrollbar-thumb {
-    @include scrollbar-thumb(color.$greyColor);
+.scroll::-webkit-scrollbarthumb {
+    @include scrollbarThumb(color.$greyColor);
 }
 
 .utility-icon-container {
@@ -207,7 +207,7 @@
 
 .img-name {
     margin-left: 0.5vw;
-    @include ellipsis.ellipsis();
+    @include ellipsis.ellipsisStyling();
     width: 100%;
 }
 
@@ -232,7 +232,7 @@
     flex-direction: column;
     font-size: 1.5vh;
     color: white;
-    @include ellipsis.ellipsis();
+    @include ellipsis.ellipsisStyling();
 }
 
 .flex-center-width {
@@ -342,9 +342,9 @@
 }
 
 .indicator {
-    @include indicator.indicator-styling(#75fe7c, relative);
+    @include indicator.indicatorStyling(#75fe7c, relative);
 }
 
 .no-indicator {
-    @include indicator.indicator-styling(#ffba54, relative);
+    @include indicator.indicatorStyling(#ffba54, relative);
 }

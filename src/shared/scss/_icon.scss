@@ -1,0 +1,9 @@
+@mixin iconStyling($pointer: pointer) {
+    min-width: 1.5vw;
+    max-width: 1.5vw;
+    min-height: 3vh;
+    max-height: 3vh;
+    padding: 0.3vw;
+    position: absolute;
+    cursor: $pointer;
+}

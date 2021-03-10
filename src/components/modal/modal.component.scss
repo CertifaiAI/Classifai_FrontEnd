@@ -50,16 +50,16 @@
     overflow-y: auto;
 }
 
-.scroll::-webkit-scrollbar-track {
-    @include scrollbar-track();
+.scroll::-webkit-scrollbartrack {
+    @include scrollbarTrack();
 }
 
 .scroll::-webkit-scrollbar {
     @include scrollbar();
 }
 
-.scroll::-webkit-scrollbar-thumb {
-    @include scrollbar-thumb(color.$greyColor);
+.scroll::-webkit-scrollbarthumb {
+    @include scrollbarThumb(color.$greyColor);
 }
 
 .modal-background {
