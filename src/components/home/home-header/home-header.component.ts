@@ -10,7 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 export class HomeHeaderComponent implements OnInit {
     languageArr: (string | null)[] = [];
     headerImage: string = `../../assets/landing-page/Classifai_PoweredBy_Horizontal_light.png`;
-    @ViewChildren('one') one!: QueryList<ElementRef>;
+    @ViewChildren('languages') languages!: QueryList<ElementRef>;
 
     constructor(public _translate: TranslateService, private _languageService: LanguageService) {
         const langsArr: string[] = ['landing-page-en', 'landing-page-cn'];
@@ -32,7 +32,7 @@ export class HomeHeaderComponent implements OnInit {
     }
 
     showLangOpts() {
-        this.one.forEach((div: ElementRef, index) => {
+        this.languages.forEach((div: ElementRef, index) => {
             div.nativeElement.style.visibility = 'visible';
             div.nativeElement.style.opacity = '100%';
             div.nativeElement.style.left = (-(105 * (index + 1))).toString() + '%';
@@ -41,7 +41,7 @@ export class HomeHeaderComponent implements OnInit {
     }
 
     hideLangOpts() {
-        this.one.forEach((div: ElementRef, index) => {
+        this.languages.forEach((div: ElementRef, index) => {
             div.nativeElement.style.visibility = 'hidden';
             div.nativeElement.style.opacity = '0%';
             div.nativeElement.style.left = '0%';
