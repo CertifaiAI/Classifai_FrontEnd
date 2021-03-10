@@ -35,7 +35,7 @@
 
 .footer-image-path {
     @include footer-texts(130%);
-    @include ellipsis.ellipsis();
+    @include ellipsis.ellipsisStyling();
 }
 
 .border-right {

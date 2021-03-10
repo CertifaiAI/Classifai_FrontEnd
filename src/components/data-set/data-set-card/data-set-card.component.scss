@@ -16,7 +16,7 @@ $hoverBackground: #393838;
 @mixin text-ellipsis($fontSize, $color) {
     color: $color;
     font-size: $fontSize;
-    @include ellipsis.ellipsis();
+    @include ellipsis.ellipsisStyling();
 }
 
 .fade-in {
@@ -37,16 +37,16 @@ $hoverBackground: #393838;
     height: 80vh;
 }
 
-.scroll::-webkit-scrollbar-track {
-    @include scrollbar-track(color.$blackColor);
+.scroll::-webkit-scrollbartrack {
+    @include scrollbarTrack(color.$blackColor);
 }
 
 .scroll::-webkit-scrollbar {
     @include scrollbar();
 }
 
-.scroll::-webkit-scrollbar-thumb {
-    @include scrollbar-thumb(color.$greyColor);
+.scroll::-webkit-scrollbarthumb {
+    @include scrollbarThumb(color.$greyColor);
 }
 
 .card-container {

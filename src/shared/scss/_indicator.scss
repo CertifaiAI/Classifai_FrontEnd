@@ -1,4 +1,4 @@
-@mixin indicator-styling($color, $position) {
+@mixin indicatorStyling($color, $position) {
     height: 1vh;
     width: 0.5vw;
     background-color: $color;

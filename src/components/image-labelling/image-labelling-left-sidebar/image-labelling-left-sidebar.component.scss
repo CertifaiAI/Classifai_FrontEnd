@@ -1,3 +1,6 @@
+@use "../../../shared/scss/icon" as icon;
+@use "../../../shared/scss/variables" as color;
+
 .utility-left-sidebar-container {
     position: absolute;
     top: 4.6vh;
@@ -26,19 +29,17 @@
     position: absolute;
 }
 
-.utility-icon-light-theme {
-    @include icon-styling();
-    cursor: pointer;
+.utility-icon-light {
+    @include icon.iconStyling();
 }
 
-.utility-icon-light-theme:focus,
-.utility-icon-light-theme:active,
-.utility-icon-light-theme-active {
-    background: darkgray;
+.utility-icon-light:focus,
+.utility-icon-light:active {
+    background: color.$iconActiveBackgroundColor;
 }
 
 .plain-icon {
-    @include icon-styling();
+    @include icon.iconStyling('none');
 }
 
 // .utility-icon-dark-theme:focus,
