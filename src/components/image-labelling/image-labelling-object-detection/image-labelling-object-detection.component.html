@@ -5,8 +5,10 @@
             #lbltypetxt
             type="text"
             class="lbltypetxt unclosedOut"
+            [ngClass]="invalidInput ? 'invalidInput' : 'validInput'"
             [(ngModel)]="labelSearch"
             (ngModelChange)="labelTypeTextChange($event)"
+            (keydown.enter)="validateInputLabel($event)"
         />
         <div #availablelbl class="availablelbl unclosedOut">
             <ul class="lblList unclosedOut">
@@ -19,6 +21,10 @@
                         class="unclosedOut"
                         >{{ label.count }}</span
                     >
+                </li>
+                <li *ngIf="labelList.length === 0" class="unclosedOut notExist">
+                    <div>Label does not exist.</div>
+                    <div>Press Enter to add.</div>
                 </li>
             </ul>
         </div>

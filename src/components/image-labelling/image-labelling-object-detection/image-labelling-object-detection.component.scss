@@ -53,12 +53,12 @@
 
 .availablelbl {
     background-color: black;
-    width: 11.2em;
-    height: 8em;
+    width: 10.5rem;
+    height: 8rem;
     color: snow;
     font-size: 15px;
     font-weight: bold;
-    border: 2px solid gray;
+    border: 0.2vw solid gray;
     outline: none;
     border-radius: 5px;
     border-top: 1px dotted snow;
@@ -97,4 +97,17 @@
 
 .cursor-grab {
     cursor: grab;
+}
+
+.notExist {
+    color: #999;
+    font-size: 1.5vh;
+}
+
+.invalidInput {
+    border: 0.2vw solid red;
+}
+
+.validInput {
+    border: 0.2vw solid grey;
 }

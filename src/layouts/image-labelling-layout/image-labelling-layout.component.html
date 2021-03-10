@@ -18,6 +18,7 @@
                 [_tabStatus]="tabStatus"
                 (_onChangeMetadata)="onChangeMetadata($event)"
                 (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
+                (_onEnterLabel)="onProcessLabel($event)"
             ></image-labelling-object-detection>
         </ng-container>
         <ng-container *ngIf="_router.url.includes('imglabel/seg')">

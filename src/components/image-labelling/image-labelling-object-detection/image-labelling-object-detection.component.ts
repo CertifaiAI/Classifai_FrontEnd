@@ -15,6 +15,7 @@ import {
     Direction,
     LabelInfo,
     MouseCursor,
+    SelectedLabelProps,
     TabsProps,
     UndoState,
 } from '../image-labelling.model';
@@ -32,6 +33,7 @@ import {
     EventEmitter,
     OnDestroy,
 } from '@angular/core';
+import { HTMLElementEvent } from 'src/shared/types/field/field.model';
 
 @Component({
     selector: 'image-labelling-object-detection',
@@ -56,6 +58,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     labelList: LabelInfo[] = [];
     allLabelList: LabelInfo[] = [];
     showDropdownLabelBox: boolean = false;
+    invalidInput: boolean = false;
     private mouseCursor: MouseCursor = {
         move: false,
         pointer: false,
@@ -69,6 +72,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Output() _onChangeMetadata: EventEmitter<BboxMetadata> = new EventEmitter();
     @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
+    @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
 
     constructor(
         private _boundingBoxCanvas: BoundingBoxCanvasService,
@@ -421,6 +425,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this.floatdiv.nativeElement.style.top = event.offsetY.toString() + 'px';
                         this.floatdiv.nativeElement.style.left = event.offsetX.toString() + 'px';
                         this.showDropdownLabelBox = true;
+                        this.labelSearch = '';
+                        this.invalidInput = false;
                         setTimeout(() => {
                             this.lbltypetxt.nativeElement.focus();
                         }, 100);
@@ -660,6 +666,35 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         const { grab, move, pointer } = this.mouseCursor;
         return grab ? 'cursor-grab' : move ? 'cursor-move' : pointer ? 'cursor-pointer' : null;
     }
+
+    validateInputLabel = ({ target }: HTMLElementEvent<HTMLTextAreaElement>): void => {
+        const { value } = target;
+        const valTrimmed = value.trim();
+        if (valTrimmed) {
+            const validateVal: boolean = valTrimmed.match(/^[a-zA-Z0-9-]*$/) ? true : false;
+            if (validateVal) {
+                const isInvalidLabel: boolean = this._tabStatus.some(({ label_list }) =>
+                    label_list && label_list.length ? label_list.some((label) => label === valTrimmed) : null,
+                );
+                if (!isInvalidLabel) {
+                    this.invalidInput = false;
+                    const label_lists = this._tabStatus
+                        .map(({ label_list }) => (label_list ? label_list : []))
+                        .filter((tab) => tab.length > 0)[0];
+                    this._onEnterLabel.emit({ action: 1, label_list: label_lists ? [...label_lists, value] : [value] });
+                    this.showDropdownLabelBox = false;
+                    this._onChangeAnnotationLabel.emit({ label: value, index: this.annotateState.annotation });
+                    this.labelSearch = '';
+                } else {
+                    this.invalidInput = true;
+                    console.error(`Invalid existing label input`);
+                }
+            } else {
+                this.invalidInput = true;
+                console.error(`Invalid input value`);
+            }
+        }
+    };
 
     ngOnDestroy(): void {
         this.unsubscribe$.next();
