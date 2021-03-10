@@ -99,14 +99,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 }
             });
 
-        this._annotateSelectState.labelStaging$
-            .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(
-                (state) => (
-                    (this.annotateState = state),
-                    this.annotateStateChange({ annotation: this.annotateState.annotation })
-                ),
-            );
+        this._annotateSelectState.labelStaging$.pipe(takeUntil(this.unsubscribe$)).subscribe((state) => {
+            this.annotateState = state;
+            this._boundingBoxCanvas.setCurrentSelectedbBox(state.annotation);
+        });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -119,7 +115,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             this.initializeCanvas();
             this._undoRedoService.clearAllStages();
             this.loadImage(changes._imgSrc.currentValue);
-            this.annotateStateChange({ annotation: -1 });
+            this._boundingBoxCanvas.setCurrentSelectedbBox(-1);
         }
     }
 
@@ -136,12 +132,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         this._onChangeMetadata.emit(this._selectMetadata);
     }
 
-    annotateStateMakeChange(newState: AnnotateActionState) {
+    annotateStateSelectChange(newState: AnnotateActionState) {
         this._annotateSelectState.setState(newState);
-    }
-
-    annotateStateChange({ annotation }: Pick<AnnotateActionState, 'annotation'>) {
-        this._boundingBoxCanvas.setCurrentSelectedbBox(annotation);
     }
 
     resetZoomScale() {
@@ -212,9 +204,11 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 } else if (ctrlKey && (key === 'v' || key === 'V')) {
                     // paste
                     if (this._copyPasteService.isAvailable()) {
+                        // another copy function to make sense of copying the latest BB instead of the 1st copied BB
+                        this._copyPasteService.copy(this._selectMetadata.bnd_box[this.annotateState.annotation]);
                         const pastedMetadata = this._copyPasteService.paste<Boundingbox>();
                         pastedMetadata && this._selectMetadata.bnd_box.push(pastedMetadata);
-                        this.annotateStateMakeChange({
+                        this.annotateStateSelectChange({
                             annotation: this._selectMetadata.bnd_box.length - 1,
                             isDlbClick: false,
                         });
@@ -223,6 +217,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             this._selectMetadata.img_x,
                             this._selectMetadata.img_y,
                         );
+                        this.redrawImages(this._selectMetadata);
                     }
 
                     this._undoRedoService.appendStages({
@@ -258,7 +253,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this.annotateState.annotation,
                         (isDone) => {
                             if (isDone) {
-                                this.annotateStateMakeChange({ annotation: -1, isDlbClick: false });
+                                this.annotateStateSelectChange({ annotation: -1, isDlbClick: false });
                                 this.redrawImages(this._selectMetadata);
                                 this._undoRedoService.appendStages({
                                     meta: cloneDeep(this._selectMetadata),
@@ -288,7 +283,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         try {
             this.annotateState.annotation > -1 &&
                 (this._undoRedoService.clearRedundantStages(),
-                this.annotateStateMakeChange({ annotation: this.annotateState.annotation, isDlbClick: true }));
+                this.annotateStateSelectChange({ annotation: this.annotateState.annotation, isDlbClick: true }));
         } catch (err) {
             console.log(err);
         }
@@ -378,7 +373,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         event.offsetY,
                         this._selectMetadata.bnd_box,
                     );
-                    this.annotateStateMakeChange({ annotation: tmpBox, isDlbClick: false });
+                    this.annotateStateSelectChange({ annotation: tmpBox, isDlbClick: false });
                     this.redrawImages(this._selectMetadata);
                 }
             }
@@ -438,7 +433,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     } else {
                         this.showDropdownLabelBox = false;
                     }
-                    retObj.isNew && this.annotateStateMakeChange({ annotation: retObj.selBox, isDlbClick: false });
+                    retObj.isNew && this.annotateStateSelectChange({ annotation: retObj.selBox, isDlbClick: false });
                 }
                 this.mousedown = false;
             }

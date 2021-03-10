@@ -51,17 +51,17 @@ export class CopyPasteService {
     private boundingBoxPaste(): Boundingbox {
         const rtMEMO: Boundingbox = this.utility.deepCloneObject(this.MEMO);
         // tslint:disable-next-line: prefer-const
-        let { x1, x2, y1, y2, id, distancetoImg } = rtMEMO;
+        // let { x1, x2, y1, y2, id, distancetoImg } = rtMEMO;
 
-        const tempW: number = x2 - x1;
-        const tempH: number = y2 - y1;
-        x1 += 8;
-        y1 += 8;
-        x2 = x1 + tempW;
-        y2 = y1 + tempH;
-        id = this.utility.generateUniquesID();
-        distancetoImg.x = 0;
-        distancetoImg.y = 0;
+        const tempW: number = rtMEMO.x2 - rtMEMO.x1;
+        const tempH: number = rtMEMO.y2 - rtMEMO.y1;
+        rtMEMO.x1 += 8;
+        rtMEMO.y1 += 8;
+        rtMEMO.x2 = rtMEMO.x1 + tempW;
+        rtMEMO.y2 = rtMEMO.y1 + tempH;
+        rtMEMO.id = this.utility.generateUniquesID();
+        rtMEMO.distancetoImg.x = 0;
+        rtMEMO.distancetoImg.y = 0;
         return rtMEMO;
     }
 }
