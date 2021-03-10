@@ -56,18 +56,18 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
                     alt: `Redo`,
                     onClick: () => null,
                 },
-                {
-                    imgPath: `../../../assets/icons/zoom_in.svg`,
-                    hoverLabel: `Zoom In`,
-                    alt: `Zoom In`,
-                    onClick: () => null,
-                },
-                {
-                    imgPath: `../../../assets/icons/zoom_out.svg`,
-                    hoverLabel: `Zoom Out`,
-                    alt: `Zoom Out`,
-                    onClick: () => null,
-                },
+                // {
+                //     imgPath: `../../../assets/icons/zoom_in.svg`,
+                //     hoverLabel: `Zoom In`,
+                //     alt: `Zoom In`,
+                //     onClick: () => null,
+                // },
+                // {
+                //     imgPath: `../../../assets/icons/zoom_out.svg`,
+                //     hoverLabel: `Zoom Out`,
+                //     alt: `Zoom Out`,
+                //     onClick: () => null,
+                // },
             ],
         };
     };
