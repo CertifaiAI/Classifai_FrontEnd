@@ -3,8 +3,16 @@
         <img class="header-img" [src]="headerImage" />
     </div>
 </header>
-<select #langSelect (change)="setLanguage(langSelect.value)" class="select-padding">
+<!-- <select #langSelect (change)="setLanguage(langSelect.value)" class="select-padding">
     <option *ngFor="let lang of languageArr" [value]="lang" [selected]="lang === _translate.currentLang">
         {{ lang | languageSlice }}
     </option>
-</select>
+</select> -->
+<div class="share" (mouseenter)="showLangOpts()" (mouseleave)="hideLangOpts()">
+    <ul>
+        <div class="toggle">{{ _translate.currentLang | languageSlice }}</div>
+        <li #one *ngFor="let lang of languageArr" (click)="setLanguage(lang); hideLangOpts()">
+            {{ lang | languageSlice }}
+        </li>
+    </ul>
+</div>
