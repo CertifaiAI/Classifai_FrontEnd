@@ -7,7 +7,20 @@
             >
             <div class="footer-label">{{ _thumbnailInfo.img_ori_w }} x {{ _thumbnailInfo.img_ori_h }}</div>
             <!-- <label class="footer-label">{{ _thumbnailInfo.file_size }} -->
-            <div class="footer-image-path" [title]="_thumbnailInfo.img_path">{{ _thumbnailInfo.img_path }}</div>
-        </div></ng-container
-    >
+            <div class="footer-image-path" [title]="_thumbnailInfo.img_path">
+                <label>{{ _thumbnailInfo.img_path }}</label>
+                <div #imgContainer class="utility-icon-container">
+                    <ng-container *ngFor="let icon of jsonSchema.icon; index as i">
+                        <img
+                            class="utility-icon-light"
+                            (click)="icon.onClick(_thumbnailInfo.img_path)"
+                            [attr.data-index]="i"
+                            [src]="icon.imgPath"
+                            [alt]="icon.alt"
+                            [title]="icon.hoverLabel"
+                        />
+                    </ng-container>
+                </div>
+            </div></div
+    ></ng-container>
 </div>
