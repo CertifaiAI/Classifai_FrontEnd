@@ -14,7 +14,7 @@
             <ng-container *ngIf="i === 0; else renderOtherIcons">
                 <div class="utility-icon-container">
                     <img
-                        [ngClass]="conditionalIconTheme()"
+                        class="utility-icon-light"
                         [attr.data-index]="i + logo.alt"
                         [src]="logo.imgPath"
                         [alt]="logo.alt"
@@ -31,7 +31,7 @@
             <ng-template #renderOtherIcons>
                 <div class="utility-icon-container">
                     <img
-                        [ngClass]="conditionalIconTheme()"
+                        class="utility-icon-light"
                         [attr.data-index]="i + logo.alt"
                         [src]="logo.imgPath"
                         [alt]="logo.alt"
@@ -46,7 +46,7 @@
         <ng-container *ngFor="let logo of jsonSchema.logosEnd; index as i">
             <div class="utility-icon-container">
                 <img
-                    [ngClass]="conditionalIconTheme()"
+                    class="utility-icon-light"
                     [attr.data-index]="i + logo.alt"
                     [src]="logo.imgPath"
                     [alt]="logo.alt"

@@ -1,5 +1,5 @@
-@use "../../../shared/scss/icon" as icon;
-@use "../../../shared/scss/variables" as color;
+@use '../../../shared/scss/_icon' as icon;
+@use '../../../shared/scss/_variables' as color;
 
 .utility-right-sidebar-container {
     position: absolute;
@@ -26,7 +26,7 @@
 }
 
 .utility-icon-light {
-    @include icon.iconStyling();
+    @include icon.icon-styling();
 }
 
 .utility-icon-light:focus,

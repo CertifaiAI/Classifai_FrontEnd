@@ -1,5 +1,5 @@
 @use '../../shared/scss/_variables.scss' as color;
-@use '../../shared/scss/_scrollbar.scss' as *;
+@use '../../shared/scss/_scrollbar.scss' as scrollbar;
 
 /* MODAL STYLES
 -------------------------------*/
@@ -50,16 +50,16 @@
     overflow-y: auto;
 }
 
-.scroll::-webkit-scrollbartrack {
-    @include scrollbarTrack();
+.scroll::-webkit-scrollbar-track {
+    @include scrollbar.scrollbar-track();
 }
 
 .scroll::-webkit-scrollbar {
-    @include scrollbar();
+    @include scrollbar.scrollbar();
 }
 
-.scroll::-webkit-scrollbarthumb {
-    @include scrollbarThumb(color.$greyColor);
+.scroll::-webkit-scrollbar-thumb {
+    @include scrollbar.scrollbar-thumb(color.$greyColor);
 }
 
 .modal-background {

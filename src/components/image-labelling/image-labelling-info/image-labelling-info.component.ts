@@ -32,7 +32,7 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
             logosCenter: [
                 {
                     imgPath: `../../../assets/icons/previous.svg`,
-                    hoverLabel: `Pervious`,
+                    hoverLabel: `Previous`,
                     alt: `Previous`,
                     onClick: () => this.emitParentEvent({ thumbnailAction: -1 }),
                 },
@@ -82,6 +82,4 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
         this._onChange.totalNumThumbnail = totalNumThumbnail;
         this.bindImagePath();
     }
-
-    conditionalIconTheme = (): string => 'utility-icon-light';
 }
