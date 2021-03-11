@@ -41,6 +41,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     unsubscribe$: Subject<any> = new Subject();
     clickAbilityToggle: boolean = false;
     invalidInput: boolean = false;
+    labelList: string[] = [];
 
     constructor(
         private _annotateService: AnnotateSelectionService,
@@ -48,6 +49,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     ) {}
 
     ngOnInit(): void {
+        this.labelList = this._tabStatus[1].label_list ? this._tabStatus[1].label_list : [];
         this._imgLblState.action$
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe(({ draw }) => (this.clickAbilityToggle = draw));
@@ -123,6 +125,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
                         .filter((tab) => tab.length > 0)[0];
                     this._onEnterLabel.emit({ action: 1, label_list: label_lists ? [...label_lists, value] : [value] });
                     this.displayInputLabel = false;
+                    this.inputLabel = '';
                 } else {
                     this.invalidInput = true;
                     console.error(`Invalid existing label input`);
@@ -138,10 +141,16 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         this.action = action;
     };
 
-    onChangeInputLabel = (event: HTMLElementEvent<HTMLTextAreaElement>) => {
-        const { value } = event.target;
-        this.inputLabel = value;
-    };
+    // onChangeInputLabel = (event: HTMLElementEvent<HTMLTextAreaElement>) => {
+    //     const { value } = event.target;
+    //     this.inputLabel = value;
+    // };
+
+    inputLabelChange(event: any) {
+        this.labelList = this._tabStatus[1].label_list
+            ? this._tabStatus[1].label_list?.filter((label) => label.includes(event))
+            : [];
+    }
 
     onDeleteLabel = (selectedLabel: string): void => {
         const [{ label_list }] = this._tabStatus.filter((tab) => tab.label_list);
@@ -210,6 +219,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         ) {
             const { currentValue }: { currentValue: TabsProps<CompleteMetadata>[] } = changes._tabStatus;
             this._tabStatus = [...currentValue];
+            this.labelList = this._tabStatus[1].label_list ? this._tabStatus[1].label_list : [];
         }
     }
 
