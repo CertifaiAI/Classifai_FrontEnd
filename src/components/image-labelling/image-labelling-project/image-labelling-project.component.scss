@@ -245,7 +245,7 @@
 .label {
     flex: 1 1 80%;
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
     margin: 0.25vh 0 0.25vh 0;
 }
 
@@ -321,7 +321,7 @@
 
 .div-input {
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
     margin: 0.5vh 0.9vw;
 }
 
