@@ -1,7 +1,7 @@
+@use '../../../shared/scss/_scrollbar.scss' as scroll;
 @use '../../../shared/scss/_variables.scss' as color;
-@use '../../../shared/scss/_scrollbar.scss' as *;
 @use '../../../shared/scss/_ellipsis' as ellipsis;
-@use '../../../shared/scss/fadeIn' as fadeIn;
+@use '../../../shared/scss/_fadeIn' as fadeIn;
 
 $fadeInEaseDuration: ease 1.5s;
 $hoverBackground: #393838;
@@ -16,7 +16,7 @@ $hoverBackground: #393838;
 @mixin text-ellipsis($fontSize, $color) {
     color: $color;
     font-size: $fontSize;
-    @include ellipsis.ellipsisStyling();
+    @include ellipsis.ellipsis-styling();
 }
 
 .fade-in {
@@ -37,16 +37,16 @@ $hoverBackground: #393838;
     height: 80vh;
 }
 
-.scroll::-webkit-scrollbartrack {
-    @include scrollbarTrack(color.$blackColor);
+.scroll::-webkit-scrollbar-track {
+    @include scroll.scrollbar-track(color.$blackColor);
 }
 
 .scroll::-webkit-scrollbar {
-    @include scrollbar();
+    @include scroll.scrollbar();
 }
 
-.scroll::-webkit-scrollbarthumb {
-    @include scrollbarThumb(color.$greyColor);
+.scroll::-webkit-scrollbar-thumb {
+    @include scroll.scrollbar-thumb(color.$greyColor);
 }
 
 .card-container {

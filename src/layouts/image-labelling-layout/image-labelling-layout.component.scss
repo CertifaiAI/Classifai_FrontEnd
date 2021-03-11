@@ -64,7 +64,7 @@
 .font-label {
     line-height: 4vh;
     font-size: 1vw;
-    @include ellipsis.ellipsisStyling();
+    @include ellipsis.ellipsis-styling();
 }
 
 .main-label-container {

@@ -1,5 +1,7 @@
 @use '../../../shared/scss/_ellipsis' as ellipsis;
 @use '../../../shared/scss/_indicator' as indicator;
+@use '../../../shared/scss/_variables' as color;
+@use '../../../shared/scss/_icon' as icon;
 
 .header-container {
     min-width: 100vw;
@@ -25,6 +27,9 @@
 .container-flex-center {
     display: flex;
     margin-left: 8vw;
+    align-items: center;
+    min-height: inherit;
+    max-height: inherit;
 }
 
 .container-flex-end {
@@ -32,34 +37,19 @@
     margin-right: 19vw;
 }
 
-/* div.utility-icon-container:nth-last-child(3) {
-    border-right: 0.1vw solid;
-    border-right-color: darkgray;
-    max-height: 4.2vh;
-} */
-
 .logo-container {
     min-width: 2.2vw;
     max-width: 2.2vw;
 }
 
 .logo,
-.utility-icon-light,
-.utility-icon-dark {
-    min-width: 1.5vw;
-    max-width: 1.5vw;
-    min-height: 3vh;
-    max-height: 3vh;
-    padding: 0.1vw;
-    cursor: pointer;
+.utility-icon-light {
+    @include icon.icon-styling(pointer, fixed, 2.2vh);
 }
 
+.utility-icon-light:focus,
 .utility-icon-light:active {
-    background: rgb(105, 105, 105);
-}
-
-.utility-icon-dark:active {
-    background: darkgray;
+    background: color.$iconActiveBackgroundColor;
 }
 
 .position-absolute {
@@ -70,6 +60,8 @@
     display: flex;
     min-height: 3.5vh;
     max-height: 3.5vh;
+    min-width: 2vw;
+    max-width: 2vw;
 }
 
 .totalThumbnail {
@@ -93,15 +85,15 @@
     max-width: 20vw;
     min-width: 20vw;
     position: absolute;
-    @include ellipsis.ellipsisStyling();
+    @include ellipsis.ellipsis-styling();
 }
 
 .indicator {
-    @include indicator.indicatorStyling(#75fe7c, aboslute);
+    @include indicator.indicator-styling(#75fe7c, aboslute);
 }
 
 .no-indicator {
-    @include indicator.indicatorStyling(#ffba54, aboslute);
+    @include indicator.indicator-styling(#ffba54, aboslute);
 }
 
 .horizontal-line {

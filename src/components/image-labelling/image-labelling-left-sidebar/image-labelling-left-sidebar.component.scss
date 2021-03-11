@@ -1,5 +1,5 @@
-@use "../../../shared/scss/icon" as icon;
-@use "../../../shared/scss/variables" as color;
+@use "../../../shared/scss/_icon" as icon;
+@use "../../../shared/scss/_variables" as color;
 
 .utility-left-sidebar-container {
     position: absolute;
@@ -20,17 +20,8 @@
     align-items: baseline;
 }
 
-@mixin icon-styling() {
-    min-width: 1.52vw;
-    max-width: 1.52vw;
-    min-height: 3vh;
-    max-height: 3vh;
-    padding: 0.3vw;
-    position: absolute;
-}
-
 .utility-icon-light {
-    @include icon.iconStyling();
+    @include icon.icon-styling();
 }
 
 .utility-icon-light:focus,
@@ -39,7 +30,7 @@
 }
 
 .plain-icon {
-    @include icon.iconStyling('none');
+    @include icon.icon-styling(auto);
 }
 
 // .utility-icon-dark-theme:focus,

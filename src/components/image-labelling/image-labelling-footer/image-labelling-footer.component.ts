@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { IconSchema } from 'src/shared/types/icon/icon.model';
 import { ImageProps } from '../image-labelling.model';
 
 @Component({
@@ -12,10 +13,21 @@ export class ImageLabellingFooterComponent implements OnInit, OnChanges {
     @Input() _imgSrc: string = '';
     thumbnailSize: string = '';
     thumbnailType: string = '';
+    jsonSchema!: IconSchema;
     constructor() {}
 
     ngOnInit(): void {
         // this.thumbnailType = this._thumbnailInfo ? atob(this._thumbnailInfo.img_src) : '';
+        this.jsonSchema = {
+            logosCenter: [
+                {
+                    imgPath: `../../../assets/icons/content_copy_white_24dp.svg`,
+                    hoverLabel: `Copy`,
+                    alt: `Copy`,
+                    onClick: () => {},
+                },
+            ],
+        };
     }
 
     /**
