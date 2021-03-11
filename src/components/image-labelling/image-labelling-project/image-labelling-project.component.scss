@@ -1,7 +1,7 @@
-@use '../../../shared/scss/_variables.scss' as color;
-@use '../../../shared/scss/_scrollbar.scss' as scrollbar;
-@use '../../../shared/scss/_ellipsis' as ellipsis;
-@use '../../../shared/scss/_indicator' as indicator;
+@use '../../../shared/scss/variables' as color;
+@use '../../../shared/scss/scrollbar' as scrollbar;
+@use '../../../shared/scss/ellipsis' as ellipsis;
+@use '../../../shared/scss/indicator' as indicator;
 
 @mixin tab-after() {
     position: absolute;
