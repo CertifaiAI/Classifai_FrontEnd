@@ -1,3 +1,6 @@
+@use "../../../shared/scss/icon" as icon;
+@use "../../../shared/scss/variables" as color;
+
 .utility-right-sidebar-container {
     position: absolute;
     min-width: 2.2vw;
@@ -22,23 +25,13 @@
     max-height: 5vh;
 }
 
-.utility-icon-light,
-.utility-icon-dark {
-    min-width: 1.5vw;
-    max-width: 1.5vw;
-    min-height: 3vh;
-    max-height: 3vh;
-    padding: 0.3vw;
-    position: absolute;
-    cursor: pointer;
+.utility-icon-light {
+    @include icon.iconStyling();
 }
 
+.utility-icon-light:focus,
 .utility-icon-light:active {
-    background: rgb(105, 105, 105);
-}
-
-.utility-icon-dark:active {
-    background: darkgray;
+    background: color.$iconActiveBackgroundColor;
 }
 
 .input-none {

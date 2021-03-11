@@ -93,15 +93,15 @@
     max-width: 20vw;
     min-width: 20vw;
     position: absolute;
-    @include ellipsis.ellipsis();
+    @include ellipsis.ellipsisStyling();
 }
 
 .indicator {
-    @include indicator.indicator-styling(#75fe7c, aboslute);
+    @include indicator.indicatorStyling(#75fe7c, aboslute);
 }
 
 .no-indicator {
-    @include indicator.indicator-styling(#ffba54, aboslute);
+    @include indicator.indicatorStyling(#ffba54, aboslute);
 }
 
 .horizontal-line {

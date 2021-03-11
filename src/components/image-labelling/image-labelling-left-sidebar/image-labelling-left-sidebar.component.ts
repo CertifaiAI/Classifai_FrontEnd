@@ -172,7 +172,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
         this.iconIndex = index;
     };
 
-    conditionalIconTheme = (isPlainIcon: boolean): string => (isPlainIcon ? `plain-icon` : `utility-icon-light-theme`);
+    conditionalIconTheme = (isPlainIcon: boolean): string => (isPlainIcon ? `plain-icon` : `utility-icon-light`);
 
     conditionalActiveIcon = (index: number): object | null =>
         index === this.iconIndex ? { background: 'rgb(59 59 59)' } : null;
