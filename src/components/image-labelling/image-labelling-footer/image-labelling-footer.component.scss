@@ -1,4 +1,6 @@
-@use '../../../shared/scss/_ellipsis' as ellipsis;
+@use '../../../shared/scss/ellipsis' as ellipsis;
+@use "../../../shared/scss/icon" as icon;
+@use "../../../shared/scss/variables" as color;
 
 .footer-container {
     position: absolute;
@@ -34,10 +36,26 @@
 }
 
 .footer-image-path {
+    display: flex;
     @include footer-texts(130%);
     @include ellipsis.ellipsis-styling();
 }
 
 .border-right {
     border-right: 1rem white;
+}
+
+.utility-icon-container {
+    min-height: 5vh;
+    max-height: 5vh;
+    align-items: baseline;
+}
+
+.utility-icon-light {
+    @include icon.icon-styling(pointer, absolute, 2vh, 0);
+}
+
+.utility-icon-light:focus,
+.utility-icon-light:active {
+    background: color.$iconActiveBackgroundColor;
 }
