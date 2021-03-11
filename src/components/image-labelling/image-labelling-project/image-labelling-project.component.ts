@@ -41,6 +41,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     unsubscribe$: Subject<any> = new Subject();
     clickAbilityToggle: boolean = false;
     invalidInput: boolean = false;
+    labelList: string[] = [];
 
     constructor(
         private _annotateService: AnnotateSelectionService,
@@ -48,48 +49,52 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     ) {}
 
     ngOnInit(): void {
+        this.updateLabelList();
         this._imgLblState.action$
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe(({ draw }) => (this.clickAbilityToggle = draw));
 
-        this._thumbnailList.length > 0
-            ? this._annotateService.labelStaging$
-                  .pipe(takeUntil(this.unsubscribe$))
-                  .subscribe(({ annotation: annnotationIndex, isDlbClick }) => {
-                      // isDlbClick ? this._annotateService.setState({ annotation: -1 }) : null;
+        this._thumbnailList.length > 0 &&
+            this._annotateService.labelStaging$
+                .pipe(takeUntil(this.unsubscribe$))
+                .subscribe(({ annotation: annnotationIndex, isDlbClick }) => {
+                    // isDlbClick ? this._annotateService.setState({ annotation: -1 }) : null;
 
-                      this.selectedIndexAnnotation = annnotationIndex;
-                      const [{ annotation }] = this._tabStatus.filter((tab) => tab.annotation);
-                      const resultLabel = annotation?.map(({ bnd_box, polygons }) => {
-                          if (bnd_box) {
-                              return bnd_box.find((_, i) => i === annnotationIndex);
-                          }
-                          if (polygons) {
-                              return polygons.find((_, i) => i === annnotationIndex);
-                          }
-                      })[0];
-                      this.selectedLabel = resultLabel?.label ?? '';
-                      // this.selectedIndexAnnotation = this._tabStatus.reduce((prev, { annotation }) => {
-                      //     const currentIndex =
-                      //         annotation?.findIndex(({ bnd_box }) =>
-                      //             bnd_box.findIndex((_, i) => {
-                      //                 const ss = i === annnotationIndex;
-                      //                 console.log(`${i}===${annnotationIndex}`);
-                      //                 console.log(ss);
-                      //                 return ss;
-                      //             }),
-                      //         ) || -1;
-                      //     prev = currentIndex || -1;
-                      //     return prev;
-                      // }, 0);
+                    this.selectedIndexAnnotation = annnotationIndex;
+                    const [{ annotation }] = this._tabStatus.filter((tab) => tab.annotation);
+                    const resultLabel = annotation?.map(({ bnd_box, polygons }) => {
+                        if (bnd_box) {
+                            return bnd_box.find((_, i) => i === annnotationIndex);
+                        }
+                        if (polygons) {
+                            return polygons.find((_, i) => i === annnotationIndex);
+                        }
+                    })[0];
+                    this.selectedLabel = resultLabel?.label ?? '';
+                    // this.selectedIndexAnnotation = this._tabStatus.reduce((prev, { annotation }) => {
+                    //     const currentIndex =
+                    //         annotation?.findIndex(({ bnd_box }) =>
+                    //             bnd_box.findIndex((_, i) => {
+                    //                 const ss = i === annnotationIndex;
+                    //                 console.log(`${i}===${annnotationIndex}`);
+                    //                 console.log(ss);
+                    //                 return ss;
+                    //             }),
+                    //         ) || -1;
+                    //     prev = currentIndex || -1;
+                    //     return prev;
+                    // }, 0);
 
-                      // this.selectedIndexAnnotation = this._tabStatus.findIndex(({ annotation }) =>
-                      //     annotation?.findIndex(({ bnd_box }) => bnd_box.findIndex((_, i) => i === annnotationIndex)),
-                      // );
-                      // console.log({ annnotationIndex, isDlbClick });
-                  })
-            : null;
+                    // this.selectedIndexAnnotation = this._tabStatus.findIndex(({ annotation }) =>
+                    //     annotation?.findIndex(({ bnd_box }) => bnd_box.findIndex((_, i) => i === annnotationIndex)),
+                    // );
+                    // console.log({ annnotationIndex, isDlbClick });
+                });
     }
+
+    updateLabelList = () => {
+        this.labelList = this._tabStatus[1].label_list ? this._tabStatus[1].label_list : [];
+    };
 
     onClose = (tab: TabsProps): void => {
         this._onClose.emit({ name: tab.name, closed: true });
@@ -123,6 +128,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
                         .filter((tab) => tab.length > 0)[0];
                     this._onEnterLabel.emit({ action: 1, label_list: label_lists ? [...label_lists, value] : [value] });
                     this.displayInputLabel = false;
+                    this.inputLabel = '';
                 } else {
                     this.invalidInput = true;
                     console.error(`Invalid existing label input`);
@@ -134,14 +140,11 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         }
     };
 
-    onIconClick = ({ tabType, action }: ActionTabProps): void => {
-        this.action = action;
-    };
-
-    onChangeInputLabel = (event: HTMLElementEvent<HTMLTextAreaElement>) => {
-        const { value } = event.target;
-        this.inputLabel = value;
-    };
+    inputLabelChange(text: string) {
+        this.labelList = this._tabStatus[1].label_list
+            ? this._tabStatus[1].label_list?.filter((label) => label.includes(text))
+            : [];
+    }
 
     onDeleteLabel = (selectedLabel: string): void => {
         const [{ label_list }] = this._tabStatus.filter((tab) => tab.label_list);
@@ -178,7 +181,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     // };
 
     checkCloseToggle = (tab: TabsProps): string | null => {
-        var classes = '';
+        let classes = '';
         if (
             !(
                 (tab.name === 'Label' && this._tabStatus[2].closed) ||
@@ -210,6 +213,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         ) {
             const { currentValue }: { currentValue: TabsProps<CompleteMetadata>[] } = changes._tabStatus;
             this._tabStatus = [...currentValue];
+            this.updateLabelList();
         }
     }
 

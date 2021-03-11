@@ -1,6 +1,5 @@
 <div class="tab-container">
     <ng-container *ngFor="let tab of _tabStatus; index as i">
-        <!-- <ng-container *ngIf="_thumbnailList.length > 0 && i === 0; else nonThumbnailTab"> -->
         <ng-container *ngIf="i === 0; else nonThumbnailTab">
             <div
                 class="utility-right-project-container tab flex-fill-remaining"
@@ -46,33 +45,22 @@
                             ><div class="div-close" (click)="onClose(tab)">x</div></span
                         >
                         <span class="tab-extra-icons"></span>
-                        <span class="tab-extra-icons">
-                            <ng-container *ngIf="_thumbnailList.length > 0">
-                                <div
-                                    class="extra-icons"
-                                    (click)="onDisplayInputModal(); onIconClick({ tabType: 'label', action: 1 })"
-                                >
-                                    +
-                                </div>
-                            </ng-container>
-                            <ng-container *ngIf="displayInputLabel">
-                                <div class="label-input">
-                                    <input
-                                        class="input"
-                                        [ngClass]="invalidInput ? 'input-invalid' : null"
-                                        type="text"
-                                        [value]="inputLabel"
-                                        (change)="onChangeInputLabel($event)"
-                                        (keydown.enter)="validateInputLabel($event)"
-                                        placeholder="Enter Label"
-                                    /></div
-                            ></ng-container>
-                        </span>
+                        <span class="tab-extra-icons"> </span>
                     </div>
-
+                    <div class="div-input">
+                        <input
+                            class="input"
+                            [ngClass]="invalidInput ? 'input-invalid' : null"
+                            type="text"
+                            [(ngModel)]="inputLabel"
+                            (ngModelChange)="inputLabelChange($event)"
+                            (keydown.enter)="validateInputLabel($event)"
+                            placeholder="Enter Label"
+                        />
+                    </div>
                     <div class="utility-inner-container tab-height scroll" id="inner-container">
                         <div class="flex-item">
-                            <ng-container *ngFor="let label of tab.label_list; index as i">
+                            <ng-container *ngFor="let label of labelList; index as i">
                                 <div
                                     class="flex-center-width"
                                     [ngClass]="label === selectedLabel ? 'label-active' : null"
@@ -96,6 +84,9 @@
                                     >
                                 </div>
                             </ng-container>
+                            <label *ngIf="labelList.length === 0" class="not-exist">
+                                Label does not exist. Press Enter to add.
+                            </label>
                         </div>
                     </div>
                 </div>

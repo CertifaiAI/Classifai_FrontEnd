@@ -187,8 +187,8 @@
     min-height: 5vh;
     max-height: 5vh;
     cursor: pointer;
-    margin: 0px 5px;
-    padding: 2px 5px;
+    margin: 0vh 0.3vw;
+    padding: 0.1vh 0.4vw;
 }
 
 .img-container:hover {
@@ -245,7 +245,7 @@
 .label {
     flex: 1 1 80%;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     margin: 0.25vh 0 0.25vh 0;
 }
 
@@ -256,10 +256,6 @@
 .label-active,
 .annotation-active {
     border: 0.15vw solid yellow;
-}
-
-.action {
-    flex: 1 1 20%;
 }
 
 .utility-info-btn {
@@ -298,6 +294,7 @@
     text-align: center;
     color: white;
     flex: 1 0 15%;
+    justify-content: flex-start;
 }
 
 .tab-text {
@@ -313,24 +310,23 @@
     max-width: 3vw;
 }
 
-.label-input {
-    position: absolute;
-    z-index: 1000;
-    margin-left: -4vw;
+.div-input {
+    display: flex;
+    justify-content: flex-start;
+    margin: 0.5vh 0.9vw;
 }
 
 .input {
-    border-radius: 10vw;
+    border-radius: 8vw;
     border: none;
     outline: none;
     padding: 0.3vw 0 0.3vw 1vw;
     box-shadow: 0 0 0.3vw;
-    min-height: 2vh;
-    max-height: 2vh;
-    min-width: 6vw;
-    max-width: 6vw;
-    font-size: 1.7vh;
-    // font-size: 2vh;
+    min-height: 1.5vh;
+    max-height: 1.5vh;
+    min-width: 13vw;
+    max-width: 13vw;
+    font-size: 1.3vh;
 }
 
 .input-invalid {
@@ -347,4 +343,9 @@
 
 .no-indicator {
     @include indicator.indicatorStyling(#ffba54, relative);
+}
+
+.not-exist {
+    font-size: 1.5vh;
+    color: #999;
 }
