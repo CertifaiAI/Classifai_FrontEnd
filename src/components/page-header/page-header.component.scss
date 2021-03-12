@@ -4,7 +4,7 @@
     min-height: 4.5vh;
     max-height: 4.5vh;
     background: #525353;
-    border: 1px solid rgb(255, 255, 255, 0.25);
+    border: 0.0625vw solid rgb(255, 255, 255, 0.25);
     display: flex;
     justify-content: space-between;
     z-index: 1000;
@@ -76,7 +76,7 @@
     // max-width: 12vw;
     font-size: 2vh;
     background: #525353;
-    border-left: 1px solid rgb(255, 255, 255, 0.25);
+    border-left: 0.0625vw solid rgb(255, 255, 255, 0.25);
     cursor: pointer;
     align-items: center;
     justify-content: center;
@@ -85,7 +85,7 @@
 }
 
 .last-btn-container {
-    border-right: 1px solid rgb(255, 255, 255, 0.25);
+    border-right: 0.0625vw solid rgb(255, 255, 255, 0.25);
 }
 
 .link {
