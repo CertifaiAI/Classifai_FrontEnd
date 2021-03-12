@@ -4,7 +4,7 @@
     min-height: 4.5vh;
     max-height: 4.5vh;
     background: #525353;
-    outline: 0.0625vw inset white;
+    border: 0.0625vw solid rgb(255, 255, 255, 0.25);
     display: flex;
     justify-content: space-between;
     z-index: 1000;
@@ -23,8 +23,8 @@
 }
 
 .logo-container {
-    min-width: 2.2vw;
-    max-width: 2.2vw;
+    min-width: 2.15vw;
+    max-width: 2.15vw;
 }
 
 .logo,
@@ -70,18 +70,22 @@
 }
 
 .btn-container {
-    min-height: 4.5vh;
-    max-height: 4.5vh;
+    min-height: 4.36vh;
+    max-height: 4.36vh;
     // min-width: 9vw;
     // max-width: 12vw;
     font-size: 2vh;
     background: #525353;
-    outline: 0.0625vw inset white;
+    border-left: 0.0625vw solid rgb(255, 255, 255, 0.25);
     cursor: pointer;
     align-items: center;
     justify-content: center;
     display: flex;
     padding: 0 1.5vw;
+}
+
+.last-btn-container {
+    border-right: 0.0625vw solid rgb(255, 255, 255, 0.25);
 }
 
 .link {
