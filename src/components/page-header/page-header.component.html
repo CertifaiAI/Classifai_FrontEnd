@@ -3,9 +3,14 @@
         <div class="logo-container">
             <img [src]="logoSrc" class="logo position-absolute" alt="logo" title="Classifai" />
         </div>
-        <ng-container *ngFor="let label of headerLabels"
+        <ng-container *ngFor="let label of headerLabels; let last = last"
             ><a class="link" [routerLink]="label.url">
-                <div class="btn-container" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
+                <div
+                    class="btn-container"
+                    [ngClass]="{ 'last-btn-container': last }"
+                    routerLinkActive="active-link"
+                    [routerLinkActiveOptions]="{ exact: true }"
+                >
                     <label class="label">{{ label.name }}</label>
                 </div></a
             >

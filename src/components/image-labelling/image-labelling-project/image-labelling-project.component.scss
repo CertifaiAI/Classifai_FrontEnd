@@ -36,8 +36,9 @@
     min-width: 16.3vw;
     max-width: 16.3vw;
     background: rgb(105, 105, 105);
-    outline: 0.0625vw inset white;
-    border: none;
+    border: 1px solid rgb(255, 255, 255, 0.25);
+    border-top: none;
+    // border: none;
     z-index: 1000;
     align-items: stretch;
 }
@@ -202,7 +203,7 @@
     min-height: 4.3vh;
     min-width: 3vw;
     max-width: 3vw;
-    // outline: 0.0625vw inset white;
+    // border: 1px solid rgb(255,255,255, 0.25);
 }
 
 .img-name {

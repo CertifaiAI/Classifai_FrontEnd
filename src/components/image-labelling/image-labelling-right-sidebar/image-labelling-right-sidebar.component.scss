@@ -3,12 +3,13 @@
 
 .utility-right-sidebar-container {
     position: absolute;
+    top: 4.56vh;
     min-width: 2.2vw;
     max-width: 2.2vw;
     min-height: 95.5vh;
     max-height: 95.5vh;
     background: #525353;
-    outline: 0.0625vw inset white;
+    border: 1px solid rgb(255, 255, 255, 0.25);
     z-index: 1000;
 }
 
