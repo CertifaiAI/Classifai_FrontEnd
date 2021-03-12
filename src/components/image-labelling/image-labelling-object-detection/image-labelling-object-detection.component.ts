@@ -212,11 +212,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             annotation: this._selectMetadata.bnd_box.length - 1,
                             isDlbClick: false,
                         });
-                        this._boundingBoxCanvas.getBBoxDistfromImg(
-                            this._selectMetadata.bnd_box,
-                            this._selectMetadata.img_x,
-                            this._selectMetadata.img_y,
-                        );
+                        this.getBBoxDistanceFromImage();
                         this.redrawImages(this._selectMetadata);
                     }
 
@@ -232,6 +228,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         const rtStages: UndoState = this._undoRedoService.redo();
                         this._selectMetadata = cloneDeep(rtStages?.meta as BboxMetadata);
                         this.redrawImages(this._selectMetadata);
+                        this.getBBoxDistanceFromImage();
                         this.emitMetadata();
                     }
                 } else if (ctrlKey && (key === 'z' || key === 'Z')) {
@@ -240,6 +237,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         const rtStages: UndoState = this._undoRedoService.undo();
                         this._selectMetadata = cloneDeep(rtStages?.meta as BboxMetadata);
                         this.redrawImages(this._selectMetadata);
+                        this.getBBoxDistanceFromImage();
                         this.emitMetadata();
                     }
                 } else if (
@@ -406,11 +404,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                                     meta: cloneDeep(this._selectMetadata),
                                     method: 'draw',
                                 });
-                            this._boundingBoxCanvas.getBBoxDistfromImg(
-                                this._selectMetadata.bnd_box,
-                                this._selectMetadata.img_x,
-                                this._selectMetadata.img_y,
-                            );
+                            this.getBBoxDistanceFromImage();
                             this.emitMetadata();
                         }
                     });
@@ -605,11 +599,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             meta: cloneDeep(this._selectMetadata),
                             method: 'draw',
                         });
-                        this._boundingBoxCanvas.getBBoxDistfromImg(
-                            this._selectMetadata.bnd_box,
-                            this._selectMetadata.img_x,
-                            this._selectMetadata.img_y,
-                        );
+                        this.getBBoxDistanceFromImage();
                         this.redrawImages(this._selectMetadata);
                         this.emitMetadata();
                     }
@@ -629,6 +619,14 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     clearCanvas() {
         this.canvasContext?.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
+    }
+
+    getBBoxDistanceFromImage() {
+        this._boundingBoxCanvas.getBBoxDistfromImg(
+            this._selectMetadata.bnd_box,
+            this._selectMetadata.img_x,
+            this._selectMetadata.img_y,
+        );
     }
 
     getLabelList() {
