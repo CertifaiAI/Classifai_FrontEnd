@@ -19,16 +19,25 @@ export class ImageLabellingFooterComponent implements OnInit, OnChanges {
     ngOnInit(): void {
         // this.thumbnailType = this._thumbnailInfo ? atob(this._thumbnailInfo.img_src) : '';
         this.jsonSchema = {
-            logosCenter: [
+            icon: [
                 {
                     imgPath: `../../../assets/icons/content_copy_white_24dp.svg`,
-                    hoverLabel: `Copy`,
+                    hoverLabel: `Copy to Clipboard`,
                     alt: `Copy`,
-                    onClick: () => {},
+                    onClick: this.copyMessage,
                 },
             ],
         };
     }
+
+    copyMessage = (path: string) => {
+        const el = document.createElement('textarea');
+        el.value = path;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+    };
 
     /**
      * @function responsible for returning file size
