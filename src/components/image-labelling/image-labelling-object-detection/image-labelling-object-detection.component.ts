@@ -212,11 +212,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             annotation: this._selectMetadata.bnd_box.length - 1,
                             isDlbClick: false,
                         });
-                        this._boundingBoxCanvas.getBBoxDistfromImg(
-                            this._selectMetadata.bnd_box,
-                            this._selectMetadata.img_x,
-                            this._selectMetadata.img_y,
-                        );
+                        this.getBBoxDistanceFromImage();
                         this.redrawImages(this._selectMetadata);
                     }
 
@@ -232,6 +228,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         const rtStages: UndoState = this._undoRedoService.redo();
                         this._selectMetadata = cloneDeep(rtStages?.meta as BboxMetadata);
                         this.redrawImages(this._selectMetadata);
+                        this.getBBoxDistanceFromImage();
                         this.emitMetadata();
                     }
                 } else if (ctrlKey && (key === 'z' || key === 'Z')) {
@@ -240,6 +237,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         const rtStages: UndoState = this._undoRedoService.undo();
                         this._selectMetadata = cloneDeep(rtStages?.meta as BboxMetadata);
                         this.redrawImages(this._selectMetadata);
+                        this.getBBoxDistanceFromImage();
                         this.emitMetadata();
                     }
                 } else if (
@@ -264,13 +262,15 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         },
                     );
                 } else {
-                    key === 'ArrowLeft'
-                        ? this.keyMoveBox('left')
-                        : key === 'ArrowRight'
-                        ? this.keyMoveBox('right')
-                        : key === 'ArrowUp'
-                        ? this.keyMoveBox('up')
-                        : key === 'ArrowDown' && this.keyMoveBox('down');
+                    const direction =
+                        key === 'ArrowLeft'
+                            ? 'left'
+                            : key === 'ArrowRight'
+                            ? 'right'
+                            : key === 'ArrowUp'
+                            ? 'up'
+                            : key === 'ArrowDown' && 'down';
+                    direction && this.keyMoveBox(direction);
                 }
             }
         } catch (err) {
@@ -406,11 +406,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                                     meta: cloneDeep(this._selectMetadata),
                                     method: 'draw',
                                 });
-                            this._boundingBoxCanvas.getBBoxDistfromImg(
-                                this._selectMetadata.bnd_box,
-                                this._selectMetadata.img_x,
-                                this._selectMetadata.img_y,
-                            );
+                            this.getBBoxDistanceFromImage();
                             this.emitMetadata();
                         }
                     });
@@ -595,21 +591,14 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             this._boundingBoxCanvas.keyboardMoveBox(
                 direction,
                 this._selectMetadata.bnd_box[this.annotateState.annotation],
-                this._selectMetadata.img_x,
-                this._selectMetadata.img_y,
-                this._selectMetadata.img_w,
-                this._selectMetadata.img_h,
+                this._selectMetadata,
                 (isDone) => {
                     if (isDone) {
                         this._undoRedoService.appendStages({
                             meta: cloneDeep(this._selectMetadata),
                             method: 'draw',
                         });
-                        this._boundingBoxCanvas.getBBoxDistfromImg(
-                            this._selectMetadata.bnd_box,
-                            this._selectMetadata.img_x,
-                            this._selectMetadata.img_y,
-                        );
+                        this.getBBoxDistanceFromImage();
                         this.redrawImages(this._selectMetadata);
                         this.emitMetadata();
                     }
@@ -629,6 +618,14 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     clearCanvas() {
         this.canvasContext?.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
+    }
+
+    getBBoxDistanceFromImage() {
+        this._boundingBoxCanvas.getBBoxDistfromImg(
+            this._selectMetadata.bnd_box,
+            this._selectMetadata.img_x,
+            this._selectMetadata.img_y,
+        );
     }
 
     getLabelList() {
