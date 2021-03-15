@@ -262,13 +262,15 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         },
                     );
                 } else {
-                    key === 'ArrowLeft'
-                        ? this.keyMoveBox('left')
-                        : key === 'ArrowRight'
-                        ? this.keyMoveBox('right')
-                        : key === 'ArrowUp'
-                        ? this.keyMoveBox('up')
-                        : key === 'ArrowDown' && this.keyMoveBox('down');
+                    const direction =
+                        key === 'ArrowLeft'
+                            ? 'left'
+                            : key === 'ArrowRight'
+                            ? 'right'
+                            : key === 'ArrowUp'
+                            ? 'up'
+                            : key === 'ArrowDown' && 'down';
+                    direction && this.keyMoveBox(direction);
                 }
             }
         } catch (err) {
@@ -589,10 +591,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             this._boundingBoxCanvas.keyboardMoveBox(
                 direction,
                 this._selectMetadata.bnd_box[this.annotateState.annotation],
-                this._selectMetadata.img_x,
-                this._selectMetadata.img_y,
-                this._selectMetadata.img_w,
-                this._selectMetadata.img_h,
+                this._selectMetadata,
                 (isDone) => {
                     if (isDone) {
                         this._undoRedoService.appendStages({

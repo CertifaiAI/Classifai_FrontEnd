@@ -74,7 +74,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public moveAllBbox(boundingBoxes: Boundingbox[], imgX: number, imgY: number, callback: (args: boolean) => void) {
+    public moveAllBbox(boundingBoxes: Boundingbox[], imgX: number, imgY: number, callback: (arg: boolean) => void) {
         try {
             for (const boundingBox of boundingBoxes) {
                 const temRectWidth: number = boundingBox.x2 - boundingBox.x1;
@@ -110,7 +110,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public deleteSingleBox(bbox: Boundingbox[], idx: number, callback: (args: boolean) => void) {
+    public deleteSingleBox(bbox: Boundingbox[], idx: number, callback: (arg: boolean) => void) {
         try {
             bbox.splice(idx, 1);
             this.currentSelectedBndBox = -1;
@@ -122,27 +122,27 @@ export class BoundingBoxCanvasService {
     public keyboardMoveBox(
         direction: Direction,
         bBox: Boundingbox,
-        imX: number,
-        imY: number,
-        imW: number,
-        imH: number,
-        callback: (args: boolean) => void,
+        { img_w, img_h, img_x, img_y }: BboxMetadata,
+        callback: (arg: boolean) => void,
     ) {
         try {
-            const bBoxH: number = bBox.x2 - bBox.x1;
-            const bBoxW: number = bBox.y2 - bBox.y1;
-            if (direction === 'up') {
-                this.moveBoxWithinPointPath(imX, imY, imW, imH, 0, -3, bBox) &&
-                    ((bBox.y1 = bBox.y1 - 3), (bBox.y2 = bBox.y1 + bBoxH));
-            } else if (direction === 'down') {
-                this.moveBoxWithinPointPath(imX, imY, imW, imH, 0, 3, bBox) &&
-                    ((bBox.y1 = bBox.y1 + 3), (bBox.y2 = bBox.y1 + bBoxH));
-            } else if (direction === 'left') {
-                this.moveBoxWithinPointPath(imX, imY, imW, imH, -3, 0, bBox) &&
-                    ((bBox.x1 = bBox.x1 - 3), (bBox.x2 = bBox.x1 + bBoxW));
-            } else if (direction === 'right') {
-                this.moveBoxWithinPointPath(imX, imY, imW, imH, 3, 0, bBox) &&
-                    ((bBox.x1 = bBox.x1 + 3), (bBox.x2 = bBox.x1 + bBoxW));
+            switch (direction) {
+                case 'up':
+                    this.moveBoxWithinPointPath(img_x, img_y, img_w, img_h, 0, -3, bBox) &&
+                        ((bBox.y1 -= 3), (bBox.y2 -= 3));
+                    break;
+                case 'down':
+                    this.moveBoxWithinPointPath(img_x, img_y, img_w, img_h, 0, 3, bBox) &&
+                        ((bBox.y1 += 3), (bBox.y2 += 3));
+                    break;
+                case 'left':
+                    this.moveBoxWithinPointPath(img_x, img_y, img_w, img_h, -3, 0, bBox) &&
+                        ((bBox.x1 -= 3), (bBox.x2 -= 3));
+                    break;
+                case 'right':
+                    this.moveBoxWithinPointPath(img_x, img_y, img_w, img_h, 3, 0, bBox) &&
+                        ((bBox.x1 += 3), (bBox.x2 += 3));
+                    break;
             }
             callback(true);
         } catch (err) {}
@@ -255,7 +255,7 @@ export class BoundingBoxCanvasService {
 
     public mouseUpDrawEnable(
         currMeta: BboxMetadata,
-        callback: (args: boolean) => void,
+        callback: (arg: boolean) => void,
     ): { selBox: number; isNew: boolean } {
         try {
             const ret: { selBox: number; isNew: boolean } = { selBox: -1, isNew: false };
@@ -293,7 +293,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public panRectangle(boundingBoxes: Boundingbox[], imgX: number, imgY: number, callback: (args: boolean) => void) {
+    public panRectangle(boundingBoxes: Boundingbox[], imgX: number, imgY: number, callback: (arg: boolean) => void) {
         try {
             for (const boundingBox of boundingBoxes) {
                 const temrectW: number = boundingBox.x2 - boundingBox.x1;
@@ -318,7 +318,7 @@ export class BoundingBoxCanvasService {
         boxes: Boundingbox[],
         imgX: number,
         imgY: number,
-        callback: (args: boolean) => void,
+        callback: (arg: boolean) => void,
     ) {
         try {
             for (const box of boxes) {
