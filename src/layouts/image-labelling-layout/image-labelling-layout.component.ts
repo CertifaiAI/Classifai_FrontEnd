@@ -119,10 +119,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         // subscription logic to check if clear is true then empty the current display image's metadata
         this._imgLblActionService.action$.pipe(takeUntil(this.unsubscribe$)).subscribe(({ clear }) => {
             if (clear) {
-                this.thumbnailList[0].bnd_box ? (this.thumbnailList[this.currentImageDisplayIndex].bnd_box = []) : null;
-                this.thumbnailList[0].polygons
-                    ? (this.thumbnailList[this.currentImageDisplayIndex].polygons = [])
-                    : null;
+                this.thumbnailList[0].bnd_box && (this.thumbnailList[this.currentImageDisplayIndex].bnd_box = []);
+                this.thumbnailList[0].polygons && (this.thumbnailList[this.currentImageDisplayIndex].polygons = []);
+
                 this.onChangeSchema = {
                     ...this.onChangeSchema,
                     hasAnnotation: false,
@@ -228,12 +227,16 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                         this.selectedMetaData = thumbnail;
                         this.imgSrc = img_src;
                         this.currentImageDisplayIndex = thumbnailIndex;
+
+                        const hasAnnotation = thumbnail.bnd_box
+                            ? thumbnail.bnd_box.length > 0
+                            : (thumbnail.polygons && thumbnail.polygons.length > 0) || false;
                         this.onChangeSchema = {
                             ...this.onChangeSchema,
                             // + 1 to prevent showing photo but info comp shows 0/2 on UI
                             currentThumbnailIndex: thumbnailIndex + 1,
                             thumbnailName: thumbnail.img_path,
-                            hasAnnotation: thumbnail.bnd_box && thumbnail.bnd_box?.length > 0 ? true : false,
+                            hasAnnotation,
                         };
                     }
                 },

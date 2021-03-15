@@ -59,7 +59,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     allLabelList: LabelInfo[] = [];
     showDropdownLabelBox: boolean = false;
     invalidInput: boolean = false;
-    // closeEnough: number = 10;
+    closeEnough: number = 5;
     private mouseCursor: MouseCursor = {
         move: false,
         pointer: false,
@@ -159,7 +159,6 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 this._selectMetadata.bnd_box,
                 this._selectMetadata.img_x,
                 this._selectMetadata.img_y,
-                () => {},
             );
             this._selectMetadata.img_x = tmpObj.newX;
             this._selectMetadata.img_y = tmpObj.newY;
@@ -295,14 +294,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('DOMMouseScroll', ['$event'])
     mouseScroll(event: WheelEvent & { wheelDelta: number }) {
         try {
-            const mouseWithinPointPath = this._boundingBoxCanvas.mouseClickWithinPointPath(
-                this._selectMetadata.img_x,
-                this._selectMetadata.img_y,
-                this._selectMetadata.img_w,
-                this._selectMetadata.img_h,
-                event.offsetX,
-                event.offsetY,
-            );
+            const mouseWithinPointPath = this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event);
 
             if (mouseWithinPointPath && this.canvasContext) {
                 // let delta = event.deltaY ? event.deltaY / 40 : 0;
@@ -355,16 +347,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('mousedown', ['$event'])
     mouseDown(event: MouseEvent) {
         try {
-            if (
-                this._boundingBoxCanvas.mouseClickWithinPointPath(
-                    this._selectMetadata.img_x,
-                    this._selectMetadata.img_y,
-                    this._selectMetadata.img_w,
-                    this._selectMetadata.img_h,
-                    event.offsetX,
-                    event.offsetY,
-                )
-            ) {
+            if (this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event)) {
                 this.mousedown = true;
                 if (this.boundingBoxState.drag) {
                     this._boundingBoxCanvas.setPanXY(event.offsetX, event.offsetY);
@@ -387,16 +370,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('mouseup', ['$event'])
     mouseUp(event: MouseEvent) {
         try {
-            if (
-                this._boundingBoxCanvas.mouseClickWithinPointPath(
-                    this._selectMetadata.img_x,
-                    this._selectMetadata.img_y,
-                    this._selectMetadata.img_w,
-                    this._selectMetadata.img_h,
-                    event.offsetX,
-                    event.offsetY,
-                )
-            ) {
+            if (this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event)) {
                 if (this.boundingBoxState.drag && this.mousedown) {
                     this._boundingBoxCanvas.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
                 }
@@ -445,12 +419,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         try {
             if (this._selectMetadata) {
                 const mouseWithinPointPath = this._boundingBoxCanvas.mouseClickWithinPointPath(
-                    this._selectMetadata.img_x,
-                    this._selectMetadata.img_y,
-                    this._selectMetadata.img_w,
-                    this._selectMetadata.img_h,
-                    event.offsetX,
-                    event.offsetY,
+                    this._selectMetadata,
+                    event,
                 );
                 if (mouseWithinPointPath && !this.showDropdownLabelBox) {
                     if (this.boundingBoxState.drag && this.mousedown) {
@@ -502,18 +472,22 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             //     this.changeMouseCursorState({ resize: true });
                             // }
                             // // 2. top right
-                            // else if (this.checkCloseEnough(offsetX, x2 - x1) && this.checkCloseEnough(offsetY, y1)) {
+                            // else if (this.checkCloseEnough(offsetX, x2) && this.checkCloseEnough(offsetY, y1)) {
                             //     this.changeMouseCursorState({ resize: true });
                             // }
+                            // // 2. top center & bottom center
+                            // // else if (
+                            // //     this.checkCloseEnough(offsetX, (x2 + x1) / 2) &&
+                            // //     this.checkCloseEnough(offsetY, (y2 + y1) / 2)
+                            // // ) {
+                            // //     this.changeMouseCursorState({ resize: true });
+                            // // }
                             // // 3. bottom left
-                            // else if (this.checkCloseEnough(offsetX, x1) && this.checkCloseEnough(offsetY, y2 - y1)) {
+                            // else if (this.checkCloseEnough(offsetX, x1) && this.checkCloseEnough(offsetY, y2)) {
                             //     this.changeMouseCursorState({ resize: true });
                             // }
                             // // 4. bottom right
-                            // else if (
-                            //     this.checkCloseEnough(offsetX, x2 - x1) &&
-                            //     this.checkCloseEnough(offsetY, y2 - y1)
-                            // ) {
+                            // else if (this.checkCloseEnough(offsetX, x2) && this.checkCloseEnough(offsetY, y2)) {
                             //     this.changeMouseCursorState({ resize: true });
                             // }
                         } else {
@@ -549,9 +523,11 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         };
     }
 
-    // checkCloseEnough(p1: number, p2: number) {
-    //     return Math.abs(p1 - p2) < this.closeEnough;
-    // }
+    checkCloseEnough(p1: number, p2: number) {
+        const ss = Math.abs(p1 - p2) < this.closeEnough;
+        console.log(ss);
+        return ss;
+    }
 
     @HostListener('mouseout', ['$event'])
     mouseOut(event: MouseEvent) {
@@ -682,8 +658,16 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     currentCursor() {
-        const { grab, move, pointer } = this.mouseCursor;
-        return grab ? 'cursor-grab' : move ? 'cursor-move' : pointer ? 'cursor-pointer' : null;
+        const { grab, move, pointer, resize } = this.mouseCursor;
+        return grab
+            ? 'cursor-grab'
+            : move
+            ? 'cursor-move'
+            : pointer
+            ? 'cursor-pointer'
+            : resize
+            ? 'cursor-e-resize'
+            : null;
     }
 
     validateInputLabel = ({ target }: HTMLElementEvent<HTMLTextAreaElement>): void => {
