@@ -155,17 +155,21 @@ export class BoundingBoxCanvasService {
         imgH: number,
         addX: number,
         addY: number,
-        box: Boundingbox,
+        box?: Boundingbox,
     ): boolean {
         try {
-            const result =
-                box.x1 + addX < imgX ||
-                box.x2 + addX > imgX + imgW ||
-                box.y1 + addY < imgY ||
-                box.y2 + addY > imgY + imgH
-                    ? false
-                    : true;
-            return result;
+            if (box) {
+                const result =
+                    box.x1 + addX < imgX ||
+                    box.x2 + addX > imgX + imgW ||
+                    box.y1 + addY < imgY ||
+                    box.y2 + addY > imgY + imgH
+                        ? false
+                        : true;
+                return result;
+            } else {
+                return false;
+            }
         } catch (err) {
             console.log(
                 'ObjectDetection isWithinPointPath(imgx:number, imgy:number, imgw:number, imgh:number, addx:number, addy:number, box:Boundingbox):Boolean',
@@ -180,17 +184,16 @@ export class BoundingBoxCanvasService {
         try {
             const tmpOffsetX: number = mouseX - this.currentDrawing.x1;
             const tmpOffsetY: number = mouseY - this.currentDrawing.y1;
-            if (
-                this.moveBoxWithinPointPath(
-                    currMeta.img_x,
-                    currMeta.img_y,
-                    currMeta.img_w,
-                    currMeta.img_h,
-                    tmpOffsetX,
-                    tmpOffsetY,
-                    currMeta.bnd_box[this.currentSelectedBndBox],
-                )
-            ) {
+            const isWithinPointPath = this.moveBoxWithinPointPath(
+                currMeta.img_x,
+                currMeta.img_y,
+                currMeta.img_w,
+                currMeta.img_h,
+                tmpOffsetX,
+                tmpOffsetY,
+                currMeta.bnd_box[this.currentSelectedBndBox],
+            );
+            if (isWithinPointPath) {
                 this.setCurrentX2Y2(mouseX, mouseY);
                 const xOffset: number = this.currentDrawing.x2 - this.currentDrawing.x1;
                 const yOffset: number = this.currentDrawing.y2 - this.currentDrawing.y1;
