@@ -317,7 +317,7 @@ export class BoundingBoxCanvasService {
         boxes: Boundingbox[],
         imgX: number,
         imgY: number,
-        callback: (arg: boolean) => void,
+        callback?: (arg: boolean) => void,
     ) {
         try {
             for (const box of boxes) {
@@ -337,7 +337,7 @@ export class BoundingBoxCanvasService {
                 box.distancetoImg.x = clone(newdistancex);
                 box.distancetoImg.y = clone(newdistanceY);
             }
-            callback(true);
+            callback && callback(true);
         } catch (err) {
             console.log(
                 'ObjectDetection scaleAllBoxes(scalefactor: number,boxes:Boundingbox[],imgX:number,imgY:number)',
@@ -411,21 +411,15 @@ export class BoundingBoxCanvasService {
     }
 
     public mouseClickWithinPointPath(
-        imgX: number,
-        imgY: number,
-        imgW: number,
-        imgH: number,
-        coorX: number,
-        coorY: number,
+        { img_x, img_y, img_w, img_h }: BboxMetadata,
+        { offsetX, offsetY }: MouseEvent,
     ): boolean {
         try {
-            return coorX > imgX && coorX < imgX + imgW && coorY > imgY && coorY < imgY + imgH ? true : false;
+            return offsetX > img_x && offsetX < img_x + img_w && offsetY > img_y && offsetY < img_y + img_h
+                ? true
+                : false;
         } catch (err) {
-            console.log(
-                'ObjectDetection mouseClickWithinPointPath(imgx:number, imgy:number, imgw:number, imgh:number, coorX:number,):boolean',
-                err.name + ': ',
-                err.message,
-            );
+            console.log(err);
             return false;
         }
     }
