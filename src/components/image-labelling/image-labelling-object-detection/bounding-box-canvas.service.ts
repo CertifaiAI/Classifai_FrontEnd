@@ -155,21 +155,17 @@ export class BoundingBoxCanvasService {
         imgH: number,
         addX: number,
         addY: number,
-        box?: Boundingbox,
+        box: Boundingbox,
     ): boolean {
         try {
-            if (box) {
-                const result =
-                    box.x1 + addX < imgX ||
-                    box.x2 + addX > imgX + imgW ||
-                    box.y1 + addY < imgY ||
-                    box.y2 + addY > imgY + imgH
-                        ? false
-                        : true;
-                return result;
-            } else {
-                return false;
-            }
+            const result =
+                box.x1 + addX < imgX ||
+                box.x2 + addX > imgX + imgW ||
+                box.y1 + addY < imgY ||
+                box.y2 + addY > imgY + imgH
+                    ? false
+                    : true;
+            return result;
         } catch (err) {
             console.log(
                 'ObjectDetection isWithinPointPath(imgx:number, imgy:number, imgw:number, imgh:number, addx:number, addy:number, box:Boundingbox):Boolean',

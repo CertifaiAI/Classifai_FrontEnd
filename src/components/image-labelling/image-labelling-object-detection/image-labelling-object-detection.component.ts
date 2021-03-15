@@ -588,11 +588,9 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     keyMoveBox(direction: Direction) {
         try {
-            this._boundingBoxCanvas.keyboardMoveBox(
-                direction,
-                this._selectMetadata.bnd_box[this.annotateState.annotation],
-                this._selectMetadata,
-                (isDone) => {
+            const boundingBox = this._selectMetadata.bnd_box[this.annotateState.annotation];
+            boundingBox &&
+                this._boundingBoxCanvas.keyboardMoveBox(direction, boundingBox, this._selectMetadata, (isDone) => {
                     if (isDone) {
                         this._undoRedoService.appendStages({
                             meta: cloneDeep(this._selectMetadata),
@@ -602,8 +600,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this.redrawImages(this._selectMetadata);
                         this.emitMetadata();
                     }
-                },
-            );
+                });
         } catch (err) {
             console.log(err);
         }
