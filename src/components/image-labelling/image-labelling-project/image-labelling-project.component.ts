@@ -1,12 +1,11 @@
 import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { HTMLElementEvent } from 'src/shared/types/field/field.model';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
 import { isEqual } from 'lodash-es';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import {
-    ActionTabProps,
     BboxMetadata,
     Boundingbox,
     ChangeAnnotationLabel,
@@ -28,7 +27,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     @Input() _thumbnailList: CompleteMetadata[] = [];
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
-    @Output() _onClickThumbNail: EventEmitter<EventEmitter_ThumbnailDetails> = new EventEmitter();
+    @Output() _onClickThumbnail: EventEmitter<EventEmitter_ThumbnailDetails> = new EventEmitter();
     @Output() _onClickLabel: EventEmitter<SelectedLabelProps> = new EventEmitter();
     @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
     @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
@@ -41,6 +40,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     unsubscribe$: Subject<any> = new Subject();
     clickAbilityToggle: boolean = false;
     invalidInput: boolean = false;
+    labelList: string[] = [];
 
     constructor(
         private _annotateService: AnnotateSelectionService,
@@ -48,55 +48,62 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     ) {}
 
     ngOnInit(): void {
+        this.updateLabelList();
         this._imgLblState.action$
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe(({ draw }) => (this.clickAbilityToggle = draw));
 
-        this._thumbnailList.length > 0
-            ? this._annotateService.labelStaging$
-                  .pipe(takeUntil(this.unsubscribe$))
-                  .subscribe(({ annotation: annnotationIndex, isDlbClick }) => {
-                      // isDlbClick ? this._annotateService.setState({ annotation: -1 }) : null;
+        this._thumbnailList.length > 0 &&
+            this._annotateService.labelStaging$
+                .pipe(takeUntil(this.unsubscribe$))
+                .subscribe(({ annotation: annnotationIndex, isDlbClick }) => {
+                    // isDlbClick ? this._annotateService.setState({ annotation: -1 }) : null;
 
-                      this.selectedIndexAnnotation = annnotationIndex;
-                      const [{ annotation }] = this._tabStatus.filter((tab) => tab.annotation);
-                      const resultLabel = annotation?.map(({ bnd_box, polygons }) => {
-                          if (bnd_box) {
-                              return bnd_box.find((_, i) => i === annnotationIndex);
-                          }
-                          if (polygons) {
-                              return polygons.find((_, i) => i === annnotationIndex);
-                          }
-                      })[0];
-                      this.selectedLabel = resultLabel?.label ?? '';
-                      // this.selectedIndexAnnotation = this._tabStatus.reduce((prev, { annotation }) => {
-                      //     const currentIndex =
-                      //         annotation?.findIndex(({ bnd_box }) =>
-                      //             bnd_box.findIndex((_, i) => {
-                      //                 const ss = i === annnotationIndex;
-                      //                 console.log(`${i}===${annnotationIndex}`);
-                      //                 console.log(ss);
-                      //                 return ss;
-                      //             }),
-                      //         ) || -1;
-                      //     prev = currentIndex || -1;
-                      //     return prev;
-                      // }, 0);
+                    this.selectedIndexAnnotation = annnotationIndex;
+                    const [{ annotation }] = this._tabStatus.filter((tab) => tab.annotation);
+                    const resultLabel = annotation?.map(({ bnd_box, polygons }) => {
+                        if (bnd_box) {
+                            return bnd_box.find((_, i) => i === annnotationIndex);
+                        }
+                        if (polygons) {
+                            return polygons.find((_, i) => i === annnotationIndex);
+                        }
+                    })[0];
+                    this.selectedLabel = resultLabel?.label ?? '';
+                    // this.selectedIndexAnnotation = this._tabStatus.reduce((prev, { annotation }) => {
+                    //     const currentIndex =
+                    //         annotation?.findIndex(({ bnd_box }) =>
+                    //             bnd_box.findIndex((_, i) => {
+                    //                 const ss = i === annnotationIndex;
+                    //                 console.log(`${i}===${annnotationIndex}`);
+                    //                 console.log(ss);
+                    //                 return ss;
+                    //             }),
+                    //         ) || -1;
+                    //     prev = currentIndex || -1;
+                    //     return prev;
+                    // }, 0);
 
-                      // this.selectedIndexAnnotation = this._tabStatus.findIndex(({ annotation }) =>
-                      //     annotation?.findIndex(({ bnd_box }) => bnd_box.findIndex((_, i) => i === annnotationIndex)),
-                      // );
-                      // console.log({ annnotationIndex, isDlbClick });
-                  })
-            : null;
+                    // this.selectedIndexAnnotation = this._tabStatus.findIndex(({ annotation }) =>
+                    //     annotation?.findIndex(({ bnd_box }) => bnd_box.findIndex((_, i) => i === annnotationIndex)),
+                    // );
+                    // console.log({ annnotationIndex, isDlbClick });
+                });
     }
+
+    updateLabelList = () => {
+        this.labelList = this._tabStatus[1].label_list ? this._tabStatus[1].label_list : [];
+    };
 
     onClose = (tab: TabsProps): void => {
         this._onClose.emit({ name: tab.name, closed: true });
     };
 
     onClick = (thumbnail: Omit<BboxMetadata & PolyMetadata, 'img_src'>, thumbnailIndex: number): void => {
-        this._onClickThumbNail.emit({ ...thumbnail, thumbnailIndex });
+        this._onClickThumbnail.emit({ ...thumbnail, thumbnailIndex });
+        // after switch photo display, also reset selectedIndexAnnotation & selectedLabel
+        this.selectedIndexAnnotation = -1;
+        this.selectedLabel = '';
     };
 
     onDisplayInputModal = (): void => {
@@ -120,6 +127,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
                         .filter((tab) => tab.length > 0)[0];
                     this._onEnterLabel.emit({ action: 1, label_list: label_lists ? [...label_lists, value] : [value] });
                     this.displayInputLabel = false;
+                    this.inputLabel = '';
                 } else {
                     this.invalidInput = true;
                     console.error(`Invalid existing label input`);
@@ -131,14 +139,11 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         }
     };
 
-    onIconClick = ({ tabType, action }: ActionTabProps): void => {
-        this.action = action;
-    };
-
-    onChangeInputLabel = (event: HTMLElementEvent<HTMLTextAreaElement>) => {
-        const { value } = event.target;
-        this.inputLabel = value;
-    };
+    inputLabelChange(text: string) {
+        this.labelList = this._tabStatus[1].label_list
+            ? this._tabStatus[1].label_list?.filter((label) => label.includes(text))
+            : [];
+    }
 
     onDeleteLabel = (selectedLabel: string): void => {
         const [{ label_list }] = this._tabStatus.filter((tab) => tab.label_list);
@@ -158,7 +163,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     };
 
     onClickAnnotation = (index: number, { label }: Boundingbox & Polygons) => {
-        // this._onClickThumbNail.emit(thumbnail);
+        // this._onClickThumbnail.emit(thumbnail);
         // const bbLabel = bnd_box.map(({ label }) => label);
         this.selectedLabel = label;
         this._annotateService.setState({ annotation: index });
@@ -169,12 +174,27 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     };
 
     // onClickAnnotation = <T extends BboxMetadata>({ bnd_box }: T) => {
-    //     // this._onClickThumbNail.emit(thumbnail);
+    //     // this._onClickThumbnail.emit(thumbnail);
     //     const bbLabel = bnd_box.map(({ label }) => label);
     //     console.log(bbLabel);
     // };
 
-    checkCloseToggle = ({ closed }: TabsProps): string | null => (closed ? 'closed' : null);
+    checkCloseToggle = (tab: TabsProps): string | null => {
+        let classes = '';
+        if (
+            !(
+                (tab.name === 'Label' && this._tabStatus[2].closed) ||
+                (tab.name === 'Project' && this._tabStatus[1].closed && this._tabStatus[2].closed) ||
+                tab.name === 'Annotation'
+            )
+        ) {
+            classes = 'flex-content';
+        }
+        if (tab.closed) {
+            classes += ' closed';
+        }
+        return classes;
+    };
 
     checkStateEqual = (currObj: object, prevObj: object): boolean => !isEqual(currObj, prevObj);
 
@@ -192,6 +212,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         ) {
             const { currentValue }: { currentValue: TabsProps<CompleteMetadata>[] } = changes._tabStatus;
             this._tabStatus = [...currentValue];
+            this.updateLabelList();
         }
     }
 

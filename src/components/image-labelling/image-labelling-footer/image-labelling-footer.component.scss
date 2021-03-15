@@ -1,31 +1,61 @@
+@use '../../../shared/scss/ellipsis' as ellipsis;
+@use "../../../shared/scss/icon" as icon;
+@use "../../../shared/scss/variables" as color;
+
 .footer-container {
     position: absolute;
     background: #525353;
-    outline: 0.0625vw inset white;
-    border: none;
+    border: 0.0625vw solid rgb(255, 255, 255, 0.25);
+    // border: none;
     min-height: 2.3vh;
     max-height: 2.3vh;
     min-width: 100vw;
     max-width: 100vw;
     bottom: 0;
+    padding-left: 2.5vw;
 }
 
 .footer-label-container {
     display: flex;
     justify-content: center;
     align-items: baseline;
-    width: 40%;
+    width: 80%;
 }
 
-.footer-label {
+@mixin footer-texts($flex) {
     font-size: 1.6vh;
     color: white;
-    flex: 0 1 30%;
+    flex: 0 1 $flex;
     outline: none;
-    border-right: 1px solid white;
+    border-right: 0.05vw solid white;
+    padding: 0 1vw 0 1vw;
+}
+.footer-label {
+    @include footer-texts(15%);
     text-align: center;
+}
+
+.footer-image-path {
+    display: flex;
+    @include footer-texts(130%);
+    @include ellipsis.ellipsis-styling();
 }
 
 .border-right {
     border-right: 1rem white;
+}
+
+.utility-icon-container {
+    min-height: 5vh;
+    max-height: 5vh;
+    align-items: baseline;
+}
+
+.utility-icon-light {
+    @include icon.icon-styling(pointer, absolute, 2vh, 0);
+}
+
+.utility-icon-light:focus,
+.utility-icon-light:active {
+    background: color.$iconActiveBackgroundColor;
 }

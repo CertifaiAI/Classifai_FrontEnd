@@ -1,5 +1,5 @@
-@use '../../shared/scss/_variables.scss' as color;
-@use '../../shared/scss/_scrollbar.scss' as *;
+@use '../../shared/scss/variables' as color;
+@use '../../shared/scss/scrollbar' as scrollbar;
 
 /* MODAL STYLES
 -------------------------------*/
@@ -51,15 +51,15 @@
 }
 
 .scroll::-webkit-scrollbar-track {
-    @include scrollbar-track();
+    @include scrollbar.scrollbar-track();
 }
 
 .scroll::-webkit-scrollbar {
-    @include scrollbar();
+    @include scrollbar.scrollbar();
 }
 
 .scroll::-webkit-scrollbar-thumb {
-    @include scrollbar-thumb(color.$greyColor);
+    @include scrollbar.scrollbar-thumb(color.$greyColor);
 }
 
 .modal-background {

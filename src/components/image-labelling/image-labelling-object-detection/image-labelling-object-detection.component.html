@@ -1,6 +1,35 @@
 <div>
     <!-- <ng-container *ngIf="imgInput"> -->
-    <canvas #canvasdrawing class="canvasstyle"></canvas>
+    <div #floatdiv class="floatdiv unclosedOut" [hidden]="!showDropdownLabelBox">
+        <input
+            #lbltypetxt
+            type="text"
+            class="lbltypetxt unclosedOut"
+            [ngClass]="invalidInput ? 'invalidInput' : 'validInput'"
+            [(ngModel)]="labelSearch"
+            (ngModelChange)="labelTypeTextChange($event)"
+            (keydown.enter)="validateInputLabel($event)"
+        />
+        <div #availablelbl class="availablelbl unclosedOut">
+            <ul class="lblList unclosedOut">
+                <li *ngFor="let label of labelList" class="lblName unclosedOut" (click)="labelNameClicked(label.name)">
+                    <span style="margin-left: 5px; overflow: hidden; text-overflow: ellipsis" class="unclosedOut">{{
+                        label.name
+                    }}</span>
+                    <span
+                        style="background-color: #222; margin-right: 5px; padding: 1px 5px; border-radius: 2px"
+                        class="unclosedOut"
+                        >{{ label.count }}</span
+                    >
+                </li>
+                <li *ngIf="labelList.length === 0" class="unclosedOut notExist">
+                    <div>Label does not exist.</div>
+                    <div>Press Enter to add.</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <canvas #canvasdrawing class="canvasstyle" [ngClass]="currentCursor()"></canvas>
     <div #crossh class="crosses cross-h"></div>
     <div #crossv class="crosses cross-v"></div>
     <!-- </ng-container> -->

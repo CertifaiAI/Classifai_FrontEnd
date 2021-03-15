@@ -1,22 +1,30 @@
 <div class="tab-container">
     <ng-container *ngFor="let tab of _tabStatus; index as i">
-        <!-- <ng-container *ngIf="_thumbnailList.length > 0 && i === 0; else nonThumbnailTab"> -->
         <ng-container *ngIf="i === 0; else nonThumbnailTab">
             <div
-                class="utility-right-project-container tab flex-fill-remaining flex-content"
+                class="utility-right-project-container tab flex-fill-remaining"
                 [ngClass]="checkCloseToggle(tab)"
                 [attr.data-index]="i"
             >
                 <label class="tab-name">{{ tab.name | translate }}</label>
                 <span class="tab-close-thumbnail"><div class="div-close" (click)="onClose(tab)">x</div></span>
-                <section class="utility-inner-container scroll">
+                <section class="utility-inner-container tab-height scroll">
                     <ng-container *ngFor="let thumbnail of _thumbnailList; index as i">
                         <div class="img-container" (click)="onClick(thumbnail, i)">
                             <div>
                                 <img imgLazyLoad class="img" [src]="thumbnail.img_thumbnail" />
                             </div>
                             <div class="img-name">
-                                <label>{{ thumbnail.img_path | fileNameSlice }} </label>
+                                <label class="img-path">{{ thumbnail.img_path | fileNameSlice }}</label>
+                            </div>
+                            <div>
+                                <div
+                                    [ngClass]="
+                                        thumbnail.bnd_box?.length > 0 || thumbnail.polygons?.length > 0
+                                            ? 'indicator'
+                                            : 'no-indicator'
+                                    "
+                                ></div>
                             </div>
                         </div>
                     </ng-container>
@@ -27,7 +35,7 @@
         <ng-template #nonThumbnailTab>
             <ng-container *ngIf="i === 1; else annotationTab">
                 <div
-                    class="utility-right-project-container tab flex-fill-remaining flex-content"
+                    class="utility-right-project-container tab flex-fill-remaining"
                     [attr.data-index]="i"
                     [ngClass]="checkCloseToggle(tab)"
                 >
@@ -37,33 +45,22 @@
                             ><div class="div-close" (click)="onClose(tab)">x</div></span
                         >
                         <span class="tab-extra-icons"></span>
-                        <span class="tab-extra-icons">
-                            <ng-container *ngIf="_thumbnailList.length > 0">
-                                <div
-                                    class="extra-icons"
-                                    (click)="onDisplayInputModal(); onIconClick({ tabType: 'label', action: 1 })"
-                                >
-                                    +
-                                </div>
-                            </ng-container>
-                            <ng-container *ngIf="displayInputLabel">
-                                <div class="label-input">
-                                    <input
-                                        class="input"
-                                        [ngClass]="invalidInput ? 'input-invalid' : null"
-                                        type="text"
-                                        [value]="inputLabel"
-                                        (change)="onChangeInputLabel($event)"
-                                        (keydown.enter)="validateInputLabel($event)"
-                                        placeholder="Enter Label"
-                                    /></div
-                            ></ng-container>
-                        </span>
+                        <span class="tab-extra-icons"> </span>
                     </div>
-
-                    <div class="utility-inner-container" id="inner-container">
+                    <div class="div-input">
+                        <input
+                            class="input"
+                            [ngClass]="invalidInput ? 'input-invalid' : null"
+                            type="text"
+                            [(ngModel)]="inputLabel"
+                            (ngModelChange)="inputLabelChange($event)"
+                            (keydown.enter)="validateInputLabel($event)"
+                            placeholder="Enter Label"
+                        />
+                    </div>
+                    <div class="utility-inner-container tab-height scroll" id="inner-container">
                         <div class="flex-item">
-                            <ng-container *ngFor="let label of tab.label_list; index as i">
+                            <ng-container *ngFor="let label of labelList; index as i">
                                 <div
                                     class="flex-center-width"
                                     [ngClass]="label === selectedLabel ? 'label-active' : null"
@@ -87,6 +84,9 @@
                                     >
                                 </div>
                             </ng-container>
+                            <label *ngIf="labelList.length === 0" class="not-exist">
+                                Label does not exist. Press Enter to add.
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -109,24 +109,47 @@
                             </ng-container>
                         </span>
                     </div>
-                    <div class="utility-inner-container" id="inner-container">
+                    <div class="utility-inner-container scroll tab-smaller-height" id="inner-container">
                         <div class="flex-item">
                             <div class="flex-center-width">
                                 <ng-container *ngIf="tab?.annotation">
                                     <ng-container *ngFor="let annotation of tab.annotation">
-                                        <ng-container *ngFor="let boundingBox of annotation.bnd_box; index as j">
-                                            <label
-                                                class="label"
-                                                [attr.data-index]="j"
-                                                [ngClass]="j === selectedIndexAnnotation ? 'annotation-active' : null"
-                                                (click)="clickAbilityToggle ? onClickAnnotation(j, boundingBox) : null"
-                                            >
-                                                <div [ngClass]="clickAbilityToggle ? 'pointer' : null">
-                                                    {{ boundingBox.label }} : {{ boundingBox.id }}
-                                                </div>
-                                            </label>
-                                        </ng-container></ng-container
-                                    >
+                                        <ng-container *ngIf="annotation.bnd_box; else polygon">
+                                            <ng-container *ngFor="let boundingBox of annotation.bnd_box; index as j">
+                                                <label
+                                                    class="label"
+                                                    [attr.data-index]="j"
+                                                    [ngClass]="
+                                                        j === selectedIndexAnnotation ? 'annotation-active' : null
+                                                    "
+                                                    (click)="
+                                                        clickAbilityToggle ? onClickAnnotation(j, boundingBox) : null
+                                                    "
+                                                >
+                                                    <div [ngClass]="clickAbilityToggle ? 'pointer' : null">
+                                                        {{ boundingBox.label }} : {{ boundingBox.id }}
+                                                    </div>
+                                                </label>
+                                            </ng-container>
+                                        </ng-container>
+
+                                        <ng-template #polygon>
+                                            <ng-container *ngFor="let polygon of annotation.polygons; index as j">
+                                                <label
+                                                    class="label"
+                                                    [attr.data-index]="j"
+                                                    [ngClass]="
+                                                        j === selectedIndexAnnotation ? 'annotation-active' : null
+                                                    "
+                                                    (click)="clickAbilityToggle ? onClickAnnotation(j, polygon) : null"
+                                                >
+                                                    <div [ngClass]="clickAbilityToggle ? 'pointer' : null">
+                                                        {{ polygon.label }} : {{ polygon.id }}
+                                                    </div>
+                                                </label>
+                                            </ng-container>
+                                        </ng-template>
+                                    </ng-container>
                                 </ng-container>
                             </div>
                         </div>

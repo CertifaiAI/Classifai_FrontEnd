@@ -32,7 +32,7 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
             logosCenter: [
                 {
                     imgPath: `../../../assets/icons/previous.svg`,
-                    hoverLabel: `Pervious`,
+                    hoverLabel: `Previous`,
                     alt: `Previous`,
                     onClick: () => this.emitParentEvent({ thumbnailAction: -1 }),
                 },
@@ -56,18 +56,18 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
                     alt: `Redo`,
                     onClick: () => null,
                 },
-                {
-                    imgPath: `../../../assets/icons/zoom_in.svg`,
-                    hoverLabel: `Zoom In`,
-                    alt: `Zoom In`,
-                    onClick: () => null,
-                },
-                {
-                    imgPath: `../../../assets/icons/zoom_out.svg`,
-                    hoverLabel: `Zoom Out`,
-                    alt: `Zoom Out`,
-                    onClick: () => null,
-                },
+                // {
+                //     imgPath: `../../../assets/icons/zoom_in.svg`,
+                //     hoverLabel: `Zoom In`,
+                //     alt: `Zoom In`,
+                //     onClick: () => null,
+                // },
+                // {
+                //     imgPath: `../../../assets/icons/zoom_out.svg`,
+                //     hoverLabel: `Zoom Out`,
+                //     alt: `Zoom Out`,
+                //     onClick: () => null,
+                // },
             ],
         };
     };
@@ -82,6 +82,4 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
         this._onChange.totalNumThumbnail = totalNumThumbnail;
         this.bindImagePath();
     }
-
-    conditionalIconTheme = (): string => 'utility-icon-light';
 }

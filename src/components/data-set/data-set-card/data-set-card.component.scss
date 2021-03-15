@@ -1,6 +1,6 @@
-@use '../../../shared/scss/_variables.scss' as color;
-@use '../../../shared/scss/_scrollbar.scss' as *;
-@use '../../../shared/scss/_ellipsis' as ellipsis;
+@use '../../../shared/scss/scrollbar' as scroll;
+@use '../../../shared/scss/variables' as color;
+@use '../../../shared/scss/ellipsis' as ellipsis;
 @use '../../../shared/scss/fadeIn' as fadeIn;
 
 $fadeInEaseDuration: ease 1.5s;
@@ -11,6 +11,12 @@ $hoverBackground: #393838;
     background-color: $color;
     font-size: 1.5vh;
     padding: 0.3vh 1.5vw 0.6vh 1vw;
+}
+
+@mixin text-ellipsis($fontSize, $color) {
+    color: $color;
+    font-size: $fontSize;
+    @include ellipsis.ellipsis-styling();
 }
 
 .fade-in {
@@ -32,15 +38,15 @@ $hoverBackground: #393838;
 }
 
 .scroll::-webkit-scrollbar-track {
-    @include scrollbar-track(color.$blackColor);
+    @include scroll.scrollbar-track(color.$blackColor);
 }
 
 .scroll::-webkit-scrollbar {
-    @include scrollbar();
+    @include scroll.scrollbar();
 }
 
 .scroll::-webkit-scrollbar-thumb {
-    @include scrollbar-thumb(color.$greyColor);
+    @include scroll.scrollbar-thumb(color.$greyColor);
 }
 
 .card-container {
@@ -124,19 +130,16 @@ $hoverBackground: #393838;
 }
 
 .card-title-txt {
-    font-size: 1.3vh;
-    color: #656667;
+    @include text-ellipsis(1.3vh, #656667);
 }
 
 .project-name-style {
     margin-left: 1vw;
-    padding: 1vh 0 1vh 0;
+    padding: 1vh 0 0 0;
 }
 
-.project-name {
-    color: #dbdbda;
-    font-size: 2.3vh;
-    @include ellipsis.ellipsis();
+.project-info {
+    @include text-ellipsis(2vh, #dbdbda);
 }
 
 .tag-container {

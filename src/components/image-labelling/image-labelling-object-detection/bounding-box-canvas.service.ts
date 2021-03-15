@@ -1,5 +1,5 @@
 import { BboxMetadata, Boundingbox, Direction, xyCoordinate } from '../image-labelling.model';
-import { cloneDeep } from 'lodash-es';
+import { clone } from 'lodash-es';
 import { Injectable } from '@angular/core';
 import { Utils } from '../../../shared/types/utils/utils';
 
@@ -74,15 +74,15 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public moveAllBbox(boundingBoxes: Boundingbox[], imgX: number, imgY: number, callback: (args: boolean) => void) {
+    public moveAllBbox(boundingBoxes: Boundingbox[], imgX: number, imgY: number, callback: (arg: boolean) => void) {
         try {
             for (const boundingBox of boundingBoxes) {
                 const temRectWidth: number = boundingBox.x2 - boundingBox.x1;
                 const temRectHeight: number = boundingBox.y2 - boundingBox.y1;
-                boundingBox.x1 = cloneDeep(imgX + boundingBox.distancetoImg.x);
-                boundingBox.y1 = cloneDeep(imgY + boundingBox.distancetoImg.y);
-                boundingBox.x2 = cloneDeep(boundingBox.x1 + temRectWidth);
-                boundingBox.y2 = cloneDeep(boundingBox.y1 + temRectHeight);
+                boundingBox.x1 = clone(imgX + boundingBox.distancetoImg.x);
+                boundingBox.y1 = clone(imgY + boundingBox.distancetoImg.y);
+                boundingBox.x2 = clone(boundingBox.x1 + temRectWidth);
+                boundingBox.y2 = clone(boundingBox.y1 + temRectHeight);
             }
             callback(true);
         } catch (err) {}
@@ -110,7 +110,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public deleteSingleBox(bbox: Boundingbox[], idx: number, callback: (args: boolean) => void) {
+    public deleteSingleBox(bbox: Boundingbox[], idx: number, callback: (arg: boolean) => void) {
         try {
             bbox.splice(idx, 1);
             this.currentSelectedBndBox = -1;
@@ -122,30 +122,58 @@ export class BoundingBoxCanvasService {
     public keyboardMoveBox(
         direction: Direction,
         bBox: Boundingbox,
-        imX: number,
-        imY: number,
-        imW: number,
-        imH: number,
-        callback: (args: boolean) => void,
+        { img_w, img_h, img_x, img_y }: BboxMetadata,
+        callback: (arg: boolean) => void,
     ) {
         try {
-            const bBoxH: number = bBox.x2 - bBox.x1;
-            const bBoxW: number = bBox.y2 - bBox.y1;
-            if (direction === 'up') {
-                this.moveBoxWithinPointPath(imX, imY, imW, imH, 0, -3, bBox) &&
-                    ((bBox.y1 -= 3), (bBox.y2 = cloneDeep(bBox.y1 + bBoxH)));
-            } else if (direction === 'down') {
-                this.moveBoxWithinPointPath(imX, imY, imW, imH, 0, 3, bBox) &&
-                    ((bBox.y1 += 3), (bBox.y2 = cloneDeep(bBox.y1 + bBoxH)));
-            } else if (direction === 'left') {
-                this.moveBoxWithinPointPath(imX, imY, imW, imH, -3, 0, bBox) &&
-                    ((bBox.x1 -= 3), (bBox.x2 = cloneDeep(bBox.x1 + bBoxW)));
-            } else if (direction === 'right') {
-                this.moveBoxWithinPointPath(imX, imY, imW, imH, 3, 0, bBox) &&
-                    ((bBox.x1 += 3), (bBox.x2 = cloneDeep(bBox.x1 + bBoxW)));
+            switch (direction) {
+                case 'up':
+                    this.moveBoxWithinPointPath(img_x, img_y, img_w, img_h, 0, -3, bBox) &&
+                        ((bBox.y1 -= 3), (bBox.y2 -= 3));
+                    break;
+                case 'down':
+                    this.moveBoxWithinPointPath(img_x, img_y, img_w, img_h, 0, 3, bBox) &&
+                        ((bBox.y1 += 3), (bBox.y2 += 3));
+                    break;
+                case 'left':
+                    this.moveBoxWithinPointPath(img_x, img_y, img_w, img_h, -3, 0, bBox) &&
+                        ((bBox.x1 -= 3), (bBox.x2 -= 3));
+                    break;
+                case 'right':
+                    this.moveBoxWithinPointPath(img_x, img_y, img_w, img_h, 3, 0, bBox) &&
+                        ((bBox.x1 += 3), (bBox.x2 += 3));
+                    break;
             }
             callback(true);
         } catch (err) {}
+    }
+
+    public moveBoxWithinPointPath(
+        imgX: number,
+        imgY: number,
+        imgW: number,
+        imgH: number,
+        addX: number,
+        addY: number,
+        box: Boundingbox,
+    ): boolean {
+        try {
+            const result =
+                box.x1 + addX < imgX ||
+                box.x2 + addX > imgX + imgW ||
+                box.y1 + addY < imgY ||
+                box.y2 + addY > imgY + imgH
+                    ? false
+                    : true;
+            return result;
+        } catch (err) {
+            console.log(
+                'ObjectDetection isWithinPointPath(imgx:number, imgy:number, imgw:number, imgh:number, addx:number, addy:number, box:Boundingbox):Boolean',
+                err.name + ': ',
+                err.message,
+            );
+            return false;
+        }
     }
 
     private mouseMoveBox(mouseX: number, mouseY: number, currMeta: BboxMetadata): void {
@@ -227,7 +255,7 @@ export class BoundingBoxCanvasService {
 
     public mouseUpDrawEnable(
         currMeta: BboxMetadata,
-        callback: (args: boolean) => void,
+        callback: (arg: boolean) => void,
     ): { selBox: number; isNew: boolean } {
         try {
             const ret: { selBox: number; isNew: boolean } = { selBox: -1, isNew: false };
@@ -236,18 +264,18 @@ export class BoundingBoxCanvasService {
                 this.currentSelectedBndBox = currMeta.bnd_box.length - 1;
                 currMeta.bnd_box[this.currentSelectedBndBox].label = 'default';
                 ret.isNew = true;
-                ret.selBox = cloneDeep(this.currentSelectedBndBox);
-            } else {
+                ret.selBox = clone(this.currentSelectedBndBox);
+            } else if (this.currentClickedBox.box > -1 && this.tmpbox) {
                 if (currMeta.bnd_box[this.currentSelectedBndBox].x1 > currMeta.bnd_box[this.currentSelectedBndBox].x2) {
-                    const previousX1: number = cloneDeep(currMeta.bnd_box[this.currentSelectedBndBox].x1);
-                    currMeta.bnd_box[this.currentSelectedBndBox].x1 = cloneDeep(
+                    const previousX1: number = clone(currMeta.bnd_box[this.currentSelectedBndBox].x1);
+                    currMeta.bnd_box[this.currentSelectedBndBox].x1 = clone(
                         currMeta.bnd_box[this.currentSelectedBndBox].x2,
                     );
                     currMeta.bnd_box[this.currentSelectedBndBox].x2 = previousX1;
                 }
                 if (currMeta.bnd_box[this.currentSelectedBndBox].y1 > currMeta.bnd_box[this.currentSelectedBndBox].y2) {
-                    const previousY1: number = cloneDeep(currMeta.bnd_box[this.currentSelectedBndBox].y1);
-                    currMeta.bnd_box[this.currentSelectedBndBox].y1 = cloneDeep(
+                    const previousY1: number = clone(currMeta.bnd_box[this.currentSelectedBndBox].y1);
+                    currMeta.bnd_box[this.currentSelectedBndBox].y1 = clone(
                         currMeta.bnd_box[this.currentSelectedBndBox].y2,
                     );
                     currMeta.bnd_box[this.currentSelectedBndBox].y2 = previousY1;
@@ -265,7 +293,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public panRectangle(boundingBoxes: Boundingbox[], imgX: number, imgY: number, callback: (args: boolean) => void) {
+    public panRectangle(boundingBoxes: Boundingbox[], imgX: number, imgY: number, callback: (arg: boolean) => void) {
         try {
             for (const boundingBox of boundingBoxes) {
                 const temrectW: number = boundingBox.x2 - boundingBox.x1;
@@ -290,7 +318,7 @@ export class BoundingBoxCanvasService {
         boxes: Boundingbox[],
         imgX: number,
         imgY: number,
-        callback: (args: boolean) => void,
+        callback: (arg: boolean) => void,
     ) {
         try {
             for (const box of boxes) {
@@ -301,14 +329,14 @@ export class BoundingBoxCanvasService {
                 const Y1: number = box.distancetoImg.y * scalefactor + imgY;
                 const X2: number = X1 + newW;
                 const Y2: number = Y1 + newH;
-                box.x1 = cloneDeep(X1);
-                box.y1 = cloneDeep(Y1);
-                box.x2 = cloneDeep(X2);
-                box.y2 = cloneDeep(Y2);
+                box.x1 = clone(X1);
+                box.y1 = clone(Y1);
+                box.x2 = clone(X2);
+                box.y2 = clone(Y2);
                 const newdistancex: number = box.x1 - imgX;
                 const newdistanceY: number = box.y1 - imgY;
-                box.distancetoImg.x = cloneDeep(newdistancex);
-                box.distancetoImg.y = cloneDeep(newdistanceY);
+                box.distancetoImg.x = clone(newdistancex);
+                box.distancetoImg.y = clone(newdistanceY);
             }
             callback(true);
         } catch (err) {
@@ -320,12 +348,12 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public mouseMoveDrawEnable(mouseX: number, mouseY: number, selectedMeta: BboxMetadata): void {
+    public mouseMoveDrawEnable(mouseX: number, mouseY: number, metadata: BboxMetadata): void {
         try {
             if (this.currentClickedBox.box === -1) {
                 this.setCurrentX2Y2(mouseX, mouseY);
             } else {
-                this.mouseMoveBox(mouseX, mouseY, selectedMeta);
+                this.mouseMoveBox(mouseX, mouseY, metadata);
             }
         } catch (err) {
             console.log(
@@ -381,32 +409,6 @@ export class BoundingBoxCanvasService {
 
     public changeLabel(bbox: Boundingbox, newLabel: string) {
         bbox && newLabel && (bbox.label = newLabel);
-    }
-
-    public moveBoxWithinPointPath(
-        imgX: number,
-        imgY: number,
-        imgW: number,
-        imgH: number,
-        addX: number,
-        addY: number,
-        box: Boundingbox,
-    ): boolean {
-        try {
-            return box.x1 + addX < imgX ||
-                box.x2 + addX > imgX + imgW ||
-                box.y1 + addY < imgY ||
-                box.y2 + addY > imgY + imgH
-                ? false
-                : true;
-        } catch (err) {
-            console.log(
-                'ObjectDetection isWithinPointPath(imgx:number, imgy:number, imgw:number, imgh:number, addx:number, addy:number, box:Boundingbox):Boolean',
-                err.name + ': ',
-                err.message,
-            );
-            return false;
-        }
     }
 
     public mouseClickWithinPointPath(
@@ -575,8 +577,8 @@ export class BoundingBoxCanvasService {
             for (const { x1, y1, distancetoImg } of boundingBoxes) {
                 const distX: number = x1 - imgX;
                 const distY: number = y1 - imgY;
-                distancetoImg.x = cloneDeep(distX);
-                distancetoImg.y = cloneDeep(distY);
+                distancetoImg.x = clone(distX);
+                distancetoImg.y = clone(distY);
             }
         } catch (err) {
             console.log(

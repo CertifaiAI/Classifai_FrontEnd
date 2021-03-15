@@ -15,7 +15,10 @@
             <image-labelling-object-detection
                 [_selectMetadata]="selectedMetaData"
                 [_imgSrc]="imgSrc"
+                [_tabStatus]="tabStatus"
                 (_onChangeMetadata)="onChangeMetadata($event)"
+                (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
+                (_onEnterLabel)="onProcessLabel($event)"
             ></image-labelling-object-detection>
         </ng-container>
         <ng-container *ngIf="_router.url.includes('imglabel/seg')">
@@ -30,7 +33,7 @@
             [_thumbnailList]="thumbnailList"
             [_tabStatus]="tabStatus"
             (_onClose)="onToggleTab($event)"
-            (_onClickThumbNail)="displayImage($event)"
+            (_onClickThumbnail)="displayImage($event)"
             (_onClickLabel)="onProcessLabel($event)"
             (_onEnterLabel)="onProcessLabel($event)"
             (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"

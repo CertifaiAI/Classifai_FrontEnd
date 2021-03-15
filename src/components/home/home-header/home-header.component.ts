@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { LanguageService } from 'src/shared/services/language.service';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -10,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 export class HomeHeaderComponent implements OnInit {
     languageArr: (string | null)[] = [];
     headerImage: string = `../../assets/landing-page/Classifai_PoweredBy_Horizontal_light.png`;
+    @ViewChildren('languages') languages!: QueryList<ElementRef>;
 
     constructor(public _translate: TranslateService, private _languageService: LanguageService) {
         const langsArr: string[] = ['landing-page-en', 'landing-page-cn', 'landing-page-ms'];
@@ -28,5 +29,23 @@ export class HomeHeaderComponent implements OnInit {
         } catch (err) {
             console.log('setLanguage(language: string) ----> ', err.name + ': ', err.message);
         }
+    }
+
+    showLangOpts() {
+        this.languages.forEach((div: ElementRef, index) => {
+            div.nativeElement.style.visibility = 'visible';
+            div.nativeElement.style.opacity = '100%';
+            div.nativeElement.style.left = (-(112 * (index + 1))).toString() + '%';
+            div.nativeElement.style.transition = (0.15 * (1 + index)).toString() + 's';
+        });
+    }
+
+    hideLangOpts() {
+        this.languages.forEach((div: ElementRef, index) => {
+            div.nativeElement.style.visibility = 'hidden';
+            div.nativeElement.style.opacity = '0%';
+            div.nativeElement.style.left = '0%';
+            div.nativeElement.style.transition = (0.15 * (3 - index)).toString() + 's';
+        });
     }
 }

@@ -8,6 +8,7 @@ export type ImgLabelProps = {
     currentThumbnailIndex: number;
     totalNumThumbnail: number;
     thumbnailName: string | undefined;
+    hasAnnotation: boolean;
 };
 
 export type ImageProps = Omit<BboxMetadata, 'bnd_box'> & {
@@ -166,4 +167,15 @@ export type FitScreenCalc = {
     factor: number;
     newX: number;
     newY: number;
+};
+
+export type LabelInfo = {
+    name: string;
+    count: number;
+};
+
+export type MouseCursor = {
+    move: boolean;
+    pointer: boolean;
+    grab: boolean;
 };

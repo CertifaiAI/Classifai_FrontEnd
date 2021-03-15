@@ -3,13 +3,14 @@ type IconConfigs = {
     imgPath: string;
     hoverLabel: string;
     alt: string;
+    nonClickable?: boolean;
     // inputType?: string;
     // accept?: 'image/x-png,image/jpeg';
     toggleable?: boolean;
     /** @function responsible for toggling function */
     // onClick?: any;
     // onClick?(): void;
-    onClick: () => void;
+    onClick: (arg: any) => void;
     /** @function responsible for uploading thumbnail(s) */
     // onUpload?();
 };

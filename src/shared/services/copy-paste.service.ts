@@ -1,29 +1,29 @@
-import { Boundingbox, Polygons } from 'src/components/image-labelling/image-labelling.model';
+import { Boundingbox, Polygons, CompleteMetadata } from 'src/components/image-labelling/image-labelling.model';
 import { Injectable } from '@angular/core';
 import { Utils } from '../types/utils/utils';
 
-type CopyPasteState = Boundingbox | Polygons | null;
 @Injectable({
     providedIn: 'any',
 })
 export class CopyPasteService {
-    private MEMO: CopyPasteState = null;
+    private MEMO: CompleteMetadata | null = null;
     private utility: Utils = new Utils();
     constructor() {}
 
-    public copy(currMeta: CopyPasteState) {
-        currMeta ? (this.MEMO = this.utility.deepCloneVariable(currMeta)) : {};
+    public copy<T>(currMeta: T) {
+        this.MEMO = this.utility.deepCloneVariable(currMeta);
     }
 
-    public paste() {
+    // temporary cheat the generic type via any
+    public paste<T>(): T {
         if (this.MEMO) {
             if ('coorPt' in this.MEMO) {
-                return this.polygonPaste();
+                return this.polygonPaste() as any;
             } else {
-                return this.boundingBoxPaste();
+                return this.boundingBoxPaste() as any;
             }
         }
-        return null;
+        return null as any;
     }
 
     public isAvailable() {
@@ -34,7 +34,7 @@ export class CopyPasteService {
         this.MEMO = null;
     }
 
-    private polygonPaste(): Polygons | null {
+    private polygonPaste(): Polygons {
         const rtMEMO: Polygons = this.utility.deepCloneObject(this.MEMO);
         // tslint:disable-next-line: prefer-const
         let { coorPt: coorPtList, id } = rtMEMO;
@@ -48,20 +48,20 @@ export class CopyPasteService {
         return rtMEMO;
     }
 
-    private boundingBoxPaste(): Boundingbox | null {
+    private boundingBoxPaste(): Boundingbox {
         const rtMEMO: Boundingbox = this.utility.deepCloneObject(this.MEMO);
         // tslint:disable-next-line: prefer-const
-        let { x1, x2, y1, y2, id, distancetoImg } = rtMEMO;
+        // let { x1, x2, y1, y2, id, distancetoImg } = rtMEMO;
 
-        const tempW: number = x2 - x1;
-        const tempH: number = y2 - y1;
-        x1 += 8;
-        y1 += 8;
-        x2 = x1 + tempW;
-        y2 = y1 + tempH;
-        id = this.utility.generateUniquesID();
-        distancetoImg.x = 0;
-        distancetoImg.y = 0;
+        const tempW: number = rtMEMO.x2 - rtMEMO.x1;
+        const tempH: number = rtMEMO.y2 - rtMEMO.y1;
+        rtMEMO.x1 += 8;
+        rtMEMO.y1 += 8;
+        rtMEMO.x2 = rtMEMO.x1 + tempW;
+        rtMEMO.y2 = rtMEMO.y1 + tempH;
+        rtMEMO.id = this.utility.generateUniquesID();
+        rtMEMO.distancetoImg.x = 0;
+        rtMEMO.distancetoImg.y = 0;
         return rtMEMO;
     }
 }

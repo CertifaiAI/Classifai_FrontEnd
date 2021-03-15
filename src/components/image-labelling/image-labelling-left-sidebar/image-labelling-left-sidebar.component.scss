@@ -1,13 +1,16 @@
+@use "../../../shared/scss/icon" as icon;
+@use "../../../shared/scss/variables" as color;
+
 .utility-left-sidebar-container {
     position: absolute;
-    top: 4.6vh;
+    top: 4.5vh;
     min-width: 2.14vw;
     max-width: 2.14vw;
     min-height: 95.4vh;
     max-height: 95.4vh;
     background: #525353;
-    outline: 0.0625vw inset white;
-    border: none;
+    border: 0.0625vw solid rgb(255, 255, 255, 0.25);
+    // border: none;
     z-index: 1000;
 }
 
@@ -17,25 +20,21 @@
     align-items: baseline;
 }
 
-.utility-icon-light-theme,
-.utility-icon-dark-theme {
-    min-width: 1.52vw;
-    max-width: 1.52vw;
-    min-height: 3vh;
-    max-height: 3vh;
-    padding: 0.3vw;
-    position: absolute;
-    cursor: pointer;
+.utility-icon-light {
+    @include icon.icon-styling();
 }
 
-.utility-icon-light-theme:focus,
-.utility-icon-light-theme:active,
-.utility-icon-light-theme-active {
-    background: darkgray;
+.utility-icon-light:focus,
+.utility-icon-light:active {
+    background: color.$iconActiveBackgroundColor;
 }
 
-.utility-icon-dark-theme:focus,
-.utility-icon-dark-theme:active,
-.utility-icon-dark-theme-active {
-    background: rgb(59 59 59);
+.plain-icon {
+    @include icon.icon-styling(auto);
 }
+
+// .utility-icon-dark-theme:focus,
+// .utility-icon-dark-theme:active,
+// .utility-icon-dark-theme-active {
+//     background: rgb(59 59 59);
+// }

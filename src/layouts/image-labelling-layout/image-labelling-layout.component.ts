@@ -120,6 +120,20 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     this.currentAnnotationIndex = annnotationIndex;
                 }
             });
+
+        // subscription logic to check if clear is true then empty the current display image's metadata
+        this._imgLblActionService.action$.pipe(takeUntil(this.unsubscribe$)).subscribe(({ clear }) => {
+            if (clear) {
+                this.thumbnailList[0].bnd_box ? (this.thumbnailList[this.currentImageDisplayIndex].bnd_box = []) : null;
+                this.thumbnailList[0].polygons
+                    ? (this.thumbnailList[this.currentImageDisplayIndex].polygons = [])
+                    : null;
+                this.onChangeSchema = {
+                    ...this.onChangeSchema,
+                    hasAnnotation: false,
+                };
+            }
+        });
     }
 
     updateProjectProgress = (): void => {
@@ -131,6 +145,21 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.tabStatus = this.tabStatus.map((tab) =>
             tab.annotation ? { ...tab, annotation: [mutatedMetadata] } : tab,
         );
+        // whenever object-detection / segmentation adding new drawing
+        // mutate state in thumbnailList to update child comp (project comp)
+        this.thumbnailList = this.thumbnailList.map((metadata, i) => {
+            return this.currentImageDisplayIndex === i ? mutatedMetadata : metadata;
+        });
+        // whenever object-detection / segmentation adding new drawing
+        // mutate state in onChangeSchema to update child comp (info comp)
+        const hasAnnotation = mutatedMetadata.bnd_box
+            ? mutatedMetadata.bnd_box.length > 0
+            : mutatedMetadata.polygons.length > 0;
+
+        this.onChangeSchema = {
+            ...this.onChangeSchema,
+            hasAnnotation,
+        };
         this.updateProjectProgress();
     };
 
@@ -149,6 +178,27 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     navigateByUrl = ({ url }: EventEmitter_Url): void => {
         // console.log(url);
         url ? this._router.navigate([url]) : console.error(`No url received from child component`);
+    };
+
+    @HostListener('window:keydown', ['$event'])
+    keyDownEvent = ({ key }: KeyboardEvent): void => {
+        this._imgLblActionService.action$.pipe(first()).subscribe(({ draw }) => {
+            if (!draw) {
+                switch (key) {
+                    case 'ArrowLeft':
+                        this.navigateByAction({ thumbnailAction: -1 });
+                        break;
+                    case 'ArrowRight':
+                        this.navigateByAction({ thumbnailAction: 1 });
+                        break;
+                    case 'Escape':
+                        this.onCloseModal();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
     };
 
     navigateByAction = ({ thumbnailAction }: EventEmitter_Action): void => {
@@ -174,24 +224,27 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         { thumbnailIndex, ...thumbnail }: EventEmitter_ThumbnailDetails,
         projectName = this.selectedProjectName,
     ): void => {
-        const getImage$ = this._imgLblApiService.getBase64Thumbnail(projectName, thumbnail.uuid);
+        if (this.selectedMetaData?.uuid !== thumbnail.uuid) {
+            const getImage$ = this._imgLblApiService.getBase64Thumbnail(projectName, thumbnail.uuid);
 
-        getImage$.pipe(first()).subscribe(
-            ({ message, img_src }) => {
-                if (message === 1) {
-                    this.selectedMetaData = thumbnail;
-                    this.imgSrc = img_src;
-                    this.currentImageDisplayIndex = thumbnailIndex;
-                    this.onChangeSchema = {
-                        ...this.onChangeSchema,
-                        // + 1 to prevent showing photo but info comp shows 0/2 on UI
-                        currentThumbnailIndex: thumbnailIndex + 1,
-                        thumbnailName: thumbnail.img_path,
-                    };
-                }
-            },
-            (err: Error) => console.error(err),
-        );
+            getImage$.pipe(first()).subscribe(
+                ({ message, img_src }) => {
+                    if (message === 1) {
+                        this.selectedMetaData = thumbnail;
+                        this.imgSrc = img_src;
+                        this.currentImageDisplayIndex = thumbnailIndex;
+                        this.onChangeSchema = {
+                            ...this.onChangeSchema,
+                            // + 1 to prevent showing photo but info comp shows 0/2 on UI
+                            currentThumbnailIndex: thumbnailIndex + 1,
+                            thumbnailName: thumbnail.img_path,
+                            hasAnnotation: thumbnail.bnd_box && thumbnail.bnd_box?.length > 0 ? true : false,
+                        };
+                    }
+                },
+                (err: Error) => console.error(err),
+            );
+        }
     };
 
     onProcessLabel = ({ selectedLabel, label_list, action }: SelectedLabelProps) => {

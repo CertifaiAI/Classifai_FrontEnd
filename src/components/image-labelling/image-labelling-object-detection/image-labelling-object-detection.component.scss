@@ -30,3 +30,84 @@
     outline: none;
     border: none;
 }
+
+.floatdiv {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 10000;
+}
+
+.lbltypetxt {
+    width: 11em;
+    height: 2em;
+    color: snow;
+    font-size: 15px;
+    font-weight: bold;
+    border: 2px solid gray;
+    background-color: black;
+    outline: none;
+    border-radius: 5px;
+    border-bottom: none;
+}
+
+.availablelbl {
+    background-color: black;
+    width: 10.5rem;
+    height: 8rem;
+    color: snow;
+    font-size: 15px;
+    font-weight: bold;
+    border: 0.2vw solid gray;
+    outline: none;
+    border-radius: 5px;
+    border-top: 1px dotted snow;
+    // text-align: center;
+    overflow: auto;
+    scrollbar-width: none;
+}
+
+.lblList {
+    padding: 0 5px;
+}
+
+.lblName {
+    list-style-type: none;
+    margin: 4px 0px;
+    padding: 0;
+    justify-content: space-between;
+    display: flex;
+}
+
+.lblName:hover {
+    background-color: #111;
+}
+
+.availablelbl::-webkit-scrollbar {
+    display: none;
+}
+
+.cursor-move {
+    cursor: move;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.cursor-grab {
+    cursor: grab;
+}
+
+.notExist {
+    color: #999;
+    font-size: 1.5vh;
+}
+
+.invalidInput {
+    border: 0.2vw solid red;
+}
+
+.validInput {
+    border: 0.2vw solid grey;
+}
