@@ -35,7 +35,7 @@ export class HomeHeaderComponent implements OnInit {
         this.languages.forEach((div: ElementRef, index) => {
             div.nativeElement.style.visibility = 'visible';
             div.nativeElement.style.opacity = '100%';
-            div.nativeElement.style.left = (-(105 * (index + 1))).toString() + '%';
+            div.nativeElement.style.left = (-(112 * (index + 1))).toString() + '%';
             div.nativeElement.style.transition = (0.15 * (1 + index)).toString() + 's';
         });
     }
