@@ -180,17 +180,16 @@ export class BoundingBoxCanvasService {
         try {
             const tmpOffsetX: number = mouseX - this.currentDrawing.x1;
             const tmpOffsetY: number = mouseY - this.currentDrawing.y1;
-            if (
-                this.moveBoxWithinPointPath(
-                    currMeta.img_x,
-                    currMeta.img_y,
-                    currMeta.img_w,
-                    currMeta.img_h,
-                    tmpOffsetX,
-                    tmpOffsetY,
-                    currMeta.bnd_box[this.currentSelectedBndBox],
-                )
-            ) {
+            const isWithinPointPath = this.moveBoxWithinPointPath(
+                currMeta.img_x,
+                currMeta.img_y,
+                currMeta.img_w,
+                currMeta.img_h,
+                tmpOffsetX,
+                tmpOffsetY,
+                currMeta.bnd_box[this.currentSelectedBndBox],
+            );
+            if (isWithinPointPath) {
                 this.setCurrentX2Y2(mouseX, mouseY);
                 const xOffset: number = this.currentDrawing.x2 - this.currentDrawing.x1;
                 const yOffset: number = this.currentDrawing.y2 - this.currentDrawing.y1;
