@@ -1,5 +1,5 @@
 import { BboxMetadata, Boundingbox, Direction, xyCoordinate } from '../image-labelling.model';
-import { clone, cloneDeep } from 'lodash-es';
+import { clone } from 'lodash-es';
 import { Injectable } from '@angular/core';
 import { Utils } from '../../../shared/types/utils/utils';
 
@@ -79,10 +79,10 @@ export class BoundingBoxCanvasService {
             for (const boundingBox of boundingBoxes) {
                 const temRectWidth: number = boundingBox.x2 - boundingBox.x1;
                 const temRectHeight: number = boundingBox.y2 - boundingBox.y1;
-                boundingBox.x1 = cloneDeep(imgX + boundingBox.distancetoImg.x);
-                boundingBox.y1 = cloneDeep(imgY + boundingBox.distancetoImg.y);
-                boundingBox.x2 = cloneDeep(boundingBox.x1 + temRectWidth);
-                boundingBox.y2 = cloneDeep(boundingBox.y1 + temRectHeight);
+                boundingBox.x1 = clone(imgX + boundingBox.distancetoImg.x);
+                boundingBox.y1 = clone(imgY + boundingBox.distancetoImg.y);
+                boundingBox.x2 = clone(boundingBox.x1 + temRectWidth);
+                boundingBox.y2 = clone(boundingBox.y1 + temRectHeight);
             }
             callback(true);
         } catch (err) {}
@@ -264,18 +264,18 @@ export class BoundingBoxCanvasService {
                 this.currentSelectedBndBox = currMeta.bnd_box.length - 1;
                 currMeta.bnd_box[this.currentSelectedBndBox].label = 'default';
                 ret.isNew = true;
-                ret.selBox = cloneDeep(this.currentSelectedBndBox);
+                ret.selBox = clone(this.currentSelectedBndBox);
             } else if (this.currentClickedBox.box > -1 && this.tmpbox) {
                 if (currMeta.bnd_box[this.currentSelectedBndBox].x1 > currMeta.bnd_box[this.currentSelectedBndBox].x2) {
-                    const previousX1: number = cloneDeep(currMeta.bnd_box[this.currentSelectedBndBox].x1);
-                    currMeta.bnd_box[this.currentSelectedBndBox].x1 = cloneDeep(
+                    const previousX1: number = clone(currMeta.bnd_box[this.currentSelectedBndBox].x1);
+                    currMeta.bnd_box[this.currentSelectedBndBox].x1 = clone(
                         currMeta.bnd_box[this.currentSelectedBndBox].x2,
                     );
                     currMeta.bnd_box[this.currentSelectedBndBox].x2 = previousX1;
                 }
                 if (currMeta.bnd_box[this.currentSelectedBndBox].y1 > currMeta.bnd_box[this.currentSelectedBndBox].y2) {
-                    const previousY1: number = cloneDeep(currMeta.bnd_box[this.currentSelectedBndBox].y1);
-                    currMeta.bnd_box[this.currentSelectedBndBox].y1 = cloneDeep(
+                    const previousY1: number = clone(currMeta.bnd_box[this.currentSelectedBndBox].y1);
+                    currMeta.bnd_box[this.currentSelectedBndBox].y1 = clone(
                         currMeta.bnd_box[this.currentSelectedBndBox].y2,
                     );
                     currMeta.bnd_box[this.currentSelectedBndBox].y2 = previousY1;
