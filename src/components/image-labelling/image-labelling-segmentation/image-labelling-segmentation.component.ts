@@ -41,6 +41,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         move: false,
         pointer: false,
         grab: false,
+        resize: false,
     };
     @Input() _selectMetadata!: PolyMetadata;
     @Input() _imgSrc: string = '';
@@ -126,9 +127,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
             this._selectMetadata.img_y = tmpObj.newY;
             this._segCanvasService.scalePolygons(this._selectMetadata, tmpObj);
 
-            const { img_x, img_y } = this._selectMetadata;
             this._segCanvasService.setGlobalXY({ img_x: tmpObj.newX, img_y: tmpObj.newY });
-            this._segCanvasService.panPolygons(this._selectMetadata, img_x, img_y, false);
+            this._segCanvasService.panPolygons(this._selectMetadata, false);
             const meta = cloneDeep(this._selectMetadata);
             this._undoRedoService.isMethodChange('zoom')
                 ? this._undoRedoService.appendStages({
@@ -281,14 +281,12 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
             this.canvasContext.canvas.style.pointerEvents !== 'none'
         ) {
             if (this._segCanvasService.isNewPolygon()) {
-                const { width, height } = this.canvas.nativeElement;
                 const { annotation } = this.annotateState;
                 this._segCanvasService.drawNewPolygon(
                     this._selectMetadata,
                     this.image,
                     this.canvasContext,
-                    width,
-                    height,
+                    this.canvas.nativeElement,
                     true,
                 );
                 this._segCanvasService.setSelectedPolygonIndex(annotation);
@@ -309,7 +307,6 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                 this.canvasContext.canvas.style.pointerEvents !== 'none'
             ) {
                 if (this._segCanvasService.isNewPolygon()) {
-                    const { width, height } = this.canvas.nativeElement;
                     const { annotation } = this.annotateState;
                     switch (key) {
                         case 'Enter':
@@ -317,8 +314,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                                 this._selectMetadata,
                                 this.image,
                                 this.canvasContext,
-                                width,
-                                height,
+                                this.canvas.nativeElement,
                                 true,
                             );
                             this._segCanvasService.setSelectedPolygonIndex(annotation);
@@ -339,10 +335,9 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                         case 'Escape':
                             this._segCanvasService.resetDrawing(
                                 this._selectMetadata,
-                                this.canvasContext,
                                 this.image,
-                                width,
-                                height,
+                                this.canvasContext,
+                                this.canvas.nativeElement,
                             );
                             this._segCanvasService.setSelectedPolygonIndex(annotation);
                             break;
@@ -433,10 +428,9 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                     this._selectMetadata,
                     direction,
                     this.annotateState.annotation,
-                    this.canvasContext,
                     this.image,
-                    this._selectMetadata.img_w,
-                    this._selectMetadata.img_h,
+                    this.canvasContext,
+                    this.canvas.nativeElement,
                     (isCompleted) => {
                         this._undoRedoService.appendStages({
                             meta: cloneDeep(this._selectMetadata),
@@ -532,12 +526,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                     const diffy = event.offsetY - this._segCanvasService.getPanY();
                     this._selectMetadata.img_x = this._segCanvasService.getGlobalX() + diffX;
                     this._selectMetadata.img_y = this._segCanvasService.getGlobalY() + diffy;
-                    this._segCanvasService.panPolygons(
-                        this._selectMetadata,
-                        this._selectMetadata.img_x,
-                        this._selectMetadata.img_y,
-                        false,
-                    );
+                    this._segCanvasService.panPolygons(this._selectMetadata, false);
                     this.redrawImage(this._selectMetadata);
                     this._undoRedoService.isMethodChange('pan')
                         ? this._undoRedoService.appendStages({
@@ -554,10 +543,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                         this._selectMetadata,
                         this.image,
                         this.canvasContext,
-                        this.canvas.nativeElement.width,
-                        this.canvas.nativeElement.height,
-                        event.offsetX,
-                        event.offsetY,
+                        this.canvas.nativeElement,
+                        event,
                         this.ctrlKey,
                         this.isMouseWithinPoint,
                         (method) => {
@@ -576,25 +563,13 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                         },
                     );
                     if (mouseWithinShape) {
-                        this.mouseCursor = {
-                            grab: false,
-                            pointer: false,
-                            move: true,
-                        };
+                        this.changeMouseCursorState({ move: true });
                     } else {
-                        this.mouseCursor = {
-                            grab: false,
-                            pointer: true,
-                            move: false,
-                        };
+                        this.changeMouseCursorState({ pointer: true });
                     }
                 }
             } else {
-                this.mouseCursor = {
-                    grab: false,
-                    pointer: false,
-                    move: false,
-                };
+                this.changeMouseCursorState({});
 
                 // console.log(this.crossh);
                 if (
@@ -612,6 +587,15 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         } catch (err) {
             console.log('mouseMove', err);
         }
+    }
+
+    changeMouseCursorState({ grab, move, pointer, resize }: Partial<MouseCursor>) {
+        this.mouseCursor = {
+            grab: grab ?? false,
+            pointer: pointer ?? false,
+            move: move ?? false,
+            resize: resize ?? false,
+        };
     }
 
     @HostListener('mouseout', ['$event'])
