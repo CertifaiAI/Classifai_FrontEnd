@@ -76,11 +76,12 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         private _imgLblLayoutService: ImageLabellingLayoutService,
         private _imgLblModeService: ImageLabellingModeService,
         private _languageService: LanguageService,
-    ) {}
-
-    ngOnInit(): void {
+    ) {
         const langsArr: string[] = ['image-labelling-en', 'image-labelling-cn', 'image-labelling-ms'];
         this._languageService.initializeLanguage(`image-labelling`, langsArr);
+    }
+
+    ngOnInit(): void {
         this.currentUrl = this._router.url as ImageLabelUrl;
         const { thumbnailList, labelList, projectName } = this._imgLblLayoutService.getRouteState(history);
         this.thumbnailList = thumbnailList;

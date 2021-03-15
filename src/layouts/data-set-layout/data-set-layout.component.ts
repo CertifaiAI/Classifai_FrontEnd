@@ -63,11 +63,11 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .subscribe((loading) => (this.isLoading = loading));
 
         this.createFormControls();
+        const langsArr: string[] = ['data-set-page-en', 'data-set-page-cn', 'data-set-page-ms'];
+        this._languageService.initializeLanguage(`data-set-page`, langsArr);
     }
 
     ngOnInit(): void {
-        const langsArr: string[] = ['data-set-page-en', 'data-set-page-cn', 'data-set-page-ms'];
-        this._languageService.initializeLanguage(`data-set-page`, langsArr);
         this.getProjectList();
     }
 

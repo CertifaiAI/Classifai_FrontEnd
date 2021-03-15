@@ -49,12 +49,12 @@ export class HomeLayoutComponent implements OnInit {
         private _router: Router,
         private _imgLblMode: ImageLabellingModeService,
         private _languageService: LanguageService,
-    ) {}
-
-    ngOnInit() {
+    ) {
         const langsArr: string[] = ['landing-page-en', 'landing-page-cn', 'landing-page-ms'];
         this._languageService.initializeLanguage(`landing-page`, langsArr);
     }
+
+    ngOnInit() {}
 
     navigate(url: string): void {
         this.navigateUrl = url;
