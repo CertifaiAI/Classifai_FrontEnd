@@ -450,7 +450,7 @@ export class BoundingBoxCanvasService {
                 }
                 const { x1, x2, y1, y2 } = this.currentDrawing;
                 this.tmpbox = this.generateNewBox(x1, x2, y1, y2);
-                this.tmpbox ? this.drawEachBoxOn(this.tmpbox, context, true) : null;
+                this.tmpbox && this.drawEachBoxOn(this.tmpbox, context, true);
             }
         } catch (err) {
             console.log('redraw(boundbox) ----> ', err.name + ': ', err.message);

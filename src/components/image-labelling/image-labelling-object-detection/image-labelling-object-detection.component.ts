@@ -59,10 +59,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     allLabelList: LabelInfo[] = [];
     showDropdownLabelBox: boolean = false;
     invalidInput: boolean = false;
+    // closeEnough: number = 10;
     private mouseCursor: MouseCursor = {
         move: false,
         pointer: false,
         grab: false,
+        resize: false,
     };
     private scale = 1;
     private factor = 0.05;
@@ -491,25 +493,35 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         );
 
                         if (box !== -1) {
-                            this.mouseCursor = {
-                                grab: false,
-                                pointer: false,
-                                move: true,
-                            };
+                            this.changeMouseCursorState({ move: true });
+                            // const { x1, x2, y1, y2 } = this._selectMetadata.bnd_box[box];
+                            // const { offsetX, offsetY } = event;
+                            // // 4 cases:
+                            // // 1. top left
+                            // if (this.checkCloseEnough(offsetX, x1) && this.checkCloseEnough(offsetY, y1)) {
+                            //     this.changeMouseCursorState({ resize: true });
+                            // }
+                            // // 2. top right
+                            // else if (this.checkCloseEnough(offsetX, x2 - x1) && this.checkCloseEnough(offsetY, y1)) {
+                            //     this.changeMouseCursorState({ resize: true });
+                            // }
+                            // // 3. bottom left
+                            // else if (this.checkCloseEnough(offsetX, x1) && this.checkCloseEnough(offsetY, y2 - y1)) {
+                            //     this.changeMouseCursorState({ resize: true });
+                            // }
+                            // // 4. bottom right
+                            // else if (
+                            //     this.checkCloseEnough(offsetX, x2 - x1) &&
+                            //     this.checkCloseEnough(offsetY, y2 - y1)
+                            // ) {
+                            //     this.changeMouseCursorState({ resize: true });
+                            // }
                         } else {
-                            this.mouseCursor = {
-                                grab: false,
-                                pointer: true,
-                                move: false,
-                            };
+                            this.changeMouseCursorState({ pointer: true });
                         }
                     }
                 } else {
-                    this.mouseCursor = {
-                        grab: false,
-                        pointer: false,
-                        move: false,
-                    };
+                    this.changeMouseCursorState({});
                     if (
                         this.crossh.nativeElement.style.zIndex !== '-1' ||
                         this.crossh.nativeElement.style.visibility !== 'hidden' ||
@@ -527,6 +539,19 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             console.log(err);
         }
     }
+
+    changeMouseCursorState({ grab, move, pointer, resize }: Partial<MouseCursor>) {
+        this.mouseCursor = {
+            grab: grab ?? false,
+            pointer: pointer ?? false,
+            move: move ?? false,
+            resize: resize ?? false,
+        };
+    }
+
+    // checkCloseEnough(p1: number, p2: number) {
+    //     return Math.abs(p1 - p2) < this.closeEnough;
+    // }
 
     @HostListener('mouseout', ['$event'])
     mouseOut(event: MouseEvent) {

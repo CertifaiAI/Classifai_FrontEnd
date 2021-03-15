@@ -178,4 +178,5 @@ export type MouseCursor = {
     move: boolean;
     pointer: boolean;
     grab: boolean;
+    resize: boolean;
 };
