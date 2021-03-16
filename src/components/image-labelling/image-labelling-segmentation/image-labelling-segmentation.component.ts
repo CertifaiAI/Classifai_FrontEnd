@@ -93,7 +93,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
             let { img_w, img_h, img_ori_w, img_ori_h } = this._selectMetadata;
             this._selectMetadata.img_w = img_w < 1 ? img_ori_w : img_w;
             this._selectMetadata.img_h = img_h < 1 ? img_ori_h : img_h;
-            // this._segCanvasService.setGlobalXY(this._selectMetadata);
+            this._segCanvasService.setGlobalXY(this._selectMetadata);
             this.imgFitToCenter();
             this.emitMetadata();
             this._undoRedoService.appendStages({ meta: cloneDeep(this._selectMetadata), method: 'draw' });
@@ -121,17 +121,20 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
             this._selectMetadata.img_y = tmpObj.newY;
             this._segCanvasService.scalePolygons(this._selectMetadata, tmpObj);
             this._segCanvasService.setGlobalXY({ img_x: tmpObj.newX, img_y: tmpObj.newY });
-            this._segCanvasService.panPolygons(this._selectMetadata, false);
-            const meta = cloneDeep(this._selectMetadata);
-            this._undoRedoService.isMethodChange('zoom')
-                ? this._undoRedoService.appendStages({
-                      meta,
-                      method: 'zoom',
-                  })
-                : this._undoRedoService.replaceStages({
-                      meta,
-                      method: 'zoom',
-                  });
+            this._segCanvasService.panPolygons(this._selectMetadata, false, (isDone) => {
+                if (isDone) {
+                    const meta = cloneDeep(this._selectMetadata);
+                    this._undoRedoService.isMethodChange('zoom')
+                        ? this._undoRedoService.appendStages({
+                              meta,
+                              method: 'zoom',
+                          })
+                        : this._undoRedoService.replaceStages({
+                              meta,
+                              method: 'zoom',
+                          });
+                }
+            });
             this.redrawImage(this._selectMetadata);
         } catch (err) {
             console.log('imgFitToCenter', err);
@@ -460,13 +463,10 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
             // this._selectMetadata as truefy value
             // as user can click on image but img not yet loaded onto screen
             // but mouse has already moving into canvas, thus getting error
-            const isMouseClickWithinPoint =
+            this.isMouseWithinPoint =
                 this._selectMetadata && this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
-            if (isMouseClickWithinPoint) {
-                if (
-                    this.segState.drag ||
-                    (this._segCanvasService.isNewPolygon() && this.ctrlKey && this.isMouseWithinPoint)
-                ) {
+            if (this.isMouseWithinPoint) {
+                if (this.segState.drag) {
                     this._segCanvasService.setGlobalXY(this._selectMetadata);
                 }
                 if (
@@ -479,11 +479,11 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                             meta: cloneDeep(this._selectMetadata),
                             method: 'draw',
                         });
+                        // this._segCanvasService.setGlobalXY({ img_x: -1, img_y: -1 });
+                        this._segCanvasService.validateXYDistance(this._selectMetadata);
+                        this.emitMetadata();
                     }
                 }
-                this._segCanvasService.setGlobalXY({ img_x: -1, img_y: -1 });
-                this._segCanvasService.validateXYDistance(this._selectMetadata);
-                this.emitMetadata();
             }
             this.mousedown = false;
         } catch (err) {
@@ -501,21 +501,29 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                 this._selectMetadata && this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
             if (this.isMouseWithinPoint) {
                 if (this.segState.drag && this.mousedown) {
-                    const diffX = event.offsetX - this._segCanvasService.getPanX();
-                    const diffy = event.offsetY - this._segCanvasService.getPanY();
-                    this._selectMetadata.img_x = this._segCanvasService.getGlobalX() + diffX;
-                    this._selectMetadata.img_y = this._segCanvasService.getGlobalY() + diffy;
-                    this._segCanvasService.panPolygons(this._selectMetadata, false);
+                    const diffAxis = this._segCanvasService.getDiffXY(event);
+                    // const { x, y } = this._segCanvasService.getGlobalXY();
+                    // const { diffX, diffY } = {
+                    //     diffX: diffAxis.diffX + x,
+                    //     diffY: diffAxis.diffY + y,
+                    // };
+                    this._selectMetadata.img_x = diffAxis.diffX;
+                    this._selectMetadata.img_y = diffAxis.diffY;
+                    this._segCanvasService.panPolygons(this._selectMetadata, false, (isDone) => {
+                        if (isDone) {
+                            const meta = cloneDeep(this._selectMetadata);
+                            this._undoRedoService.isMethodChange('pan')
+                                ? this._undoRedoService.appendStages({
+                                      meta,
+                                      method: 'pan',
+                                  })
+                                : this._undoRedoService.replaceStages({
+                                      meta,
+                                      method: 'pan',
+                                  });
+                        }
+                    });
                     this.redrawImage(this._selectMetadata);
-                    this._undoRedoService.isMethodChange('pan')
-                        ? this._undoRedoService.appendStages({
-                              meta: this._selectMetadata,
-                              method: 'pan',
-                          })
-                        : this._undoRedoService.replaceStages({
-                              meta: this._selectMetadata,
-                              method: 'pan',
-                          });
                 }
                 if (this.segState.draw && this.canvasContext) {
                     const mouseWithinShape = this._segCanvasService.mouseMoveDraw(
@@ -580,7 +588,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     @HostListener('mouseout', ['$event'])
     mouseOut(_: MouseEvent) {
         try {
-            if (this.segState.drag && this.isMouseWithinPoint) {
+            if (this.segState.drag && this.isMouseWithinPoint && this.mousedown) {
                 this._segCanvasService.setGlobalXY(this._selectMetadata);
                 this.redrawImage(this._selectMetadata);
             }

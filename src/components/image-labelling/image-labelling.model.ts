@@ -180,3 +180,5 @@ export type MouseCursor = {
     grab: boolean;
     resize: boolean;
 };
+
+export type DiffXY = { diffX: number; diffY: number };

@@ -1,4 +1,4 @@
-import { BboxMetadata, Boundingbox, Direction, xyCoordinate } from '../image-labelling.model';
+import { BboxMetadata, Boundingbox, DiffXY, Direction, xyCoordinate } from '../image-labelling.model';
 import { clone } from 'lodash-es';
 import { Injectable } from '@angular/core';
 import { Utils } from '../../../shared/types/utils/utils';
@@ -26,9 +26,9 @@ export class BoundingBoxCanvasService {
     private util: Utils = new Utils();
     constructor() {}
 
-    public getdiffXY(offsetX: number, offsetY: number): { diffX: number; diffY: number } {
+    public getDiffXY(offsetX: number, offsetY: number): DiffXY {
         try {
-            const rtobj: { diffX: number; diffY: number } = { diffX: 0, diffY: 0 };
+            const rtobj: DiffXY = { diffX: 0, diffY: 0 };
             if (offsetX !== null && offsetX !== undefined && offsetY !== null && offsetY !== undefined) {
                 rtobj.diffX = this.globalXY.x + (offsetX - this.panXY.x);
                 rtobj.diffY = this.globalXY.y + (offsetY - this.panXY.y);
@@ -36,7 +36,7 @@ export class BoundingBoxCanvasService {
             return rtobj;
         } catch (err) {
             console.log(
-                'ObjectDetection GetdiffXY(offsetX: number,offsetY: number): { diffX: number; diffY: number }',
+                'ObjectDetection getDiffXY(offsetX: number,offsetY: number): { diffX: number; diffY: number }',
                 err.name + ': ',
                 err.message,
             );
@@ -74,7 +74,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public moveAllBbox(boundingBoxes: Boundingbox[], imgX: number, imgY: number, callback: (arg: boolean) => void) {
+    public moveAllBbox(boundingBoxes: Boundingbox[], imgX: number, imgY: number, callback?: (arg: boolean) => void) {
         try {
             for (const boundingBox of boundingBoxes) {
                 const temRectWidth: number = boundingBox.x2 - boundingBox.x1;
@@ -84,7 +84,7 @@ export class BoundingBoxCanvasService {
                 boundingBox.x2 = clone(boundingBox.x1 + temRectWidth);
                 boundingBox.y2 = clone(boundingBox.y1 + temRectHeight);
             }
-            callback(true);
+            callback && callback(true);
         } catch (err) {}
     }
 

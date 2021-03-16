@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Utils } from '../../../shared/types/utils/utils';
 import {
     Coordinate,
+    DiffXY,
     Direction,
     FitScreenCalc,
     Method,
@@ -79,18 +80,21 @@ export class SegmentationCanvasService {
         img: HTMLImageElement,
         context: CanvasRenderingContext2D,
         canvas: HTMLCanvasElement,
-        { offsetX, offsetY }: MouseEvent,
+        event: MouseEvent,
         ctrlDown: boolean,
         isMouseDown: boolean,
         redrawCallback: (arg: Method) => void,
     ) {
+        const { offsetX, offsetY } = event;
         const detectedPolygon = this.findPolygonArea(offsetX, offsetY, metadata);
         if (this.isNewPolygon() && ctrlDown && isMouseDown) {
-            const diffX = offsetX - this.getPanX();
-            const diffY = offsetY - this.getPanY();
+            // const diffX = offsetX - this.getPanX();
+            // const diffY = offsetY - this.getPanY();
+            const { diffX, diffY } = this.getDiffXY(event);
             if (metadata) {
-                metadata.img_x = this.getGlobalX() + diffX;
-                metadata.img_y = this.getGlobalY() + diffY;
+                const { x, y } = this.getGlobalXY();
+                metadata.img_x = diffX - x;
+                metadata.img_y = diffY - y;
                 this.panPolygons(metadata, true);
                 redrawCallback('pan');
             }
@@ -117,22 +121,25 @@ export class SegmentationCanvasService {
             if (offsetX && offsetY) {
                 this.panXY.x = offsetX;
                 this.panXY.y = offsetY;
-                return true;
-            } else {
-                return false;
             }
         } catch (err) {
             console.log('setPanXY', err);
-            return false;
         }
     }
 
-    getPanX() {
-        return this.panXY.x;
-    }
-
-    getPanY() {
-        return this.panXY.y;
+    getDiffXY({ offsetX, offsetY }: MouseEvent): DiffXY {
+        try {
+            const panObj: DiffXY = { diffX: 0, diffY: 0 };
+            if (offsetX && offsetY) {
+                const { x, y } = this.getGlobalXY();
+                panObj.diffX = x + (offsetX - this.panXY.x);
+                panObj.diffY = y + (offsetY - this.panXY.y);
+            }
+            return panObj;
+        } catch (err) {
+            console.log(err);
+            return { diffX: -1, diffY: -1 };
+        }
     }
 
     setSelectedPolygonIndex(index: number) {
@@ -371,12 +378,8 @@ export class SegmentationCanvasService {
         }
     }
 
-    getGlobalX() {
-        return this.globalXY.x;
-    }
-
-    getGlobalY() {
-        return this.globalXY.y;
+    getGlobalXY() {
+        return this.globalXY;
     }
 
     mouseMovePolygon(
@@ -745,7 +748,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    panPolygons(metadata: PolyMetadata, isDraw: boolean) {
+    panPolygons(metadata: PolyMetadata, isDraw: boolean, callback?: (arg: boolean) => void) {
         try {
             if (isDraw && this.tmpPolygon?.coorPt) {
                 for (const [i] of this.tmpPolygon.coorPt.entries()) {
@@ -759,6 +762,7 @@ export class SegmentationCanvasService {
                     metadata.polygons[i].coorPt[j].y = metadata.img_y + metadata.polygons[i].coorPt[j].distancetoImg.y;
                 }
             }
+            callback && callback(true);
         } catch (err) {
             console.log('panPolygons', err);
         }
