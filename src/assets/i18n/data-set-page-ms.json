@@ -16,7 +16,9 @@
     "pageHeader": {
         "home": "Laman Utama",
         "datasetManagement": "Pengurusan Set Data",
-        "revision": "Semakan"
+        "revision": "Semakan",
+        "addUser": "Tambah pengguna",
+        "profile": "Profil"
     },
     "datasetHeader": {
         "datasetManagement": "Pengurusan Set Data"
@@ -30,7 +32,7 @@
         "notAvailable": "Tidak Tersedia",
         "uploadFolder": "Memuat naik folder",
         "uploadPhotos": "Memuat naik foto",
-        "created": "Dibuat pada:",
+        "created": "Dicipta pada:",
         "totalPhoto": "Jumlah foto:",
         "noProject": "Tunggu sekejap... tidak ada projek pun",
         "createNew": "Bersedia dan jom mulakan projek baru!"
@@ -38,11 +40,49 @@
     "labellingProject": {
         "project": "Projek",
         "label": "Label",
-        "annotation": "Anotasi"
+        "enterLabel": "Masukkan Label",
+        "annotation": "Anotasi",
+        "delete": "Padam",
+        "labelNotExist": "Label tidak wujud. Tekan 'enter' untuk tambah."
     },
     "footer": {
         "size": "Saiz",
         "image": "Imej",
-        "dimension": "Dimensi"
+        "dimension": "Dimensi",
+        "copyToClipboard": "Salin"
+    },
+    "leftSideBar": {
+        "pointer": "Penunjuk",
+        "rectangularBB": "Kotak Sempadan",
+        "polygon": "Poligon",
+        "eraser": "Pemadam",
+        "fitCenter": "Sesuaikan Dengan Saiz Skrin",
+        "save": "Simpan"
+    },
+    "rightSideBar": {
+        "folderOrFiles": "Folder / Fail",
+        "label": "Label",
+        "annotation": "Anotasi",
+        "statistic": "Statistik"
+    },
+    "labellingInfo": {
+        "previous": "Sebelumnya",
+        "next": "Selepasnya",
+        "undo": "Kembali ke tindakan terakhir",
+        "redo": "Buat semula"
+    },
+    "labellingArea": {
+        "mainLabel": "Label Utama",
+        "label": "Label",
+        "regionInfo": "Info Wilayah",
+        "subLabel": "Sub Label",
+        "add": "Tambah",
+        "addedSubLabel": "Senarai Sub Label",
+        "mainRegionInfo": "Info Label Utama",
+        "subRegionInfo": "Info Sub Label"
+    },
+    "searchLabel": {
+        "labelNotExist": "Label tidak wujud.",
+        "enterToAdd": "Tekan 'enter' untuk tambah."
     }
 }

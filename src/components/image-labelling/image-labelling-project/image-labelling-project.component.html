@@ -55,7 +55,7 @@
                             [(ngModel)]="inputLabel"
                             (ngModelChange)="inputLabelChange($event)"
                             (keydown.enter)="validateInputLabel($event)"
-                            placeholder="Enter Label"
+                            [placeholder]="'labellingProject.enterLabel' | translate"
                         />
                     </div>
                     <div class="utility-inner-container tab-height scroll" id="inner-container">
@@ -78,14 +78,14 @@
                                             ><span
                                                 [ngClass]="clickAbilityToggle ? 'pointer' : null"
                                                 (click)="onDeleteLabel(label)"
-                                                >Delete</span
+                                                >{{ 'labellingProject.delete' | translate }}</span
                                             ></ng-container
                                         ></label
                                     >
                                 </div>
                             </ng-container>
                             <label *ngIf="labelList.length === 0" class="not-exist">
-                                Label does not exist. Press Enter to add.
+                                {{ 'labellingProject.labelNotExist' | translate }}
                             </label>
                         </div>
                     </div>

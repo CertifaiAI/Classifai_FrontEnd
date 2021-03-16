@@ -6,7 +6,7 @@
     "voice": "语音",
     "imageOpt": {
         "selection": "Please select one of the below:",
-        "boundingBoxes": "Bounding Boxes",
-        "polygons": "Polygons"
+        "boundingBoxes": "边界框",
+        "polygons": "多边形"
     }
 }

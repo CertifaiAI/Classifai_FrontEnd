@@ -52,7 +52,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                 },
                 {
                     imgPath: `../../../assets/icons/pointer.svg`,
-                    hoverLabel: `Pointer`,
+                    hoverLabel: 'leftSideBar.pointer',
                     alt: `Pointer`,
                     toggleable: true,
                     onClick: () => {
@@ -72,7 +72,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                 this._currentUrl === '/imglabel/bndbox'
                     ? {
                           imgPath: `../../../assets/icons/rec_bounding_box.svg`,
-                          hoverLabel: `Rectangular Bounding Box`,
+                          hoverLabel: `leftSideBar.rectangularBB`,
                           alt: `RectangularBB`,
                           toggleable: true,
                           onClick: () => {
@@ -82,7 +82,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                       }
                     : {
                           imgPath: `../../../assets/icons/polygon.svg`,
-                          hoverLabel: `Polygon`,
+                          hoverLabel: `leftSideBar.polygon`,
                           alt: `Polygon`,
                           toggleable: true,
                           onClick: () => {
@@ -117,7 +117,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                 // },
                 {
                     imgPath: `../../../assets/icons/eraser.svg`,
-                    hoverLabel: `Eraser`,
+                    hoverLabel: `leftSideBar.eraser`,
                     alt: `Eraser`,
                     toggleable: false,
                     onClick: () => {
@@ -134,7 +134,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                 },
                 {
                     imgPath: `../../../assets/icons/fit_center.svg`,
-                    hoverLabel: `Fit Center`,
+                    hoverLabel: `leftSideBar.fitCenter`,
                     alt: `Fit Center`,
                     toggleable: false,
                     onClick: () => {
@@ -145,7 +145,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                 },
                 {
                     imgPath: `../../../assets/icons/save.svg`,
-                    hoverLabel: `Save`,
+                    hoverLabel: `leftSideBar.save`,
                     alt: `Save`,
                     toggleable: false,
                     onClick: () => {

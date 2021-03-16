@@ -23,8 +23,8 @@
                     >
                 </li>
                 <li *ngIf="labelList.length === 0" class="unclosedOut notExist">
-                    <div>Label does not exist.</div>
-                    <div>Press Enter to add.</div>
+                    <div>{{ 'searchLabel.labelNotExist' | translate }}</div>
+                    <div>{{ 'searchLabel.enterToAdd' | translate }}</div>
                 </li>
             </ul>
         </div>

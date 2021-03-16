@@ -1,10 +1,10 @@
 {
-    "createNewProject": "Create New Project",
-    "newProjectName": "New Project Name:",
+    "createNewProject": "建立新项目",
+    "newProjectName": "新项目名称 : ",
     "projectNameExist": "* Project name already exist! Try other name",
     "projectNameRequired": "* Project name is required",
-    "labelListFile": "Label list file (*.txt):",
-    "createButton": "Create",
+    "labelListFile": "标签列表文件 (*.txt): ",
+    "createButton": "创建",
     "cancelButton": "Cancel",
     "menuName": {
         "newProject": "New Project",
@@ -16,7 +16,9 @@
     "pageHeader": {
         "home": "Home",
         "datasetManagement": "Dataset Management",
-        "revision": "Revision"
+        "revision": "Revision",
+        "addUser": "Add user",
+        "profile": "Profile"
     },
     "datasetHeader": {
         "datasetManagement": "Dataset Management"
@@ -38,11 +40,49 @@
     "labellingProject": {
         "project": "Project",
         "label": "Label",
-        "annotation": "Annotation"
+        "enterLabel": "Enter Label",
+        "annotation": "Annotation",
+        "delete": "Delete",
+        "labelNotExist": "Label does not exist. Press Enter to add."
     },
     "footer": {
         "size": "Size",
         "image": "Image",
-        "dimension": "Dimension"
+        "dimension": "Dimension",
+        "copyToClipboard": "Copy to Clipboard"
+    },
+    "leftSideBar": {
+        "pointer": "Pointer",
+        "rectangularBB": "边界框",
+        "polygon": "多边形",
+        "eraser": "Eraser",
+        "fitCenter": "调整到屏幕大小",
+        "save": "Save"
+    },
+    "rightSideBar": {
+        "folderOrFiles": "Folder / Files",
+        "label": "Label",
+        "annotation": "Annotation",
+        "statistic": "Statistic"
+    },
+    "labellingInfo": {
+        "previous": "Previous",
+        "next": "Next",
+        "undo": "Undo",
+        "redo": "Redo"
+    },
+    "labellingArea": {
+        "mainLabel": "主标签",
+        "label": "标签",
+        "regionInfo": "区域资讯",
+        "subLabel": "副标签",
+        "add": "添加",
+        "addedSubLabel": "Added Sub Label",
+        "mainRegionInfo": "Input Main Region Info",
+        "subRegionInfo": "Input Sub Region Info"
+    },
+    "searchLabel": {
+        "labelNotExist": "Label does not exist.",
+        "enterToAdd": "Press enter to add."
     }
 }

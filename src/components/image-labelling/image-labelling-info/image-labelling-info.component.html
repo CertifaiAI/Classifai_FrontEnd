@@ -18,7 +18,7 @@
                         [attr.data-index]="i + logo.alt"
                         [src]="logo.imgPath"
                         [alt]="logo.alt"
-                        [title]="logo.hoverLabel"
+                        [title]="logo.hoverLabel | translate"
                         (click)="logo.onClick()"
                     />
                 </div>
@@ -35,7 +35,7 @@
                         [attr.data-index]="i + logo.alt"
                         [src]="logo.imgPath"
                         [alt]="logo.alt"
-                        [title]="logo.hoverLabel"
+                        [title]="logo.hoverLabel | translate"
                         (click)="logo.onClick()"
                     />
                 </div>
@@ -50,7 +50,7 @@
                     [attr.data-index]="i + logo.alt"
                     [src]="logo.imgPath"
                     [alt]="logo.alt"
-                    [title]="logo.hoverLabel"
+                    [title]="logo.hoverLabel | translate"
                     (click)="logo.onClick()"
                 />
             </div>

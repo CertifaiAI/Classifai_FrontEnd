@@ -82,7 +82,9 @@
                     </div>
                     <div class="card-title-style">
                         <label [title]="project.created_date"
-                            ><div class="card-title-txt">Created: {{ project.created_date }}</div></label
+                            ><div class="card-title-txt">
+                                {{ 'datasetCard.created' | translate }} {{ project.created_date }}
+                            </div></label
                         >
                     </div>
                     <div class="project-name-style">

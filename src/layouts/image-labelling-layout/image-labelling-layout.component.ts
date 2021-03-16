@@ -75,7 +75,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         private _imgLblActionService: ImageLabellingActionService,
         private _imgLblLayoutService: ImageLabellingLayoutService,
         private _imgLblModeService: ImageLabellingModeService,
-        private _languageService: LanguageService,
+        public _languageService: LanguageService,
     ) {
         const langsArr: string[] = ['image-labelling-en', 'image-labelling-cn', 'image-labelling-ms'];
         this._languageService.initializeLanguage(`image-labelling`, langsArr);
