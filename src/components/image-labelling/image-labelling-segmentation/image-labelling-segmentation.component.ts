@@ -43,6 +43,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         grab: false,
         resize: false,
     };
+    mousedown: boolean = false;
     @Input() _selectMetadata!: PolyMetadata;
     @Input() _imgSrc: string = '';
     @Output() _onChangeMetadata: EventEmitter<PolyMetadata> = new EventEmitter();
@@ -94,6 +95,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
             this._selectMetadata.img_h = img_h < 1 ? img_ori_h : img_h;
             // this._segCanvasService.setGlobalXY(this._selectMetadata);
             this.imgFitToCenter();
+            this.emitMetadata();
             this._undoRedoService.appendStages({ meta: cloneDeep(this._selectMetadata), method: 'draw' });
         };
     }
@@ -110,18 +112,6 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         this.annotateState && this._segCanvasService.setSelectedPolygonIndex(this.annotateState.annotation);
     }
 
-    // rulesMakeChange(scroll?: boolean, fitToScreen?: boolean, clearScreen?: boolean) {
-    //     try {
-    //         const tempRules = clone(this.segState);
-    //         scroll && (tempRules.scroll = scroll);
-    //         fitToScreen && (tempRules.fitCenter = fitToScreen);
-    //         clearScreen && (tempRules.clear = clearScreen);
-    //         this._imgLblStateService.setState(tempRules);
-    //     } catch (err) {
-    //         console.log('rulesMakeChange', err);
-    //     }
-    // }
-
     imgFitToCenter() {
         try {
             const tmpObj = this._segCanvasService.calScaleToFitScreen(this._selectMetadata, this.canvas.nativeElement);
@@ -130,7 +120,6 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
             this._selectMetadata.img_x = tmpObj.newX;
             this._selectMetadata.img_y = tmpObj.newY;
             this._segCanvasService.scalePolygons(this._selectMetadata, tmpObj);
-
             this._segCanvasService.setGlobalXY({ img_x: tmpObj.newX, img_y: tmpObj.newY });
             this._segCanvasService.panPolygons(this._selectMetadata, false);
             const meta = cloneDeep(this._selectMetadata);
@@ -442,6 +431,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
             this.isMouseWithinPoint = this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
 
             if (this.isMouseWithinPoint) {
+                this.mousedown = true;
                 if (this.segState.drag) {
                     this._segCanvasService.setPanXY(event);
                 }
@@ -495,6 +485,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                 this._segCanvasService.validateXYDistance(this._selectMetadata);
                 this.emitMetadata();
             }
+            this.mousedown = false;
         } catch (err) {
             console.log('mouseUp', err);
         }
@@ -509,7 +500,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
             this.isMouseWithinPoint =
                 this._selectMetadata && this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
             if (this.isMouseWithinPoint) {
-                if (this.segState.drag && this.mouseDown) {
+                if (this.segState.drag && this.mousedown) {
                     const diffX = event.offsetX - this._segCanvasService.getPanX();
                     const diffy = event.offsetY - this._segCanvasService.getPanY();
                     this._selectMetadata.img_x = this._segCanvasService.getGlobalX() + diffX;
@@ -526,7 +517,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                               method: 'pan',
                           });
                 }
-                if (this.segState.draw && this.canvasContext && this.mouseDown) {
+                if (this.segState.draw && this.canvasContext) {
                     const mouseWithinShape = this._segCanvasService.mouseMoveDraw(
                         this._selectMetadata,
                         this.image,
