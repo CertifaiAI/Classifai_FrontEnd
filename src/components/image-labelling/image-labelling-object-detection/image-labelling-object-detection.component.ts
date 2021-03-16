@@ -424,7 +424,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 );
                 if (mouseWithinPointPath && !this.showDropdownLabelBox) {
                     if (this.boundingBoxState.drag && this.mousedown) {
-                        const diff = this._boundingBoxCanvas.getDiffXY(event.offsetX, event.offsetY);
+                        const diff = this._boundingBoxCanvas.getDiffXY(event);
                         this._selectMetadata.img_x = diff.diffX;
                         this._selectMetadata.img_y = diff.diffY;
                         this._boundingBoxCanvas.panRectangle(
@@ -492,7 +492,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         }
                     }
                 } else {
-                    this.changeMouseCursorState({});
+                    this.changeMouseCursorState();
                     if (
                         this.crossh.nativeElement.style.zIndex !== '-1' ||
                         this.crossh.nativeElement.style.visibility !== 'hidden' ||
@@ -511,13 +511,16 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         }
     }
 
-    changeMouseCursorState({ grab, move, pointer, resize }: Partial<MouseCursor>) {
-        this.mouseCursor = {
-            grab: grab ?? false,
-            pointer: pointer ?? false,
-            move: move ?? false,
-            resize: resize ?? false,
-        };
+    changeMouseCursorState(mouseCursor?: Partial<MouseCursor>) {
+        if (mouseCursor) {
+            const { grab, move, pointer, resize } = mouseCursor;
+            this.mouseCursor = {
+                grab: grab ?? false,
+                pointer: pointer ?? false,
+                move: move ?? false,
+                resize: resize ?? false,
+            };
+        }
     }
 
     checkCloseEnough(p1: number, p2: number) {
