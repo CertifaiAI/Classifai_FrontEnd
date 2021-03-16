@@ -59,10 +59,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     allLabelList: LabelInfo[] = [];
     showDropdownLabelBox: boolean = false;
     invalidInput: boolean = false;
+    closeEnough: number = 5;
     private mouseCursor: MouseCursor = {
         move: false,
         pointer: false,
         grab: false,
+        resize: false,
     };
     private scale = 1;
     private factor = 0.05;
@@ -94,7 +96,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 fitCenter && this.imgFitToCenter();
                 if (clear) {
                     this._selectMetadata.bnd_box = [];
-                    this.redrawImages(this._selectMetadata);
+                    this.redrawImage(this._selectMetadata);
                     this.emitMetadata();
                 }
             });
@@ -108,7 +110,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     ngOnChanges(changes: SimpleChanges): void {
         // console.log(changes);
         if (changes._selectMetadata?.currentValue) {
-            this.redrawImages(this._selectMetadata);
+            this.redrawImage(this._selectMetadata);
         }
 
         if (changes._imgSrc?.currentValue) {
@@ -157,7 +159,6 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 this._selectMetadata.bnd_box,
                 this._selectMetadata.img_x,
                 this._selectMetadata.img_y,
-                () => {},
             );
             this._selectMetadata.img_x = tmpObj.newX;
             this._selectMetadata.img_y = tmpObj.newY;
@@ -166,22 +167,22 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 this._selectMetadata.bnd_box,
                 this._selectMetadata.img_x,
                 this._selectMetadata.img_y,
-                (isDone: boolean) => {
-                    if (isDone) {
-                        const meta = cloneDeep(this._selectMetadata);
-                        return this._undoRedoService.isMethodChange('zoom')
-                            ? this._undoRedoService.appendStages({
-                                  meta,
-                                  method: 'zoom',
-                              })
-                            : this._undoRedoService.replaceStages({
-                                  meta,
-                                  method: 'zoom',
-                              });
-                    }
-                },
+                // (isDone) => {
+                //     if (isDone) {
+                //         const meta = cloneDeep(this._selectMetadata);
+                //         this._undoRedoService.isMethodChange('zoom')
+                //             ? this._undoRedoService.appendStages({
+                //                   meta,
+                //                   method: 'zoom',
+                //               })
+                //             : this._undoRedoService.replaceStages({
+                //                   meta,
+                //                   method: 'zoom',
+                //               });
+                //     }
+                // },
             );
-            this.redrawImages(this._selectMetadata);
+            this.redrawImage(this._selectMetadata);
             if (this.canvasContext) {
                 this.resetZoomScale();
                 this.canvasContext.canvas.style.transformOrigin = `0 0`;
@@ -213,7 +214,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             isDlbClick: false,
                         });
                         this.getBBoxDistanceFromImage();
-                        this.redrawImages(this._selectMetadata);
+                        this.redrawImage(this._selectMetadata);
                     }
 
                     this._undoRedoService.appendStages({
@@ -227,7 +228,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     if (this._undoRedoService.isAllowRedo()) {
                         const rtStages: UndoState = this._undoRedoService.redo();
                         this._selectMetadata = cloneDeep(rtStages?.meta as BboxMetadata);
-                        this.redrawImages(this._selectMetadata);
+                        this.redrawImage(this._selectMetadata);
                         this.getBBoxDistanceFromImage();
                         this.emitMetadata();
                     }
@@ -236,7 +237,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     if (this._undoRedoService.isAllowUndo()) {
                         const rtStages: UndoState = this._undoRedoService.undo();
                         this._selectMetadata = cloneDeep(rtStages?.meta as BboxMetadata);
-                        this.redrawImages(this._selectMetadata);
+                        this.redrawImage(this._selectMetadata);
                         this.getBBoxDistanceFromImage();
                         this.emitMetadata();
                     }
@@ -252,7 +253,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         (isDone) => {
                             if (isDone) {
                                 this.annotateStateSelectChange({ annotation: -1, isDlbClick: false });
-                                this.redrawImages(this._selectMetadata);
+                                this.redrawImage(this._selectMetadata);
                                 this._undoRedoService.appendStages({
                                     meta: cloneDeep(this._selectMetadata),
                                     method: 'draw',
@@ -293,14 +294,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('DOMMouseScroll', ['$event'])
     mouseScroll(event: WheelEvent & { wheelDelta: number }) {
         try {
-            const mouseWithinPointPath = this._boundingBoxCanvas.mouseClickWithinPointPath(
-                this._selectMetadata.img_x,
-                this._selectMetadata.img_y,
-                this._selectMetadata.img_w,
-                this._selectMetadata.img_h,
-                event.offsetX,
-                event.offsetY,
-            );
+            const mouseWithinPointPath = this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event);
 
             if (mouseWithinPointPath && this.canvasContext) {
                 // let delta = event.deltaY ? event.deltaY / 40 : 0;
@@ -353,28 +347,19 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('mousedown', ['$event'])
     mouseDown(event: MouseEvent) {
         try {
-            if (
-                this._boundingBoxCanvas.mouseClickWithinPointPath(
-                    this._selectMetadata.img_x,
-                    this._selectMetadata.img_y,
-                    this._selectMetadata.img_w,
-                    this._selectMetadata.img_h,
-                    event.offsetX,
-                    event.offsetY,
-                )
-            ) {
+            if (this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event)) {
                 this.mousedown = true;
                 if (this.boundingBoxState.drag) {
                     this._boundingBoxCanvas.setPanXY(event.offsetX, event.offsetY);
                 }
                 if (this.boundingBoxState.draw) {
-                    const tmpBox: number = this._boundingBoxCanvas.mouseDownDrawEnable(
+                    const tmpBox = this._boundingBoxCanvas.mouseDownDrawEnable(
                         event.offsetX,
                         event.offsetY,
                         this._selectMetadata.bnd_box,
                     );
                     this.annotateStateSelectChange({ annotation: tmpBox, isDlbClick: false });
-                    this.redrawImages(this._selectMetadata);
+                    this.redrawImage(this._selectMetadata);
                 }
             }
         } catch (err) {
@@ -385,16 +370,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('mouseup', ['$event'])
     mouseUp(event: MouseEvent) {
         try {
-            if (
-                this._boundingBoxCanvas.mouseClickWithinPointPath(
-                    this._selectMetadata.img_x,
-                    this._selectMetadata.img_y,
-                    this._selectMetadata.img_w,
-                    this._selectMetadata.img_h,
-                    event.offsetX,
-                    event.offsetY,
-                )
-            ) {
+            if (this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event)) {
                 if (this.boundingBoxState.drag && this.mousedown) {
                     this._boundingBoxCanvas.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
                 }
@@ -443,29 +419,22 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         try {
             if (this._selectMetadata) {
                 const mouseWithinPointPath = this._boundingBoxCanvas.mouseClickWithinPointPath(
-                    this._selectMetadata.img_x,
-                    this._selectMetadata.img_y,
-                    this._selectMetadata.img_w,
-                    this._selectMetadata.img_h,
-                    event.offsetX,
-                    event.offsetY,
+                    this._selectMetadata,
+                    event,
                 );
                 if (mouseWithinPointPath && !this.showDropdownLabelBox) {
                     if (this.boundingBoxState.drag && this.mousedown) {
-                        const diff: {
-                            diffX: number;
-                            diffY: number;
-                        } = this._boundingBoxCanvas.getdiffXY(event.offsetX, event.offsetY);
+                        const diff = this._boundingBoxCanvas.getDiffXY(event.offsetX, event.offsetY);
                         this._selectMetadata.img_x = diff.diffX;
                         this._selectMetadata.img_y = diff.diffY;
                         this._boundingBoxCanvas.panRectangle(
                             this._selectMetadata.bnd_box,
                             this._selectMetadata.img_x,
                             this._selectMetadata.img_y,
-                            (isDone: boolean) => {
+                            (isDone) => {
                                 if (isDone) {
                                     const meta = cloneDeep(this._selectMetadata);
-                                    return this._undoRedoService.isMethodChange('pan')
+                                    this._undoRedoService.isMethodChange('pan')
                                         ? this._undoRedoService.appendStages({
                                               meta,
                                               method: 'pan',
@@ -477,11 +446,11 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                                 }
                             },
                         );
-                        this.redrawImages(this._selectMetadata);
+                        this.redrawImage(this._selectMetadata);
                     }
                     if (this.boundingBoxState.draw && this.mousedown) {
                         this._boundingBoxCanvas.mouseMoveDrawEnable(event.offsetX, event.offsetY, this._selectMetadata);
-                        this.redrawImages(this._selectMetadata);
+                        this.redrawImage(this._selectMetadata);
                     }
                     if (this.boundingBoxState.draw && !this.mousedown) {
                         const { box } = this._boundingBoxCanvas.getCurrentClickBox(
@@ -491,25 +460,39 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         );
 
                         if (box !== -1) {
-                            this.mouseCursor = {
-                                grab: false,
-                                pointer: false,
-                                move: true,
-                            };
+                            this.changeMouseCursorState({ move: true });
+                            // const { x1, x2, y1, y2 } = this._selectMetadata.bnd_box[box];
+                            // const { offsetX, offsetY } = event;
+                            // // 4 cases:
+                            // // 1. top left
+                            // if (this.checkCloseEnough(offsetX, x1) && this.checkCloseEnough(offsetY, y1)) {
+                            //     this.changeMouseCursorState({ resize: true });
+                            // }
+                            // // 2. top right
+                            // else if (this.checkCloseEnough(offsetX, x2) && this.checkCloseEnough(offsetY, y1)) {
+                            //     this.changeMouseCursorState({ resize: true });
+                            // }
+                            // // 2. top center & bottom center
+                            // // else if (
+                            // //     this.checkCloseEnough(offsetX, (x2 + x1) / 2) &&
+                            // //     this.checkCloseEnough(offsetY, (y2 + y1) / 2)
+                            // // ) {
+                            // //     this.changeMouseCursorState({ resize: true });
+                            // // }
+                            // // 3. bottom left
+                            // else if (this.checkCloseEnough(offsetX, x1) && this.checkCloseEnough(offsetY, y2)) {
+                            //     this.changeMouseCursorState({ resize: true });
+                            // }
+                            // // 4. bottom right
+                            // else if (this.checkCloseEnough(offsetX, x2) && this.checkCloseEnough(offsetY, y2)) {
+                            //     this.changeMouseCursorState({ resize: true });
+                            // }
                         } else {
-                            this.mouseCursor = {
-                                grab: false,
-                                pointer: true,
-                                move: false,
-                            };
+                            this.changeMouseCursorState({ pointer: true });
                         }
                     }
                 } else {
-                    this.mouseCursor = {
-                        grab: false,
-                        pointer: false,
-                        move: false,
-                    };
+                    this.changeMouseCursorState({});
                     if (
                         this.crossh.nativeElement.style.zIndex !== '-1' ||
                         this.crossh.nativeElement.style.visibility !== 'hidden' ||
@@ -528,6 +511,21 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         }
     }
 
+    changeMouseCursorState({ grab, move, pointer, resize }: Partial<MouseCursor>) {
+        this.mouseCursor = {
+            grab: grab ?? false,
+            pointer: pointer ?? false,
+            move: move ?? false,
+            resize: resize ?? false,
+        };
+    }
+
+    checkCloseEnough(p1: number, p2: number) {
+        const ss = Math.abs(p1 - p2) < this.closeEnough;
+        console.log(ss);
+        return ss;
+    }
+
     @HostListener('mouseout', ['$event'])
     mouseOut(event: MouseEvent) {
         try {
@@ -541,7 +539,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             }
             if (this.boundingBoxState.drag && this.mousedown) {
                 this._boundingBoxCanvas.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
-                this.redrawImages(this._selectMetadata);
+                this.redrawImage(this._selectMetadata);
             }
             this.mousedown = false;
         } catch (err) {
@@ -561,7 +559,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 this._boundingBoxCanvas.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
                 this.imgFitToCenter();
                 this.emitMetadata();
-                // this.redrawImages(
+                // this.redrawImage(
                 //     this._selectMetadata.img_x,
                 //     this._selectMetadata.img_y,
                 //     this._selectMetadata.img_w,
@@ -588,28 +586,25 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     keyMoveBox(direction: Direction) {
         try {
-            this._boundingBoxCanvas.keyboardMoveBox(
-                direction,
-                this._selectMetadata.bnd_box[this.annotateState.annotation],
-                this._selectMetadata,
-                (isDone) => {
+            const boundingBox = this._selectMetadata.bnd_box[this.annotateState.annotation];
+            boundingBox &&
+                this._boundingBoxCanvas.keyboardMoveBox(direction, boundingBox, this._selectMetadata, (isDone) => {
                     if (isDone) {
                         this._undoRedoService.appendStages({
                             meta: cloneDeep(this._selectMetadata),
                             method: 'draw',
                         });
                         this.getBBoxDistanceFromImage();
-                        this.redrawImages(this._selectMetadata);
+                        this.redrawImage(this._selectMetadata);
                         this.emitMetadata();
                     }
-                },
-            );
+                });
         } catch (err) {
             console.log(err);
         }
     }
 
-    redrawImages({ img_x, img_y, img_w, img_h }: BboxMetadata) {
+    redrawImage({ img_x, img_y, img_w, img_h }: BboxMetadata) {
         this.clearCanvas();
         this.canvasContext?.drawImage(this.img, img_x, img_y, img_w, img_h);
         this._boundingBoxCanvas.drawAllBoxOn(this._selectMetadata.bnd_box, this.canvasContext);
@@ -660,8 +655,16 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     currentCursor() {
-        const { grab, move, pointer } = this.mouseCursor;
-        return grab ? 'cursor-grab' : move ? 'cursor-move' : pointer ? 'cursor-pointer' : null;
+        const { grab, move, pointer, resize } = this.mouseCursor;
+        return grab
+            ? 'cursor-grab'
+            : move
+            ? 'cursor-move'
+            : pointer
+            ? 'cursor-pointer'
+            : resize
+            ? 'cursor-e-resize'
+            : null;
     }
 
     validateInputLabel = ({ target }: HTMLElementEvent<HTMLTextAreaElement>): void => {

@@ -1,4 +1,4 @@
-import { BboxMetadata, Boundingbox, Direction, xyCoordinate } from '../image-labelling.model';
+import { BboxMetadata, Boundingbox, DiffXY, Direction, xyCoordinate } from '../image-labelling.model';
 import { clone } from 'lodash-es';
 import { Injectable } from '@angular/core';
 import { Utils } from '../../../shared/types/utils/utils';
@@ -26,9 +26,9 @@ export class BoundingBoxCanvasService {
     private util: Utils = new Utils();
     constructor() {}
 
-    public getdiffXY(offsetX: number, offsetY: number): { diffX: number; diffY: number } {
+    public getDiffXY(offsetX: number, offsetY: number): DiffXY {
         try {
-            const rtobj: { diffX: number; diffY: number } = { diffX: 0, diffY: 0 };
+            const rtobj: DiffXY = { diffX: 0, diffY: 0 };
             if (offsetX !== null && offsetX !== undefined && offsetY !== null && offsetY !== undefined) {
                 rtobj.diffX = this.globalXY.x + (offsetX - this.panXY.x);
                 rtobj.diffY = this.globalXY.y + (offsetY - this.panXY.y);
@@ -36,7 +36,7 @@ export class BoundingBoxCanvasService {
             return rtobj;
         } catch (err) {
             console.log(
-                'ObjectDetection GetdiffXY(offsetX: number,offsetY: number): { diffX: number; diffY: number }',
+                'ObjectDetection getDiffXY(offsetX: number,offsetY: number): { diffX: number; diffY: number }',
                 err.name + ': ',
                 err.message,
             );
@@ -74,7 +74,7 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public moveAllBbox(boundingBoxes: Boundingbox[], imgX: number, imgY: number, callback: (arg: boolean) => void) {
+    public moveAllBbox(boundingBoxes: Boundingbox[], imgX: number, imgY: number, callback?: (arg: boolean) => void) {
         try {
             for (const boundingBox of boundingBoxes) {
                 const temRectWidth: number = boundingBox.x2 - boundingBox.x1;
@@ -84,7 +84,7 @@ export class BoundingBoxCanvasService {
                 boundingBox.x2 = clone(boundingBox.x1 + temRectWidth);
                 boundingBox.y2 = clone(boundingBox.y1 + temRectHeight);
             }
-            callback(true);
+            callback && callback(true);
         } catch (err) {}
     }
 
@@ -180,17 +180,16 @@ export class BoundingBoxCanvasService {
         try {
             const tmpOffsetX: number = mouseX - this.currentDrawing.x1;
             const tmpOffsetY: number = mouseY - this.currentDrawing.y1;
-            if (
-                this.moveBoxWithinPointPath(
-                    currMeta.img_x,
-                    currMeta.img_y,
-                    currMeta.img_w,
-                    currMeta.img_h,
-                    tmpOffsetX,
-                    tmpOffsetY,
-                    currMeta.bnd_box[this.currentSelectedBndBox],
-                )
-            ) {
+            const isWithinPointPath = this.moveBoxWithinPointPath(
+                currMeta.img_x,
+                currMeta.img_y,
+                currMeta.img_w,
+                currMeta.img_h,
+                tmpOffsetX,
+                tmpOffsetY,
+                currMeta.bnd_box[this.currentSelectedBndBox],
+            );
+            if (isWithinPointPath) {
                 this.setCurrentX2Y2(mouseX, mouseY);
                 const xOffset: number = this.currentDrawing.x2 - this.currentDrawing.x1;
                 const yOffset: number = this.currentDrawing.y2 - this.currentDrawing.y1;
@@ -318,7 +317,7 @@ export class BoundingBoxCanvasService {
         boxes: Boundingbox[],
         imgX: number,
         imgY: number,
-        callback: (arg: boolean) => void,
+        callback?: (arg: boolean) => void,
     ) {
         try {
             for (const box of boxes) {
@@ -338,7 +337,7 @@ export class BoundingBoxCanvasService {
                 box.distancetoImg.x = clone(newdistancex);
                 box.distancetoImg.y = clone(newdistanceY);
             }
-            callback(true);
+            callback && callback(true);
         } catch (err) {
             console.log(
                 'ObjectDetection scaleAllBoxes(scalefactor: number,boxes:Boundingbox[],imgX:number,imgY:number)',
@@ -412,21 +411,15 @@ export class BoundingBoxCanvasService {
     }
 
     public mouseClickWithinPointPath(
-        imgX: number,
-        imgY: number,
-        imgW: number,
-        imgH: number,
-        coorX: number,
-        coorY: number,
+        { img_x, img_y, img_w, img_h }: BboxMetadata,
+        { offsetX, offsetY }: MouseEvent,
     ): boolean {
         try {
-            return coorX > imgX && coorX < imgX + imgW && coorY > imgY && coorY < imgY + imgH ? true : false;
+            return offsetX > img_x && offsetX < img_x + img_w && offsetY > img_y && offsetY < img_y + img_h
+                ? true
+                : false;
         } catch (err) {
-            console.log(
-                'ObjectDetection mouseClickWithinPointPath(imgx:number, imgy:number, imgw:number, imgh:number, coorX:number,):boolean',
-                err.name + ': ',
-                err.message,
-            );
+            console.log(err);
             return false;
         }
     }
@@ -451,7 +444,7 @@ export class BoundingBoxCanvasService {
                 }
                 const { x1, x2, y1, y2 } = this.currentDrawing;
                 this.tmpbox = this.generateNewBox(x1, x2, y1, y2);
-                this.tmpbox ? this.drawEachBoxOn(this.tmpbox, context, true) : null;
+                this.tmpbox && this.drawEachBoxOn(this.tmpbox, context, true);
             }
         } catch (err) {
             console.log('redraw(boundbox) ----> ', err.name + ': ', err.message);
