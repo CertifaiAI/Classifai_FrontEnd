@@ -5,7 +5,7 @@
     "video": "视频",
     "voice": "语音",
     "imageOpt": {
-        "selection": "Please select one of the below:",
+        "selection": "请选择项目种类:",
         "boundingBoxes": "边界框",
         "polygons": "多边形"
     }

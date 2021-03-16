@@ -1,75 +1,75 @@
 {
     "createNewProject": "建立新项目",
     "newProjectName": "新项目名称 : ",
-    "projectNameExist": "* Project name already exist! Try other name",
-    "projectNameRequired": "* Project name is required",
+    "projectNameExist": "* 项目名称已被使用。请选择其他名称",
+    "projectNameRequired": "* 项目名称空缺",
     "labelListFile": "标签列表文件 (*.txt): ",
     "createButton": "创建",
-    "cancelButton": "Cancel",
+    "cancelButton": "取消",
     "menuName": {
-        "newProject": "New Project",
-        "myProject": "My Project",
-        "starred": "Starred",
-        "recent": "Recent",
-        "trash": "Trash"
+        "newProject": "创建新项目",
+        "myProject": "我的项目",
+        "starred": "书签",
+        "recent": "最新",
+        "trash": "已删除"
     },
     "pageHeader": {
-        "home": "Home",
-        "datasetManagement": "Dataset Management",
-        "revision": "Revision",
-        "addUser": "Add user",
-        "profile": "Profile"
+        "home": "主页",
+        "datasetManagement": "资料集管理",
+        "revision": "修订",
+        "addUser": "添加用户",
+        "profile": "用户资料"
     },
     "datasetHeader": {
-        "datasetManagement": "Dataset Management"
+        "datasetManagement": "资料集管理"
     },
     "datasetCard": {
-        "fetchingProject": "Fetching your project...",
-        "pleaseWait": "Please wait... while we prepare the dishes",
-        "uploading": "Uploading",
-        "new": "New",
-        "available": "Available",
-        "notAvailable": "Not Available",
-        "uploadFolder": "Upload Folder",
-        "uploadPhotos": "Upload Photo(s)",
-        "created": "Created:",
-        "totalPhoto": "Total Photo:",
-        "noProject": "Wait a minute... there's no project",
-        "createNew": "Gear up and start creating new project!"
+        "fetchingProject": "正在读取档案...",
+        "pleaseWait": "请稍等...缓冲处理中",
+        "uploading": "正在读取",
+        "new": "最新",
+        "available": "可开启",
+        "notAvailable": "不可开启",
+        "uploadFolder": "上载文件夹",
+        "uploadPhotos": "上载图像",
+        "created": "已创建:",
+        "totalPhoto": "图像总数:",
+        "noProject": "没有项目",
+        "createNew": "开始新的项目吧！"
     },
     "labellingProject": {
-        "project": "Project",
-        "label": "Label",
-        "enterLabel": "Enter Label",
-        "annotation": "Annotation",
-        "delete": "Delete",
-        "labelNotExist": "Label does not exist. Press Enter to add."
+        "project": "项目",
+        "label": "标签",
+        "enterLabel": "输入标签",
+        "annotation": "标注",
+        "delete": "删除",
+        "labelNotExist": "没有此标签，按下回车键以添加标签"
     },
     "footer": {
-        "size": "Size",
-        "image": "Image",
-        "dimension": "Dimension",
-        "copyToClipboard": "Copy to Clipboard"
+        "size": "容量",
+        "image": "格式",
+        "dimension": "尺寸",
+        "copyToClipboard": "复制"
     },
     "leftSideBar": {
-        "pointer": "Pointer",
+        "pointer": "鼠标",
         "rectangularBB": "边界框",
         "polygon": "多边形",
-        "eraser": "Eraser",
+        "eraser": "橡皮",
         "fitCenter": "调整到屏幕大小",
-        "save": "Save"
+        "save": "存档"
     },
     "rightSideBar": {
-        "folderOrFiles": "Folder / Files",
-        "label": "Label",
-        "annotation": "Annotation",
-        "statistic": "Statistic"
+        "folderOrFiles": "文件夹 / 文件",
+        "label": "标签",
+        "annotation": "标注",
+        "statistic": "数据"
     },
     "labellingInfo": {
-        "previous": "Previous",
-        "next": "Next",
-        "undo": "Undo",
-        "redo": "Redo"
+        "previous": "上一个",
+        "next": "下一个",
+        "undo": "撤销",
+        "redo": "重做"
     },
     "labellingArea": {
         "mainLabel": "主标签",
@@ -77,12 +77,12 @@
         "regionInfo": "区域资讯",
         "subLabel": "副标签",
         "add": "添加",
-        "addedSubLabel": "Added Sub Label",
-        "mainRegionInfo": "Input Main Region Info",
-        "subRegionInfo": "Input Sub Region Info"
+        "addedSubLabel": "添加副标签",
+        "mainRegionInfo": "主标签资讯",
+        "subRegionInfo": "副标签资讯"
     },
     "searchLabel": {
-        "labelNotExist": "Label does not exist.",
-        "enterToAdd": "Press enter to add."
+        "labelNotExist": "没有此标签",
+        "enterToAdd": "按回车键添加"
     }
 }
