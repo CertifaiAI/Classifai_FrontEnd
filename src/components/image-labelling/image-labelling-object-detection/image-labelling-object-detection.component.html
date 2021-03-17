@@ -1,15 +1,18 @@
 <div>
     <!-- <ng-container *ngIf="imgInput"> -->
     <div #floatdiv class="floatdiv unclosedOut" [hidden]="!showDropdownLabelBox">
-        <input
-            #lbltypetxt
-            type="text"
-            class="lbltypetxt unclosedOut"
-            [ngClass]="invalidInput ? 'invalidInput' : 'validInput'"
-            [(ngModel)]="labelSearch"
-            (ngModelChange)="labelTypeTextChange($event)"
-            (keydown.enter)="validateInputLabel($event)"
-        />
+        <form autocomplete="off">
+            <input
+                #lbltypetxt
+                type="text"
+                class="lbltypetxt unclosedOut"
+                [ngClass]="invalidInput ? 'invalidInput' : 'validInput'"
+                [(ngModel)]="labelSearch"
+                (ngModelChange)="labelTypeTextChange($event)"
+                (keydown.enter)="validateInputLabel($event)"
+                [ngModelOptions]="{ standalone: true }"
+            />
+        </form>
         <div #availablelbl class="availablelbl unclosedOut">
             <ul class="lblList unclosedOut">
                 <li *ngFor="let label of labelList" class="lblName unclosedOut" (click)="labelNameClicked(label.name)">
