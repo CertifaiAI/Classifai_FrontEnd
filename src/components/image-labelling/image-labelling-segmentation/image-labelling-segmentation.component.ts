@@ -1,8 +1,9 @@
-import { ActionState, Direction, MouseCursor, Polygons, PolyMetadata, UndoState } from '../image-labelling.model';
+import { ActionState, Direction, Polygons, PolyMetadata, UndoState } from '../image-labelling.model';
 import { AnnotateActionState, AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { cloneDeep } from 'lodash-es';
 import { CopyPasteService } from 'src/shared/services/copy-paste.service';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
+import { MouseCursorState, MousrCursorService } from 'src/shared/services/mouse-cursor.service';
 import { SegmentationCanvasService } from './segmentation-canvas.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -42,12 +43,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     private annotateState!: AnnotateActionState;
     private unsubscribe$: Subject<any> = new Subject();
     private zoom!: ZoomState;
-    mouseCursor: MouseCursor = {
-        move: false,
-        pointer: false,
-        grab: false,
-        resize: false,
-    };
+    mouseCursor!: MouseCursorState;
     mousedown: boolean = false;
     @Input() _selectMetadata!: PolyMetadata;
     @Input() _imgSrc: string = '';
@@ -60,6 +56,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         private _copyPasteService: CopyPasteService,
         private _annotateSelectState: AnnotateSelectionService,
         private _zoomService: ZoomService,
+        private _mouseCursorService: MousrCursorService,
     ) {}
 
     ngOnInit(): void {
@@ -81,6 +78,10 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         });
 
         this._zoomService.zoom$.pipe(takeUntil(this.unsubscribe$)).subscribe((state) => (this.zoom = state));
+
+        this._mouseCursorService.mouseCursor$
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe((state) => (this.mouseCursor = state));
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -110,6 +111,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             this._segCanvasService.setGlobalXY(this._selectMetadata);
             this.imgFitToCenter();
             this.emitMetadata();
+            this.changeMouseCursorState();
             this._undoRedoService.appendStages({ meta: cloneDeep(this._selectMetadata), method: 'draw' });
         };
     }
@@ -198,6 +200,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
 
                 // prevent canvas scaling on UI but scroll state is false
                 if (this.segState.scroll) {
+                    const { wheelDelta } = event;
+                    this._mouseCursorService.changeCursor(this.mouseCursor, wheelDelta);
                     // this.canvas.nativeElement.style.transformOrigin = '0 0';
                     // this.canvas.nativeElement.style.transform = `scale(${this.scale}, ${this.scale})`;
                     // this.canvas.nativeElement.scrollTop = newScroll.y;
@@ -419,6 +423,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             if (this.isMouseWithinPoint) {
                 this.mousedown = true;
                 if (this.segState.drag) {
+                    this.changeMouseCursorState({ grabbing: true });
                     this._segCanvasService.setPanXY(event);
                 }
                 if (this.segState.draw && this.canvasContext) {
@@ -503,6 +508,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                         }
                     });
                     this.redrawImage(this._selectMetadata);
+                } else if (this.segState.drag && !this.mousedown) {
+                    this.changeMouseCursorState({ grab: true });
                 }
                 if (this.segState.draw && this.canvasContext) {
                     const mouseWithinShape = this._segCanvasService.mouseMoveDraw(
@@ -534,7 +541,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                     if (mouseWithinShape) {
                         this.changeMouseCursorState({ move: true });
                     } else {
-                        this.changeMouseCursorState({ pointer: true });
+                        this.changeMouseCursorState({ crosshair: true });
                     }
                 }
             } else {
@@ -558,16 +565,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         }
     }
 
-    changeMouseCursorState(mouseCursor?: Partial<MouseCursor>) {
-        if (mouseCursor) {
-            const { grab, move, pointer, resize } = mouseCursor;
-            this.mouseCursor = {
-                grab: grab ?? false,
-                pointer: pointer ?? false,
-                move: move ?? false,
-                resize: resize ?? false,
-            };
-        }
+    changeMouseCursorState(mouseCursor?: Partial<MouseCursorState>) {
+        this._mouseCursorService.setState(mouseCursor);
     }
 
     @HostListener('mouseout', ['$event'])
@@ -584,8 +583,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     }
 
     currentCursor() {
-        const { grab, move, pointer } = this.mouseCursor;
-        return grab ? 'cursor-grab' : move ? 'cursor-move' : pointer ? 'cursor-pointer' : null;
+        return this._mouseCursorService.changeCursor(this.mouseCursor);
     }
 
     ngOnDestroy(): void {

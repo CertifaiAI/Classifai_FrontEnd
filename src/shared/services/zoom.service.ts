@@ -37,7 +37,6 @@ export class ZoomService {
     }
 
     calculateZoomScale(event: WheelEvent & WheelDelta, zoom: ZoomState, canvas: HTMLCanvasElement) {
-        // tslint:disable-next-line: prefer-const
         let { scale } = zoom;
         const { factor, max_scale } = zoom;
         // let delta = event.deltaY ? event.deltaY / 40 : 0;

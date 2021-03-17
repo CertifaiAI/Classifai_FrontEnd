@@ -4,6 +4,7 @@ import { cloneDeep } from 'lodash-es';
 import { CopyPasteService } from '../../../shared/services/copy-paste.service';
 import { HTMLElementEvent } from 'src/shared/types/field/field.model';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
+import { MouseCursorState, MousrCursorService } from 'src/shared/services/mouse-cursor.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UndoRedoService } from '../../../shared/services/undo-redo.service';
@@ -16,7 +17,6 @@ import {
     CompleteMetadata,
     Direction,
     LabelInfo,
-    MouseCursor,
     SelectedLabelProps,
     TabsProps,
     UndoState,
@@ -61,12 +61,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     showDropdownLabelBox: boolean = false;
     invalidInput: boolean = false;
     closeEnough: number = 5;
-    private mouseCursor: MouseCursor = {
-        move: false,
-        pointer: false,
-        grab: false,
-        resize: false,
-    };
+    private mouseCursor!: MouseCursorState;
     private zoom!: ZoomState;
     @Input() _selectMetadata!: BboxMetadata;
     @Input() _imgSrc: string = '';
@@ -82,6 +77,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         private _copyPasteService: CopyPasteService,
         private _annotateSelectState: AnnotateSelectionService,
         private _zoomService: ZoomService,
+        private _mouseCursorService: MousrCursorService,
     ) {}
 
     ngOnInit() {
@@ -107,6 +103,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         });
 
         this._zoomService.zoom$.pipe(takeUntil(this.unsubscribe$)).subscribe((state) => (this.zoom = state));
+
+        this._mouseCursorService.mouseCursor$
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe((state) => (this.mouseCursor = state));
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -305,6 +305,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
                 // prevent canvas scaling on UI but scroll state is false
                 if (this.boundingBoxState.scroll) {
+                    const { wheelDelta } = event;
+                    this._mouseCursorService.changeCursor(this.mouseCursor, wheelDelta);
                     // this.canvas.nativeElement.style.transformOrigin = '0 0';
                     // this.canvas.nativeElement.style.transform = `scale(${this.scale}, ${this.scale})`;
                     // this.canvas.nativeElement.scrollTop = newScroll.y;
@@ -330,6 +332,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             if (this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event)) {
                 this.mousedown = true;
                 if (this.boundingBoxState.drag) {
+                    this.changeMouseCursorState({ grabbing: true });
                     this._boundingBoxCanvas.setPanXY(event.offsetX, event.offsetY);
                 }
                 if (this.boundingBoxState.draw) {
@@ -427,6 +430,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             },
                         );
                         this.redrawImage(this._selectMetadata);
+                    } else if (this.boundingBoxState.drag && !this.mousedown) {
+                        this.changeMouseCursorState({ grab: true });
                     }
                     if (this.boundingBoxState.draw && this.mousedown) {
                         this._boundingBoxCanvas.mouseMoveDrawEnable(event.offsetX, event.offsetY, this._selectMetadata);
@@ -468,7 +473,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             //     this.changeMouseCursorState({ resize: true });
                             // }
                         } else {
-                            this.changeMouseCursorState({ pointer: true });
+                            this.changeMouseCursorState({ crosshair: true });
                         }
                     }
                 } else {
@@ -491,16 +496,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         }
     }
 
-    changeMouseCursorState(mouseCursor?: Partial<MouseCursor>) {
-        if (mouseCursor) {
-            const { grab, move, pointer, resize } = mouseCursor;
-            this.mouseCursor = {
-                grab: grab ?? false,
-                pointer: pointer ?? false,
-                move: move ?? false,
-                resize: resize ?? false,
-            };
-        }
+    changeMouseCursorState(mouseCursor?: Partial<MouseCursorState>) {
+        this._mouseCursorService.setState(mouseCursor);
     }
 
     checkCloseEnough(p1: number, p2: number) {
@@ -542,6 +539,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 this._boundingBoxCanvas.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
                 this.imgFitToCenter();
                 this.emitMetadata();
+                this.changeMouseCursorState();
                 // this.redrawImage(
                 //     this._selectMetadata.img_x,
                 //     this._selectMetadata.img_y,
@@ -638,16 +636,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     currentCursor() {
-        const { grab, move, pointer, resize } = this.mouseCursor;
-        return grab
-            ? 'cursor-grab'
-            : move
-            ? 'cursor-move'
-            : pointer
-            ? 'cursor-pointer'
-            : resize
-            ? 'cursor-e-resize'
-            : null;
+        return this._mouseCursorService.changeCursor(this.mouseCursor);
     }
 
     validateInputLabel = ({ target }: HTMLElementEvent<HTMLTextAreaElement>): void => {

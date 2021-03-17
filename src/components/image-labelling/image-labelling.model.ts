@@ -174,11 +174,4 @@ export type LabelInfo = {
     count: number;
 };
 
-export type MouseCursor = {
-    move: boolean;
-    pointer: boolean;
-    grab: boolean;
-    resize: boolean;
-};
-
 export type DiffXY = { diffX: number; diffY: number };
