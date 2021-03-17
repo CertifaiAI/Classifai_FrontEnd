@@ -2,10 +2,13 @@ import { AnnotateActionState, AnnotateSelectionService } from '../../../shared/s
 import { BoundingBoxCanvasService } from './bounding-box-canvas.service';
 import { cloneDeep } from 'lodash-es';
 import { CopyPasteService } from '../../../shared/services/copy-paste.service';
+import { HTMLElementEvent } from 'src/shared/types/field/field.model';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
+import { MouseCursorState, MousrCursorService } from 'src/shared/services/mouse-cursor.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UndoRedoService } from '../../../shared/services/undo-redo.service';
+import { WheelDelta, ZoomService, ZoomState } from 'src/shared/services/zoom.service';
 import {
     ActionState,
     BboxMetadata,
@@ -14,7 +17,6 @@ import {
     CompleteMetadata,
     Direction,
     LabelInfo,
-    MouseCursor,
     SelectedLabelProps,
     TabsProps,
     UndoState,
@@ -33,7 +35,6 @@ import {
     EventEmitter,
     OnDestroy,
 } from '@angular/core';
-import { HTMLElementEvent } from 'src/shared/types/field/field.model';
 
 @Component({
     selector: 'image-labelling-object-detection',
@@ -60,15 +61,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     showDropdownLabelBox: boolean = false;
     invalidInput: boolean = false;
     closeEnough: number = 5;
-    private mouseCursor: MouseCursor = {
-        move: false,
-        pointer: false,
-        grab: false,
-        resize: false,
-    };
-    private scale = 1;
-    private factor = 0.05;
-    private max_scale = 4;
+    private mouseCursor!: MouseCursorState;
+    private zoom!: ZoomState;
     @Input() _selectMetadata!: BboxMetadata;
     @Input() _imgSrc: string = '';
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
@@ -82,6 +76,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         private _undoRedoService: UndoRedoService,
         private _copyPasteService: CopyPasteService,
         private _annotateSelectState: AnnotateSelectionService,
+        private _zoomService: ZoomService,
+        private _mouseCursorService: MousrCursorService,
     ) {}
 
     ngOnInit() {
@@ -105,6 +101,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             this.annotateState = state;
             this._boundingBoxCanvas.setCurrentSelectedbBox(state.annotation);
         });
+
+        this._zoomService.zoom$.pipe(takeUntil(this.unsubscribe$)).subscribe((state) => (this.zoom = state));
+
+        this._mouseCursorService.mouseCursor$
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe((state) => (this.mouseCursor = state));
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -134,14 +136,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         this._onChangeMetadata.emit(this._selectMetadata);
     }
 
-    annotateStateSelectChange(newState: AnnotateActionState) {
+    annotateSelectChange(newState: AnnotateActionState) {
         this._annotateSelectState.setState(newState);
     }
 
-    resetZoomScale() {
-        this.scale = 1;
-        this.factor = 0.05;
-        this.max_scale = 4;
+    resetZoom() {
+        this._zoomService.resetZoomScale();
     }
 
     imgFitToCenter() {
@@ -184,7 +184,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             );
             this.redrawImage(this._selectMetadata);
             if (this.canvasContext) {
-                this.resetZoomScale();
+                this.resetZoom();
                 this.canvasContext.canvas.style.transformOrigin = `0 0`;
                 this.canvasContext.canvas.style.transform = `scale(1, 1)`;
             }
@@ -209,7 +209,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this._copyPasteService.copy(this._selectMetadata.bnd_box[this.annotateState.annotation]);
                         const pastedMetadata = this._copyPasteService.paste<Boundingbox>();
                         pastedMetadata && this._selectMetadata.bnd_box.push(pastedMetadata);
-                        this.annotateStateSelectChange({
+                        this.annotateSelectChange({
                             annotation: this._selectMetadata.bnd_box.length - 1,
                             isDlbClick: false,
                         });
@@ -252,7 +252,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this.annotateState.annotation,
                         (isDone) => {
                             if (isDone) {
-                                this.annotateStateSelectChange({ annotation: -1, isDlbClick: false });
+                                this.annotateSelectChange({ annotation: -1, isDlbClick: false });
                                 this.redrawImage(this._selectMetadata);
                                 this._undoRedoService.appendStages({
                                     meta: cloneDeep(this._selectMetadata),
@@ -284,7 +284,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         try {
             this.annotateState.annotation > -1 &&
                 (this._undoRedoService.clearRedundantStages(),
-                this.annotateStateSelectChange({ annotation: this.annotateState.annotation, isDlbClick: true }));
+                this.annotateSelectChange({ annotation: this.annotateState.annotation, isDlbClick: true }));
         } catch (err) {
             console.log(err);
         }
@@ -292,50 +292,31 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     @HostListener('mousewheel', ['$event'])
     @HostListener('DOMMouseScroll', ['$event'])
-    mouseScroll(event: WheelEvent & { wheelDelta: number }) {
+    mouseScroll(event: WheelEvent & WheelDelta) {
         try {
             const mouseWithinPointPath = this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event);
 
             if (mouseWithinPointPath && this.canvasContext) {
-                // let delta = event.deltaY ? event.deltaY / 40 : 0;
-                // const delta = Math.max(-1, Math.min(1, -event.deltaY || -event.detail));
-                let delta = event.wheelDelta;
-                if (delta === undefined) {
-                    // we are on firefox
-                    delta = event.detail;
-                }
-                delta = Math.max(-1, Math.min(1, delta)); // cap the delta to [-1,1] for cross browser consistency
-                const { scrollLeft, scrollTop } = this.canvas.nativeElement;
-                const offset = { x: scrollLeft, y: scrollTop };
-                const image_loc = {
-                    x: event.pageX + offset.x,
-                    y: event.pageY + offset.y,
-                };
-                const zoom_point = { x: image_loc.x / this.scale, y: image_loc.y / this.scale };
-
-                // apply zoom
-                this.scale += delta * this.factor * this.scale;
-                this.scale = Math.max(1, Math.min(this.max_scale, this.scale));
-
-                const zoom_point_new = { x: zoom_point.x * this.scale, y: zoom_point.y * this.scale };
-
-                const newScroll = {
-                    x: zoom_point_new.x - event.pageX,
-                    y: zoom_point_new.y - event.pageY,
-                };
-                // this.canvas.nativeElement.style.transformOrigin = '0 0';
-                // this.canvas.nativeElement.style.transform = `scale(${this.scale}, ${this.scale})`;
-                // this.canvas.nativeElement.scrollTop = newScroll.y;
-                // this.canvas.nativeElement.scrollLeft = newScroll.x;
+                const { scale, x, y } = this._zoomService.calculateZoomScale(
+                    event,
+                    this.zoom,
+                    this.canvas.nativeElement,
+                );
 
                 // prevent canvas scaling on UI but scroll state is false
                 if (this.boundingBoxState.scroll) {
+                    this._mouseCursorService.changeCursor(this.mouseCursor, event);
+                    // this.canvas.nativeElement.style.transformOrigin = '0 0';
+                    // this.canvas.nativeElement.style.transform = `scale(${this.scale}, ${this.scale})`;
+                    // this.canvas.nativeElement.scrollTop = newScroll.y;
+                    // this.canvas.nativeElement.scrollLeft = newScroll.x;
                     this.canvasContext.canvas.style.transformOrigin = `${event.offsetX}px ${event.offsetY}px`;
-                    this.canvasContext.canvas.style.transform = `scale(${this.scale}, ${this.scale})`;
+                    this.canvasContext.canvas.style.transform = `scale(${scale}, ${scale})`;
+                    this._zoomService.setState({ scale });
                 }
 
-                this.canvasContext.canvas.scrollTop = newScroll.y;
-                this.canvasContext.canvas.scrollLeft = newScroll.x;
+                this.canvasContext.canvas.scrollTop = y;
+                this.canvasContext.canvas.scrollLeft = x;
 
                 this._copyPasteService.isAvailable() && this._copyPasteService.clear();
             }
@@ -350,6 +331,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             if (this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event)) {
                 this.mousedown = true;
                 if (this.boundingBoxState.drag) {
+                    this.changeMouseCursorState({ grabbing: true });
                     this._boundingBoxCanvas.setPanXY(event.offsetX, event.offsetY);
                 }
                 if (this.boundingBoxState.draw) {
@@ -358,9 +340,11 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         event.offsetY,
                         this._selectMetadata.bnd_box,
                     );
-                    this.annotateStateSelectChange({ annotation: tmpBox, isDlbClick: false });
+                    this.annotateSelectChange({ annotation: tmpBox, isDlbClick: false });
                     this.redrawImage(this._selectMetadata);
                 }
+            } else {
+                this.mousedown = false;
             }
         } catch (err) {
             console.log(err);
@@ -405,7 +389,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     } else {
                         this.showDropdownLabelBox = false;
                     }
-                    retObj.isNew && this.annotateStateSelectChange({ annotation: retObj.selBox, isDlbClick: false });
+                    retObj.isNew && this.annotateSelectChange({ annotation: retObj.selBox, isDlbClick: false });
                 }
                 this.mousedown = false;
             }
@@ -447,6 +431,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             },
                         );
                         this.redrawImage(this._selectMetadata);
+                    } else if (this.boundingBoxState.drag && !this.mousedown) {
+                        this.changeMouseCursorState({ grab: true });
                     }
                     if (this.boundingBoxState.draw && this.mousedown) {
                         this._boundingBoxCanvas.mouseMoveDrawEnable(event.offsetX, event.offsetY, this._selectMetadata);
@@ -488,7 +474,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             //     this.changeMouseCursorState({ resize: true });
                             // }
                         } else {
-                            this.changeMouseCursorState({ pointer: true });
+                            this.changeMouseCursorState({ crosshair: true });
                         }
                     }
                 } else {
@@ -511,16 +497,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         }
     }
 
-    changeMouseCursorState(mouseCursor?: Partial<MouseCursor>) {
-        if (mouseCursor) {
-            const { grab, move, pointer, resize } = mouseCursor;
-            this.mouseCursor = {
-                grab: grab ?? false,
-                pointer: pointer ?? false,
-                move: move ?? false,
-                resize: resize ?? false,
-            };
-        }
+    changeMouseCursorState(mouseCursor?: Partial<MouseCursorState>) {
+        this._mouseCursorService.setState(mouseCursor);
     }
 
     checkCloseEnough(p1: number, p2: number) {
@@ -562,6 +540,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 this._boundingBoxCanvas.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
                 this.imgFitToCenter();
                 this.emitMetadata();
+                this.changeMouseCursorState();
                 // this.redrawImage(
                 //     this._selectMetadata.img_x,
                 //     this._selectMetadata.img_y,
@@ -658,16 +637,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     currentCursor() {
-        const { grab, move, pointer, resize } = this.mouseCursor;
-        return grab
-            ? 'cursor-grab'
-            : move
-            ? 'cursor-move'
-            : pointer
-            ? 'cursor-pointer'
-            : resize
-            ? 'cursor-e-resize'
-            : null;
+        return this._mouseCursorService.changeCursor(this.mouseCursor);
     }
 
     validateInputLabel = ({ target }: HTMLElementEvent<HTMLTextAreaElement>): void => {

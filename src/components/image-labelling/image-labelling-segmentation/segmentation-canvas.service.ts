@@ -96,7 +96,7 @@ export class SegmentationCanvasService {
             metadata.img_y = diffY;
             this.panPolygons(metadata, true);
             redrawCallback('pan');
-        } else if (!isNewPolygon && isMouseDown && this.selectedPolygonIndex > -1) {
+        } else if (isMouseDown && this.selectedPolygonIndex > -1) {
             // } else if (isMouseDown && pointIndex > -1 && polygonIndex > -1) {
             // console.log('mouseMoveDraw else if 1');
             this.mouseMovePolygon(event, metadata, context, this.selectedPolygonIndex, img, canvas);
@@ -139,7 +139,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    setSelectedPolygonIndex(index: number) {
+    setSelectedPolygon(index: number) {
         this.selectedPolygonIndex = index;
     }
 
@@ -593,6 +593,7 @@ export class SegmentationCanvasService {
                         this.tmpPolygon = null;
                     }
                     this.setNewPolygon(false);
+
                     this.redraw(pol, img, context, canvas, length - 1);
                 }
             }
