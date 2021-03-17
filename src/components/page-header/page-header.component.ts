@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 import { IconSchema } from 'src/shared/types/icon/icon.model';
 import { ImgLabelProps } from '../image-labelling/image-labelling.model';
 import { Router } from '@angular/router';
-import { LanguageService } from 'src/shared/services/language.service';
 
 type HeaderLabelSchema = {
     name: string;
@@ -35,11 +34,9 @@ export class PageHeaderComponent implements OnInit {
         },
     ];
 
-    constructor(private _router: Router, private _languageService: LanguageService) {
+    constructor(private _router: Router) {
         const { url } = _router;
         this.bindImagePath(url);
-        const langsArr: string[] = ['data-set-page-en', 'data-set-page-cn', 'data-set-page-ms'];
-        this._languageService.initializeLanguage(`data-set-page`, langsArr);
     }
 
     bindImagePath = (url: string) => {

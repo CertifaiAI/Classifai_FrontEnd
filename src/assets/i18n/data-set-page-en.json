@@ -13,15 +13,15 @@
         "recent": "Recent",
         "trash": "Trash"
     },
+    "datasetHeader": {
+        "datasetManagement": "Dataset Management"
+    },
     "pageHeader": {
         "home": "Home",
         "datasetManagement": "Dataset Management",
         "revision": "Revision",
         "addUser": "Add user",
         "profile": "Profile"
-    },
-    "datasetHeader": {
-        "datasetManagement": "Dataset Management"
     },
     "datasetCard": {
         "fetchingProject": "Fetching your project...",
@@ -36,53 +36,5 @@
         "totalPhoto": "Total Photo:",
         "noProject": "Wait a minute... there's no project",
         "createNew": "Gear up and start creating new project!"
-    },
-    "labellingProject": {
-        "project": "Project",
-        "label": "Label",
-        "enterLabel": "Enter Label",
-        "annotation": "Annotation",
-        "delete": "Delete",
-        "labelNotExist": "Label does not exist. Press Enter to add."
-    },
-    "footer": {
-        "size": "Size",
-        "image": "Image",
-        "dimension": "Dimension",
-        "copyToClipboard": "Copy to Clipboard"
-    },
-    "leftSideBar": {
-        "pointer": "Pointer",
-        "rectangularBB": "Rectangular Bounding Box",
-        "polygon": "Polygon",
-        "eraser": "Eraser",
-        "fitCenter": "Fit Center",
-        "save": "Save"
-    },
-    "rightSideBar": {
-        "folderOrFiles": "Folder / Files",
-        "label": "Label",
-        "annotation": "Annotation",
-        "statistic": "Statistic"
-    },
-    "labellingInfo": {
-        "previous": "Previous",
-        "next": "Next",
-        "undo": "Undo",
-        "redo": "Redo"
-    },
-    "labellingArea": {
-        "mainLabel": "Main Label",
-        "label": "Label",
-        "regionInfo": "Region Info",
-        "subLabel": "Sub Label",
-        "add": "Add",
-        "addedSubLabel": "Added Sub Label",
-        "mainRegionInfo": "Input Main Region Info",
-        "subRegionInfo": "Input Sub Region Info"
-    },
-    "searchLabel": {
-        "labelNotExist": "Label does not exist.",
-        "enterToAdd": "Press enter to add."
     }
 }
