@@ -39,11 +39,18 @@ export class MousrCursorService {
             : this.mouseCursorSubject.next(initialState);
     };
 
-    changeCursor(mouseCursor: MouseCursorState, wheelDelta?: number) {
-        if (wheelDelta) {
-            wheelDelta === 150
-                ? this.setState({ 'zoom-in': true })
-                : wheelDelta === -150 && this.setState({ 'zoom-out': true });
+    changeCursor(mouseCursor: MouseCursorState, event?: WheelEvent & WheelDelta) {
+        if (event) {
+            const { wheelDelta, detail } = event;
+            if (wheelDelta !== undefined) {
+                wheelDelta === 150
+                    ? this.setState({ 'zoom-in': true })
+                    : wheelDelta === -150 && this.setState({ 'zoom-out': true });
+            } else {
+                detail === 3
+                    ? this.setState({ 'zoom-in': true })
+                    : detail === -3 && this.setState({ 'zoom-out': true });
+            }
         } else {
             for (const [key, value] of Object.entries(mouseCursor)) {
                 if (value === true) {

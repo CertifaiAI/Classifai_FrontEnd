@@ -200,8 +200,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
 
                 // prevent canvas scaling on UI but scroll state is false
                 if (this.segState.scroll) {
-                    const { wheelDelta } = event;
-                    this._mouseCursorService.changeCursor(this.mouseCursor, wheelDelta);
+                    this._mouseCursorService.changeCursor(this.mouseCursor, event);
                     // this.canvas.nativeElement.style.transformOrigin = '0 0';
                     // this.canvas.nativeElement.style.transform = `scale(${this.scale}, ${this.scale})`;
                     // this.canvas.nativeElement.scrollTop = newScroll.y;
