@@ -11,8 +11,10 @@
 <div class="share" (mouseenter)="showLangOpts()" (mouseleave)="hideLangOpts()">
     <ul>
         <div class="toggle">{{ _translate.currentLang | languageSlice }}</div>
-        <li #languages *ngFor="let lang of languageArr" (click)="setLanguage(lang); hideLangOpts()">
-            {{ lang | languageSlice }}
-        </li>
+        <div *ngFor="let lang of languageArr">
+            <li #languages *ngIf="lang !== _translate.currentLang" (click)="setLanguage(lang); hideLangOpts()">
+                {{ lang | languageSlice }}
+            </li>
+        </div>
     </ul>
 </div>
