@@ -2,10 +2,12 @@ import { ActionState, Direction, MouseCursor, Polygons, PolyMetadata, UndoState 
 import { AnnotateActionState, AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { cloneDeep } from 'lodash-es';
 import { CopyPasteService } from 'src/shared/services/copy-paste.service';
-import { distinctUntilChanged } from 'rxjs/operators';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
 import { SegmentationCanvasService } from './segmentation-canvas.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { UndoRedoService } from 'src/shared/services/undo-redo.service';
+import { WheelDelta, ZoomService, ZoomState } from 'src/shared/services/zoom.service';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -14,6 +16,7 @@ import {
     HostListener,
     Input,
     OnChanges,
+    OnDestroy,
     OnInit,
     Output,
     SimpleChanges,
@@ -26,7 +29,7 @@ import {
     styleUrls: ['./image-labelling-segmentation.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
+export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, OnDestroy {
     @ViewChild('canvasdrawing') canvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('crossh') crossh!: ElementRef<HTMLDivElement>;
     @ViewChild('crossv') crossv!: ElementRef<HTMLDivElement>;
@@ -37,6 +40,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     private ctrlKey: boolean = false;
     private segState!: ActionState;
     private annotateState!: AnnotateActionState;
+    private unsubscribe$: Subject<any> = new Subject();
+    private zoom!: ZoomState;
     mouseCursor: MouseCursor = {
         move: false,
         pointer: false,
@@ -54,21 +59,28 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         private _undoRedoService: UndoRedoService,
         private _copyPasteService: CopyPasteService,
         private _annotateSelectState: AnnotateSelectionService,
+        private _zoomService: ZoomService,
     ) {}
 
     ngOnInit(): void {
-        this._imgLblStateService.action$.pipe(distinctUntilChanged()).subscribe(({ clear, fitCenter, ...action }) => {
-            this.segState = { ...action, clear, fitCenter };
-            fitCenter && this.imgFitToCenter();
-            if (clear) {
-                this._selectMetadata.polygons = [];
-                this.redrawImage(this._selectMetadata);
-                this.emitMetadata();
-            }
+        this._imgLblStateService.action$
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe(({ clear, fitCenter, ...action }) => {
+                this.segState = { ...action, clear, fitCenter };
+                fitCenter && this.imgFitToCenter();
+                if (clear) {
+                    this._selectMetadata.polygons = [];
+                    this.redrawImage(this._selectMetadata);
+                    this.emitMetadata();
+                }
+            });
+
+        this._annotateSelectState.labelStaging$.pipe(takeUntil(this.unsubscribe$)).subscribe((state) => {
+            this.annotateState = state;
+            this._segCanvasService.setSelectedPolygon(state.annotation);
         });
-        this._annotateSelectState.labelStaging$
-            .pipe(distinctUntilChanged())
-            .subscribe((state) => ((this.annotateState = state), this.annotateStateOnChange()));
+
+        this._zoomService.zoom$.pipe(takeUntil(this.unsubscribe$)).subscribe((state) => (this.zoom = state));
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -76,7 +88,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
             this.initializeCanvas();
             this._undoRedoService.clearAllStages();
             this.loadImage(changes._imgSrc.currentValue);
-            this._segCanvasService.setSelectedPolygonIndex(-1);
+            this._segCanvasService.setSelectedPolygon(-1);
         }
     }
 
@@ -110,8 +122,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         newState && this._annotateSelectState.setState(newState);
     }
 
-    annotateStateOnChange() {
-        this.annotateState && this._segCanvasService.setSelectedPolygonIndex(this.annotateState.annotation);
+    resetZoom() {
+        this._zoomService.resetZoomScale();
     }
 
     imgFitToCenter() {
@@ -138,6 +150,11 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                 }
             });
             this.redrawImage(this._selectMetadata);
+            if (this.canvasContext) {
+                this.resetZoom();
+                this.canvasContext.canvas.style.transformOrigin = `0 0`;
+                this.canvasContext.canvas.style.transform = `scale(1, 1)`;
+            }
         } catch (err) {
             console.log('imgFitToCenter', err);
         }
@@ -166,72 +183,34 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
         this.canvasContext?.clearRect(0, 0, width, height);
     }
 
-    zoomImage(delta: number) {
-        try {
-            if (delta > 0) {
-                const factor = 1.1;
-                const { img_x, img_y } = this._selectMetadata;
-                // zoom up
-                this._selectMetadata.img_w *= factor;
-                this._selectMetadata.img_h *= factor;
-                this._segCanvasService.scalePolygons(
-                    this._selectMetadata,
-                    { factor, newX: img_x, newY: img_y },
-                    (isCompleted) => {
-                        if (isCompleted) {
-                            this._undoRedoService.appendStages({
-                                meta: cloneDeep(this._selectMetadata),
-                                method: 'zoom',
-                            });
-                            this.emitMetadata();
-                        }
-                    },
-                );
-            } else {
-                // zoom down
-                const factor = 0.9;
-                // tslint:disable-next-line: prefer-const
-                let { img_w, img_h, img_x, img_y } = this._selectMetadata;
-                const widthExceedHeight = img_w * factor > 100 && img_h * factor > 100;
-                if (widthExceedHeight) {
-                    this._selectMetadata.img_w *= factor;
-                    this._selectMetadata.img_h *= factor;
-                    this._segCanvasService.scalePolygons(
-                        this._selectMetadata,
-                        { factor, newX: img_x, newY: img_y },
-                        (isCompleted) => {
-                            if (isCompleted) {
-                                const clonedMeta = cloneDeep(this._selectMetadata);
-                                this.emitMetadata();
-                                this._undoRedoService.isMethodChange('zoom')
-                                    ? this._undoRedoService.appendStages({
-                                          meta: clonedMeta,
-                                          method: 'zoom',
-                                      })
-                                    : this._undoRedoService.replaceStages({
-                                          meta: clonedMeta,
-                                          method: 'zoom',
-                                      });
-                            }
-                        },
-                    );
-                }
-            }
-            this._copyPasteService.isAvailable() && this._copyPasteService.clear();
-            this.redrawImage(this._selectMetadata);
-        } catch (err) {
-            console.log('zoomImage', err);
-        }
-    }
-
     @HostListener('mousewheel', ['$event'])
     @HostListener('DOMMouseScroll', ['$event'])
-    mouseScroll({ detail, deltaY }: WheelEvent) {
+    mouseScroll(event: WheelEvent & WheelDelta) {
         try {
-            // let delta = event.deltaY ? event.deltaY / 40 : 0;
-            const delta = Math.max(-1, Math.min(1, -deltaY || -detail));
-            if (delta && this.segState.scroll) {
-                this.zoomImage(delta);
+            this.isMouseWithinPoint = this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
+
+            if (this.isMouseWithinPoint && this.canvasContext) {
+                const { scale, x, y } = this._zoomService.calculateZoomScale(
+                    event,
+                    this.zoom,
+                    this.canvas.nativeElement,
+                );
+
+                // prevent canvas scaling on UI but scroll state is false
+                if (this.segState.scroll) {
+                    // this.canvas.nativeElement.style.transformOrigin = '0 0';
+                    // this.canvas.nativeElement.style.transform = `scale(${this.scale}, ${this.scale})`;
+                    // this.canvas.nativeElement.scrollTop = newScroll.y;
+                    // this.canvas.nativeElement.scrollLeft = newScroll.x;
+                    this.canvasContext.canvas.style.transformOrigin = `${event.offsetX}px ${event.offsetY}px`;
+                    this.canvasContext.canvas.style.transform = `scale(${scale}, ${scale})`;
+                    this._zoomService.setState({ scale });
+                }
+
+                this.canvasContext.canvas.scrollTop = y;
+                this.canvasContext.canvas.scrollLeft = x;
+
+                this._copyPasteService.isAvailable() && this._copyPasteService.clear();
             }
         } catch (err) {
             console.log('mouseScroll', err);
@@ -269,7 +248,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                     this.canvas.nativeElement,
                     true,
                 );
-                this._segCanvasService.setSelectedPolygonIndex(annotation);
+                this._segCanvasService.setSelectedPolygon(annotation);
                 this._segCanvasService.validateXYDistance(this._selectMetadata);
             }
         }
@@ -298,7 +277,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                                 this.canvas.nativeElement,
                                 true,
                             );
-                            this._segCanvasService.setSelectedPolygonIndex(annotation);
+                            this._segCanvasService.setSelectedPolygon(annotation);
                             this._segCanvasService.validateXYDistance(this._selectMetadata);
                             // this.ClearallBoundingboxList(this.seg.Metadata[this.seg.getCurrentSelectedimgidx()].polygons);
                             // this.RefreshBoundingBoxList();
@@ -320,7 +299,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                                 this.canvasContext,
                                 this.canvas.nativeElement,
                             );
-                            this._segCanvasService.setSelectedPolygonIndex(annotation);
+                            this._segCanvasService.setSelectedPolygon(annotation);
                             break;
                     }
                 } else {
@@ -607,5 +586,10 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
     currentCursor() {
         const { grab, move, pointer } = this.mouseCursor;
         return grab ? 'cursor-grab' : move ? 'cursor-move' : pointer ? 'cursor-pointer' : null;
+    }
+
+    ngOnDestroy(): void {
+        this.unsubscribe$.next();
+        this.unsubscribe$.complete();
     }
 }

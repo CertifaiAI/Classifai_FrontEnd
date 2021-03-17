@@ -139,7 +139,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    setSelectedPolygonIndex(index: number) {
+    setSelectedPolygon(index: number) {
         this.selectedPolygonIndex = index;
     }
 
