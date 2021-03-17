@@ -33,7 +33,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
             logos: [
                 {
                     imgPath: `../../../assets/icons/folder.svg`,
-                    hoverLabel: `Folder / Files`,
+                    hoverLabel: `rightSideBar.folderOrFiles`,
                     alt: `Folder`,
                     // inputType: 'file',
                     // accept: 'image/x-png,image/jpeg',
@@ -44,7 +44,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                 },
                 {
                     imgPath: `../../../assets/icons/tag.svg`,
-                    hoverLabel: `Label`,
+                    hoverLabel: `rightSideBar.label`,
                     alt: `Label`,
                     onClick: () => {
                         this._onClick.emit({ name: 'label', closed: false });
@@ -52,7 +52,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                 },
                 {
                     imgPath: `../../../assets/icons/bounding_box.svg`,
-                    hoverLabel: `Annotation`,
+                    hoverLabel: `rightSideBar.annotation`,
                     alt: `Annotation`,
                     onClick: () => {
                         this._onClick.emit({ name: 'annotation', closed: false });
@@ -60,7 +60,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                 },
                 {
                     imgPath: `../../../assets/icons/statistic.svg`,
-                    hoverLabel: `Statistic`,
+                    hoverLabel: `rightSideBar.statistic`,
                     alt: `Statistic`,
                     onClick: () => {},
                 },

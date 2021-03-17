@@ -14,6 +14,10 @@ export class FormatLanguagePipe implements PipeTransform {
                 newStr = 'CN';
                 break;
 
+            case 'ms':
+                newStr = 'MS';
+                break;
+
             default:
                 break;
         }

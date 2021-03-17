@@ -183,9 +183,9 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         let classes = '';
         if (
             !(
-                (tab.name === 'Label' && this._tabStatus[2].closed) ||
-                (tab.name === 'Project' && this._tabStatus[1].closed && this._tabStatus[2].closed) ||
-                tab.name === 'Annotation'
+                (tab.name === 'labellingProject.label' && this._tabStatus[2].closed) ||
+                (tab.name === 'labellingProject.project' && this._tabStatus[1].closed && this._tabStatus[2].closed) ||
+                tab.name === 'labellingProject.annotation'
             )
         ) {
             classes = 'flex-content';

@@ -50,9 +50,9 @@
 <modal id="modal-image-labelling">
     <button class="modal-button float-right" (click)="onCloseModal()">X</button>
     <div>
-        <h2 class="font-title">Main Label</h2>
+        <h2 class="font-title">{{ 'labellingArea.mainLabel' | translate }}</h2>
         <div class="main-label-container">
-            <label class="font-label">Label: </label>
+            <label class="font-label">{{ 'labellingArea.label' | translate }}: </label>
             <select class="static-select">
                 <ng-container *ngFor="let tab of tabStatus">
                     <ng-container *ngFor="let label of tab.label_list">
@@ -62,21 +62,21 @@
                     </ng-container>
                 </ng-container>
             </select>
-            <label class="font-label">Region Info: </label>
+            <label class="font-label">{{ 'labellingArea.regionInfo' | translate }}: </label>
             <input
                 class="static-input"
                 type="text"
                 [value]="mainLabelRegionVal"
-                placeholder="Input Main Region Info"
+                [placeholder]="'labellingArea.mainRegionInfo' | translate"
                 (change)="onChangeInput($event, 'main')"
             />
         </div>
     </div>
     <hr class="hr-line" />
     <div>
-        <h2 class="font-title">Sub Label</h2>
+        <h2 class="font-title">{{ 'labellingArea.subLabel' | translate }}</h2>
         <div class="sub-label-container">
-            <label class="font-label">Label: </label>
+            <label class="font-label">{{ 'labellingArea.label' | translate }}: </label>
             <select class="static-select" #subLabelSelect>
                 <ng-container *ngFor="let tab of tabStatus">
                     <ng-container *ngFor="let label of tab.label_list">
@@ -86,15 +86,15 @@
                     </ng-container>
                 </ng-container>
             </select>
-            <label class="font-label">Region Info: </label>
+            <label class="font-label">{{ 'labellingArea.regionInfo' | translate }}: </label>
             <input
                 class="static-input"
                 type="text"
                 [value]="subLabelRegionVal"
-                placeholder="Input Sub Region Info"
+                [placeholder]="'labellingArea.subRegionInfo' | translate"
                 (change)="onChangeInput($event, 'sub')"
             />
-            <button class="modal-button" (click)="onSubmitLabel()">Add</button>
+            <button class="modal-button" (click)="onSubmitLabel()">{{ 'labellingArea.add' | translate }}</button>
         </div>
         <ng-container *ngIf="subLabelValidateMsg">
             <div class="validate-msg">
@@ -108,12 +108,16 @@
         <ng-container *ngFor="let annotation of tab.annotation">
             <ng-container *ngFor="let bb of annotation?.bnd_box; index as annotationIndex">
                 <ng-container *ngIf="bb?.subLabel?.length > 0 && annotationIndex === currentAnnotationIndex">
-                    <h2 class="font-title">Added Sub Label</h2>
+                    <h2 class="font-title">{{ 'labellingArea.addedSubLabel' | translate }}</h2>
                     <ng-container *ngFor="let sublabel of bb.subLabel; index as subLabelIndex">
                         <div class="sub-label-flex-container sub-label-padding">
-                            <label class="font-label flex-first">Label: {{ sublabel.label }}</label>
+                            <label class="font-label flex-first"
+                                >{{ 'labellingArea.label' | translate }}: {{ sublabel.label }}</label
+                            >
 
-                            <label class="font-label flex-second">Region Info: {{ sublabel.region }}</label>
+                            <label class="font-label flex-second"
+                                >{{ 'labellingArea.regionInfo' | translate }}: {{ sublabel.region }}</label
+                            >
                             <span class="flex-third"></span>
                             <button
                                 class="modal-butto flex-fourth"

@@ -2,10 +2,10 @@
     <div class="card-layout-container scroll fade-in">
         <div class="no-project-card-container">
             <div class="no-project-title-padding">
-                <label class="no-project-title">Fetching your project...</label>
+                <label class="no-project-title">{{ 'datasetCard.fetchingProject' | translate }}</label>
             </div>
             <div>
-                <label class="no-project-subtitle">Please wait... while we prepare the dishes</label>
+                <label class="no-project-subtitle">{{ 'datasetCard.pleaseWait' | translate }}</label>
             </div>
         </div>
     </div>
@@ -24,18 +24,24 @@
                     <div class="card-header-style">
                         <div>
                             <ng-container *ngIf="isExactIndex(i) && _jsonSchema.isUploading; else newLabel">
-                                <label class="project-status-uploading"> Uploading </label> </ng-container
+                                <label class="project-status-uploading">
+                                    {{ 'datasetCard.uploading' | translate }}
+                                </label> </ng-container
                             ><ng-template #newLabel>
                                 <ng-container [ngSwitch]="project">
                                     <ng-container *ngIf="project.is_new">
-                                        <label class="project-status-new">New</label>
+                                        <label class="project-status-new">{{ 'datasetCard.new' | translate }}</label>
                                     </ng-container>
                                     <ng-container *ngIf="!project.is_new && !project.is_loaded">
-                                        <label class="project-status-available">Available</label>
+                                        <label class="project-status-available">{{
+                                            'datasetCard.available' | translate
+                                        }}</label>
                                     </ng-container>
 
                                     <ng-container *ngIf="!project.is_new && project.is_loaded">
-                                        <label class="project-status-not-available">Not Available</label>
+                                        <label class="project-status-not-available">{{
+                                            'datasetCard.notAvailable' | translate
+                                        }}</label>
                                     </ng-container>
                                 </ng-container></ng-template
                             >
@@ -61,13 +67,13 @@
                                 <span>
                                     <div class="popup-container">
                                         <div class="popup-label" (click)="onUploadContent(i, project.project_name)">
-                                            Upload Folder
+                                            {{ 'datasetCard.uploadFolder' | translate }}
                                         </div>
                                         <div
                                             class="popup-label"
                                             (click)="onUploadContent(i, project.project_name, 'file')"
                                         >
-                                            Upload Photo(s)
+                                            {{ 'datasetCard.uploadPhotos' | translate }}
                                         </div>
                                     </div>
                                 </span>
@@ -76,7 +82,9 @@
                     </div>
                     <div class="card-title-style">
                         <label [title]="project.created_date"
-                            ><div class="card-title-txt">Created: {{ project.created_date }}</div></label
+                            ><div class="card-title-txt">
+                                {{ 'datasetCard.created' | translate }} {{ project.created_date }}
+                            </div></label
                         >
                     </div>
                     <div class="project-name-style">
@@ -89,7 +97,9 @@
 
                     <div class="project-name-style">
                         <label [title]="'Total Photo: ' + project.total_uuid">
-                            <div class="project-info">Total Photo: {{ project.total_uuid }}</div>
+                            <div class="project-info">
+                                {{ 'datasetCard.totalPhoto' | translate }} {{ project.total_uuid }}
+                            </div>
                         </label>
                     </div>
                     <!-- <div class="tag-container">
@@ -105,10 +115,10 @@
         <div class="card-layout-container scroll fade-in">
             <div class="no-project-card-container">
                 <div class="no-project-title-padding">
-                    <label class="no-project-title">Wait a minute... there's no project</label>
+                    <label class="no-project-title">{{ 'datasetCard.noProject' | translate }}</label>
                 </div>
                 <div>
-                    <label class="no-project-subtitle">Gear up and start creating new project!</label>
+                    <label class="no-project-subtitle">{{ 'datasetCard.createNew' | translate }}</label>
                 </div>
             </div>
         </div>
