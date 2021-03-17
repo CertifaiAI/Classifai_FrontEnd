@@ -343,6 +343,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this.annotateSelectChange({ annotation: tmpBox, isDlbClick: false });
                     this.redrawImage(this._selectMetadata);
                 }
+            } else {
+                this.mousedown = false;
             }
         } catch (err) {
             console.log(err);

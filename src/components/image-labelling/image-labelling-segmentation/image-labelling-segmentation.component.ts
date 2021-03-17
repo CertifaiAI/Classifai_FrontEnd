@@ -441,6 +441,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 } else if (this.segState.draw && !this.mousedown) {
                     this.redrawImage(this._selectMetadata);
                 }
+            } else {
+                this.mousedown = false;
             }
         } catch (err) {
             console.log('mouseDown', err);
