@@ -154,7 +154,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                     this.canvasContext,
                     this.annotateState.annotation,
                 );
-                this.canvas.nativeElement.focus();
+                // this.canvas.nativeElement.focus();
             }
         } catch (err) {
             console.log('redrawImage', err);
@@ -331,10 +331,10 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                             this._segCanvasService.deleteSinglePolygon(
                                 this._selectMetadata,
                                 this.annotateState.annotation,
-                                (isCompleted: boolean) => {
-                                    if (isCompleted) {
+                                (isDone) => {
+                                    if (isDone) {
                                         this.annotateStateMakeChange({ annotation: -1, isDlbClick: false });
-                                        // ? (this.rulesMakeChange(null, -1, null, null, null),
+                                        this.redrawImage(this._selectMetadata);
                                         this._undoRedoService.appendStages({
                                             meta: cloneDeep(this._selectMetadata),
                                             method: 'draw',
@@ -346,7 +346,16 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                             break;
                     }
                 }
-                this.canvasContext.canvas.focus();
+                const direction =
+                    key === 'ArrowLeft'
+                        ? 'left'
+                        : key === 'ArrowRight'
+                        ? 'right'
+                        : key === 'ArrowUp'
+                        ? 'up'
+                        : key === 'ArrowDown' && 'down';
+                direction && this.keyMoveBox(direction);
+                // this.canvasContext.canvas.focus();
             }
             if (!this.isMouseWithinPoint) {
                 if (ctrlKey && (key === 'c' || key === 'C')) {
@@ -370,7 +379,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                         method: 'draw',
                     });
                     this.emitMetadata();
-                    this.canvas.nativeElement.focus();
+                    // this.canvas.nativeElement.focus();
                 } else if (ctrlKey && shiftKey && (key === 'z' || key === 'Z')) {
                     // redo
                     if (this._undoRedoService.isAllowRedo()) {
@@ -388,16 +397,6 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                         this.emitMetadata();
                     }
                 }
-            } else {
-                const direction =
-                    key === 'ArrowLeft'
-                        ? 'left'
-                        : key === 'ArrowRight'
-                        ? 'right'
-                        : key === 'ArrowUp'
-                        ? 'up'
-                        : key === 'ArrowDown' && 'down';
-                direction && this.keyMoveBox(direction);
             }
         } catch (err) {
             console.log('canvasKeyDownEvent', err);
@@ -406,7 +405,9 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
 
     keyMoveBox(direction: Direction) {
         try {
-            this.canvasContext &&
+            const polygon = this._selectMetadata.polygons[this.annotateState.annotation];
+            polygon &&
+                this.canvasContext &&
                 this._segCanvasService.keyboardMovePolygon(
                     this._selectMetadata,
                     direction,
@@ -414,13 +415,13 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                     this.image,
                     this.canvasContext,
                     this.canvas.nativeElement,
-                    (isCompleted) => {
-                        if (isCompleted) {
+                    (isDone) => {
+                        if (isDone) {
                             this._undoRedoService.appendStages({
                                 meta: cloneDeep(this._selectMetadata),
                                 method: 'draw',
                             });
-
+                            this._segCanvasService.validateXYDistance(this._selectMetadata);
                             this.redrawImage(this._selectMetadata);
                             this.emitMetadata();
                         }
@@ -532,9 +533,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                         this.canvas.nativeElement,
                         event,
                         this.ctrlKey,
-                        this.isMouseWithinPoint,
+                        this.mousedown,
                         (method) => {
-                            this.redrawImage(this._selectMetadata);
                             if (method === 'pan') {
                                 this._undoRedoService.isMethodChange('pan')
                                     ? this._undoRedoService.appendStages({
@@ -546,6 +546,9 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges {
                                           method: 'pan',
                                       });
                             }
+                            // this._segCanvasService.validateXYDistance(this._selectMetadata);
+                            this.redrawImage(this._selectMetadata);
+                            this.emitMetadata();
                         },
                     );
 
