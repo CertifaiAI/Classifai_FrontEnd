@@ -593,6 +593,7 @@ export class SegmentationCanvasService {
                         this.tmpPolygon = null;
                     }
                     this.setNewPolygon(false);
+
                     this.redraw(pol, img, context, canvas, length - 1);
                 }
             }
