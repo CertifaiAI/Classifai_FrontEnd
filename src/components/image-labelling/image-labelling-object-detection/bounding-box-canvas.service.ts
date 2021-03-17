@@ -26,13 +26,12 @@ export class BoundingBoxCanvasService {
     private util: Utils = new Utils();
     constructor() {}
 
-    public getDiffXY(offsetX: number, offsetY: number): DiffXY {
+    public getDiffXY({ offsetX, offsetY }: MouseEvent): DiffXY {
         try {
             const rtobj: DiffXY = { diffX: 0, diffY: 0 };
-            if (offsetX !== null && offsetX !== undefined && offsetY !== null && offsetY !== undefined) {
-                rtobj.diffX = this.globalXY.x + (offsetX - this.panXY.x);
-                rtobj.diffY = this.globalXY.y + (offsetY - this.panXY.y);
-            }
+            rtobj.diffX = this.globalXY.x + (offsetX - this.panXY.x);
+            rtobj.diffY = this.globalXY.y + (offsetY - this.panXY.y);
+
             return rtobj;
         } catch (err) {
             console.log(
