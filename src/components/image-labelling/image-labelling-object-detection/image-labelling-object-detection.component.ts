@@ -222,7 +222,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         method: 'draw',
                     });
                     this.emitMetadata();
-                    this.canvas.nativeElement.focus();
+                    // this.canvas.nativeElement.focus();
                 } else if (ctrlKey && shiftKey && (key === 'z' || key === 'Z')) {
                     // redo
                     if (this._undoRedoService.isAllowRedo()) {
@@ -611,7 +611,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         this.clearCanvas();
         this.canvasContext?.drawImage(this.img, img_x, img_y, img_w, img_h);
         this._boundingBoxCanvas.drawAllBoxOn(this._selectMetadata.bnd_box, this.canvasContext);
-        this.canvas.nativeElement.focus();
+        // this.canvas.nativeElement.focus();
     }
 
     clearCanvas() {
