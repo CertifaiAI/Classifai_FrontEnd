@@ -67,6 +67,10 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 fitCenter && this.imgFitToCenter();
                 if (clear) {
                     this._selectMetadata.polygons = [];
+                    this._undoRedoService.appendStages({
+                        meta: this._selectMetadata,
+                        method: 'draw',
+                    });
                     this.redrawImage(this._selectMetadata);
                     this.emitMetadata();
                 }
