@@ -3,7 +3,7 @@
 
 <modal [id]="modalIdImgLbl" [modalBodyStyle]="modalBodyStyle" [scrollable]="false">
     <div class="modal-header-container">
-        <label>Please select one of the below:</label>
+        <label>{{ 'imageOpt.selection' | translate }}</label>
         <button class="modal-button float-right" (click)="onCloseModal(modalIdImgLbl)">X</button>
     </div>
 
@@ -20,7 +20,7 @@
                     <ng-container *ngIf="hover">
                         <div>
                             <span [ngClass]="field.title ? null : 'label-hidden'">
-                                {{ conditionalHoverPlaceholder(i, field.title) }}
+                                {{ conditionalHoverPlaceholder(i, field.title) | translate }}
                             </span>
                         </div></ng-container
                     >

@@ -21,15 +21,15 @@ export class PageHeaderComponent implements OnInit {
     jsonSchema!: IconSchema;
     headerLabels: HeaderLabelSchema[] = [
         {
-            name: 'Home',
+            name: 'pageHeader.home',
             url: '/',
         },
         {
-            name: 'Dataset Management',
+            name: 'pageHeader.datasetManagement',
             url: '/dataset',
         },
         {
-            name: 'Revision',
+            name: 'pageHeader.revision',
             url: '/',
         },
     ];
@@ -47,7 +47,7 @@ export class PageHeaderComponent implements OnInit {
                           {
                               imgPath: `../../../assets/icons/add_user.svg`,
                               hoverLabel: `Add user to project`,
-                              alt: `Add user`,
+                              alt: `pageHeader.addUser`,
                               onClick: () => null,
                           },
                           // {
@@ -64,7 +64,7 @@ export class PageHeaderComponent implements OnInit {
                     : [
                           {
                               imgPath: `../../../assets/icons/profile.svg`,
-                              hoverLabel: `Profile`,
+                              hoverLabel: `pageHeader.profile`,
                               alt: `Profile`,
                               onClick: () => null,
                           },

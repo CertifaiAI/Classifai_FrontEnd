@@ -22,7 +22,7 @@ export class ImageLabellingFooterComponent implements OnInit, OnChanges {
             icon: [
                 {
                     imgPath: `../../../assets/icons/content_copy_white_24dp.svg`,
-                    hoverLabel: `Copy to Clipboard`,
+                    hoverLabel: `footer.copyToClipboard`,
                     alt: `Copy`,
                     onClick: this.copyMessage,
                 },

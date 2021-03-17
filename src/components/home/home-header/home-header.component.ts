@@ -13,7 +13,7 @@ export class HomeHeaderComponent implements OnInit {
     @ViewChildren('languages') languages!: QueryList<ElementRef>;
 
     constructor(public _translate: TranslateService, private _languageService: LanguageService) {
-        const langsArr: string[] = ['landing-page-en', 'landing-page-cn'];
+        const langsArr: string[] = ['landing-page-en', 'landing-page-cn', 'landing-page-ms'];
         this._languageService.initializeLanguage(`landing-page`, langsArr);
 
         this.languageArr = this._languageService.filterLanguageList(langsArr, 'landing-page');

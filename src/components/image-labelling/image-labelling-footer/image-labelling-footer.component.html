@@ -1,9 +1,9 @@
 <div class="footer-container">
     <ng-container *ngIf="(_thumbnailInfo | json) != '{}'">
         <div class="footer-label-container">
-            <div class="footer-label">Size: {{ thumbnailSize }}</div>
+            <div class="footer-label">{{ 'footer.size' | translate }}: {{ thumbnailSize }}</div>
             <ng-container *ngIf="thumbnailType">
-                <div class="footer-label">Image: {{ thumbnailType }}</div></ng-container
+                <div class="footer-label">{{ 'footer.image' | translate }}: {{ thumbnailType }}</div></ng-container
             >
             <div class="footer-label">{{ _thumbnailInfo.img_ori_w }} x {{ _thumbnailInfo.img_ori_h }}</div>
             <!-- <label class="footer-label">{{ _thumbnailInfo.file_size }} -->
@@ -17,7 +17,7 @@
                             [attr.data-index]="i"
                             [src]="icon.imgPath"
                             [alt]="icon.alt"
-                            [title]="icon.hoverLabel"
+                            [title]="icon.hoverLabel | translate"
                         />
                     </ng-container>
                 </div>
