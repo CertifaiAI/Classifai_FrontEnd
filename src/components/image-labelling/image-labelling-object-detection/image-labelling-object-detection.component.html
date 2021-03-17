@@ -10,6 +10,7 @@
                 [(ngModel)]="labelSearch"
                 (ngModelChange)="labelTypeTextChange($event)"
                 (keydown.enter)="validateInputLabel($event)"
+                [ngModelOptions]="{ standalone: true }"
             />
         </form>
         <div #availablelbl class="availablelbl unclosedOut">
