@@ -11,6 +11,7 @@ import { ImageLabellingModeService } from './../../components/image-labelling/im
 import { Message } from 'src/shared/types/message/message.model';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'src/components/spinner/spinner.service';
+import { LanguageService } from 'src/shared/services/language.service';
 
 @Component({
     selector: 'data-set-layout',
@@ -50,6 +51,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         private _dataSetService: DataSetLayoutService,
         private _spinnerService: SpinnerService,
         private _imgLblModeService: ImageLabellingModeService,
+        private _languageService: LanguageService,
     ) {
         this._imgLblModeService.imgLabelMode$
             .pipe(distinctUntilChanged())
@@ -61,6 +63,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .subscribe((loading) => (this.isLoading = loading));
 
         this.createFormControls();
+        const langsArr: string[] = ['data-set-page-en', 'data-set-page-cn', 'data-set-page-ms'];
+        this._languageService.initializeLanguage(`data-set-page`, langsArr);
     }
 
     ngOnInit(): void {

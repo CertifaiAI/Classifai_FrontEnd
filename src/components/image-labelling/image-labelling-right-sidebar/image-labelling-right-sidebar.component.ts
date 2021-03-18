@@ -33,34 +33,34 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
             logos: [
                 {
                     imgPath: `../../../assets/icons/folder.svg`,
-                    hoverLabel: `Folder / Files`,
+                    hoverLabel: `rightSideBar.folderOrFiles`,
                     alt: `Folder`,
                     // inputType: 'file',
                     // accept: 'image/x-png,image/jpeg',
                     // onUpload: () => this._onClick.emit(),
                     onClick: () => {
-                        this._onClick.emit({ name: 'project', closed: false });
+                        this._onClick.emit({ name: 'labellingProject.project', closed: false });
                     },
                 },
                 {
                     imgPath: `../../../assets/icons/tag.svg`,
-                    hoverLabel: `Label`,
+                    hoverLabel: `rightSideBar.label`,
                     alt: `Label`,
                     onClick: () => {
-                        this._onClick.emit({ name: 'label', closed: false });
+                        this._onClick.emit({ name: 'labellingProject.label', closed: false });
                     },
                 },
                 {
                     imgPath: `../../../assets/icons/bounding_box.svg`,
-                    hoverLabel: `Annotation`,
+                    hoverLabel: `rightSideBar.annotation`,
                     alt: `Annotation`,
                     onClick: () => {
-                        this._onClick.emit({ name: 'annotation', closed: false });
+                        this._onClick.emit({ name: 'labellingProject.annotation', closed: false });
                     },
                 },
                 {
                     imgPath: `../../../assets/icons/statistic.svg`,
-                    hoverLabel: `Statistic`,
+                    hoverLabel: `rightSideBar.statistic`,
                     alt: `Statistic`,
                     onClick: () => {},
                 },

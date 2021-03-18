@@ -11,7 +11,7 @@
                     routerLinkActive="active-link"
                     [routerLinkActiveOptions]="{ exact: true }"
                 >
-                    <label class="label">{{ label.name }}</label>
+                    <label class="label">{{ label.name | translate }}</label>
                 </div></a
             >
         </ng-container>
@@ -24,7 +24,7 @@
                     [attr.data-index]="i"
                     [src]="logo.imgPath"
                     [alt]="logo.alt"
-                    [title]="logo.hoverLabel"
+                    [title]="logo.hoverLabel | translate"
                 />
             </div>
         </ng-container>

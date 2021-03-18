@@ -74,7 +74,7 @@ export class UndoRedoService {
     public clearRedundantStages() {
         // TODO:Solve bugs here
         /** Daniel: Unable to shortcut code logic due to the Type embedded into 'currentArr.meta' prop */
-        if (this.currentArr[0]?.meta && 'Polygons' in this.currentArr[0].meta) {
+        if (this.currentArr[0]?.meta && 'polygons' in this.currentArr[0].meta) {
         } else {
             if (this.undoArr.length > 0) {
                 const last2Stages: boolean = this.isStateChange(
@@ -105,10 +105,10 @@ export class UndoRedoService {
     }
 
     public isStateChange(notate: Boundingbox[] | Polygons[] | null) {
-        if (notate === null || notate === undefined) {
+        if (!notate) {
             return false;
         }
-        if (this.isAnnotationChange(notate) || this.isLabelChange(notate)) {
+        if ((notate && this.isAnnotationChange(notate)) || this.isLabelChange(notate)) {
             return true;
         }
         return false;
@@ -116,7 +116,7 @@ export class UndoRedoService {
 
     private isLabelChange(notate: Boundingbox[] | Polygons[] | null): boolean {
         /** Daniel: Unable to shortcut code logic due to the Type embedded into 'currentArr.meta' prop */
-        if (this.currentArr[0]?.meta && 'Polygons' in this.currentArr[0]?.meta) {
+        if (this.currentArr[0]?.meta && 'polygons' in this.currentArr[0]?.meta) {
             const polybox: Polygons[] = notate as Polygons[];
             const comparePolyBoxes: Polygons[] = (this.currentArr[0]?.meta as PolyMetadata).polygons;
             if (polybox.length !== comparePolyBoxes.length) {
@@ -144,7 +144,7 @@ export class UndoRedoService {
 
     private isAnnotationChange(notate: Boundingbox[] | Polygons[] | null) {
         /** Daniel: Unable to shortcut code logic due to the Type embedded into 'currentArr.meta' prop */
-        if (this.currentArr[0]?.meta && 'Polygons' in this.currentArr[0]?.meta) {
+        if (this.currentArr[0]?.meta && 'polygons' in this.currentArr[0]?.meta) {
             if (this.currentArr.length < 1) {
                 return true;
             } else {

@@ -8,7 +8,7 @@
                         [attr.data-index]="i"
                         [src]="logo.imgPath"
                         [alt]="logo.alt"
-                        [title]="logo.hoverLabel"
+                        [title]="logo.hoverLabel | translate"
                         (click)="logo.onClick()"
                     />
                 </label>

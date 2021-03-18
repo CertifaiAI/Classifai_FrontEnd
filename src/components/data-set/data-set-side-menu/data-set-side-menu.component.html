@@ -4,7 +4,7 @@
             <div [attr.data-index]="i" class="new-project-container">
                 <div class="new-project-btn" (click)="displayModal()">
                     <img class="add-icon" [src]="menu.src" />
-                    <label class="new-project-txt">{{ menu.name }}</label>
+                    <label class="new-project-txt">{{ menu.name | translate }}</label>
                 </div>
             </div>
         </ng-container>
@@ -13,7 +13,7 @@
             <!-- <div class="current-project-container"> -->
             <div [attr.data-index]="i" class="current-project-btn">
                 <img class="project-icon" [src]="menu.src" />
-                <label class="current-project-txt">{{ menu.name }}</label>
+                <label class="current-project-txt">{{ menu.name | translate }}</label>
             </div>
             <!-- </div> -->
         </ng-template>

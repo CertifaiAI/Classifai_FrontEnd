@@ -17,9 +17,9 @@
         <form [formGroup]="form">
             <div class="model-content">
                 <div class="content-container">
-                    <h1 class="content-header">Create new Project</h1>
+                    <h1 class="content-header">{{ 'createNewProject' | translate }}</h1>
                     <div class="new-project-container">
-                        <label class="label">New Project Name: </label>
+                        <label class="label">{{ 'newProjectName' | translate }} </label>
                         <input
                             #refProjectName
                             class="input-style"
@@ -34,22 +34,26 @@
                     <ng-container *ngIf="form.get('projectName')?.touched">
                         <div class="validation">
                             <span *ngIf="form.get('projectName')?.getError('exist')">
-                                <small class="error-msg"> * Project name already exist! Try other name </small>
+                                <small class="error-msg"> {{ 'projectNameExist' | translate }} </small>
                             </span>
                             <span *ngIf="form.get('projectName')?.getError('required')">
-                                <small class="error-msg"> * Project name is required </small>
+                                <small class="error-msg"> {{ 'projectNameRequired' | translate }} </small>
                             </span>
                         </div>
                     </ng-container>
 
                     <div class="select-folder-container">
-                        <label class="label">Label list file (*.txt): </label>
+                        <label class="label">{{ 'labelListFile' | translate }} </label>
                         <input type="file" accept=".txt" class="input" (change)="onFileChange($event)" />
                     </div>
                     <div class="horizontal-line"></div>
                     <div class="model-button-container">
-                        <button class="button-style create-btn" type="submit" (click)="onSubmit(true)">Create</button>
-                        <button (click)="toggleModalDisplay(false)" class="button-style cancel-btn">Cancel</button>
+                        <button class="button-style create-btn" type="submit" (click)="onSubmit(true)">
+                            {{ 'createButton' | translate }}
+                        </button>
+                        <button (click)="toggleModalDisplay(false)" class="button-style cancel-btn">
+                            {{ 'cancelButton' | translate }}
+                        </button>
                     </div>
                 </div>
             </div>

@@ -8,9 +8,10 @@ import { ImageLabellingRightSidebarComponent } from 'src/components/image-labell
 import { ImageLabellingSegmentationComponent } from 'src/components/image-labelling/image-labelling-segmentation/image-labelling-segmentation.component';
 import { NgModule } from '@angular/core';
 import { SharedModule } from 'src/shared/shared.module';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-    imports: [CommonModule, SharedModule],
+    imports: [CommonModule, SharedModule, TranslateModule],
     declarations: [
         ImageLabellingInfoComponent,
         ImageLabellingLeftSidebarComponent,

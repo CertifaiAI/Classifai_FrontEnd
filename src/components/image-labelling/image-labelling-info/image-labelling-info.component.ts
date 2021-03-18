@@ -32,13 +32,13 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
             logosCenter: [
                 {
                     imgPath: `../../../assets/icons/previous.svg`,
-                    hoverLabel: `Previous`,
+                    hoverLabel: `labellingInfo.previous`,
                     alt: `Previous`,
                     onClick: () => this.emitParentEvent({ thumbnailAction: -1 }),
                 },
                 {
                     imgPath: `../../../assets/icons/next.svg`,
-                    hoverLabel: `Next`,
+                    hoverLabel: `labellingInfo.next`,
                     alt: `Next`,
                     onClick: () => this.emitParentEvent({ thumbnailAction: 1 }),
                 },
@@ -46,13 +46,13 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
             logosEnd: [
                 {
                     imgPath: `../../../assets/icons/undo.svg`,
-                    hoverLabel: `Undo`,
+                    hoverLabel: `labellingInfo.undo`,
                     alt: `Undo`,
                     onClick: () => null,
                 },
                 {
                     imgPath: `../../../assets/icons/redo.svg`,
-                    hoverLabel: `Redo`,
+                    hoverLabel: `labellingInfo.redo`,
                     alt: `Redo`,
                     onClick: () => null,
                 },

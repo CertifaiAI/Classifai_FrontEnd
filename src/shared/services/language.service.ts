@@ -44,7 +44,7 @@ export class LanguageService {
             const validateLang = language ? language : localStorage.getItem('language') || 'en';
             // console.log(validateLang);
             // _translate.use(`image-labelling-${validateLang}`);
-            this.setLanguageState(validateLang);
+            // this.setLanguageState(validateLang);
             this.setTranslation(compName, validateLang, finalizedLang);
         });
 
