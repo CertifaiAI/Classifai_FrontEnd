@@ -394,8 +394,24 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                                 : []
                             : [];
                         this.sortingLabelList(this.labelList, annotationList);
-                        this.floatdiv.nativeElement.style.top = event.offsetY.toString() + 'px';
-                        this.floatdiv.nativeElement.style.left = event.offsetX.toString() + 'px';
+                        // Positioning the floating div at the bottom right corner of bounding box
+                        var posFromTop = event.offsetY * (100 / document.documentElement.clientHeight) + 8.5;
+                        var posFromLeft = event.offsetX * (100 / document.documentElement.clientWidth) + 2.5;
+                        // Re-adjustment of floating div position if it is outside of the canvas
+                        if (posFromTop < 9) {
+                            posFromTop = 9;
+                        }
+                        if (posFromTop > 76) {
+                            posFromTop = 76;
+                        }
+                        if (posFromLeft < 2.5) {
+                            posFromLeft = 2.5;
+                        }
+                        if (posFromLeft > 66) {
+                            posFromLeft = 66;
+                        }
+                        this.floatdiv.nativeElement.style.top = posFromTop.toString() + 'vh';
+                        this.floatdiv.nativeElement.style.left = posFromLeft.toString() + 'vw';
                         this.showDropdownLabelBox = true;
                         this.labelSearch = '';
                         this.invalidInput = false;

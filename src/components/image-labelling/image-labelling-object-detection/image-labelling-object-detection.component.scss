@@ -33,54 +33,67 @@
 
 .floatdiv {
     position: absolute;
-    left: 0px;
-    top: 0px;
     z-index: 10000;
 }
 
 .lbltypetxt {
-    width: 11em;
-    height: 2em;
+    width: 11vw;
+    height: 4vh;
     color: snow;
-    font-size: 15px;
-    font-weight: bold;
-    border: 2px solid gray;
+    font-size: 2vh;
+    // font-weight: bold;
+    border: 0.2vw solid gray;
     background-color: black;
     outline: none;
-    border-radius: 5px;
+    border-radius: 0.2vh;
     border-bottom: none;
+    padding: 0;
+    text-indent: 0.4vw;
 }
 
 .availablelbl {
     background-color: black;
-    width: 10.5rem;
-    height: 8rem;
+    width: 11vw;
+    height: 15vh;
     color: snow;
-    font-size: 15px;
+    font-size: 2vh;
     font-weight: bold;
     border: 0.2vw solid gray;
     outline: none;
-    border-radius: 5px;
-    border-top: 1px dotted snow;
+    border-radius: 0.2vh;
+    border-top: 0.1vh dotted snow;
     // text-align: center;
     overflow: auto;
     scrollbar-width: none;
 }
 
 .lblList {
-    padding: 0 5px;
+    padding: 0 0.2vw;
 }
 
-.lblName {
+.lblElement {
     list-style-type: none;
-    margin: 4px 0px;
+    margin: 0.3vh 0;
     padding: 0;
     justify-content: space-between;
     display: flex;
 }
 
-.lblName:hover {
+.lblElement:hover {
     background-color: #111;
+}
+
+.lblName {
+    margin-left: 0.2vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lblCount {
+    background-color: #222;
+    margin-right: 0.2vw;
+    padding: 0.1vh 0.2vw;
+    border-radius: 0.2vw;
 }
 
 .availablelbl::-webkit-scrollbar {
