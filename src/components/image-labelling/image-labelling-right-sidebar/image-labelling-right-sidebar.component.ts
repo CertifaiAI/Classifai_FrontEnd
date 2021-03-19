@@ -39,7 +39,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     // accept: 'image/x-png,image/jpeg',
                     // onUpload: () => this._onClick.emit(),
                     onClick: () => {
-                        this._onClick.emit({ name: 'project', closed: false });
+                        this._onClick.emit({ name: 'labellingProject.project', closed: false });
                     },
                 },
                 {
@@ -47,7 +47,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     hoverLabel: `rightSideBar.label`,
                     alt: `Label`,
                     onClick: () => {
-                        this._onClick.emit({ name: 'label', closed: false });
+                        this._onClick.emit({ name: 'labellingProject.label', closed: false });
                     },
                 },
                 {
@@ -55,7 +55,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     hoverLabel: `rightSideBar.annotation`,
                     alt: `Annotation`,
                     onClick: () => {
-                        this._onClick.emit({ name: 'annotation', closed: false });
+                        this._onClick.emit({ name: 'labellingProject.annotation', closed: false });
                     },
                 },
                 {
