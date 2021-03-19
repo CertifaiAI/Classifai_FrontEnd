@@ -87,7 +87,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.thumbnailList = thumbnailList;
         this.selectedProjectName = projectName;
         this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: thumbnailList.length };
-
+        this.navigateByAction({ thumbnailAction: 1 });
         const newLabelList = this._imgLblLayoutService.displayLabelList<CompleteMetadata>(this.tabStatus, labelList);
         this.tabStatus = newLabelList;
 

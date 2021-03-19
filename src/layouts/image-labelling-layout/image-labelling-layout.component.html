@@ -10,7 +10,6 @@
             [_currentUrl]="currentUrl"
         ></image-labelling-left-sidebar>
 
-        <!-- !! Not enough time to implement router outlet service, as many changes needed for object detection's code -->
         <ng-container *ngIf="_router.url.includes('imglabel/bndbox')">
             <image-labelling-object-detection
                 [_selectMetadata]="selectedMetaData"
