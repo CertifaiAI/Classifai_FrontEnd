@@ -92,6 +92,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 fitCenter && this.imgFitToCenter();
                 if (clear) {
                     this._selectMetadata.bnd_box = [];
+                    this._undoRedoService.appendStages({
+                        meta: this._selectMetadata,
+                        method: 'draw',
+                    });
                     this.redrawImage(this._selectMetadata);
                     this.emitMetadata();
                 }

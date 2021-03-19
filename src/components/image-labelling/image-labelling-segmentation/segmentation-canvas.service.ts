@@ -402,10 +402,16 @@ export class SegmentationCanvasService {
                 })
             ) {
                 this.setGlobalXY(pol);
-
+                // console.log('mouse', offsetX, offsetY);
+                // console.log('newOffset', newoffsetX, newoffsetY);
                 for (const [i] of pol.polygons[polyIndex].coorPt.entries()) {
-                    pol.polygons[polyIndex].coorPt[i].x += newoffsetX;
-                    pol.polygons[polyIndex].coorPt[i].y += newoffsetY;
+                    // console.log(
+                    //     'polygon',
+                    //     (pol.polygons[polyIndex].coorPt[i].x += newoffsetX) / 2,
+                    //     (pol.polygons[polyIndex].coorPt[i].y += newoffsetY) / 2,
+                    // );
+                    pol.polygons[polyIndex].coorPt[i].x += offsetX / newoffsetX;
+                    pol.polygons[polyIndex].coorPt[i].y += offsetY / newoffsetY;
                 }
 
                 this.redraw(pol, img, context, canvas, polyIndex);
@@ -593,8 +599,7 @@ export class SegmentationCanvasService {
                         this.tmpPolygon = null;
                     }
                     this.setNewPolygon(false);
-
-                    this.redraw(pol, img, context, canvas, length - 1);
+                    // this.redraw(pol, img, context, canvas, this.selectedPolygonIndex);
                 }
             }
         } catch (err) {
