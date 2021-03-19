@@ -36,7 +36,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     }
 
     resetSelectedAnnotate = () => {
-        this._annotateService.setState({ annotation: -1 });
+        this._annotateService.setState();
     };
 
     bindImagePath = () => {

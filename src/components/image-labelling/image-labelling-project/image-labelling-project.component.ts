@@ -57,7 +57,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
             this._annotateService.labelStaging$
                 .pipe(takeUntil(this.unsubscribe$))
                 .subscribe(({ annotation: annnotationIndex, isDlbClick }) => {
-                    // isDlbClick ? this._annotateService.setState({ annotation: -1 }) : null;
+                    // isDlbClick && this._annotateService.setState();
 
                     this.selectedIndexAnnotation = annnotationIndex;
                     const [{ annotation }] = this._tabStatus.filter((tab) => tab.annotation);
