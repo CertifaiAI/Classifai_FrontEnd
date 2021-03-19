@@ -23,7 +23,7 @@ export class UndoRedoService {
 
     constructor() {}
 
-    removeLastArray = (arr: UndoState[]): UndoState => arr.splice(-1, 1)[0];
+    private removeLastArray = (arr: UndoState[]): UndoState => arr.splice(-1, 1)[0];
 
     public appendStages(stages: UndoState): void {
         if (stages) {
@@ -101,7 +101,7 @@ export class UndoRedoService {
     }
 
     public replaceStages(stages: UndoState) {
-        stages ? (this.currentArr[0] = this.utility.deepCloneVariable(stages)) : {};
+        stages && (this.currentArr[0] = this.utility.deepCloneVariable(stages));
     }
 
     public isStateChange(notate: Boundingbox[] | Polygons[] | null) {

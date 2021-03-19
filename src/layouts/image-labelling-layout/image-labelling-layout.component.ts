@@ -7,8 +7,10 @@ import { ImageLabellingActionService } from 'src/components/image-labelling/imag
 import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
 import { ImageLabellingLayoutService } from 'src/layouts/image-labelling-layout/image-labelling-layout.service';
 import { ImageLabellingModeService } from 'src/components/image-labelling/image-labelling-mode.service';
+import { LanguageService } from 'src/shared/services/language.service';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
+import { SpinnerService } from 'src/components/spinner/spinner.service';
 import { Subject } from 'rxjs';
 import {
     AddSubLabel,
@@ -24,7 +26,6 @@ import {
     SelectedLabelProps,
     TabsProps,
 } from 'src/components/image-labelling/image-labelling.model';
-import { LanguageService } from 'src/shared/services/language.service';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -63,7 +64,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     currentAnnotationLabel = '';
     currentAnnotationIndex = -1;
     currentImageDisplayIndex = -1;
-
+    isLoading: boolean = false;
+    showLoading: boolean = false;
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
 
     constructor(
@@ -76,6 +78,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         private _imgLblLayoutService: ImageLabellingLayoutService,
         private _imgLblModeService: ImageLabellingModeService,
         public _languageService: LanguageService,
+        private _spinnerService: SpinnerService,
     ) {
         const langsArr: string[] = ['image-labelling-en', 'image-labelling-cn', 'image-labelling-ms'];
         this._languageService.initializeLanguage(`image-labelling`, langsArr);
@@ -87,7 +90,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.thumbnailList = thumbnailList;
         this.selectedProjectName = projectName;
         this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: thumbnailList.length };
-
+        this.navigateByAction({ thumbnailAction: 1 });
         const newLabelList = this._imgLblLayoutService.displayLabelList<CompleteMetadata>(this.tabStatus, labelList);
         this.tabStatus = newLabelList;
 
@@ -133,6 +136,11 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 };
             }
         });
+
+        this._spinnerService
+            .returnAsObservable()
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe((loading) => (this.isLoading = this.showLoading && loading));
     }
 
     updateProjectProgress = (): void => {
@@ -202,6 +210,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     navigateByAction = ({ thumbnailAction }: EventEmitter_Action): void => {
         if (thumbnailAction) {
+            this.showLoading = true;
             const calculatedIndex = this._imgLblLayoutService.calculateIndex(
                 thumbnailAction,
                 this.currentImageDisplayIndex,
@@ -246,6 +255,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     }
                 },
                 (err: Error) => console.error(err),
+                () => (this.showLoading = false),
             );
         }
     };

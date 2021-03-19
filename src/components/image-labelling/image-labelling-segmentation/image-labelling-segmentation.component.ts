@@ -67,6 +67,10 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 fitCenter && this.imgFitToCenter();
                 if (clear) {
                     this._selectMetadata.polygons = [];
+                    this._undoRedoService.appendStages({
+                        meta: this._selectMetadata,
+                        method: 'draw',
+                    });
                     this.redrawImage(this._selectMetadata);
                     this.emitMetadata();
                 }
@@ -75,6 +79,12 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         this._annotateSelectState.labelStaging$.pipe(takeUntil(this.unsubscribe$)).subscribe((state) => {
             this.annotateState = state;
             this._segCanvasService.setSelectedPolygon(state.annotation);
+            /**
+             * allow click annotate to highlight respective BB
+             * @property _selectMetadata trufy check due to first start project will have no state
+             *           but after that it will always it's state being filled
+             */
+            this._selectMetadata && this.redrawImage(this._selectMetadata);
         });
 
         this._zoomService.zoom$.pipe(takeUntil(this.unsubscribe$)).subscribe((state) => (this.zoom = state));
