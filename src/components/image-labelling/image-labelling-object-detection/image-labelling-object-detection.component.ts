@@ -104,6 +104,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         this._annotateSelectState.labelStaging$.pipe(takeUntil(this.unsubscribe$)).subscribe((state) => {
             this.annotateState = state;
             this._boundingBoxCanvas.setCurrentSelectedbBox(state.annotation);
+            /**
+             * allow click annotate to highlight respective BB
+             * @property _selectMetadata trufy check due to first start project will have no state
+             *           but after that it will always it's state being filled
+             */
+            this._selectMetadata && this.redrawImage(this._selectMetadata);
         });
 
         this._zoomService.zoom$.pipe(takeUntil(this.unsubscribe$)).subscribe((state) => (this.zoom = state));
