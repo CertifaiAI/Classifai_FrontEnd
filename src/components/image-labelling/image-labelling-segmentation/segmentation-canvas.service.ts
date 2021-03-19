@@ -48,9 +48,9 @@ export class SegmentationCanvasService {
         this.clickPoint = this.findClickPoint(offsetX, offsetY, metadata);
         const isNewPolygon = this.isNewPolygon();
         if (isNewPolygon && ctrlKey) {
-            console.log('mouseDownDraw if');
+            // console.log('mouseDownDraw if');
         } else if (!this.returnTempPoly() && this.polygonAreaIndex < 0 && this.clickPoint.pointIndex < 0) {
-            console.log('mouseDownDraw else if 1');
+            // console.log('mouseDownDraw else if 1');
             // this.setGlobalXY({ img_x: offsetX, img_y: offsetY });
             // this.setPanXY({ offsetX, offsetY });
             this.setPolygonLineWidth(metadata, -1);
@@ -58,12 +58,12 @@ export class SegmentationCanvasService {
             this.pushTempPoint(event, metadata);
             this.setNewPolygon(true);
         } else if (isNewPolygon) {
-            console.log('mouseDownDraw else if 2');
+            // console.log('mouseDownDraw else if 2');
             this.pushTempPoint(event, metadata);
             this.drawNewPolygon(metadata, img, context, canvas, false);
             this.drawfromPreviousPoint(event, context);
         } else {
-            console.log('mouseDownDraw else');
+            // console.log('mouseDownDraw else');
             this.selectedPolygonIndex =
                 this.findPolygonArea(event, metadata) > -1
                     ? this.findPolygonArea(event, metadata)
@@ -96,7 +96,7 @@ export class SegmentationCanvasService {
             metadata.img_y = diffY;
             this.panPolygons(metadata, true);
             redrawCallback('pan');
-        } else if (isMouseDown && this.selectedPolygonIndex > -1) {
+        } else if (isMouseDown && pointIndex === -1 && this.selectedPolygonIndex > -1) {
             // } else if (isMouseDown && pointIndex > -1 && polygonIndex > -1) {
             // console.log('mouseMoveDraw else if 1');
             this.mouseMovePolygon(event, metadata, context, this.selectedPolygonIndex, img, canvas);
@@ -106,9 +106,12 @@ export class SegmentationCanvasService {
             this.drawNewPolygon(metadata, img, context, canvas, false);
             this.drawfromPreviousPoint(event, context);
         } else {
-            // console.log('mouseMoveDraw else');
-            this.setPolygonCoordinate(event, metadata, this.clickPoint);
-            redrawCallback('draw');
+            // check if mouse clicked on polygon's dot
+            if (isMouseDown && pointIndex > -1 && polygonIndex > -1) {
+                // console.log('mouseMoveDraw else');
+                this.setPolygonCoordinate(event, metadata, this.clickPoint);
+                redrawCallback('draw');
+            }
         }
         return detectedPolygon > -1;
     }
@@ -237,6 +240,10 @@ export class SegmentationCanvasService {
         } catch (err) {
             console.log('generateNewTempPolygon', err);
         }
+    }
+
+    getClickPoint() {
+        return this.clickPoint;
     }
 
     resetDrawing(
@@ -383,20 +390,11 @@ export class SegmentationCanvasService {
         canvas: HTMLCanvasElement,
     ) {
         try {
-            /*
-              ! Don't remove below const variables, used by other function for calculations
-              original code written by bobby
-              need to explore to know if possible for refactor
-            **/
-            const img_X = pol.img_x;
-            const img_Y = pol.img_y;
-            const imgW = pol.img_w;
-            const imgH = pol.img_h;
             const { x, y } = this.getGlobalXY();
             const newoffsetX = offsetX - x;
             const newoffsetY = offsetY - y;
             if (
-                this.withinPointPath(pol, img_X, img_Y, imgW, imgH, polyIndex, {
+                this.withinPointPath(pol, polyIndex, {
                     offsetX: newoffsetX,
                     offsetY: newoffsetY,
                 })
@@ -404,15 +402,16 @@ export class SegmentationCanvasService {
                 this.setGlobalXY(pol);
                 // console.log('mouse', offsetX, offsetY);
                 // console.log('newOffset', newoffsetX, newoffsetY);
-                for (const [i] of pol.polygons[polyIndex].coorPt.entries()) {
-                    // console.log(
-                    //     'polygon',
-                    //     (pol.polygons[polyIndex].coorPt[i].x += newoffsetX) / 2,
-                    //     (pol.polygons[polyIndex].coorPt[i].y += newoffsetY) / 2,
-                    // );
-                    pol.polygons[polyIndex].coorPt[i].x += offsetX / newoffsetX;
-                    pol.polygons[polyIndex].coorPt[i].y += offsetY / newoffsetY;
-                }
+                // console.log(pol.polygons[polyIndex].coorPt);
+                // const newOffsetCoord = pol.polygons[polyIndex].coorPt.map(({ x, y, distancetoImg }) => {
+                //     return {
+                //         x: x + newoffsetX,
+                //         y: y + newoffsetY,
+                //         distancetoImg,
+                //     };
+                // });
+                // pol.polygons[polyIndex].coorPt = newOffsetCoord;
+                // console.log(pol.polygons[polyIndex].coorPt);
 
                 this.redraw(pol, img, context, canvas, polyIndex);
             }
@@ -431,17 +430,12 @@ export class SegmentationCanvasService {
         callback: (arg: boolean) => void,
     ): boolean {
         try {
-            if (polyIndex !== undefined && polyIndex !== -1 && pol) {
-                // ! Don't remove the below const variables, it's used for other function to do calculations
-                const img_X = pol.img_x;
-                const img_Y = pol.img_y;
-                const imgW = pol.img_w;
-                const imgH = pol.img_h;
+            if (polyIndex > -1) {
                 const offset = -3;
                 switch (direction) {
                     case 'up':
                         if (
-                            this.withinPointPath(pol, img_X, img_Y, imgW, imgH, polyIndex, {
+                            this.withinPointPath(pol, polyIndex, {
                                 offsetX: 0,
                                 offsetY: offset,
                             })
@@ -453,7 +447,7 @@ export class SegmentationCanvasService {
                         break;
                     case 'down':
                         if (
-                            this.withinPointPath(pol, img_X, img_Y, imgW, imgH, polyIndex, {
+                            this.withinPointPath(pol, polyIndex, {
                                 offsetX: 0,
                                 offsetY: offset,
                             })
@@ -465,7 +459,7 @@ export class SegmentationCanvasService {
                         break;
                     case 'left':
                         if (
-                            this.withinPointPath(pol, img_X, img_Y, imgW, imgH, polyIndex, {
+                            this.withinPointPath(pol, polyIndex, {
                                 offsetX: offset,
                                 offsetY: 0,
                             })
@@ -477,7 +471,7 @@ export class SegmentationCanvasService {
                         break;
                     case 'right':
                         if (
-                            this.withinPointPath(pol, img_X, img_Y, imgW, imgH, polyIndex, {
+                            this.withinPointPath(pol, polyIndex, {
                                 offsetX: offset,
                                 offsetY: 0,
                             })
@@ -500,21 +494,17 @@ export class SegmentationCanvasService {
     }
 
     private withinPointPath(
-        { polygons }: PolyMetadata,
-        imgx: number,
-        imgy: number,
-        imgw: number,
-        imgh: number,
+        { polygons, img_x, img_y, img_w, img_h }: PolyMetadata,
         index: number,
         { offsetX, offsetY }: Pick<MouseEvent, 'offsetX' | 'offsetY'>,
     ) {
         try {
             for (const [i] of polygons[index].coorPt.entries()) {
                 if (
-                    polygons[index].coorPt[i].x + offsetX < imgx ||
-                    polygons[index].coorPt[i].x + offsetX > imgx + imgw ||
-                    polygons[index].coorPt[i].y + offsetY < imgy ||
-                    polygons[index].coorPt[i].y + offsetY > imgy + imgh
+                    polygons[index].coorPt[i].x + offsetX < img_x ||
+                    polygons[index].coorPt[i].x + offsetX > img_x + img_w ||
+                    polygons[index].coorPt[i].y + offsetY < img_y ||
+                    polygons[index].coorPt[i].y + offsetY > img_y + img_h
                 ) {
                     return false;
                 } else {
@@ -685,9 +675,9 @@ export class SegmentationCanvasService {
         try {
             let polyIndex: number = -1;
             let area: number = 10000000;
-            for (let i = 0; i < polygons.length; ++i) {
-                if (this.insidePolygonArea(polygons[i].coorPt, event)) {
-                    const polyarea: number = this.calPolygonArea(polygons[i]);
+            for (const [i, metadata] of polygons.entries()) {
+                if (this.insidePolygonArea(metadata.coorPt, event)) {
+                    const polyarea: number = this.calPolygonArea(metadata);
                     if (polyarea < area) {
                         polyIndex = i;
                         area = polyarea;
