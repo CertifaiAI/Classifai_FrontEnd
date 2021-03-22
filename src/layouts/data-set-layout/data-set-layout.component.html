@@ -43,8 +43,18 @@
                     </ng-container>
 
                     <div class="select-folder-container">
-                        <label class="label">{{ 'labelListFile' | translate }} </label>
-                        <input type="file" accept=".txt" class="input" (change)="onFileChange($event)" />
+                        <label class="label label-file">{{ 'labelListFile' | translate }} </label>
+                        <label class="choose-file-btn">
+                            {{ 'chooseFile' | translate
+                            }}<input
+                                type="file"
+                                #labeltextfile
+                                class="input-id"
+                                accept=".txt"
+                                (change)="onFileChange($event)"
+                            />
+                        </label>
+                        <label class="filename" #labeltextfilename></label>
                     </div>
                     <div class="horizontal-line"></div>
                     <div class="model-button-container">
