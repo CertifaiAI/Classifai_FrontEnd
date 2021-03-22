@@ -52,10 +52,20 @@
 }
 
 .utility-icon-light {
-    @include icon.icon-styling(pointer, absolute, 2vh, 0);
+    @include icon.icon-styling(context-menu, absolute, 1.5vh, 0);
 }
 
-.utility-icon-light:focus,
-.utility-icon-light:active {
-    background: color.$iconActiveBackgroundColor;
+.footer-path-label {
+    cursor: pointer;
+    padding: 0 0.2vw;
+    border-radius: 0.5vw;
+}
+
+.footer-path-label:hover {
+    background: #636363;
+}
+
+.footer-path-label:focus,
+.footer-path-label:active {
+    background: #737474;
 }

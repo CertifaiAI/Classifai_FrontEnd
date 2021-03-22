@@ -322,12 +322,14 @@
     border: none;
     outline: none;
     padding: 0.3vw 0 0.3vw 1vw;
-    box-shadow: 0 0 0.3vw;
+    // box-shadow: 0 0 0.3vw;
     min-height: 1.5vh;
     max-height: 1.5vh;
     min-width: 13vw;
     max-width: 13vw;
     font-size: 1.3vh;
+    background: #525353;
+    color: white;
 }
 
 .input-invalid {
@@ -349,4 +351,9 @@
 .not-exist {
     font-size: 1.5vh;
     color: #999;
+}
+
+.delete-annotation {
+    position: absolute;
+    right: 2vw;
 }

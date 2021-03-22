@@ -120,6 +120,33 @@ $fontSize: 2vh;
     margin-right: 0.7vw;
 }
 
+.choose-file-btn {
+    font-size: $fontSize;
+    text-decoration: none;
+    background-color: #444444;
+    color: white;
+    padding: 0.5vh 1vw;
+    border: none;
+    border-radius: 1vh;
+    margin-right: 1vw;
+    cursor: pointer;
+}
+
+.label-file {
+    padding-top: 0.5vh;
+}
+
+.input-id {
+    font-size: $fontSize;
+    display: none;
+}
+
+.filename {
+    font-size: $fontSize;
+    padding-top: 0.5vh;
+    color: white;
+}
+
 // .file-input {
 //     color: transparent;
 //     color: transparent;

@@ -103,11 +103,7 @@
                             ><div class="div-close" (click)="onClose(tab)">x</div></span
                         >
                         <span class="tab-extra-icons"></span>
-                        <span class="tab-extra-icons">
-                            <ng-container *ngIf="_thumbnailList.length > 0">
-                                <div class="extra-icons" (click)="onDeleteAnnotation()">-</div>
-                            </ng-container>
-                        </span>
+                        <span class="tab-extra-icons"></span>
                     </div>
                     <div class="utility-inner-container scroll tab-smaller-height" id="inner-container">
                         <div class="flex-item">
@@ -128,6 +124,14 @@
                                                 >
                                                     <div [ngClass]="clickAbilityToggle ? 'pointer' : null">
                                                         {{ boundingBox.label }} : {{ boundingBox.id }}
+                                                    </div>
+                                                    <div
+                                                        [ngClass]="clickAbilityToggle ? 'pointer' : null"
+                                                        *ngIf="j === selectedIndexAnnotation"
+                                                        (click)="onDeleteAnnotation()"
+                                                        class="delete-annotation"
+                                                    >
+                                                        -
                                                     </div>
                                                 </label>
                                             </ng-container>
