@@ -7,7 +7,7 @@
             >
             <div class="footer-label">{{ _thumbnailInfo.img_ori_w }} x {{ _thumbnailInfo.img_ori_h }}</div>
             <!-- <label class="footer-label">{{ _thumbnailInfo.file_size }} -->
-            <div class="footer-image-path" [title]="_thumbnailInfo.img_path">
+            <div class="footer-image-path" [title]="'footer.copyToClipboard' | translate">
                 <label class="footer-path-label" (click)="copyMessage(_thumbnailInfo.img_path)">{{
                     _thumbnailInfo.img_path
                 }}</label>
