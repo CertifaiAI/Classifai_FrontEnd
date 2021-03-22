@@ -20,9 +20,14 @@ export class AnnotateSelectionService {
 
     constructor() {}
 
-    public setState = (inComingState: Partial<AnnotateActionState>): void => {
-        inComingState
-            ? this.labelStateSubject.next({ ...initialState, ...inComingState })
+    /**
+     * @function seState handles update state in service
+     * @param newState if no value, setState will reset state to initialState
+     * else merge state given onto existing state
+     */
+    public setState = (newState?: Partial<AnnotateActionState>): void => {
+        newState
+            ? this.labelStateSubject.next({ ...initialState, ...newState })
             : this.labelStateSubject.next(initialState);
     };
 }
