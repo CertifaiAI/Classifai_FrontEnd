@@ -49,7 +49,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @ViewChild('floatdiv') floatdiv!: ElementRef<HTMLDivElement>;
     @ViewChild('lbltypetxt') lbltypetxt!: ElementRef<HTMLInputElement>;
     @ViewChild('availablelbl') availablelbl!: ElementRef<HTMLDivElement>;
-    private canvasContext!: CanvasRenderingContext2D | null;
+    private canvasContext!: CanvasRenderingContext2D;
     private img: HTMLImageElement = new Image();
     private mousedown: boolean = false;
     private boundingBoxState!: ActionState;
@@ -92,6 +92,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 fitCenter && this.imgFitToCenter();
                 if (clear) {
                     this._selectMetadata.bnd_box = [];
+                    this._undoRedoService.appendStages({
+                        meta: this._selectMetadata,
+                        method: 'draw',
+                    });
                     this.redrawImage(this._selectMetadata);
                     this.emitMetadata();
                 }
@@ -100,6 +104,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         this._annotateSelectState.labelStaging$.pipe(takeUntil(this.unsubscribe$)).subscribe((state) => {
             this.annotateState = state;
             this._boundingBoxCanvas.setCurrentSelectedbBox(state.annotation);
+            /**
+             * allow click annotate to highlight respective BB
+             * @property _selectMetadata trufy check due to first start project will have no state
+             *           but after that it will always it's state being filled
+             */
+            this._selectMetadata && this.redrawImage(this._selectMetadata);
         });
 
         this._zoomService.zoom$.pipe(takeUntil(this.unsubscribe$)).subscribe((state) => (this.zoom = state));
@@ -111,9 +121,9 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     ngOnChanges(changes: SimpleChanges): void {
         // console.log(changes);
-        if (changes._selectMetadata?.currentValue) {
-            this.redrawImage(this._selectMetadata);
-        }
+        // if (changes._selectMetadata?.currentValue) {
+        //     this.redrawImage(this._selectMetadata);
+        // }
 
         if (changes._imgSrc?.currentValue) {
             this.initializeCanvas();
@@ -128,7 +138,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         this.canvas.nativeElement.style.height = '90%';
         this.canvas.nativeElement.width = this.canvas.nativeElement.offsetWidth;
         this.canvas.nativeElement.height = this.canvas.nativeElement.offsetHeight;
-        this.canvasContext = this.canvas.nativeElement.getContext('2d');
+        this.canvasContext = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
     }
 
     emitMetadata() {
@@ -183,11 +193,9 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 // },
             );
             this.redrawImage(this._selectMetadata);
-            if (this.canvasContext) {
-                this.resetZoom();
-                this.canvasContext.canvas.style.transformOrigin = `0 0`;
-                this.canvasContext.canvas.style.transform = `scale(1, 1)`;
-            }
+            this.resetZoom();
+            this.canvasContext.canvas.style.transformOrigin = `0 0`;
+            this.canvasContext.canvas.style.transform = `scale(1, 1)`;
         } catch (err) {
             console.log(err);
         }
@@ -296,7 +304,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         try {
             const mouseWithinPointPath = this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event);
 
-            if (mouseWithinPointPath && this.canvasContext) {
+            if (mouseWithinPointPath) {
                 const { scale, x, y } = this._zoomService.calculateZoomScale(
                     event,
                     this.zoom,
@@ -604,13 +612,13 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     redrawImage({ img_x, img_y, img_w, img_h }: BboxMetadata) {
         this.clearCanvas();
-        this.canvasContext?.drawImage(this.img, img_x, img_y, img_w, img_h);
+        this.canvasContext.drawImage(this.img, img_x, img_y, img_w, img_h);
         this._boundingBoxCanvas.drawAllBoxOn(this._selectMetadata.bnd_box, this.canvasContext);
         // this.canvas.nativeElement.focus();
     }
 
     clearCanvas() {
-        this.canvasContext?.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
+        this.canvasContext.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
     }
 
     getBBoxDistanceFromImage() {
@@ -686,6 +694,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     };
 
     ngOnDestroy(): void {
+        this._annotateSelectState.setState();
         this.unsubscribe$.next();
         this.unsubscribe$.complete();
     }

@@ -1,10 +1,10 @@
 import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { HTMLElementEvent } from 'src/shared/types/field/field.model';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
 import { isEqual } from 'lodash-es';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import {
     BboxMetadata,
     Boundingbox,
@@ -57,7 +57,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
             this._annotateService.labelStaging$
                 .pipe(takeUntil(this.unsubscribe$))
                 .subscribe(({ annotation: annnotationIndex, isDlbClick }) => {
-                    // isDlbClick ? this._annotateService.setState({ annotation: -1 }) : null;
+                    // isDlbClick && this._annotateService.setState();
 
                     this.selectedIndexAnnotation = annnotationIndex;
                     const [{ annotation }] = this._tabStatus.filter((tab) => tab.annotation);
