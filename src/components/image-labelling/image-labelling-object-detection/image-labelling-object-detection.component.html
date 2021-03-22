@@ -1,7 +1,7 @@
 <div>
     <!-- <ng-container *ngIf="imgInput"> -->
     <div #floatdiv class="floatdiv unclosedOut" [hidden]="!showDropdownLabelBox">
-        <form autocomplete="off">
+        <form autocomplete="off" spellcheck="false" class="unclosedOut">
             <input
                 #lbltypetxt
                 type="text"
@@ -15,19 +15,17 @@
         </form>
         <div #availablelbl class="availablelbl unclosedOut">
             <ul class="lblList unclosedOut">
-                <li *ngFor="let label of labelList" class="lblName unclosedOut" (click)="labelNameClicked(label.name)">
-                    <span style="margin-left: 5px; overflow: hidden; text-overflow: ellipsis" class="unclosedOut">{{
-                        label.name
-                    }}</span>
-                    <span
-                        style="background-color: #222; margin-right: 5px; padding: 1px 5px; border-radius: 2px"
-                        class="unclosedOut"
-                        >{{ label.count }}</span
-                    >
+                <li
+                    *ngFor="let label of labelList"
+                    class="lblElement unclosedOut"
+                    (click)="labelNameClicked(label.name)"
+                >
+                    <span class="lblName unclosedOut">{{ label.name }}</span>
+                    <span class="lblCount unclosedOut">{{ label.count }}</span>
                 </li>
                 <li *ngIf="labelList.length === 0" class="unclosedOut notExist">
-                    <div>{{ 'searchLabel.labelNotExist' | translate }}</div>
-                    <div>{{ 'searchLabel.enterToAdd' | translate }}</div>
+                    <div class="unclosedOut">{{ 'searchLabel.labelNotExist' | translate }}</div>
+                    <div class="unclosedOut">{{ 'searchLabel.enterToAdd' | translate }}</div>
                 </li>
             </ul>
         </div>

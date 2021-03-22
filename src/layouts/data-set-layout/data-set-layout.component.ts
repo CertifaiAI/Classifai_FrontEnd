@@ -43,6 +43,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     isLoading = false;
     imgLblMode: ImageLabellingMode = null;
     @ViewChild('refProjectName') _refProjectName!: ElementRef<HTMLInputElement>;
+    @ViewChild('labeltextfile') _labelTextFile!: ElementRef<HTMLInputElement>;
+    @ViewChild('labeltextfilename') _labelTextFilename!: ElementRef<HTMLLabelElement>;
 
     constructor(
         private _fb: FormBuilder,
@@ -126,6 +128,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     onFileChange = ({ target: { files } }: HTMLElementEvent<HTMLInputElement>): void => {
+        const filename = this._labelTextFile.nativeElement.files?.item(0)?.name!;
+        this._labelTextFilename.nativeElement.innerHTML = filename === undefined ? '' : filename;
         const reader = new FileReader();
 
         if (files && files.length) {
