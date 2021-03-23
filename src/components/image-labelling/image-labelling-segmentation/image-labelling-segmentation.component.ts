@@ -78,13 +78,16 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
 
         this._annotateSelectState.labelStaging$.pipe(takeUntil(this.unsubscribe$)).subscribe((state) => {
             this.annotateState = state;
-            this._segCanvasService.setSelectedPolygon(state.annotation);
+
             /**
              * allow click annotate to highlight respective BB
-             * @property _selectMetadata trufy check due to freshly loaded project will have no state
+             * @property _selectMetadata trufy check due to freshly loaded project will have no selected drawn item state
              *           but after that it will always has it's state being filled
              */
-            this._selectMetadata && this.redrawImage(this._selectMetadata);
+            if (this._selectMetadata) {
+                this._segCanvasService.setSelectedPolygon(state.annotation, this._selectMetadata);
+                this.redrawImage(this._selectMetadata);
+            }
         });
 
         this._zoomService.zoom$.pipe(takeUntil(this.unsubscribe$)).subscribe((state) => (this.zoom = state));
@@ -430,10 +433,11 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 this.mousedown = true;
                 if (this.segState.drag) {
                     this.changeMouseCursorState({ grabbing: true });
+                    // this._segCanvasService.setGlobalXY(event);
                     this._segCanvasService.setPanXY(event);
                 }
                 if (this.segState.draw && this.mousedown) {
-                    this._segCanvasService.setGlobalXY(event);
+                    // needed when mouse down then mouse move to get correct coordinate
                     const tmpPoly = this._segCanvasService.mouseDownDraw(
                         event,
                         this._selectMetadata,
@@ -443,9 +447,17 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                         this.ctrlKey,
                         this.altKey,
                     );
-                    this.annotateStateChange({ annotation: tmpPoly });
 
-                    const mouseWithinShape = this.mouseMoveDrawCanvas(event);
+                    if (tmpPoly > -1) {
+                        this._segCanvasService.setGlobalXY(event);
+                    } else {
+                        const { img_x, img_y } = this._selectMetadata;
+                        this._segCanvasService.setGlobalXY({ offsetX: img_x, offsetY: img_y });
+                    }
+                    this.annotateStateChange({ annotation: tmpPoly });
+                    this.redrawImage(this._selectMetadata);
+                    // continuously show the seg line, prevents mouse down draw but line disappear
+                    this.mouseMoveDrawCanvas(event);
                 }
                 // mousedown resize
                 else if (this.segState.draw && !this.mousedown) {
@@ -469,8 +481,11 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             // but mouse has already moving into canvas, thus getting error
             if (this._selectMetadata && this.isMouseWithinPoint) {
                 if (this.mousedown) {
+                    const { img_x, img_y } = this._selectMetadata;
                     if (this.segState.drag) {
-                        this._segCanvasService.setGlobalXY(event);
+                        // needed to prevent mouse drag move image to glitch due to wrong global axis
+                        // needing global axis follows image's axis
+                        this._segCanvasService.setGlobalXY({ offsetX: img_x, offsetY: img_y });
                     }
                     if (this.segState.draw && !isNewPolygon && this.annotateState.annotation > -1) {
                         if (this._undoRedoService.isStateChange(this._selectMetadata.polygons)) {
@@ -478,7 +493,9 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                                 meta: cloneDeep(this._selectMetadata),
                                 method: 'draw',
                             });
-                            // this._segCanvasService.setGlobalXY({ img_x: -1, img_y: -1 });
+                            // needed to prevent mouse drag move image to glitch due to wrong global axis
+                            // needing global axis follows image's axis
+                            this._segCanvasService.setGlobalXY({ offsetX: img_x, offsetY: img_y });
                             this._segCanvasService.validateXYDistance(this._selectMetadata);
                             this.redrawImage(this._selectMetadata);
                             this.emitMetadata();
@@ -497,9 +514,9 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                             this.redrawImage(this._selectMetadata);
                             this.emitMetadata();
                         }
-                    } // mouse mouse polygon then mouse up logic
+                    } // mouse move polygon then mouse up logic
                     else if (this.segState.draw) {
-                        this._segCanvasService.setGlobalXY({ offsetX: -1, offsetY: -1 });
+                        // this._segCanvasService.setGlobalXY({ offsetX: -1, offsetY: -1 });
                         this._segCanvasService.resetClickPoint();
                         this._segCanvasService.validateXYDistance(this._selectMetadata);
                         this.emitMetadata();
@@ -522,14 +539,14 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 this._selectMetadata && this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
             if (this.isMouseWithinPoint) {
                 if (this.segState.drag && this.mousedown) {
-                    const diffAxis = this._segCanvasService.getDiffXY(event);
+                    const { diffX, diffY } = this._segCanvasService.getDiffXY(event);
                     // const { x, y } = this._segCanvasService.getGlobalXY();
                     // const { diffX, diffY } = {
                     //     diffX: diffAxis.diffX + x,
                     //     diffY: diffAxis.diffY + y,
                     // };
-                    this._selectMetadata.img_x = diffAxis.diffX;
-                    this._selectMetadata.img_y = diffAxis.diffY;
+                    this._selectMetadata.img_x = diffX;
+                    this._selectMetadata.img_y = diffY;
                     this._segCanvasService.panPolygons(this._selectMetadata, false, (isDone) => {
                         if (isDone) {
                             const meta = cloneDeep(this._selectMetadata);
@@ -547,8 +564,11 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                     });
                 } else if (this.segState.drag && !this.mousedown) {
                     this.changeMouseCursorState({ grab: true });
+                    // !! must not have below setGlobalXY due to causing wrong axis
+                    // this._segCanvasService.setGlobalXY(event);
                 }
                 if (this.segState.draw) {
+                    // this._segCanvasService.setPanXY(event);
                     const mouseWithinShape = this.mouseMoveDrawCanvas(event);
                     if (mouseWithinShape) {
                         this.changeMouseCursorState({ move: true });
@@ -558,18 +578,20 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 }
             } else {
                 this.changeMouseCursorState();
-
+                this.mousedown = false;
                 // console.log(this.crossh);
+                let { zIndex: crosshZIndex, visibility: crosshVisibility } = this.crossh.nativeElement.style;
+                let { zIndex: crossvZIndex, visibility: crossvVisibility } = this.crossv.nativeElement.style;
                 if (
-                    this.crossh.nativeElement.style.zIndex !== '-1' ||
-                    this.crossh.nativeElement.style.visibility !== 'hidden' ||
-                    this.crossv.nativeElement.style.zIndex !== '-1' ||
-                    this.crossv.nativeElement.style.visibility !== 'hidden'
+                    crosshZIndex !== '-1' ||
+                    crosshVisibility !== 'hidden' ||
+                    crossvZIndex !== '-1' ||
+                    crossvVisibility !== 'hidden'
                 ) {
-                    this.crossh.nativeElement.style.zIndex = '-1';
-                    this.crossh.nativeElement.style.visibility = 'hidden';
-                    this.crossv.nativeElement.style.zIndex = '-1';
-                    this.crossv.nativeElement.style.visibility = 'hidden';
+                    crosshZIndex = '-1';
+                    crosshVisibility = 'hidden';
+                    crossvZIndex = '-1';
+                    crossvVisibility = 'hidden';
                 }
             }
         } catch (err) {
@@ -610,9 +632,10 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     }
 
     @HostListener('mouseout', ['$event'])
-    mouseOut(_: MouseEvent) {
+    mouseOut(event: MouseEvent) {
         try {
             if (this.segState.drag && this.isMouseWithinPoint && this.mousedown) {
+                this._segCanvasService.setGlobalXY(event);
                 this.redrawImage(this._selectMetadata);
             }
             this.isMouseWithinPoint = false;

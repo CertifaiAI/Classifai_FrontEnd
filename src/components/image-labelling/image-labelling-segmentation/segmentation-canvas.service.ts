@@ -49,7 +49,8 @@ export class SegmentationCanvasService {
         this.clickPoint = this.findClickPoint(offsetX, offsetY, metadata);
         const isNewPolygon = this.isNewPolygon();
         if (isNewPolygon && ctrlKey) {
-            // console.log('mouseDownDraw if');
+            // console.log('mouseDownDraw if 0');
+            this.setPanXY(event);
         } else if (!this.returnTempPoly() && this.polygonAreaIndex < 0 && this.clickPoint.pointIndex < 0) {
             // console.log('mouseDownDraw else if 1');
             // this.setGlobalXY({ img_x: offsetX, img_y: offsetY });
@@ -105,7 +106,7 @@ export class SegmentationCanvasService {
             // } else if (isMouseDown && pointIndex > -1 && polygonIndex > -1) {
             // console.log('mouseMoveDraw else if 1');
             this.mouseMovePolygon(event, metadata, context, this.selectedPolygonIndex, img, canvas);
-            this.resetClickPath(metadata);
+            this.resetClipPath(metadata);
             redrawCallback('pan');
         } else {
             // check if mouse clicked on polygon's dot
@@ -129,6 +130,10 @@ export class SegmentationCanvasService {
         }
     }
 
+    getPanXY() {
+        return this.panXY;
+    }
+
     getDiffXY({ offsetX, offsetY }: MouseEvent): DiffXY {
         try {
             const panObj: DiffXY = { diffX: 0, diffY: 0 };
@@ -144,8 +149,9 @@ export class SegmentationCanvasService {
         }
     }
 
-    setSelectedPolygon(index: number) {
+    setSelectedPolygon(index: number, metadata?: PolyMetadata) {
         this.selectedPolygonIndex = index;
+        metadata && this.setPolygonLineWidth(metadata, this.selectedPolygonIndex);
     }
 
     getSelectedPolygonIndex() {
@@ -375,17 +381,6 @@ export class SegmentationCanvasService {
         }
     }
 
-    // setGlobalXY({ img_x, img_y }: Pick<PolyMetadata, 'img_x' | 'img_y'>) {
-    //     try {
-    //         this.globalXY = {
-    //             x: img_x,
-    //             y: img_y,
-    //         };
-    //     } catch (err) {
-    //         console.log('setGlobalXY', err);
-    //     }
-    // }
-
     setGlobalXY({ offsetX, offsetY }: Pick<MouseEvent, 'offsetX' | 'offsetY'>) {
         try {
             this.globalXY = {
@@ -543,15 +538,12 @@ export class SegmentationCanvasService {
         }
     }
 
-    setPolygonLineWidth(metadata: PolyMetadata, selectedPolygonIndex: number) {
+    setPolygonLineWidth(metadata: PolyMetadata, polyIndex: number) {
         try {
-            for (let i = 0; i < metadata.polygons.length; ++i) {
-                if (i === selectedPolygonIndex) {
-                    metadata.polygons[i].lineWidth = 2;
-                } else {
-                    metadata.polygons[i].lineWidth = 1;
-                }
-            }
+            metadata.polygons = metadata.polygons.map((poly, i) => ({
+                ...poly,
+                lineWidth: i === polyIndex ? (poly.lineWidth = 2) : (poly.lineWidth = 1),
+            }));
         } catch (err) {
             console.log('setPolygonLineWidth', err);
         }
@@ -788,7 +780,7 @@ export class SegmentationCanvasService {
         }
     }
 
-    resetClickPath({ img_x, img_y, img_w, img_h }: PolyMetadata) {
+    resetClipPath({ img_x, img_y, img_w, img_h }: PolyMetadata) {
         try {
             this.clipPath = null;
             this.clipPath = new Path2D();
