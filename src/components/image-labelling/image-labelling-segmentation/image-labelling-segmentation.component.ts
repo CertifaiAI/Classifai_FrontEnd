@@ -419,8 +419,9 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                     // this._segCanvasService.setGlobalXY(event);
                     this._segCanvasService.setPanXY(event);
                     /**
-                     * @function initializeCanvas needed for a muysterious bug where the black area keep covering the canvas image
-                     *           therefore, reassign value to canvas's width & height
+                     * @function initializeCanvas needed due to a mysterious bug where the black area keeps changing
+                     *            and leading to more black area covering canvas image
+                     *            therefore, reassign value to canvas's width & height
                      * @function redrawImage update & remove not needed items on canvas
                      */
                     this.initializeCanvas();
