@@ -216,14 +216,14 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         }
     }
 
-    ngOnDestroy(): void {
-        this.unsubscribe$.next();
-        this.unsubscribe$.complete();
-    }
-
-    openAllTabs() {
+    openAllTab() {
         this._tabStatus.forEach((tab) => {
             tab.closed = false;
         });
+    }
+
+    ngOnDestroy(): void {
+        this.unsubscribe$.next();
+        this.unsubscribe$.complete();
     }
 }
