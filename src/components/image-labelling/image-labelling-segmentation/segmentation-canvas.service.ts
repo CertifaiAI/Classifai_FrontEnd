@@ -605,8 +605,9 @@ export class SegmentationCanvasService {
         try {
             if (this.tmpPolygon?.coorPt) {
                 const { length } = this.tmpPolygon.coorPt;
+                const newLength = length - 1;
                 context.beginPath();
-                context.moveTo(this.tmpPolygon.coorPt[length - 1].x, this.tmpPolygon.coorPt[length - 1].y);
+                context.moveTo(this.tmpPolygon.coorPt[newLength].x, this.tmpPolygon.coorPt[newLength].y);
                 context.lineTo(offsetX, offsetY);
                 context.stroke();
             }
