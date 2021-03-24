@@ -132,7 +132,6 @@ type Metadata = {
     img_y: number;
     project_name: string;
     uuid: uuid;
-    file_size: number;
 };
 
 export type BboxMetadata = Metadata & {
