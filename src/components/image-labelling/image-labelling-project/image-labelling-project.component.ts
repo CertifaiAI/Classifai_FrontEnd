@@ -220,4 +220,10 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         this.unsubscribe$.next();
         this.unsubscribe$.complete();
     }
+
+    openAllTabs() {
+        this._tabStatus.forEach((tab) => {
+            tab.closed = false;
+        });
+    }
 }
