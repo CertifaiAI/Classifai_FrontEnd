@@ -285,7 +285,7 @@ export class SegmentationCanvasService {
         img: HTMLImageElement,
         context: CanvasRenderingContext2D,
         { width, height }: HTMLCanvasElement,
-        selectedPolygonIndex: number,
+        polyIndex: number,
     ) {
         try {
             const { img_w, img_h, img_x, img_y } = metadata;
@@ -297,19 +297,19 @@ export class SegmentationCanvasService {
             context.clip();
             context.beginPath();
             context.drawImage(img, img_x, img_y, img_w, img_h);
-            this.drawAllPolygon(metadata, context, selectedPolygonIndex);
+            this.drawAllPolygon(metadata, context, polyIndex);
         } catch (err) {
             console.log('redraw', err);
         }
     }
 
-    drawAllPolygon(metadata: PolyMetadata, context: CanvasRenderingContext2D, selectedPolygonIndex: number) {
+    drawAllPolygon(metadata: PolyMetadata, context: CanvasRenderingContext2D, polyIndex: number) {
         try {
             // if(pol.polygons.length < 1 || selectpolygon === -1){return;}
             // else{
             if (this.validatePolygonMetadata(metadata.polygons)) {
                 this.drawAllPolygonLine(metadata, context);
-                this.drawAllPolygonsDots(metadata, context, selectedPolygonIndex, this.radius);
+                this.drawAllPolygonsDots(metadata, context, polyIndex, this.radius);
                 this.plotAllFloatLabel(metadata, context);
             }
             // }

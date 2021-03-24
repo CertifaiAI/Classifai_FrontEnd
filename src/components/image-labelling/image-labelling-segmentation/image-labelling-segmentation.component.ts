@@ -32,8 +32,6 @@ import {
 })
 export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, OnDestroy {
     @ViewChild('canvasdrawing') canvas!: ElementRef<HTMLCanvasElement>;
-    @ViewChild('crossh') crossh!: ElementRef<HTMLDivElement>;
-    @ViewChild('crossv') crossv!: ElementRef<HTMLDivElement>;
     private canvasContext!: CanvasRenderingContext2D;
     private image: HTMLImageElement = new Image();
     private isMouseWithinPoint: boolean = false;
@@ -513,6 +511,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                                 method: 'draw',
                             });
                             // this._segCanvasService.setGlobalXY({ img_x: -1, img_y: -1 });
+                            this._segCanvasService.resetClickPoint();
                             this._segCanvasService.validateXYDistance(this._selectMetadata);
                             this.redrawImage(this._selectMetadata);
                             this.emitMetadata();
@@ -520,8 +519,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                     } // mouse move polygon then mouse up logic
                     else if (this.segState.draw) {
                         // this._segCanvasService.setGlobalXY({ offsetX: -1, offsetY: -1 });
-                        this._segCanvasService.resetClickPoint();
                         this._segCanvasService.validateXYDistance(this._selectMetadata);
+                        this.redrawImage(this._selectMetadata);
                         this.emitMetadata();
                     }
                 }
@@ -582,20 +581,6 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             } else {
                 this.changeMouseCursorState();
                 this.mousedown = false;
-                // console.log(this.crossh);
-                let { zIndex: crosshZIndex, visibility: crosshVisibility } = this.crossh.nativeElement.style;
-                let { zIndex: crossvZIndex, visibility: crossvVisibility } = this.crossv.nativeElement.style;
-                if (
-                    crosshZIndex !== '-1' ||
-                    crosshVisibility !== 'hidden' ||
-                    crossvZIndex !== '-1' ||
-                    crossvVisibility !== 'hidden'
-                ) {
-                    crosshZIndex = '-1';
-                    crosshVisibility = 'hidden';
-                    crossvZIndex = '-1';
-                    crossvVisibility = 'hidden';
-                }
             }
         } catch (err) {
             console.log('mouseMove', err);

@@ -44,8 +44,6 @@ import {
 })
 export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges, OnDestroy {
     @ViewChild('canvasdrawing') canvas!: ElementRef<HTMLCanvasElement>;
-    @ViewChild('crossh') crossh!: ElementRef<HTMLDivElement>;
-    @ViewChild('crossv') crossv!: ElementRef<HTMLDivElement>;
     @ViewChild('floatdiv') floatdiv!: ElementRef<HTMLDivElement>;
     @ViewChild('lbltypetxt') lbltypetxt!: ElementRef<HTMLInputElement>;
     @ViewChild('availablelbl') availablelbl!: ElementRef<HTMLDivElement>;
@@ -505,17 +503,6 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     }
                 } else {
                     this.changeMouseCursorState();
-                    if (
-                        this.crossh.nativeElement.style.zIndex !== '-1' ||
-                        this.crossh.nativeElement.style.visibility !== 'hidden' ||
-                        this.crossv.nativeElement.style.zIndex !== '-1' ||
-                        this.crossv.nativeElement.style.visibility !== 'hidden'
-                    ) {
-                        this.crossh.nativeElement.style.zIndex = '-1';
-                        this.crossh.nativeElement.style.visibility = 'hidden';
-                        this.crossv.nativeElement.style.zIndex = '-1';
-                        this.crossv.nativeElement.style.visibility = 'hidden';
-                    }
                 }
             }
         } catch (err) {
