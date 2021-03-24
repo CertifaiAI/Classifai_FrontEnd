@@ -216,9 +216,12 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                     // this.canvas.nativeElement.style.transform = `scale(${this.scale}, ${this.scale})`;
                     // this.canvas.nativeElement.scrollTop = newScroll.y;
                     // this.canvas.nativeElement.scrollLeft = newScroll.x;
-                    this.canvasContext.canvas.style.transformOrigin = `${event.offsetX}px ${event.offsetY}px`;
-                    this.canvasContext.canvas.style.transform = `scale(${scale}, ${scale})`;
-                    this._zoomService.setState({ scale });
+
+                    if (this._zoomService.validateZoomScale(this.canvasContext, scale)) {
+                        this.canvasContext.canvas.style.transformOrigin = `${event.offsetX}px ${event.offsetY}px`;
+                        this.canvasContext.canvas.style.transform = `scale(${scale}, ${scale})`;
+                        this._zoomService.setState({ scale });
+                    }
                 }
 
                 this.canvasContext.canvas.scrollTop = y;
