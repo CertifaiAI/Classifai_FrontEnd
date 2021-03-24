@@ -71,4 +71,15 @@ export class ZoomService {
             scale,
         };
     }
+
+    validateZoomScale(
+        {
+            canvas: {
+                style: { transform },
+            },
+        }: CanvasRenderingContext2D,
+        scale: number,
+    ) {
+        return transform === `scale(${scale}, ${scale})` ? false : true;
+    }
 }
