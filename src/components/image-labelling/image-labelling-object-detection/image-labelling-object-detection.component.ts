@@ -387,8 +387,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             : [];
                         this.sortingLabelList(this.labelList, annotationList);
                         // Positioning the floating div at the bottom right corner of bounding box
-                        var posFromTop = event.offsetY * (100 / document.documentElement.clientHeight) + 8.5;
-                        var posFromLeft = event.offsetX * (100 / document.documentElement.clientWidth) + 2.5;
+                        let posFromTop = event.offsetY * (100 / document.documentElement.clientHeight) + 8.5;
+                        let posFromLeft = event.offsetX * (100 / document.documentElement.clientWidth) + 2.5;
                         // Re-adjustment of floating div position if it is outside of the canvas
                         if (posFromTop < 9) {
                             posFromTop = 9;
