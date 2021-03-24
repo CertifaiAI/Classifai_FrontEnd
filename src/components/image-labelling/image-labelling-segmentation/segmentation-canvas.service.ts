@@ -53,7 +53,7 @@ export class SegmentationCanvasService {
             this.setPanXY(event);
         } else if (!this.returnTempPoly() && this.polygonAreaIndex < 0 && this.clickPoint.pointIndex < 0) {
             // console.log('mouseDownDraw else if 1');
-            // this.setGlobalXY({ img_x: offsetX, img_y: offsetY });
+            // this.setGlobalXY(event);
             // this.setPanXY({ offsetX, offsetY });
             this.setPolygonLineWidth(metadata, -1);
             this.selectedPolygonIndex = -1;
