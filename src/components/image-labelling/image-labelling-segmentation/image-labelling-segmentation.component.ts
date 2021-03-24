@@ -99,8 +99,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         if (changes._imgSrc?.currentValue) {
             this.initializeCanvas();
             this._undoRedoService.clearAllStages();
-            this.loadImage(changes._imgSrc.currentValue);
             this._segCanvasService.setSelectedPolygon(-1);
+            this.loadImage(changes._imgSrc.currentValue);
         }
     }
 
@@ -176,22 +176,14 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     }
 
     redrawImage({ img_x, img_y, img_w, img_h }: PolyMetadata) {
-        try {
-            this.clearcanvas();
-
-            this.canvasContext.drawImage(this.image, img_x, img_y, img_w, img_h);
-
-            this._segCanvasService.drawAllPolygon(
-                this._selectMetadata,
-                this.canvasContext,
-                this.annotateState.annotation,
-            );
-            // this.canvas.nativeElement.focus();
-        } catch (err) {
-            console.log('redrawImage', err);
-        }
+        this.clearcanvas();
+        this.canvasContext.drawImage(this.image, img_x, img_y, img_w, img_h);
+        this._segCanvasService.drawAllPolygon(this._selectMetadata, this.canvasContext, this.annotateState.annotation);
     }
 
+    /**
+     * @function responsible for cleaning up the canvas
+     */
     clearcanvas() {
         const { width, height } = this.canvas.nativeElement;
         this.canvasContext.clearRect(0, 0, width, height);
@@ -426,6 +418,14 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                     this.changeMouseCursorState({ grabbing: true });
                     // this._segCanvasService.setGlobalXY(event);
                     this._segCanvasService.setPanXY(event);
+                    /**
+                     * @function initializeCanvas needed due to a mysterious bug where the black area keeps changing
+                     *            and leading to more black area covering canvas image
+                     *            therefore, reassign value to canvas's width & height
+                     * @function redrawImage update & remove not needed items on canvas
+                     */
+                    this.initializeCanvas();
+                    this.redrawImage(this._selectMetadata);
                 }
                 if (this.segState.draw) {
                     // needed when mouse down then mouse move to get correct coordinate
@@ -445,6 +445,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                         const { img_x, img_y } = this._selectMetadata;
                         this._segCanvasService.setGlobalXY({ offsetX: img_x, offsetY: img_y });
                     }
+
                     this.annotateStateChange({ annotation: polyIndex });
                     this.redrawImage(this._selectMetadata);
                     // continuously show the seg line, prevents mouse down draw but line disappear

@@ -48,7 +48,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @ViewChild('lbltypetxt') lbltypetxt!: ElementRef<HTMLInputElement>;
     @ViewChild('availablelbl') availablelbl!: ElementRef<HTMLDivElement>;
     private canvasContext!: CanvasRenderingContext2D;
-    private img: HTMLImageElement = new Image();
+    private image: HTMLImageElement = new Image();
     private mousedown: boolean = false;
     private boundingBoxState!: ActionState;
     private annotateState!: AnnotateActionState;
@@ -543,9 +543,9 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     loadImage(bit64STR: string) {
         try {
-            this.img.src = bit64STR;
+            this.image.src = bit64STR;
             // this.clearCanvas();
-            this.img.onload = () => {
+            this.image.onload = () => {
                 this._selectMetadata.img_w =
                     this._selectMetadata.img_w < 1 ? this._selectMetadata.img_ori_w : this._selectMetadata.img_w;
                 this._selectMetadata.img_h =
@@ -565,7 +565,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     method: 'draw',
                 });
                 // this.canvasContext?.drawImage(
-                //     this.img,
+                //     this.image,
                 //     this._selectMetadata.img_x,
                 //     this._selectMetadata.img_y,
                 //     this._selectMetadata.img_w,
@@ -601,7 +601,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     redrawImage({ img_x, img_y, img_w, img_h }: BboxMetadata) {
         this.clearCanvas();
-        this.canvasContext.drawImage(this.img, img_x, img_y, img_w, img_h);
+        this.canvasContext.drawImage(this.image, img_x, img_y, img_w, img_h);
         this._boundingBoxCanvas.drawAllBoxOn(this._selectMetadata.bnd_box, this.canvasContext);
         // this.canvas.nativeElement.focus();
     }
