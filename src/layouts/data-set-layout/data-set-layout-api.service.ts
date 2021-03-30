@@ -38,6 +38,10 @@ export class DataSetLayoutService {
         });
     };
 
+    deleteProject = (projectName: string): Observable<Message> => {
+        return this.http.delete<Message>(`${this.hostPort}${this.imageLabellingMode}/projects/${projectName}`);
+    };
+
     updateProjectLoadStatus = (projectName: string): Observable<Message> => {
         return this.http.get<Message>(`${this.hostPort}${this.imageLabellingMode}/projects/${projectName}`);
     };

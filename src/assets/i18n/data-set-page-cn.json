@@ -33,9 +33,11 @@
         "notAvailable": "不可开启",
         "uploadFolder": "上载文件夹",
         "uploadPhotos": "上载图像",
+        "deleteProject": "删除现有项目",
         "created": "已创建:",
         "totalPhoto": "图像总数:",
         "noProject": "没有项目",
         "createNew": "开始新的项目吧！"
-    }
+    },
+    "deleteSuccess": "已被删除"
 }

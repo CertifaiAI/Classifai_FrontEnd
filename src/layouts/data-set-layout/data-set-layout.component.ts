@@ -382,6 +382,24 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             });
     };
 
+    deleteProject = (projectName: string): void => {
+        const deleteProj$ = this._dataSetService.deleteProject(projectName);
+
+        deleteProj$
+            .pipe(
+                first(),
+                map(({ message }) => message),
+            )
+            .subscribe((message) => {
+                if ((message = 1)) {
+                    this._languageService._translate.get('deleteSuccess').subscribe((translated: any) => {
+                        alert(projectName + ' ' + translated);
+                    });
+                    this.getProjectList();
+                }
+            });
+    };
+
     @HostListener('window:keydown', ['$event'])
     keyDownEvent = ({ key }: KeyboardEvent): void => {
         key === 'Escape' && this.displayModal && this.toggleModalDisplay(false);

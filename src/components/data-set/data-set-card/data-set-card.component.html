@@ -75,6 +75,9 @@
                                         >
                                             {{ 'datasetCard.uploadPhotos' | translate }}
                                         </div>
+                                        <div class="popup-label" (click)="onDeleteProject(project.project_name)">
+                                            {{ 'datasetCard.deleteProject' | translate }}
+                                        </div>
                                     </div>
                                 </span>
                             </ng-container>

@@ -33,9 +33,11 @@
         "notAvailable": "Tidak Tersedia",
         "uploadFolder": "Memuat naik folder",
         "uploadPhotos": "Memuat naik foto",
+        "deleteProject": "Padam Projek",
         "created": "Dicipta pada:",
         "totalPhoto": "Jumlah foto:",
         "noProject": "Tunggu sekejap... tidak ada projek pun",
         "createNew": "Bersedia dan jom mulakan projek baru!"
-    }
+    },
+    "deleteSuccess": "telah berjaya dipadam!"
 }
