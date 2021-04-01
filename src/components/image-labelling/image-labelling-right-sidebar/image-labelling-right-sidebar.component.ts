@@ -69,7 +69,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     imgPath: `../../../assets/icons/export.svg`,
                     hoverLabel: `rightSideBar.export`,
                     alt: `Export`,
-                    style: 'padding-left:0.5vw; padding-top:1vh;',
+                    style: 'padding: 1.5vh 0.5vw;',
                     onClick: () => {
                         this._onExport.emit();
                     },
