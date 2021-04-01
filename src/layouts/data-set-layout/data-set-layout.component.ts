@@ -369,17 +369,61 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
 
     createProject = (projectName: string): void => {
         const createProj$ = this._dataSetService.createNewProject(projectName);
-        const updateLabel$ = this._dataSetService.updateLabelList(projectName, this.labelTextUpload);
+        const uploadStatus$ = this._dataSetService.localUploadStatus(projectName);
+        const thumbnail$ = this._dataSetService.getThumbnailList;
+        let numberOfReq: number = 0;
 
-        createProj$
+        const returnResponse = ({ message }: Message): Observable<BboxMetadata & PolyMetadata> => {
+            return message !== 5 && message === 1
+                ? interval(500).pipe(
+                      mergeMap(() => uploadStatus$),
+                      /** @property {number} message value 4 means upload completed, value 1 means cancelled */
+                      first(({ message }) => {
+                          const isValidResponse: boolean = message === 4 || message === 1;
+                          return isValidResponse;
+                      }),
+                      mergeMap(({ uuid_list, message }) => {
+                          /** @property {number} message if value 4 means client has received uploaded item(s) */
+                          const thumbnails =
+                              message === 4 && uuid_list.length > 0
+                                  ? uuid_list.map((uuid) => thumbnail$(projectName, uuid))
+                                  : [];
+                          this.projectList =
+                              thumbnails.length > 0
+                                  ? { ...this.projectList, isUploading: true }
+                                  : { ...this.projectList, isUploading: false };
+                          numberOfReq = thumbnails.length;
+                          return thumbnails;
+                      }),
+                      // * this mergeMap responsible for flaten all observable into one layer
+                      mergeMap((data) => data),
+                  )
+                : throwError((error: any) => {
+                      console.error(error);
+                      this.projectList = { ...this.projectList, isUploading: false };
+                      return error;
+                  });
+        };
+        this.projectList = { ...this.projectList, isUploading: true };
+        this.subjectSubscription = this.subject$
             .pipe(
                 first(),
-                map(({ message }) => message),
-                mergeMap(() => updateLabel$),
+                mergeMap(() => createProj$),
+                mergeMap((val) => returnResponse(val)),
             )
-            .subscribe(({ message }) => {
-                message === 1 ? (this.getProjectList(), this.toggleModalDisplay(false)) : null;
-            });
+            .subscribe(
+                (res) => {
+                    numberOfReq = res ? --numberOfReq : numberOfReq;
+                    numberOfReq < 1 && (this.projectList = { ...this.projectList, isUploading: false });
+                },
+                (error: Error) => {},
+                () => {
+                    this.getProjectList();
+                },
+            );
+
+        // make initial call
+        this.subject$.next();
     };
 
     deleteProject = (projectName: string): void => {
