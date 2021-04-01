@@ -41,6 +41,7 @@
         <image-labelling-right-sidebar
             [_onChange]="onChangeSchema"
             (_onClick)="onToggleTab($event)"
+            (_onExport)="onExport()"
         ></image-labelling-right-sidebar>
     </div>
     <image-labelling-footer [_thumbnailInfo]="selectedMetaData" [_imgSrc]="imgSrc"></image-labelling-footer>

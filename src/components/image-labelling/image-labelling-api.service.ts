@@ -55,4 +55,10 @@ export class ImageLabellingApiService {
             return (metadata as CompleteMetadata).bnd_box !== undefined;
         }
     }
+
+    exportProject = (projectName: string): Observable<Message> => {
+        return this.http.put<Message>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/export`, {
+            newprojectid: projectName,
+        });
+    };
 }

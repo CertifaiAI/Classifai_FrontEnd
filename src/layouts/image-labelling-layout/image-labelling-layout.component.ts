@@ -182,6 +182,22 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
               ));
     };
 
+    onExport = (): void => {
+        const projectName = this.selectedProjectName;
+        const exportProject$ = this._imgLblApiService.exportProject(projectName);
+        exportProject$.pipe(first()).subscribe(({ message }) => {
+            if (message === 1) {
+                this._languageService._translate.get('exportSuccess').subscribe((translated: any) => {
+                    alert(projectName + translated);
+                });
+            } else {
+                this._languageService._translate.get('exportFailed').subscribe((translated: any) => {
+                    alert(translated + projectName);
+                });
+            }
+        });
+    };
+
     navigateByUrl = ({ url }: EventEmitter_Url): void => {
         // console.log(url);
         url ? this._router.navigate([url]) : console.error(`No url received from child component`);

@@ -20,6 +20,7 @@ import {
 export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
     @Input() _onChange!: ImgLabelProps;
     @Output() _onClick: EventEmitter<TabsProps> = new EventEmitter();
+    @Output() _onExport = new EventEmitter();
     jsonSchema!: IconSchema;
 
     constructor() {}
@@ -63,6 +64,15 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     hoverLabel: `rightSideBar.statistic`,
                     alt: `Statistic`,
                     onClick: () => {},
+                },
+                {
+                    imgPath: `../../../assets/icons/export.svg`,
+                    hoverLabel: `rightSideBar.export`,
+                    alt: `Export`,
+                    style: 'padding-left:0.5vw; padding-top:1vh;',
+                    onClick: () => {
+                        this._onExport.emit();
+                    },
                 },
             ],
         };
