@@ -33,13 +33,13 @@ export class DataSetLayoutService {
     };
 
     createNewProject = (projectName: string): Observable<Message> => {
-        // return this.http.put<Message>(`${this.hostPort}${this.imageLabellingMode}/newproject/${projectName}`, {
-        //     newprojectid: projectName,
-        // });
-        console.log('create : ' + projectName);
-        return this.http.put<Message>(`${this.hostPort}/v2/${this.imageLabellingMode}/newproject/${projectName}`, {
+        return this.http.put<Message>(`${this.hostPort}v2/${this.imageLabellingMode}/newproject/${projectName}`, {
             newprojectid: projectName,
         });
+    };
+
+    importProject = (): Observable<Message> => {
+        return this.http.put<Message>(`${this.hostPort}v2/newproject`, {});
     };
 
     deleteProject = (projectName: string): Observable<Message> => {
@@ -86,7 +86,7 @@ export class DataSetLayoutService {
 
     localUploadStatus = (projectName: string): Observable<MessageUuidList> => {
         return this.http.get<MessageUuidList>(
-            `${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/filesysstatus`,
+            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/filesysstatus`,
         );
     };
 

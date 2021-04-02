@@ -9,6 +9,7 @@
     "cancelButton": "Batal",
     "menuName": {
         "newProject": "Projek Baru",
+        "importProject": "Import Projek",
         "myProject": "Projek Saya",
         "starred": "Dibintangi",
         "recent": "Terbaru",

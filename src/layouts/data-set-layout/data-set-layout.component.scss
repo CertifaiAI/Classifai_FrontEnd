@@ -147,6 +147,15 @@ $fontSize: 2vh;
     color: white;
 }
 
+.overlay {
+    z-index: 2000;
+    position: absolute;
+    background-color: rgb(0, 0, 0, 0.8);
+    width: 99.9vw;
+    height: 99.7vh;
+    cursor: not-allowed;
+}
+
 // .file-input {
 //     color: transparent;
 //     color: transparent;

@@ -41,6 +41,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     labelList: string[] = [];
     unsubscribe$: Subject<any> = new Subject();
     isLoading = false;
+    isOverlayOn = false;
+    isImageUploading = false;
     imgLblMode: ImageLabellingMode = null;
     @ViewChild('refProjectName') _refProjectName!: ElementRef<HTMLInputElement>;
     @ViewChild('labeltextfile') _labelTextFile!: ElementRef<HTMLInputElement>;
@@ -125,6 +127,18 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.displayModal = shown;
         /** timeOut needed to allow focus due to Angular's templating sys issue / bug */
         setTimeout(() => this._refProjectName.nativeElement.focus());
+    };
+
+    importProject = (): void => {
+        const importProject$ = this._dataSetService.importProject();
+        importProject$
+            .pipe(
+                first(),
+                map(({ message }) => message),
+            )
+            .subscribe((message) => {
+                console.log(message);
+            });
     };
 
     onFileChange = ({ target: { files } }: HTMLElementEvent<HTMLInputElement>): void => {
@@ -379,6 +393,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                       mergeMap(() => uploadStatus$),
                       /** @property {number} message value 4 means upload completed, value 1 means cancelled */
                       first(({ message }) => {
+                          this.isOverlayOn = message === 0 || message === 2 ? true : false;
+                          this.isImageUploading = message === 2 ? true : false;
                           const isValidResponse: boolean = message === 4 || message === 1;
                           return isValidResponse;
                       }),
@@ -393,6 +409,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                                   ? { ...this.projectList, isUploading: true }
                                   : { ...this.projectList, isUploading: false };
                           numberOfReq = thumbnails.length;
+                          if (message === 4) {
+                              this.toggleModalDisplay(false);
+                          }
                           return thumbnails;
                       }),
                       // * this mergeMap responsible for flaten all observable into one layer

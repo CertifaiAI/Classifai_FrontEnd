@@ -9,6 +9,7 @@
     "cancelButton": "Cancel",
     "menuName": {
         "newProject": "New Project",
+        "importProject": "Import Project",
         "myProject": "My Project",
         "starred": "Starred",
         "recent": "Recent",
