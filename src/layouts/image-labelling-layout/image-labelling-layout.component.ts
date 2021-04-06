@@ -1,7 +1,7 @@
 import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from '../data-set-layout/data-set-layout-api.service';
-import { first, takeUntil } from 'rxjs/operators';
+import { first, mergeMap, takeUntil } from 'rxjs/operators';
 import { HTMLElementEvent } from 'src/shared/types/field/field.model';
 import { ImageLabellingActionService } from 'src/components/image-labelling/image-labelling-action.service';
 import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
@@ -11,7 +11,7 @@ import { LanguageService } from 'src/shared/services/language.service';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'src/components/spinner/spinner.service';
-import { Subject } from 'rxjs';
+import { interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import {
     AddSubLabel,
     BboxMetadata,
@@ -26,6 +26,7 @@ import {
     SelectedLabelProps,
     TabsProps,
 } from 'src/components/image-labelling/image-labelling.model';
+import { Message } from 'src/shared/types/message/message.model';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -41,6 +42,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     thumbnailList: CompleteMetadata[] = [];
     selectedMetaData?: CompleteMetadata;
     unsubscribe$: Subject<any> = new Subject();
+    subject$: Subject<any> = new Subject();
+    subjectSubscription?: Subscription;
     tabStatus: TabsProps<CompleteMetadata>[] = [
         {
             name: 'labellingProject.project',
@@ -66,6 +69,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     currentImageDisplayIndex = -1;
     isLoading: boolean = false;
     showLoading: boolean = false;
+    reloadTimer: any;
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
 
     constructor(
@@ -196,6 +200,76 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 });
             }
         });
+    };
+
+    onReload = (): void => {
+        const projectName = this.selectedProjectName;
+        const reloadProject$ = this._imgLblApiService.reloadProject(projectName);
+        const reloadStatus$ = this._imgLblApiService.reloadProjectStatus(projectName);
+        const thumbnail$ = this._dataSetService.getThumbnailList;
+        const thumbnailListTemp: CompleteMetadata[] = [];
+
+        const returnResponse = ({ message }: Message): Observable<BboxMetadata & PolyMetadata> => {
+            return message !== 5 && message === 1
+                ? interval(500).pipe(
+                      mergeMap(() => reloadStatus$),
+                      /** @property {number} message value 4 means upload completed, value 1 means cancelled */
+                      first(({ message }) => {
+                          const isValidResponse: boolean = message === 4 || message === 1;
+                          return isValidResponse;
+                      }),
+                      mergeMap(({ uuid_add_list, uuid_delete_list, message }) => {
+                          /** @property {number} message if value 4 means client has received uploaded item(s) */
+                          this.isLoading = true;
+                          let listTemp: string[] = [];
+                          this.thumbnailList.forEach((element) => {
+                              listTemp.push(element.uuid);
+                          });
+                          uuid_add_list.forEach((uuid) => {
+                              listTemp.push(uuid);
+                          });
+                          uuid_delete_list.forEach((uuid) => {
+                              listTemp = listTemp.filter((e) => e !== uuid);
+                          });
+                          // console.log(listTemp);
+                          const thumbnails =
+                              message === 4 && listTemp.length > 0
+                                  ? listTemp.map((uuid) => thumbnail$(projectName, uuid))
+                                  : [];
+
+                          // console.log(thumbnails);
+                          this.thumbnailList = [];
+                          return thumbnails;
+                      }),
+                      // * this mergeMap responsible for flaten all observable into one layer
+                      mergeMap((data) => data),
+                  )
+                : throwError((error: any) => {
+                      console.error(error);
+                      this.isLoading = false;
+                      return error;
+                  });
+        };
+        this.subjectSubscription = this.subject$
+            .pipe(
+                first(),
+                mergeMap(() => reloadProject$),
+                mergeMap((val) => returnResponse(val)),
+            )
+            .subscribe(
+                (res) => {
+                    this.isLoading = true;
+                    thumbnailListTemp.push(res);
+                },
+                (error: Error) => {},
+                () => {
+                    this.thumbnailList = thumbnailListTemp;
+                    this.isLoading = false;
+                },
+            );
+
+        // make initial call
+        this.subject$.next();
     };
 
     navigateByUrl = ({ url }: EventEmitter_Url): void => {

@@ -21,6 +21,8 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
     @Input() _onChange!: ImgLabelProps;
     @Output() _onClick: EventEmitter<TabsProps> = new EventEmitter();
     @Output() _onExport = new EventEmitter();
+    @Output() _onReload = new EventEmitter();
+
     jsonSchema!: IconSchema;
 
     constructor() {}
@@ -72,6 +74,15 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     style: 'padding: 1.5vh 0.5vw;',
                     onClick: () => {
                         this._onExport.emit();
+                    },
+                },
+                {
+                    imgPath: `../../../assets/icons/reload.svg`,
+                    hoverLabel: `rightSideBar.reload`,
+                    alt: `Reload`,
+                    style: 'padding: 1.5vh 0.5vw;',
+                    onClick: () => {
+                        this._onReload.emit();
                     },
                 },
             ],

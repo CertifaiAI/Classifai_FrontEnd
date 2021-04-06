@@ -4,6 +4,8 @@ type content = string[];
 type message = boolean | number;
 export type uuid = string;
 type img_src = string;
+type uuid_add_list = string[];
+type uuid_delete_list = string[];
 
 export type MessageContent<TContent = undefined> = {
     content: TContent extends undefined ? content : TContent;
@@ -31,4 +33,10 @@ export type MessageProjectProgress = {
     error_code?: error_code;
     error_message?: errormessage;
     message: message;
+};
+
+export type MessageReload = {
+    message: message;
+    uuid_add_list: uuid_add_list;
+    uuid_delete_list: uuid_delete_list;
 };
