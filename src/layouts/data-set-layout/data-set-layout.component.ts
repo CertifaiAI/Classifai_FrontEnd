@@ -383,6 +383,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
 
     createProject = (projectName: string): void => {
         const createProj$ = this._dataSetService.createNewProject(projectName);
+        const updateLabel$ = this._dataSetService.updateLabelList(projectName, this.labelTextUpload);
         const uploadStatus$ = this._dataSetService.localUploadStatus(projectName);
         const thumbnail$ = this._dataSetService.getThumbnailList;
         let numberOfReq: number = 0;
@@ -428,6 +429,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .pipe(
                 first(),
                 mergeMap(() => createProj$),
+                mergeMap(() => updateLabel$),
                 mergeMap((val) => returnResponse(val)),
             )
             .subscribe(
