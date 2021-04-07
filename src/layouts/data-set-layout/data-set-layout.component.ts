@@ -123,6 +123,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     toggleModalDisplay = (shown: boolean): void => {
+        this._labelTextFilename.nativeElement.innerHTML = '';
+        this.labelTextUpload = [];
         shown ? this.form.reset() : null;
         this.displayModal = shown;
         /** timeOut needed to allow focus due to Angular's templating sys issue / bug */
@@ -234,7 +236,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     ? (this.form.get('projectName')?.setErrors({ exist: true }),
                       this._refProjectName.nativeElement.focus())
                     : (this.createProject(this.inputProjectName),
-                      (this.selectedProjectName = this.form.get('projectName')?.value));
+                      (this.selectedProjectName = this.form.get('projectName')?.value),
+                      (this.labelTextUpload = []),
+                      (this._labelTextFilename.nativeElement.innerHTML = ''));
             } else {
                 this.form.get('projectName')?.setErrors({ required: true });
                 this._refProjectName.nativeElement.focus();
