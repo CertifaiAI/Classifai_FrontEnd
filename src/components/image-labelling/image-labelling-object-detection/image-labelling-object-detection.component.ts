@@ -367,17 +367,21 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this._boundingBoxCanvas.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
                 }
                 if (this.boundingBoxState.draw && this.mousedown) {
-                    const retObj = this._boundingBoxCanvas.mouseUpDrawEnable(this._selectMetadata, (isDone) => {
-                        if (isDone) {
-                            this._undoRedoService.isStateChange(this._selectMetadata.bnd_box) &&
-                                this._undoRedoService.appendStages({
-                                    meta: cloneDeep(this._selectMetadata),
-                                    method: 'draw',
-                                });
-                            this.getBBoxDistanceFromImage();
-                            this.emitMetadata();
-                        }
-                    });
+                    const retObj = this._boundingBoxCanvas.mouseUpDrawEnable(
+                        this._selectMetadata,
+                        this.labelList,
+                        (isDone) => {
+                            if (isDone) {
+                                this._undoRedoService.isStateChange(this._selectMetadata.bnd_box) &&
+                                    this._undoRedoService.appendStages({
+                                        meta: cloneDeep(this._selectMetadata),
+                                        method: 'draw',
+                                    });
+                                this.getBBoxDistanceFromImage();
+                                this.emitMetadata();
+                            }
+                        },
+                    );
                     if (retObj.isNew) {
                         this.getLabelList();
                         const annotationList = this._tabStatus[2].annotation

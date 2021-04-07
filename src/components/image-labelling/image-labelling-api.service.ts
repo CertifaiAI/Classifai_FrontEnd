@@ -32,10 +32,8 @@ export class ImageLabellingApiService {
     };
 
     updateLabelList = (projectName: string, label_list: string[]): Observable<Message> => {
-        // console.log(label_list);
-        const checkLabelList: string[] = label_list.length > 0 ? label_list : ['default'];
         return this.http.put<Message>(`${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/newlabels`, {
-            label_list: checkLabelList,
+            label_list: label_list,
         });
     };
 

@@ -8,6 +8,7 @@
         <image-labelling-left-sidebar
             [_onChange]="onChangeSchema"
             [_currentUrl]="currentUrl"
+            [_tabStatus]="tabStatus"
         ></image-labelling-left-sidebar>
 
         <ng-container *ngIf="_router.url.includes('imglabel/bndbox')">

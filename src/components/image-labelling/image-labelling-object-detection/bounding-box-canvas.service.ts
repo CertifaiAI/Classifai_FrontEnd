@@ -1,4 +1,4 @@
-import { BboxMetadata, Boundingbox, DiffXY, Direction, xyCoordinate } from '../image-labelling.model';
+import { BboxMetadata, Boundingbox, DiffXY, Direction, LabelInfo, xyCoordinate } from '../image-labelling.model';
 import { clone } from 'lodash-es';
 import { Injectable } from '@angular/core';
 import { Utils } from '../../../shared/types/utils/utils';
@@ -253,6 +253,7 @@ export class BoundingBoxCanvasService {
 
     public mouseUpDrawEnable(
         currMeta: BboxMetadata,
+        labelList: LabelInfo[],
         callback: (arg: boolean) => void,
     ): { selBox: number; isNew: boolean } {
         try {
@@ -260,7 +261,7 @@ export class BoundingBoxCanvasService {
             if (this.currentClickedBox.box === -1 && this.tmpbox !== null) {
                 currMeta.bnd_box.push(this.tmpbox);
                 this.currentSelectedBndBox = currMeta.bnd_box.length - 1;
-                currMeta.bnd_box[this.currentSelectedBndBox].label = 'default';
+                currMeta.bnd_box[this.currentSelectedBndBox].label = labelList.length > 0 ? labelList[0].name : '';
                 ret.isNew = true;
                 ret.selBox = clone(this.currentSelectedBndBox);
             } else if (this.currentClickedBox.box > -1 && this.tmpbox) {
@@ -549,7 +550,7 @@ export class BoundingBoxCanvasService {
                     lineWidth: 2,
                     color: 'rgba(0,255,0,1.0)',
                     distancetoImg: { x: 0, y: 0 },
-                    label: 'default',
+                    label: '',
                     id: newID,
                 };
             }
