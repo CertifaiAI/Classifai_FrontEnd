@@ -23,7 +23,6 @@ type FileTypeProps = {
 export class DataSetCardComponent implements OnInit, OnChanges {
     @Input() _jsonSchema!: ProjectSchema;
     @Output() _onClick: EventEmitter<string> = new EventEmitter();
-    @Output() _onUpload: EventEmitter<FileTypeProps> = new EventEmitter();
     @Output() _onStarred: EventEmitter<StarredProps> = new EventEmitter();
     @Output() _onDelete: EventEmitter<string> = new EventEmitter();
 
@@ -47,12 +46,6 @@ export class DataSetCardComponent implements OnInit, OnChanges {
     onOpenProject = (index: number, { project_name, is_loaded }: Project): void => {
         is_loaded ? null : this.isExactIndex(index) ? null : this._onClick.emit(project_name);
         // this.isExactIndex(index) ? null : this._onClick.emit(project_name);
-    };
-
-    onUploadContent = (index: number, projectName: string, fileType?: FileType): void => {
-        this.cardSchema = { clickIndex: index };
-        this._onUpload.emit({ projectName, fileType: fileType ?? 'folder' });
-        // this.onDisplayMore(index);
     };
 
     onDeleteProject(projectName: string) {

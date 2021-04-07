@@ -74,16 +74,6 @@ export class DataSetLayoutService {
         );
     };
 
-    /** @function responsible for returning an Observable of data type Message
-     *  @param {string} projectName - your current project name
-     *  @param {string} fileType - default w/o value is 'folder', else have to provide 'file' as value
-     */
-    localUploadThumbnail = (projectName: string, fileType: FileType = 'folder'): Observable<Message> => {
-        return this.http.get<Message>(
-            `${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/filesys/${fileType}`,
-        );
-    };
-
     localUploadStatus = (projectName: string): Observable<MessageUuidList> => {
         return this.http.get<MessageUuidList>(
             `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/filesysstatus`,
