@@ -112,4 +112,8 @@ export class DataSetLayoutService {
             },
         );
     };
+
+    importStatus = (): Observable<Message> => {
+        return this.http.get<Message>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/importstatus`);
+    };
 }

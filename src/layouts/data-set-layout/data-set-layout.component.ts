@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnIn
 import { cloneDeep } from 'lodash-es';
 import { DataSetLayoutService } from './data-set-layout-api.service';
 import { DataSetProps, ProjectSchema, StarredProps, UploadThumbnailProps } from './data-set-layout.model';
-import { distinctUntilChanged, first, map, mergeMap, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, first, map, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HTMLElementEvent } from 'src/shared/types/field/field.model';
@@ -130,6 +130,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     importProject = (): void => {
+        const importStatus$ = this._dataSetService.importStatus();
         const importProject$ = this._dataSetService.importProject();
         importProject$
             .pipe(
@@ -137,7 +138,22 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 map(({ message }) => message),
             )
             .subscribe((message) => {
-                console.log(message);
+                let refreshProjectList = false;
+                interval(500)
+                    .pipe(
+                        switchMap(() => importStatus$),
+                        first((response) => {
+                            this.isOverlayOn = response.message === 0 ? true : false;
+                            if (response.message === 1 || response.message === 4) {
+                                refreshProjectList = true;
+                            }
+
+                            return refreshProjectList;
+                        }),
+                    )
+                    .subscribe((response) => {
+                        this.getProjectList();
+                    });
             });
     };
 
