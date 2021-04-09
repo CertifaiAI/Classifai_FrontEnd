@@ -25,6 +25,7 @@ export class DataSetCardComponent implements OnInit, OnChanges {
     @Output() _onClick: EventEmitter<string> = new EventEmitter();
     @Output() _onStarred: EventEmitter<StarredProps> = new EventEmitter();
     @Output() _onDelete: EventEmitter<string> = new EventEmitter();
+    @Output() _onRename: EventEmitter<{ shown: boolean; projectName: string }> = new EventEmitter();
 
     // clonedJsonSchema!: ProjectSchema;
     starredActiveIcon: string = `../../../assets/icons/starred_active.svg`;
@@ -48,14 +49,24 @@ export class DataSetCardComponent implements OnInit, OnChanges {
         // this.isExactIndex(index) ? null : this._onClick.emit(project_name);
     };
 
+    onRenameProject(projectName: string) {
+        this._onRename.emit({ shown: true, projectName });
+        this.onCloseDisplay();
+    }
+
     onDeleteProject(projectName: string) {
         this._onDelete.emit(projectName);
+        this.onCloseDisplay();
     }
 
     onDisplayMore = (index: number = this.cardSchema.clickIndex): void => {
         const { clickIndex } = this.cardSchema;
         this.cardSchema = { clickIndex: clickIndex === index ? -1 : index };
         // console.log(this.cardSchema);
+    };
+
+    onCloseDisplay = (): void => {
+        this.cardSchema.clickIndex = -1;
     };
 
     onStarred = (project: Project, starred: boolean): void => {

@@ -42,6 +42,13 @@ export class DataSetLayoutService {
         return this.http.put<Message>(`${this.hostPort}v2/newproject`, {});
     };
 
+    renameProject = (oldProjectName: string, newProjectName: string): Observable<Message> => {
+        return this.http.put<Message>(
+            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${oldProjectName}/rename/${newProjectName}`,
+            {},
+        );
+    };
+
     deleteProject = (projectName: string): Observable<Message> => {
         return this.http.delete<Message>(`${this.hostPort}${this.imageLabellingMode}/projects/${projectName}`);
     };

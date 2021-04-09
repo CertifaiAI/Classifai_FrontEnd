@@ -31,10 +31,14 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         isFetching: false,
     };
     inputProjectName: string = '';
+    newInputProjectName: string = '';
     selectedProjectName: string = '';
+    oldProjectName: string = '';
     labelTextUpload: any[] = [];
     form!: FormGroup;
+    renameForm!: FormGroup;
     displayModal: boolean = false;
+    displayRenameProjectModal: boolean = false;
     subject$: Subject<any> = new Subject();
     subjectSubscription?: Subscription;
     thumbnailList: BboxMetadata[] & PolyMetadata[] = [];
@@ -47,6 +51,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     @ViewChild('refProjectName') _refProjectName!: ElementRef<HTMLInputElement>;
     @ViewChild('labeltextfile') _labelTextFile!: ElementRef<HTMLInputElement>;
     @ViewChild('labeltextfilename') _labelTextFilename!: ElementRef<HTMLLabelElement>;
+    @ViewChild('refNewProjectName') _refNewProjectName!: ElementRef<HTMLInputElement>;
 
     constructor(
         private _fb: FormBuilder,
@@ -67,6 +72,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .subscribe((loading) => (this.isLoading = loading));
 
         this.createFormControls();
+        this.renameFormControls();
         const langsArr: string[] = ['data-set-page-en', 'data-set-page-cn', 'data-set-page-ms'];
         this._languageService.initializeLanguage(`data-set-page`, langsArr);
     }
@@ -118,8 +124,18 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         });
     };
 
+    renameFormControls = (): void => {
+        this.renameForm = this._fb.group({
+            newProjectName: ['', Validators.required],
+        });
+    };
+
     onChange = (val: string): void => {
         this.inputProjectName = val;
+    };
+
+    onChangeRename = (val: string): void => {
+        this.newInputProjectName = val;
     };
 
     toggleModalDisplay = (shown: boolean): void => {
@@ -129,6 +145,14 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.displayModal = shown;
         /** timeOut needed to allow focus due to Angular's templating sys issue / bug */
         setTimeout(() => this._refProjectName.nativeElement.focus());
+    };
+
+    toggleRenameModalDisplay = (event: any): void => {
+        event.shown ? this.renameForm.reset() : null;
+        this.displayRenameProjectModal = event.shown;
+        this.oldProjectName = event.projectName;
+        /** timeOut needed to allow focus due to Angular's templating sys issue / bug */
+        setTimeout(() => this._refNewProjectName.nativeElement.focus());
     };
 
     importProject = (): void => {
@@ -245,6 +269,25 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             }
         }
     };
+
+    onSubmitRename() {
+        if (this.newInputProjectName) {
+            console.log(this.projectList.projects);
+            const checkExistProject = this.projectList.projects
+                ? this.projectList.projects.find((project) =>
+                      project ? project.project_name === this.newInputProjectName : null,
+                  )
+                : null;
+            checkExistProject
+                ? (this.renameForm.get('newProjectName')?.setErrors({ exist: true }),
+                  this._refProjectName.nativeElement.focus())
+                : (this.renameProject(this.oldProjectName, this.newInputProjectName),
+                  (this.selectedProjectName = this.renameForm.get('newProjectName')?.value));
+        } else {
+            this.renameForm.get('newProjectName')?.setErrors({ required: true });
+            this._refProjectName.nativeElement.focus();
+        }
+    }
 
     startProject = (projectName: string): void => {
         this.selectedProjectName = projectName;
@@ -385,6 +428,26 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
 
         // make initial call
         this.subject$.next();
+    };
+
+    renameProject = (oldProjectName: string, newProjectName: string): void => {
+        this.displayRenameProjectModal = false;
+        const renameProject$ = this._dataSetService.renameProject(oldProjectName, newProjectName);
+
+        renameProject$
+            .pipe(
+                first(),
+                map(({ message }) => message),
+            )
+            .subscribe((message) => {
+                console.log(message);
+                if (message == 1) {
+                    this._languageService._translate.get('renameSuccess').subscribe((translated: any) => {
+                        alert(oldProjectName + ' ' + translated);
+                    });
+                    this.getProjectList();
+                }
+            });
     };
 
     deleteProject = (projectName: string): void => {

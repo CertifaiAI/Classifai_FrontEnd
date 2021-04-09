@@ -13,6 +13,7 @@
             (_onClick)="onSubmit(false, $event)"
             (_onStarred)="onStarred($event)"
             (_onDelete)="deleteProject($event)"
+            (_onRename)="toggleRenameModalDisplay($event)"
         ></data-set-card>
     </div>
 </div>
@@ -67,6 +68,51 @@
                             {{ 'createButton' | translate }}
                         </button>
                         <button (click)="toggleModalDisplay(false)" class="button-style cancel-btn">
+                            {{ 'cancelButton' | translate }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div [hidden]="!displayRenameProjectModal">
+    <div class="model">
+        <form [formGroup]="renameForm">
+            <div class="model-content">
+                <div class="content-container">
+                    <h1 class="content-header">{{ 'renameProject' | translate }}</h1>
+                    <div class="new-project-container">
+                        <label class="label">{{ 'newProjectName' | translate }} </label>
+                        <input
+                            #refNewProjectName
+                            class="input-style"
+                            type="text"
+                            placeholder="Enter new project name"
+                            formControlName="newProjectName"
+                            [value]="inputProjectName"
+                            (input)="onChangeRename($event.target.value)"
+                        />
+                    </div>
+
+                    <ng-container *ngIf="form.get('newProjectName')?.touched">
+                        <div class="validation">
+                            <span *ngIf="form.get('newProjectName')?.getError('exist')">
+                                <small class="error-msg"> {{ 'projectNameExist' | translate }} </small>
+                            </span>
+                            <span *ngIf="form.get('newProjectName')?.getError('required')">
+                                <small class="error-msg"> {{ 'projectNameRequired' | translate }} </small>
+                            </span>
+                        </div>
+                    </ng-container>
+
+                    <div class="horizontal-line"></div>
+                    <div class="model-button-container">
+                        <button class="button-style create-btn" type="submit" (click)="onSubmitRename()">
+                            {{ 'updateButton' | translate }}
+                        </button>
+                        <button (click)="toggleRenameModalDisplay(false)" class="button-style cancel-btn">
                             {{ 'cancelButton' | translate }}
                         </button>
                     </div>
