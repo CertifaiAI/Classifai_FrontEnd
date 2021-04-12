@@ -272,7 +272,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
 
     onSubmitRename() {
         if (this.newInputProjectName) {
-            console.log(this.projectList.projects);
             const checkExistProject = this.projectList.projects
                 ? this.projectList.projects.find((project) =>
                       project ? project.project_name === this.newInputProjectName : null,

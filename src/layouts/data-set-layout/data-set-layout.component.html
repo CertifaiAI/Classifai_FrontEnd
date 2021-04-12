@@ -96,12 +96,12 @@
                         />
                     </div>
 
-                    <ng-container *ngIf="form.get('newProjectName')?.touched">
+                    <ng-container *ngIf="renameForm.get('newProjectName')?.touched">
                         <div class="validation">
-                            <span *ngIf="form.get('newProjectName')?.getError('exist')">
+                            <span *ngIf="renameForm.get('newProjectName')?.getError('exist')">
                                 <small class="error-msg"> {{ 'projectNameExist' | translate }} </small>
                             </span>
-                            <span *ngIf="form.get('newProjectName')?.getError('required')">
+                            <span *ngIf="renameForm.get('newProjectName')?.getError('required')">
                                 <small class="error-msg"> {{ 'projectNameRequired' | translate }} </small>
                             </span>
                         </div>
