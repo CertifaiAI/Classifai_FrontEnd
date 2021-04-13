@@ -371,7 +371,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         let numberOfReq: number = 0;
 
         const returnResponse = ({ message }: Message): Observable<BboxMetadata & PolyMetadata> => {
-            return message !== 5 && message === 1
+            return message !== 5 && (message === 1 || message === 0)
                 ? interval(500).pipe(
                       mergeMap(() => uploadStatus$),
                       /** @property {number} message value 4 means upload completed, value 1 means cancelled */
