@@ -264,6 +264,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 (error: Error) => {},
                 () => {
                     this.thumbnailList = thumbnailListTemp;
+                    this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: this.thumbnailList.length };
                     this.isLoading = false;
                 },
             );
