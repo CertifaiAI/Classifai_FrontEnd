@@ -147,3 +147,66 @@
     @include button-style();
     flex: 0 0 5%;
 }
+
+.modal {
+    position: fixed; /* Stay in place */
+    z-index: 1000; /*Sit on top*/
+    padding-top: 10vh; /* Location of the box */
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: transparent;
+    scrollbar-width: none;
+    position: fixed;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.modal-content {
+    background-color: #525353;
+    margin: auto;
+    padding: 1vw;
+    max-width: 30vw;
+    min-width: 30vw;
+    border-radius: 1vw;
+    margin-top: 15vh;
+}
+
+.model-content-container {
+    margin-left: 1.3vw;
+}
+
+.modal-content-header {
+    color: white;
+    font-size: 3vh;
+}
+
+.modal-button-container {
+    display: flex;
+    flex-direction: row-reverse;
+    padding: 1vw;
+}
+
+.button-style {
+    padding: 1vh 1.5vw 1vh 1.5vw;
+    border-radius: 1vh;
+    border: none;
+    outline: none;
+    color: white;
+    cursor: pointer;
+    font-size: 2vh;
+}
+
+.confg-btn {
+    background-color: #169887;
+}
+
+.confgdata-btn {
+    background-color: #169887;
+    margin-right: 0.7vw;
+}
+
+.cancel-btn {
+    background-color: #444444;
+    margin-right: 0.7vw;
+}

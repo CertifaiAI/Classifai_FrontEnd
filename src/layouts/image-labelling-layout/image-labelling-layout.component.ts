@@ -70,6 +70,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     isLoading: boolean = false;
     showLoading: boolean = false;
     reloadTimer: any;
+    displayExportModal: boolean = false;
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
 
     constructor(
@@ -187,8 +188,12 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     onExport = (): void => {
+        this.displayExportModal = true;
+    };
+
+    exportProject = (exportType: string): void => {
         const projectName = this.selectedProjectName;
-        const exportProject$ = this._imgLblApiService.exportProject(projectName);
+        const exportProject$ = this._imgLblApiService.exportProject(projectName, exportType);
         exportProject$.pipe(first()).subscribe(({ message }) => {
             if (message === 1) {
                 this._languageService._translate.get('exportSuccess').subscribe((translated: any) => {
@@ -200,7 +205,12 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 });
             }
         });
+        this.displayExportModal = false;
     };
+
+    cancelExportProject() {
+        this.displayExportModal = false;
+    }
 
     onReload = (): void => {
         const projectName = this.selectedProjectName;

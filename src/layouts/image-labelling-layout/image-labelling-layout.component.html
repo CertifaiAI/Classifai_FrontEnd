@@ -135,4 +135,21 @@
     </ng-container>
 </modal>
 
+<div [hidden]="!displayExportModal">
+    <div class="modal">
+        <div class="modal-content">
+            <div class="modal-content-container">
+                <h1 class="modal-content-header">Export Options</h1>
+                <div class="modal-button-container">
+                    <button class="button-style confg-btn" (click)="exportProject('cfgdata')">
+                        Config File with Data
+                    </button>
+                    <button class="button-style confgdata-btn" (click)="exportProject('cfg')">Config File</button>
+                    <button class="button-style cancel-btn" (click)="cancelExportProject()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <spinner [_loading]="isLoading"></spinner>

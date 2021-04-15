@@ -60,10 +60,13 @@ export class ImageLabellingApiService {
         }
     }
 
-    exportProject = (projectName: string): Observable<Message> => {
-        return this.http.put<Message>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/export`, {
-            newprojectid: projectName,
-        });
+    exportProject = (projectName: string, exportType: string): Observable<Message> => {
+        return this.http.put<Message>(
+            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/export/${exportType}`,
+            {
+                newprojectid: projectName,
+            },
+        );
     };
 
     reloadProject = (projectName: string): Observable<Message> => {
