@@ -141,14 +141,14 @@
             <div class="modal-content-container">
                 <h1 class="modal-content-header">{{ 'exportModal.exportOptions' | translate }}</h1>
                 <div class="modal-button-container">
-                    <button class="button-style confg-btn" (click)="exportProject('cfgdata')">
-                        {{ 'exportModal.configFileWithData' | translate }}
+                    <button class="button-style cancel-btn" (click)="cancelExportProject()">
+                        {{ 'exportModal.cancel' | translate }}
                     </button>
                     <button class="button-style confgdata-btn" (click)="exportProject('cfg')">
                         {{ 'exportModal.configFile' | translate }}
                     </button>
-                    <button class="button-style cancel-btn" (click)="cancelExportProject()">
-                        {{ 'exportModal.cancel' | translate }}
+                    <button class="button-style confg-btn" (click)="exportProject('cfgdata')">
+                        {{ 'exportModal.configFileWithData' | translate }}
                     </button>
                 </div>
             </div>

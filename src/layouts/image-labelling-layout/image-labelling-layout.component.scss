@@ -177,13 +177,14 @@
 }
 
 .modal-content-header {
+    text-align: center;
     color: white;
     font-size: 3vh;
 }
 
 .modal-button-container {
     display: flex;
-    flex-direction: row-reverse;
+    justify-content: center;
     padding: 1vw;
 }
 
