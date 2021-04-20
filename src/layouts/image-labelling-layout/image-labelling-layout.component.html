@@ -139,16 +139,21 @@
     <div class="modal">
         <div class="modal-content">
             <div class="modal-content-container">
-                <h1 class="modal-content-header">{{ 'exportModal.exportOptions' | translate }}</h1>
+                <h1 class="modal-content-header">
+                    {{ 'exportModal.exportOptions' | translate }}
+                </h1>
                 <div class="modal-button-container">
-                    <button class="button-style cancel-btn" (click)="cancelExportProject()">
-                        {{ 'exportModal.cancel' | translate }}
-                    </button>
-                    <button class="button-style confgdata-btn" (click)="exportProject('cfg')">
+                    <button class="button-style confg-btn" (click)="exportProject('cfg')">
                         {{ 'exportModal.configFile' | translate }}
                     </button>
-                    <button class="button-style confg-btn" (click)="exportProject('cfgdata')">
-                        {{ 'exportModal.configFileWithData' | translate }}
+                    <button class="button-style confgdata-btn" (click)="exportProject('cfgdata')">
+                        {{ 'exportModal.zipFile' | translate }}
+                        <br /><span class="with-data">{{ 'exportModal.withData' | translate }}</span>
+                    </button>
+                </div>
+                <div class="modal-button-cancel">
+                    <button class="button-style cancel-btn" (click)="cancelExportProject()">
+                        {{ 'exportModal.cancel' | translate }}
                     </button>
                 </div>
             </div>
