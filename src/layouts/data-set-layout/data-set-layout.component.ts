@@ -184,7 +184,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     onFileChange = ({ target: { files } }: HTMLElementEvent<HTMLInputElement>): void => {
-        const filename = this._labelTextFile.nativeElement.files?.item(0)?.name!;
+        const filename = this._labelTextFile.nativeElement.files?.item(0)?.name;
         this._labelTextFilename.nativeElement.innerHTML = filename === undefined ? '' : filename;
         const reader = new FileReader();
 
@@ -440,7 +440,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             )
             .subscribe((message) => {
                 console.log(message);
-                if (message == 1) {
+                if (message === 1) {
                     this._languageService._translate.get('renameSuccess').subscribe((translated: any) => {
                         alert(oldProjectName + ' ' + translated);
                     });
@@ -458,7 +458,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 map(({ message }) => message),
             )
             .subscribe((message) => {
-                if ((message = 1)) {
+                if (message === 1) {
                     this._languageService._translate.get('deleteSuccess').subscribe((translated: any) => {
                         alert(projectName + ' ' + translated);
                     });
