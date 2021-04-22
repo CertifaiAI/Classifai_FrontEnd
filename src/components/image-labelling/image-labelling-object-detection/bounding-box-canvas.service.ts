@@ -424,34 +424,43 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public drawAllBoxOn(boundingBoxes: Boundingbox[], context: CanvasRenderingContext2D | null) {
+    public drawAllBoxOn(
+        labelList: LabelInfo[],
+        boundingBoxes: Boundingbox[],
+        context: CanvasRenderingContext2D | null,
+    ) {
         try {
             if (boundingBoxes.length > 0) {
                 for (const [i, boundingBox] of boundingBoxes.entries()) {
                     i === this.currentClickedBox.box || i === this.currentSelectedBndBox
                         ? ((boundingBox.color = `rgba(0,255,0,1.0)`),
                           (boundingBox.lineWidth = 2),
-                          this.drawEachBoxOn(boundingBox, context, true))
+                          this.drawEachBoxOn(labelList, boundingBox, context, true))
                         : ((boundingBox.color = `rgba(255,255,0,0.8)`),
                           (boundingBox.lineWidth = 1),
-                          this.drawEachBoxOn(boundingBox, context, false));
+                          this.drawEachBoxOn(labelList, boundingBox, context, false));
                 }
             }
             if (this.currentClickedBox.box === -1 && this.currentSelectedBndBox === -1) {
                 for (const boundingBox of boundingBoxes) {
                     boundingBox.color = `rgba(255,255,0,0.8)`;
-                    this.drawEachBoxOn(boundingBox, context, false);
+                    this.drawEachBoxOn(labelList, boundingBox, context, false);
                 }
                 const { x1, x2, y1, y2 } = this.currentDrawing;
                 this.tmpbox = this.generateNewBox(x1, x2, y1, y2);
-                this.tmpbox && this.drawEachBoxOn(this.tmpbox, context, true);
+                this.tmpbox && this.drawEachBoxOn(labelList, this.tmpbox, context, true);
             }
         } catch (err) {
             console.log('redraw(boundbox) ----> ', err.name + ': ', err.message);
         }
     }
 
-    private drawEachBoxOn(box: Boundingbox, context: CanvasRenderingContext2D | null, isSelected: boolean): void {
+    private drawEachBoxOn(
+        labelList: LabelInfo[],
+        box: Boundingbox,
+        context: CanvasRenderingContext2D | null,
+        isSelected: boolean,
+    ): void {
         try {
             if (context) {
                 const xCenter = box.x1 + (box.x2 - box.x1) / 2;
@@ -459,8 +468,16 @@ export class BoundingBoxCanvasService {
                 context.strokeStyle = 'white';
                 context.fillStyle = 'black';
                 context.font = 'bold 12px Arial';
-                context.strokeText(box.label, box.x1 + 10, box.y1 + 15);
-                context.fillText(box.label, box.x1 + 10, box.y1 + 15);
+                if (box.label == '') {
+                    context.strokeText('', box.x1 + 10, box.y1 + 15);
+                    context.fillText('', box.x1 + 10, box.y1 + 15);
+                } else if (!labelList.find((x) => x.name === box.label)) {
+                    context.strokeText('Text', box.x1 + 10, box.y1 + 15);
+                    context.fillText('Text', box.x1 + 10, box.y1 + 15);
+                } else {
+                    context.strokeText(box.label, box.x1 + 10, box.y1 + 15);
+                    context.fillText(box.label, box.x1 + 10, box.y1 + 15);
+                }
                 context.strokeStyle = box.color;
                 context.beginPath();
                 context.rect(box.x1, box.y1, box.x2 - box.x1, box.y2 - box.y1);

@@ -84,12 +84,8 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                           alt: `RectangularBB`,
                           toggleable: this.labelList.length !== 0 ? true : false,
                           onClick: () => {
-                              if (this.labelList.length !== 0) {
-                                  this.resetSelectedAnnotate();
-                                  this._imgLabelState.setState({ draw: true, drag: false, scroll: false });
-                              } else {
-                                  this.showAlertNoLabel();
-                              }
+                              this.resetSelectedAnnotate();
+                              this._imgLabelState.setState({ draw: true, drag: false, scroll: false });
                           },
                       }
                     : {
