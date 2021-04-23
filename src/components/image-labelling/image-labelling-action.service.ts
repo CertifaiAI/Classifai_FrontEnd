@@ -9,6 +9,7 @@ const initialValue: ActionState = {
     fitCenter: false,
     clear: false,
     isActiveModal: false,
+    save: false,
 };
 
 @Injectable({

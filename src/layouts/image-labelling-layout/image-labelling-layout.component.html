@@ -46,8 +46,50 @@
     <image-labelling-footer [_thumbnailInfo]="selectedMetaData" [_imgSrc]="imgSrc"></image-labelling-footer>
 </div>
 
+<modal id="modal-save">
+    <button class="modal-button float-right" (click)="onCloseModal('modal-save')">X</button>
+    <div class="save-format-list">
+        <div class="save-format-content">
+            <ng-container *ngIf="selectedMetaData?.bnd_box">
+                <div class="switch-container">
+                    <label class="switch">
+                        <input
+                            type="checkbox"
+                            [checked]="saveType.saveCurrentImage"
+                            class="checkBox"
+                            (change)="onSwitchSaveType()"
+                        />
+                        <span class="slider round"></span>
+                        <p>Current Image</p>
+                    </label>
+                    <span class="space-verticle"></span>
+                    <label class="switch">
+                        <input
+                            type="checkbox"
+                            [checked]="saveType.saveBulk"
+                            class="checkBox"
+                            (change)="onSwitchSaveType()"
+                        />
+                        <span class="slider round"></span>
+                        <p>Bulk Saving</p>
+                    </label>
+                </div>
+                <button class="save-format-btn" (click)="onClickDownload('pascalVoc')">Pascal VOC</button><br />
+                <button class="save-format-btn" (click)="onClickDownload('yolo')">YOLO</button><br />
+                <button class="save-format-btn" (click)="onClickDownload('ocr')">Text OCR</button><br />
+                <button class="save-format-btn" (click)="onClickDownload('label')">Label</button><br />
+            </ng-container>
+            <ng-container *ngIf="selectedMetaData?.polygons">
+                <button class="save-format-btn" (click)="onClickDownload('coco')">COCO</button><br />
+                <button class="save-format-btn" (click)="onClickDownload('json')">JSON</button><br />
+                <button class="save-format-btn" (click)="onClickDownload('label')">Label</button><br />
+            </ng-container>
+        </div>
+    </div>
+</modal>
+
 <modal id="modal-image-labelling">
-    <button class="modal-button float-right" (click)="onCloseModal()">X</button>
+    <button class="modal-button float-right" (click)="onCloseModal('modal-image-labelling')">X</button>
     <div>
         <h2 class="font-title">{{ 'labellingArea.mainLabel' | translate }}</h2>
         <div class="main-label-container">

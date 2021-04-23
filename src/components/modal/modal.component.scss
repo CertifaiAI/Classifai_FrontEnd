@@ -33,17 +33,18 @@
 }
 
 .modal-body-height {
-    min-height: 80vh;
-    max-height: 80vh;
+    min-height: 75%;
+    max-height: 80%;
 }
 
 .modal-body-width {
-    min-width: 50vw;
-    max-width: 50vw;
+    min-width: 50%;
+    max-width: 50%;
 }
 
 .modal-body-margin {
-    margin: 5vh 25vw 15vh 25vw;
+    left: 25%;
+    top: 10%;
 }
 
 .scroll {
