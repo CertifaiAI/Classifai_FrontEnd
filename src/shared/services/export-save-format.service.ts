@@ -279,23 +279,6 @@ export class ExportSaveFormatService {
         return calculatedMetadata;
     }
 
-    // private calPolyCoorOriginalImages({ img_ori_w, img_ori_h, img_w, img_h, polygons }: PolyMetadata){
-    //     const xScaledFactor = img_ori_w / img_w;
-    //     const yScaledFactor = img_ori_h / img_h;
-    //     const polygonList = polygons.filter(({ coorPt }) =>
-    //         coorPt.map(({ distancetoImg }) => {
-    //             const tempX = distancetoImg.x * xScaledFactor;
-    //             const tempY = distancetoImg.y * yScaledFactor;
-    //             return {
-    //                 distancetoImg,
-    //                 x: tempX,
-    //                 y: tempY,
-    //             };
-    //         }),
-    //     );
-    //     return polygonList;
-    // }
-
     private generatePascalVocFormat({
         bnd_box,
         img_path,
@@ -309,53 +292,53 @@ export class ExportSaveFormatService {
         let pVocStart = '<annotation>\n';
         const filename = this.getItemName('file', img_path);
         const foldername = this.getItemName('folder', img_path);
-        const databaseitem = 'unknown';
-        const foldernode = this.createNode('folder');
-        pVocStart += '\t' + foldernode[0] + foldername + foldernode[1];
-        const filenamenode = this.createNode('filename');
-        pVocStart += '\t' + filenamenode[0] + filename + filenamenode[1];
-        const pathnode = this.createNode('path');
-        pVocStart += '\t' + pathnode[0] + img_path.split('\\').join('/') + pathnode[1];
-        const sourcenode = this.createNode('source');
-        const databasechildnode = this.createNode('database');
-        pVocStart += '\t' + sourcenode[0] + '\n';
-        pVocStart += '\t\t' + databasechildnode[0] + databaseitem + databasechildnode[1];
-        pVocStart += '\t' + sourcenode[1];
-        const sizenode = this.createNode('size');
-        pVocStart += '\t' + sizenode[0] + '\n';
-        const widthchildnode = this.createNode('width');
-        const heightchildnode = this.createNode('height');
-        const depthchildnode = this.createNode('depth');
-        pVocStart += '\t\t' + widthchildnode[0] + img_ori_w.toString() + widthchildnode[1];
-        pVocStart += '\t\t' + heightchildnode[0] + img_ori_h.toString() + heightchildnode[1];
-        pVocStart += '\t\t' + depthchildnode[0] + img_depth?.toString() + depthchildnode[1];
-        pVocStart += '\t' + sizenode[1];
-        const segmentednode = this.createNode('segmented');
-        pVocStart += '\t' + segmentednode[0] + '0' + segmentednode[1];
-        const objectnode = this.createNode('object');
+        const databaseItem = 'unknown';
+        const folderNode = this.createNode('folder');
+        pVocStart += '\t' + folderNode[0] + foldername + folderNode[1];
+        const filenameNode = this.createNode('filename');
+        pVocStart += '\t' + filenameNode[0] + filename + filenameNode[1];
+        const pathNode = this.createNode('path');
+        pVocStart += '\t' + pathNode[0] + img_path.split('\\').join('/') + pathNode[1];
+        const sourceNode = this.createNode('source');
+        const databaseChildNode = this.createNode('database');
+        pVocStart += '\t' + sourceNode[0] + '\n';
+        pVocStart += '\t\t' + databaseChildNode[0] + databaseItem + databaseChildNode[1];
+        pVocStart += '\t' + sourceNode[1];
+        const sizeNode = this.createNode('size');
+        pVocStart += '\t' + sizeNode[0] + '\n';
+        const widthChildNode = this.createNode('width');
+        const heightChildNode = this.createNode('height');
+        const depthChildNode = this.createNode('depth');
+        pVocStart += '\t\t' + widthChildNode[0] + img_ori_w.toString() + widthChildNode[1];
+        pVocStart += '\t\t' + heightChildNode[0] + img_ori_h.toString() + heightChildNode[1];
+        pVocStart += '\t\t' + depthChildNode[0] + img_depth?.toString() + depthChildNode[1];
+        pVocStart += '\t' + sizeNode[1];
+        const segmentedNode = this.createNode('segmented');
+        pVocStart += '\t' + segmentedNode[0] + '0' + segmentedNode[1];
+        const objectNode = this.createNode('object');
 
         for (const [_, { label, x1, x2, y1, y2 }] of bnd_box.entries()) {
-            pVocStart += '\t' + objectnode[0] + '\n';
-            const namechildnode = this.createNode('name');
-            const posechildnode = this.createNode('pose');
-            const truncatedchildnode = this.createNode('truncated');
-            const difficultchildnode = this.createNode('difficult');
-            const bndboxchildnode = this.createNode('bndbox');
-            const xminsubchildnode = this.createNode('xmin');
-            const yminsubchildnode = this.createNode('ymin');
-            const xmaxsubchildnode = this.createNode('xmax');
-            const ymaxsubchildnode = this.createNode('ymax');
-            pVocStart += '\t\t' + namechildnode[0] + label + namechildnode[1];
-            pVocStart += '\t\t' + posechildnode[0] + 'Unspecified' + posechildnode[1];
-            pVocStart += '\t\t' + truncatedchildnode[0] + '0' + truncatedchildnode[1];
-            pVocStart += '\t\t' + difficultchildnode[0] + '0' + difficultchildnode[1];
-            pVocStart += '\t\t' + bndboxchildnode[0] + '\n';
-            pVocStart += '\t\t\t' + xminsubchildnode[0] + Math.floor(x1).toString() + xminsubchildnode[1];
-            pVocStart += '\t\t\t' + yminsubchildnode[0] + Math.floor(y1).toString() + yminsubchildnode[1];
-            pVocStart += '\t\t\t' + xmaxsubchildnode[0] + Math.floor(x2).toString() + xmaxsubchildnode[1];
-            pVocStart += '\t\t\t' + ymaxsubchildnode[0] + Math.floor(y2).toString() + ymaxsubchildnode[1];
-            pVocStart += '\t\t' + bndboxchildnode[1];
-            pVocStart += '\t' + objectnode[1];
+            pVocStart += '\t' + objectNode[0] + '\n';
+            const nameChildNode = this.createNode('name');
+            const poseChildNode = this.createNode('pose');
+            const truncatedChildNode = this.createNode('truncated');
+            const difficultChildNode = this.createNode('difficult');
+            const bndboxChildNode = this.createNode('bndbox');
+            const xMinSubChildNode = this.createNode('xmin');
+            const yMinSubChildNode = this.createNode('ymin');
+            const xMaxSubChildNode = this.createNode('xmax');
+            const yMaxSubChildNode = this.createNode('ymax');
+            pVocStart += '\t\t' + nameChildNode[0] + label + nameChildNode[1];
+            pVocStart += '\t\t' + poseChildNode[0] + 'Unspecified' + poseChildNode[1];
+            pVocStart += '\t\t' + truncatedChildNode[0] + '0' + truncatedChildNode[1];
+            pVocStart += '\t\t' + difficultChildNode[0] + '0' + difficultChildNode[1];
+            pVocStart += '\t\t' + bndboxChildNode[0] + '\n';
+            pVocStart += '\t\t\t' + xMinSubChildNode[0] + Math.floor(x1).toString() + xMinSubChildNode[1];
+            pVocStart += '\t\t\t' + yMinSubChildNode[0] + Math.floor(y1).toString() + yMinSubChildNode[1];
+            pVocStart += '\t\t\t' + xMaxSubChildNode[0] + Math.floor(x2).toString() + xMaxSubChildNode[1];
+            pVocStart += '\t\t\t' + yMaxSubChildNode[0] + Math.floor(y2).toString() + yMaxSubChildNode[1];
+            pVocStart += '\t\t' + bndboxChildNode[1];
+            pVocStart += '\t' + objectNode[1];
         }
         pVocStart += '</annotation>';
 
@@ -454,15 +437,15 @@ export class ExportSaveFormatService {
     }
 
     private getCocoContent(metadata: PolyMetadata[], labelList?: string[]) {
-        let cocostr: string = '{';
-        cocostr += this.generateCocoInfo();
-        cocostr += this.generateCocoImage(metadata);
-        cocostr += this.generateCocoAnnotation(metadata, labelList);
-        cocostr += this.generateCocoLicense();
-        cocostr += this.generateCocoCategory(labelList);
-        cocostr += '}';
-        cocostr = cocostr.replace(/(}{)/gi, '},{');
-        return cocostr;
+        let cocoContent: string = '{';
+        cocoContent += this.generateCocoInfo();
+        cocoContent += this.generateCocoImage(metadata);
+        cocoContent += this.generateCocoAnnotation(metadata, labelList);
+        cocoContent += this.generateCocoLicense();
+        cocoContent += this.generateCocoCategory(labelList);
+        cocoContent += '}';
+        cocoContent = cocoContent.replace(/(}{)/gi, '},{');
+        return cocoContent;
     }
 
     private generateCocoInfo() {
