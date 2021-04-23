@@ -6,6 +6,6 @@ module.exports = {
     /**  @remark - project not require xlx OLD excel files */
     new webpack.IgnorePlugin(/cpexcel/),
     /**  @remark - project not require zip files YET */
-    new webpack.IgnorePlugin(/jszip/),
+    // new webpack.IgnorePlugin(/jszip/),
   ],
 };

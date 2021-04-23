@@ -2,6 +2,7 @@ import { first } from 'rxjs/operators';
 import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
 import { Injectable } from '@angular/core';
 import {
+    PolyMetadata,
     BboxMetadata,
     ChangeAnnotationLabel,
     CompleteMetadata,
@@ -10,7 +11,7 @@ import {
 } from '../../components/image-labelling/image-labelling.model';
 
 type CustomHistory = Omit<History, 'state'> & {
-    state: { thumbnailList: BboxMetadata[]; labelList: string[]; projectName: string };
+    state: { thumbnailList: (BboxMetadata & PolyMetadata)[]; labelList: string[]; projectName: string };
 };
 
 type LabelRegion = {
