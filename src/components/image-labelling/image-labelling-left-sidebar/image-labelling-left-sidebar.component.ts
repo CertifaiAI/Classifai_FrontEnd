@@ -168,7 +168,9 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                             fitCenter: false,
                             scroll: false,
                             clear: false,
+                            save: true,
                         });
+                        // this._imgLabelState.setState(null);
                     },
                 },
             ],

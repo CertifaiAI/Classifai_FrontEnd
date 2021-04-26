@@ -1,6 +1,7 @@
 import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from '../data-set-layout/data-set-layout-api.service';
+import { ExportSaveFormatService, ExportSaveType, SaveFormat } from 'src/shared/services/export-save-format.service';
 import { first, mergeMap, takeUntil } from 'rxjs/operators';
 import { HTMLElementEvent } from 'src/shared/types/field/field.model';
 import { ImageLabellingActionService } from 'src/components/image-labelling/image-labelling-action.service';
@@ -70,7 +71,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     currentImageDisplayIndex = -1;
     isLoading: boolean = false;
     showLoading: boolean = false;
-    reloadTimer: any;
     readonly modalExportOptions = 'modal-export-options';
     exportModalBodyStyle: ModalBodyStyle = {
         minHeight: '19vh',
@@ -80,6 +80,18 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         margin: '15vw 71vh',
         overflow: 'none',
     };
+    saveModalBodyStyle: ModalBodyStyle = {
+        maxHeight: '80vh',
+        minWidth: '28vw',
+        maxWidth: '28vw',
+        margin: '10vh 28vw',
+        overflow: 'none',
+    };
+    saveType: ExportSaveType = {
+        saveCurrentImage: true,
+        saveBulk: false,
+    };
+
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
 
     constructor(
@@ -93,6 +105,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         private _imgLblModeService: ImageLabellingModeService,
         public _languageService: LanguageService,
         private _spinnerService: SpinnerService,
+        private _exportSaveFormatService: ExportSaveFormatService,
     ) {
         const langsArr: string[] = ['image-labelling-en', 'image-labelling-cn', 'image-labelling-ms'];
         this._languageService.initializeLanguage(`image-labelling`, langsArr);
@@ -139,7 +152,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             });
 
         // subscription logic to check if clear is true then empty the current display image's metadata
-        this._imgLblActionService.action$.pipe(takeUntil(this.unsubscribe$)).subscribe(({ clear }) => {
+        this._imgLblActionService.action$.pipe(takeUntil(this.unsubscribe$)).subscribe(({ clear, save }) => {
             if (clear) {
                 this.thumbnailList[0].bnd_box && (this.thumbnailList[this.currentImageDisplayIndex].bnd_box = []);
                 this.thumbnailList[0].polygons && (this.thumbnailList[this.currentImageDisplayIndex].polygons = []);
@@ -149,6 +162,12 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     hasAnnotation: false,
                 };
             }
+            if (save) {
+                this.onDisplayModal('modal-save');
+            }
+            //  else {
+            //     this.onCloseModal('modal-save');
+            // }
         });
 
         this._spinnerService
@@ -493,6 +512,29 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 .subscribe(({ message }) => {
                     this._router.navigate(['/']);
                 });
+    };
+
+    onSwitchSaveType = () => {
+        this.saveType = {
+            saveCurrentImage: !this.saveType.saveCurrentImage,
+            saveBulk: !this.saveType.saveBulk,
+        };
+    };
+
+    onClickDownload = (saveFormat: SaveFormat) => {
+        this._exportSaveFormatService.exportSaveFormat({
+            ...this.saveType,
+            saveFormat,
+            metadata: this.selectedMetaData,
+            index: this.currentAnnotationIndex,
+            projectName: this.selectedProjectName,
+            ...((this.saveType.saveBulk || saveFormat === 'ocr' || saveFormat === 'json' || saveFormat === 'coco') && {
+                projectFullMetadata: this.thumbnailList,
+            }),
+            ...((saveFormat === 'label' || saveFormat === 'yolo' || saveFormat === 'coco') && {
+                labelList: this.tabStatus.map(({ label_list }) => label_list)[1],
+            }),
+        });
     };
 
     ngOnDestroy(): void {

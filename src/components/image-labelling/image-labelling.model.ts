@@ -37,6 +37,7 @@ export type ActionState = {
     fitCenter: boolean;
     clear: boolean;
     isActiveModal: boolean;
+    save: boolean;
     // dbClick: boolean;
 };
 
@@ -141,6 +142,7 @@ export type BboxMetadata = Metadata & {
 
 export type PolyMetadata = Metadata & {
     polygons: Polygons[];
+    file_size: number;
 };
 
 export type CompleteMetadata = WithOptional<BboxMetadata, 'bnd_box' | 'img_depth'> &

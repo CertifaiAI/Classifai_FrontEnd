@@ -232,3 +232,122 @@
     background-color: #444444;
     font-size: 1.5vh;
 }
+.save-format-list {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+.save-format-content {
+    margin: auto;
+    padding: 10px;
+}
+
+.switch-container {
+    font-size: small;
+    align-content: center;
+    text-align: center;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 4em;
+    height: 1.8em;
+    margin-left: auto;
+    margin-right: auto;
+
+    input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .checkBox:checked + .slider {
+        // background: url(../../assets/dark-planingwood.png) no-repeat center;
+        background: black;
+        background-size: 100% 100%;
+        background-position: center;
+    }
+    .checkBox:checked + .slider:before {
+        -webkit-transform: translateX(2.2em);
+        -ms-transform: translateX(2.2em);
+        transform: translateX(2.2em);
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: 0.8s;
+        transition: 0.8s;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: '';
+        height: 1.6em;
+        width: 1.6em;
+        left: 0.14em;
+        bottom: 0.15em;
+        background-color: snow;
+        -webkit-transition: 0.8s;
+        transition: 0.8s;
+    }
+
+    .round {
+        border-radius: 1.2em;
+    }
+
+    .round:before {
+        border-radius: 50%;
+    }
+
+    p {
+        padding-top: 8px;
+        margin-top: 0.5em;
+        outline: none;
+    }
+}
+
+.space-verticle {
+    background-color: transparent;
+    outline: none;
+    border: none;
+    margin-left: 1.5em;
+    margin-right: 1.5em;
+}
+
+.save-format-btn {
+    width: 90%;
+    height: 6em;
+    margin-top: 2%;
+    margin-bottom: 2%;
+    margin-left: 4.5%;
+    // background: url(../../assets/dark-planingwood.png) no-repeat center;
+    background: black;
+    background-size: 100% 100%;
+    background-position: center;
+    font-size: medium;
+    outline: none;
+    border: none;
+    color: snow;
+    overflow: hidden;
+    border-radius: 5px;
+}
+
+.save-format-btn:hover {
+    text-shadow: 0px 0px 30px #888888;
+    box-shadow: 5px 5px 10px #888888, -5px -5px 10px #888888;
+    cursor: pointer;
+}
+
+.save-format-btn:active:hover {
+    border: 3px dashed green;
+}
