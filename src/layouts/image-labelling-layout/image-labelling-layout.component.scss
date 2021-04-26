@@ -47,10 +47,17 @@
     line-height: 1vh;
     font-size: 1vw;
     padding: 0.5vw;
+    background: #262a2e;
+    color: azure;
 }
 
 .modal-button {
     @include button-style();
+}
+
+.close-button {
+    border: none;
+    cursor: pointer;
 }
 
 .float-right {
@@ -115,9 +122,9 @@
 }
 
 .hr-line {
-    height: 0.5vh;
-    color: black;
-    background: #8c8b8b;
+    // height: 0.5vh;
+    // color: black;
+    // background: #8c8b8b;
     margin: 5vh 0 5vh 0;
 }
 
@@ -166,8 +173,8 @@
     background-color: #525353;
     margin: auto;
     padding: 1vw;
-    max-width: 30vw;
-    min-width: 30vw;
+    max-width: 20vw;
+    min-width: 20vw;
     border-radius: 1vw;
     margin-top: 15vh;
 }
@@ -188,26 +195,40 @@
     padding: 1vw;
 }
 
+.modal-button-cancel {
+    display: flex;
+    justify-content: flex-end;
+}
+
 .button-style {
-    padding: 1vh 1.5vw 1vh 1.5vw;
     border-radius: 1vh;
     border: none;
     outline: none;
     color: white;
     cursor: pointer;
-    font-size: 2vh;
 }
 
 .confg-btn {
+    padding: 1vh 1.5vw 1vh 1.5vw;
     background-color: #169887;
+    margin-right: 0.7vw;
+    font-size: 2vh;
+    min-width: 8vw;
 }
 
 .confgdata-btn {
+    padding: 1vh 1.5vw 1vh 1.5vw;
     background-color: #169887;
-    margin-right: 0.7vw;
+    font-size: 2vh;
+    min-width: 8vw;
+}
+
+.with-data {
+    font-size: 1.5vh;
 }
 
 .cancel-btn {
+    padding: 1vh 1vw;
     background-color: #444444;
-    margin-right: 0.7vw;
+    font-size: 1.5vh;
 }

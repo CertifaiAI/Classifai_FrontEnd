@@ -12,6 +12,8 @@ import { Message } from 'src/shared/types/message/message.model';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'src/components/spinner/spinner.service';
 import { LanguageService } from 'src/shared/services/language.service';
+import { ModalService } from 'src/components/modal/modal.service';
+import { ModalBodyStyle } from 'src/components/modal/modal.model';
 
 @Component({
     selector: 'data-set-layout',
@@ -37,8 +39,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     labelTextUpload: any[] = [];
     form!: FormGroup;
     renameForm!: FormGroup;
-    displayModal: boolean = false;
-    displayRenameProjectModal: boolean = false;
     subject$: Subject<any> = new Subject();
     subjectSubscription?: Subscription;
     thumbnailList: BboxMetadata[] & PolyMetadata[] = [];
@@ -48,6 +48,24 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     isOverlayOn = false;
     isImageUploading = false;
     imgLblMode: ImageLabellingMode = null;
+    readonly modalIdCreateProject = 'modal-create-project';
+    readonly modalIdRenameProject = 'modal-rename-project';
+    createProjectModalBodyStyle: ModalBodyStyle = {
+        minHeight: '28vh',
+        maxHeight: '28vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    renameProjectModalBodyStyle: ModalBodyStyle = {
+        minHeight: '23vh',
+        maxHeight: '23vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
     @ViewChild('refProjectName') _refProjectName!: ElementRef<HTMLInputElement>;
     @ViewChild('labeltextfile') _labelTextFile!: ElementRef<HTMLInputElement>;
     @ViewChild('labeltextfilename') _labelTextFilename!: ElementRef<HTMLLabelElement>;
@@ -61,6 +79,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         private _spinnerService: SpinnerService,
         private _imgLblModeService: ImageLabellingModeService,
         private _languageService: LanguageService,
+        private _modalService: ModalService,
     ) {
         this._imgLblModeService.imgLabelMode$
             .pipe(distinctUntilChanged())
@@ -142,17 +161,21 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this._labelTextFilename.nativeElement.innerHTML = '';
         this.labelTextUpload = [];
         shown ? this.form.reset() : null;
-        this.displayModal = shown;
+        shown
+            ? this._modalService.open(this.modalIdCreateProject)
+            : this._modalService.close(this.modalIdCreateProject);
         /** timeOut needed to allow focus due to Angular's templating sys issue / bug */
-        setTimeout(() => this._refProjectName.nativeElement.focus());
+        // setTimeout(() => this._refProjectName.nativeElement.focus());
     };
 
     toggleRenameModalDisplay = (event: any): void => {
         event.shown ? this.renameForm.reset() : null;
-        this.displayRenameProjectModal = event.shown;
+        event.shown
+            ? this._modalService.open(this.modalIdRenameProject)
+            : this._modalService.close(this.modalIdRenameProject);
         this.oldProjectName = event.projectName;
         /** timeOut needed to allow focus due to Angular's templating sys issue / bug */
-        setTimeout(() => this._refNewProjectName.nativeElement.focus());
+        // setTimeout(() => this._refNewProjectName.nativeElement.focus());
     };
 
     importProject = (): void => {
@@ -184,7 +207,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     onFileChange = ({ target: { files } }: HTMLElementEvent<HTMLInputElement>): void => {
-        const filename = this._labelTextFile.nativeElement.files?.item(0)?.name!;
+        const filename = this._labelTextFile.nativeElement.files?.item(0)?.name;
         this._labelTextFilename.nativeElement.innerHTML = filename === undefined ? '' : filename;
         const reader = new FileReader();
 
@@ -271,6 +294,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     onSubmitRename() {
+        this.renameForm.markAllAsTouched();
         if (this.newInputProjectName) {
             const checkExistProject = this.projectList.projects
                 ? this.projectList.projects.find((project) =>
@@ -430,7 +454,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     renameProject = (oldProjectName: string, newProjectName: string): void => {
-        this.displayRenameProjectModal = false;
         const renameProject$ = this._dataSetService.renameProject(oldProjectName, newProjectName);
 
         renameProject$
@@ -439,12 +462,12 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 map(({ message }) => message),
             )
             .subscribe((message) => {
-                console.log(message);
-                if (message == 1) {
+                if (message === 1) {
                     this._languageService._translate.get('renameSuccess').subscribe((translated: any) => {
                         alert(oldProjectName + ' ' + translated);
                     });
                     this.getProjectList();
+                    this.toggleRenameModalDisplay(false);
                 }
             });
     };
@@ -458,7 +481,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 map(({ message }) => message),
             )
             .subscribe((message) => {
-                if ((message = 1)) {
+                if (message === 1) {
                     this._languageService._translate.get('deleteSuccess').subscribe((translated: any) => {
                         alert(projectName + ' ' + translated);
                     });
@@ -469,7 +492,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
 
     @HostListener('window:keydown', ['$event'])
     keyDownEvent = ({ key }: KeyboardEvent): void => {
-        key === 'Escape' && this.displayModal && this.toggleModalDisplay(false);
+        key === 'Escape' && this.toggleRenameModalDisplay(false) && this.toggleModalDisplay(false);
     };
 
     ngOnDestroy(): void {

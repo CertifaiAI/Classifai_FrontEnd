@@ -1,12 +1,12 @@
 <home-header></home-header>
 <home-content (_navigate)="navigate($event)"></home-content>
 
-<modal [id]="modalIdImgLbl" [modalBodyStyle]="modalBodyStyle" [scrollable]="false">
-    <div class="modal-header-container">
-        <label>{{ 'imageOpt.selection' | translate }}</label>
-        <button class="modal-button float-right" (click)="onCloseModal(modalIdImgLbl)">X</button>
-    </div>
-
+<modal
+    [id]="modalIdImgLbl"
+    [modalBodyStyle]="modalBodyStyle"
+    [modalTitle]="'imageOpt.selection' | translate"
+    [scrollable]="false"
+>
     <div class="modal-body-container">
         <ng-container *ngFor="let field of cardSchema.fields; index as i">
             <div

@@ -27,6 +27,7 @@ import {
     TabsProps,
 } from 'src/components/image-labelling/image-labelling.model';
 import { Message } from 'src/shared/types/message/message.model';
+import { ModalBodyStyle } from 'src/components/modal/modal.model';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -70,7 +71,15 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     isLoading: boolean = false;
     showLoading: boolean = false;
     reloadTimer: any;
-    displayExportModal: boolean = false;
+    readonly modalExportOptions = 'modal-export-options';
+    exportModalBodyStyle: ModalBodyStyle = {
+        minHeight: '19vh',
+        maxHeight: '19vh',
+        minWidth: '17vw',
+        maxWidth: '17vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
 
     constructor(
@@ -188,7 +197,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     onExport = (): void => {
-        this.displayExportModal = true;
+        this._modalService.open(this.modalExportOptions);
     };
 
     exportProject = (exportType: string): void => {
@@ -205,11 +214,11 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 });
             }
         });
-        this.displayExportModal = false;
+        this.closeExportProjectModal();
     };
 
-    cancelExportProject() {
-        this.displayExportModal = false;
+    closeExportProjectModal() {
+        this._modalService.close(this.modalExportOptions);
     }
 
     onReload = (): void => {
