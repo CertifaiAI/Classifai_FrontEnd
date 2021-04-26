@@ -96,7 +96,7 @@
         <h2 class="font-title">{{ 'labellingArea.mainLabel' | translate }}</h2>
         <div class="main-label-container">
             <label class="font-label">{{ 'labellingArea.label' | translate }}: </label>
-            <select class="static-select">
+            <select class="static-select" (change)="onChangeLabel($event.target.value)">
                 <ng-container *ngFor="let tab of tabStatus">
                     <ng-container *ngFor="let label of tab.label_list">
                         <option [value]="label" [selected]="label === currentAnnotationLabel">

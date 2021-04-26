@@ -537,6 +537,14 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         });
     };
 
+    onChangeLabel(value: string) {
+        const changeAnnotationLabel: ChangeAnnotationLabel = {
+            index: this.currentAnnotationIndex,
+            label: value,
+        };
+        this.onChangeAnnotationLabel(changeAnnotationLabel);
+    }
+
     ngOnDestroy(): void {
         this.unsubscribe$.next();
         this.unsubscribe$.complete();
