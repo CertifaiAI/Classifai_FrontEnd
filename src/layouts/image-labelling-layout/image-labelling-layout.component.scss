@@ -47,10 +47,17 @@
     line-height: 1vh;
     font-size: 1vw;
     padding: 0.5vw;
+    background: #262a2e;
+    color: azure;
 }
 
 .modal-button {
     @include button-style();
+}
+
+.close-button {
+    border: none;
+    cursor: pointer;
 }
 
 .float-right {
@@ -115,9 +122,9 @@
 }
 
 .hr-line {
-    height: 0.5vh;
-    color: black;
-    background: #8c8b8b;
+    // height: 0.5vh;
+    // color: black;
+    // background: #8c8b8b;
     margin: 5vh 0 5vh 0;
 }
 

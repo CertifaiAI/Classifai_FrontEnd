@@ -49,8 +49,8 @@
     <image-labelling-footer [_thumbnailInfo]="selectedMetaData" [_imgSrc]="imgSrc"></image-labelling-footer>
 </div>
 
-<modal id="modal-image-labelling">
-    <button class="modal-button float-right" (click)="onCloseModal()">X</button>
+<modal id="modal-image-labelling" [id]="'modal-image-labelling'" [scrollable]="true" [showHeader]="false">
+    <button class="modal-button close-button float-right" (click)="onCloseModal()">&#10006;</button>
     <div>
         <h2 class="font-title">{{ 'labellingArea.mainLabel' | translate }}</h2>
         <div class="main-label-container">
@@ -135,30 +135,22 @@
     </ng-container>
 </modal>
 
-<div [hidden]="!displayExportModal">
-    <div class="modal">
-        <div class="modal-content">
-            <div class="modal-content-container">
-                <h1 class="modal-content-header">
-                    {{ 'exportModal.exportOptions' | translate }}
-                </h1>
-                <div class="modal-button-container">
-                    <button class="button-style confg-btn" (click)="exportProject('cfg')">
-                        {{ 'exportModal.configFile' | translate }}
-                    </button>
-                    <button class="button-style confgdata-btn" (click)="exportProject('cfgdata')">
-                        {{ 'exportModal.zipFile' | translate }}
-                        <br /><span class="with-data">{{ 'exportModal.withData' | translate }}</span>
-                    </button>
-                </div>
-                <div class="modal-button-cancel">
-                    <button class="button-style cancel-btn" (click)="cancelExportProject()">
-                        {{ 'exportModal.cancel' | translate }}
-                    </button>
-                </div>
-            </div>
+<modal [id]="modalExportOptions" [modalBodyStyle]="exportModalBodyStyle" [showHeader]="false">
+    <button class="modal-button close-button float-right" (click)="closeExportProjectModal()">&#10006;</button>
+    <div class="modal-content-container">
+        <h1 class="modal-content-header">
+            {{ 'exportModal.exportOptions' | translate }}
+        </h1>
+        <div class="modal-button-container">
+            <button class="button-style confg-btn" (click)="exportProject('cfg')">
+                {{ 'exportModal.configFile' | translate }}
+            </button>
+            <button class="button-style confgdata-btn" (click)="exportProject('cfgdata')">
+                {{ 'exportModal.zipFile' | translate }}
+                <br /><span class="with-data">{{ 'exportModal.withData' | translate }}</span>
+            </button>
         </div>
     </div>
-</div>
+</modal>
 
 <spinner [_loading]="isLoading"></spinner>
