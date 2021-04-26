@@ -1,6 +1,14 @@
 @use '../../shared/scss/variables' as color;
 @use '../../shared/scss/scrollbar' as scrollbar;
 
+@mixin button-style() {
+    line-height: 1vh;
+    font-size: 1vw;
+    padding: 0.5vw;
+    background: #262a2e;
+    color: azure;
+}
+
 /* MODAL STYLES
 -------------------------------*/
 
@@ -14,7 +22,7 @@
     left: 0;
     overflow: hidden;
     /* z-index must be higher than .jw-modal-background */
-    z-index: 1001;
+    // z-index: 1001;
 }
 
 /* enables scrolling for tall modals */
@@ -22,7 +30,8 @@
 .modal-body {
     border-radius: 1vw;
     padding: 1.5vw;
-    background: #fff;
+    background: #262a2e;
+    color: #fff;
     // display: flex;
     // flex-direction: column;
     /* margin exposes part of the modal background */
@@ -30,6 +39,7 @@
     // margin: 5rem 25rem 15rem 25rem;
 
     position: absolute;
+    z-index: 2000;
 }
 
 .modal-body-height {
@@ -40,6 +50,27 @@
 .modal-body-width {
     min-width: 50%;
     max-width: 50%;
+}
+
+.modal-header-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    @include button-style();
+}
+
+.modal-button {
+    @include button-style();
+}
+
+.close-button {
+    border: none;
+    cursor: pointer;
+}
+
+.float-right {
+    float: right;
 }
 
 .modal-body-margin {

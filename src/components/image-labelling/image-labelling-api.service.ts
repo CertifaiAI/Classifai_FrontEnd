@@ -3,7 +3,13 @@ import { environment } from 'src/environments/environment.prod';
 import { HttpClient } from '@angular/common/http';
 import { ImageLabellingModeService } from './image-labelling-mode.service';
 import { Injectable } from '@angular/core';
-import { Message, MessageBase64Img, MessageProjectProgress, uuid } from 'src/shared/types/message/message.model';
+import {
+    Message,
+    MessageBase64Img,
+    MessageProjectProgress,
+    MessageReload,
+    uuid,
+} from 'src/shared/types/message/message.model';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { CompleteMetadata, ImageLabellingMode } from 'src/components/image-labelling/image-labelling.model';
@@ -26,10 +32,8 @@ export class ImageLabellingApiService {
     };
 
     updateLabelList = (projectName: string, label_list: string[]): Observable<Message> => {
-        // console.log(label_list);
-        const checkLabelList: string[] = label_list.length > 0 ? label_list : ['default'];
         return this.http.put<Message>(`${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/newlabels`, {
-            label_list: checkLabelList,
+            label_list: label_list,
         });
     };
 
@@ -55,4 +59,25 @@ export class ImageLabellingApiService {
             return (metadata as CompleteMetadata).bnd_box !== undefined;
         }
     }
+
+    exportProject = (projectName: string, exportType: string): Observable<Message> => {
+        return this.http.put<Message>(
+            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/export/${exportType}`,
+            {
+                newprojectid: projectName,
+            },
+        );
+    };
+
+    reloadProject = (projectName: string): Observable<Message> => {
+        return this.http.put<Message>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/reload`, {
+            newprojectid: projectName,
+        });
+    };
+
+    reloadProjectStatus = (projectName: string): Observable<MessageReload> => {
+        return this.http.get<MessageReload>(
+            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/reloadstatus`,
+        );
+    };
 }

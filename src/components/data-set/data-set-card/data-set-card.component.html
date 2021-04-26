@@ -66,14 +66,11 @@
                             <ng-container *ngIf="isExactIndex(i)">
                                 <span>
                                     <div class="popup-container">
-                                        <div class="popup-label" (click)="onUploadContent(i, project.project_name)">
-                                            {{ 'datasetCard.uploadFolder' | translate }}
+                                        <div class="popup-label" (click)="onRenameProject(project.project_name)">
+                                            {{ 'datasetCard.renameProject' | translate }}
                                         </div>
-                                        <div
-                                            class="popup-label"
-                                            (click)="onUploadContent(i, project.project_name, 'file')"
-                                        >
-                                            {{ 'datasetCard.uploadPhotos' | translate }}
+                                        <div class="popup-label" (click)="onDeleteProject(project.project_name)">
+                                            {{ 'datasetCard.deleteProject' | translate }}
                                         </div>
                                     </div>
                                 </span>

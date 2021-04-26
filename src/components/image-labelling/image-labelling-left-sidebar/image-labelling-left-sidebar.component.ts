@@ -1,7 +1,7 @@
 import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { IconSchema } from 'src/shared/types/icon/icon.model';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
-import { ImageLabelUrl, ImgLabelProps } from '../image-labelling.model';
+import { CompleteMetadata, ImageLabelUrl, ImgLabelProps, TabsProps } from '../image-labelling.model';
 import {
     Component,
     OnInit,
@@ -12,6 +12,7 @@ import {
     OnChanges,
     ChangeDetectionStrategy,
 } from '@angular/core';
+import { isEqual } from 'lodash-es';
 
 @Component({
     selector: 'image-labelling-left-sidebar',
@@ -22,9 +23,11 @@ import {
 export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     @Input() _onChange!: ImgLabelProps;
     @Input() _currentUrl: ImageLabelUrl = '';
+    @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Output() _navigate: EventEmitter<any> = new EventEmitter();
     jsonSchema!: IconSchema;
     iconIndex!: number;
+    labelList: string[] = [];
 
     constructor(
         private _imgLabelState: ImageLabellingActionService,
@@ -32,8 +35,13 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     ) {}
 
     ngOnInit(): void {
+        this.updateLabelList();
         this.bindImagePath();
     }
+
+    updateLabelList = () => {
+        this.labelList = this._tabStatus[1].label_list ? this._tabStatus[1].label_list : [];
+    };
 
     resetSelectedAnnotate = () => {
         this._annotateService.setState();
@@ -74,7 +82,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                           imgPath: `../../../assets/icons/rec_bounding_box.svg`,
                           hoverLabel: `leftSideBar.rectangularBB`,
                           alt: `RectangularBB`,
-                          toggleable: true,
+                          toggleable: this.labelList.length !== 0 ? true : false,
                           onClick: () => {
                               this.resetSelectedAnnotate();
                               this._imgLabelState.setState({ draw: true, drag: false, scroll: false });
@@ -84,10 +92,14 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                           imgPath: `../../../assets/icons/polygon.svg`,
                           hoverLabel: `leftSideBar.polygon`,
                           alt: `Polygon`,
-                          toggleable: true,
+                          toggleable: this.labelList.length !== 0 ? true : false,
                           onClick: () => {
-                              this.resetSelectedAnnotate();
-                              this._imgLabelState.setState({ draw: true, drag: false, scroll: false });
+                              if (this.labelList.length !== 0) {
+                                  this.resetSelectedAnnotate();
+                                  this._imgLabelState.setState({ draw: true, drag: false, scroll: false });
+                              } else {
+                                  this.showAlertNoLabel();
+                              }
                           },
                       },
                 // {
@@ -165,14 +177,28 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
         };
     };
 
+    checkStateEqual = (currObj: object, prevObj: object): boolean => !isEqual(currObj, prevObj);
+
     ngOnChanges(changes: SimpleChanges): void {
         // console.log(changes);
         this.bindImagePath();
+        if (
+            changes._tabStatus &&
+            this.checkStateEqual(changes._tabStatus.currentValue, changes._tabStatus.previousValue)
+        ) {
+            const { currentValue }: { currentValue: TabsProps<CompleteMetadata>[] } = changes._tabStatus;
+            this._tabStatus = [...currentValue];
+            this.updateLabelList();
+        }
     }
 
     getIndex = (index: number): void => {
         this.iconIndex = index;
     };
+
+    showAlertNoLabel() {
+        alert('No label exist yet. Please add new label.');
+    }
 
     conditionalIconTheme = (isPlainIcon: boolean): string => (isPlainIcon ? `plain-icon` : `utility-icon-light`);
 

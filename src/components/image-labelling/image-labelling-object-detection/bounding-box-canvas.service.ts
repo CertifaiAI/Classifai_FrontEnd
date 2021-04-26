@@ -1,4 +1,4 @@
-import { BboxMetadata, Boundingbox, DiffXY, Direction, xyCoordinate } from '../image-labelling.model';
+import { BboxMetadata, Boundingbox, DiffXY, Direction, LabelInfo, xyCoordinate } from '../image-labelling.model';
 import { clone } from 'lodash-es';
 import { Injectable } from '@angular/core';
 import { Utils } from '../../../shared/types/utils/utils';
@@ -253,6 +253,7 @@ export class BoundingBoxCanvasService {
 
     public mouseUpDrawEnable(
         currMeta: BboxMetadata,
+        labelList: LabelInfo[],
         callback: (arg: boolean) => void,
     ): { selBox: number; isNew: boolean } {
         try {
@@ -260,7 +261,7 @@ export class BoundingBoxCanvasService {
             if (this.currentClickedBox.box === -1 && this.tmpbox !== null) {
                 currMeta.bnd_box.push(this.tmpbox);
                 this.currentSelectedBndBox = currMeta.bnd_box.length - 1;
-                currMeta.bnd_box[this.currentSelectedBndBox].label = 'default';
+                currMeta.bnd_box[this.currentSelectedBndBox].label = labelList.length > 0 ? labelList[0].name : '';
                 ret.isNew = true;
                 ret.selBox = clone(this.currentSelectedBndBox);
             } else if (this.currentClickedBox.box > -1 && this.tmpbox) {
@@ -423,34 +424,43 @@ export class BoundingBoxCanvasService {
         }
     }
 
-    public drawAllBoxOn(boundingBoxes: Boundingbox[], context: CanvasRenderingContext2D | null) {
+    public drawAllBoxOn(
+        labelList: LabelInfo[],
+        boundingBoxes: Boundingbox[],
+        context: CanvasRenderingContext2D | null,
+    ) {
         try {
             if (boundingBoxes.length > 0) {
                 for (const [i, boundingBox] of boundingBoxes.entries()) {
                     i === this.currentClickedBox.box || i === this.currentSelectedBndBox
                         ? ((boundingBox.color = `rgba(0,255,0,1.0)`),
                           (boundingBox.lineWidth = 2),
-                          this.drawEachBoxOn(boundingBox, context, true))
+                          this.drawEachBoxOn(labelList, boundingBox, context, true))
                         : ((boundingBox.color = `rgba(255,255,0,0.8)`),
                           (boundingBox.lineWidth = 1),
-                          this.drawEachBoxOn(boundingBox, context, false));
+                          this.drawEachBoxOn(labelList, boundingBox, context, false));
                 }
             }
             if (this.currentClickedBox.box === -1 && this.currentSelectedBndBox === -1) {
                 for (const boundingBox of boundingBoxes) {
                     boundingBox.color = `rgba(255,255,0,0.8)`;
-                    this.drawEachBoxOn(boundingBox, context, false);
+                    this.drawEachBoxOn(labelList, boundingBox, context, false);
                 }
                 const { x1, x2, y1, y2 } = this.currentDrawing;
                 this.tmpbox = this.generateNewBox(x1, x2, y1, y2);
-                this.tmpbox && this.drawEachBoxOn(this.tmpbox, context, true);
+                this.tmpbox && this.drawEachBoxOn(labelList, this.tmpbox, context, true);
             }
         } catch (err) {
             console.log('redraw(boundbox) ----> ', err.name + ': ', err.message);
         }
     }
 
-    private drawEachBoxOn(box: Boundingbox, context: CanvasRenderingContext2D | null, isSelected: boolean): void {
+    private drawEachBoxOn(
+        labelList: LabelInfo[],
+        box: Boundingbox,
+        context: CanvasRenderingContext2D | null,
+        isSelected: boolean,
+    ): void {
         try {
             if (context) {
                 const xCenter = box.x1 + (box.x2 - box.x1) / 2;
@@ -458,8 +468,16 @@ export class BoundingBoxCanvasService {
                 context.strokeStyle = 'white';
                 context.fillStyle = 'black';
                 context.font = 'bold 12px Arial';
-                context.strokeText(box.label, box.x1 + 10, box.y1 + 15);
-                context.fillText(box.label, box.x1 + 10, box.y1 + 15);
+                if (box.label == '') {
+                    context.strokeText('', box.x1 + 10, box.y1 + 15);
+                    context.fillText('', box.x1 + 10, box.y1 + 15);
+                } else if (!labelList.find((x) => x.name === box.label)) {
+                    context.strokeText('Text', box.x1 + 10, box.y1 + 15);
+                    context.fillText('Text', box.x1 + 10, box.y1 + 15);
+                } else {
+                    context.strokeText(box.label, box.x1 + 10, box.y1 + 15);
+                    context.fillText(box.label, box.x1 + 10, box.y1 + 15);
+                }
                 context.strokeStyle = box.color;
                 context.beginPath();
                 context.rect(box.x1, box.y1, box.x2 - box.x1, box.y2 - box.y1);
@@ -549,7 +567,7 @@ export class BoundingBoxCanvasService {
                     lineWidth: 2,
                     color: 'rgba(0,255,0,1.0)',
                     distancetoImg: { x: 0, y: 0 },
-                    label: 'default',
+                    label: '',
                     id: newID,
                 };
             }

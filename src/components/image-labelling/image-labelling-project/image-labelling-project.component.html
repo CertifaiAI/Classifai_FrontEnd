@@ -16,7 +16,7 @@
                 <section class="utility-inner-container tab-height scroll">
                     <ng-container *ngFor="let thumbnail of _thumbnailList; index as i">
                         <div class="img-container" (click)="onClick(thumbnail, i)">
-                            <div>
+                            <div class="img-skeleton">
                                 <img imgLazyLoad class="img" [src]="thumbnail.img_thumbnail" />
                             </div>
                             <div class="img-name">
