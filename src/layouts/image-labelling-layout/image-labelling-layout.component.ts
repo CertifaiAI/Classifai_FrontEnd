@@ -558,7 +558,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this._modalService.open(this.modalShortcutKeyInfo);
     }
 
-    ShortcutKeyInfo() {
+    shortcutKeyInfo() {
         return [
             {
                 no: 1,

@@ -199,7 +199,7 @@
     <div class="shortcut-key-info-header">{{ 'info.header' | translate }}</div>
     <div class="table-box">
         <table cellpadding="20">
-            <tr *ngFor="let info of ShortcutKeyInfo()">
+            <tr *ngFor="let info of shortcutKeyInfo()">
                 <td innerHTML="{{ info.shortcutKey | translate }}"></td>
                 <td innerHTML="{{ info.functionality | translate }}"></td>
             </tr>
