@@ -25,6 +25,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     @Input() _currentUrl: ImageLabelUrl = '';
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Output() _navigate: EventEmitter<any> = new EventEmitter();
+    @Output() _openInfo = new EventEmitter();
     jsonSchema!: IconSchema;
     iconIndex!: number;
     labelList: string[] = [];
@@ -171,6 +172,15 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                             save: true,
                         });
                         // this._imgLabelState.setState(null);
+                    },
+                },
+                {
+                    imgPath: `../../../assets/icons/info.svg`,
+                    hoverLabel: `leftSideBar.info`,
+                    alt: `KeyPoint`,
+                    toggleable: false,
+                    onClick: () => {
+                        this._openInfo.emit();
                     },
                 },
             ],

@@ -72,6 +72,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     isLoading: boolean = false;
     showLoading: boolean = false;
     readonly modalExportOptions = 'modal-export-options';
+    readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
     exportModalBodyStyle: ModalBodyStyle = {
         minHeight: '19vh',
         maxHeight: '19vh',
@@ -85,6 +86,14 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         minWidth: '28vw',
         maxWidth: '28vw',
         margin: '10vh 28vw',
+        overflow: 'none',
+    };
+    infoModalBodyStyle: ModalBodyStyle = {
+        maxHeight: '80vh',
+        minWidth: '40vw',
+        maxWidth: '40vw',
+        margin: '20vh 23vw',
+        padding: '0vh 0vw 3vh 0vw',
         overflow: 'none',
     };
     saveType: ExportSaveType = {
@@ -543,6 +552,40 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             label: value,
         };
         this.onChangeAnnotationLabel(changeAnnotationLabel);
+    }
+
+    onDisplayShortcutKeyInfo() {
+        this._modalService.open(this.modalShortcutKeyInfo);
+    }
+
+    ShortcutKeyInfo() {
+        return [
+            {
+                no: 1,
+                shortcutKey: `info.shortcut.1.key`,
+                functionality: `info.shortcut.1.functionality`,
+            },
+            {
+                no: 2,
+                shortcutKey: `info.shortcut.2.key`,
+                functionality: `info.shortcut.2.functionality`,
+            },
+            {
+                no: 3,
+                shortcutKey: `info.shortcut.3.key`,
+                functionality: `info.shortcut.3.functionality`,
+            },
+            {
+                no: 4,
+                shortcutKey: `info.shortcut.4.key`,
+                functionality: `info.shortcut.4.functionality`,
+            },
+            {
+                no: 5,
+                shortcutKey: `info.shortcut.5.key`,
+                functionality: `info.shortcut.5.functionality`,
+            },
+        ];
     }
 
     ngOnDestroy(): void {

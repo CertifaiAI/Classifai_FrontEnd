@@ -18,7 +18,8 @@
         "polygon": "多边形",
         "eraser": "橡皮",
         "fitCenter": "调整到屏幕大小",
-        "save": "存档"
+        "save": "存档",
+        "info": "快捷键资讯"
     },
     "rightSideBar": {
         "folderOrFiles": "文件夹 / 文件",

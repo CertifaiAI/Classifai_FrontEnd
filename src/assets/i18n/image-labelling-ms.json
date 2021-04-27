@@ -18,7 +18,8 @@
         "polygon": "Poligon",
         "eraser": "Pemadam",
         "fitCenter": "Sesuaikan Dengan Saiz Skrin",
-        "save": "Simpan"
+        "save": "Simpan",
+        "info": "Info Kekunci Pintasan"
     },
     "rightSideBar": {
         "folderOrFiles": "Folder / Fail",
