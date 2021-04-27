@@ -52,16 +52,9 @@
 
             <div class="select-folder-container">
                 <label class="label label-file">{{ 'labelListFile' | translate }} </label>
-                <label class="choose-file-btn">
-                    {{ 'chooseFile' | translate
-                    }}<input
-                        type="file"
-                        #labeltextfile
-                        class="input-id"
-                        accept=".txt"
-                        (change)="onFileChange($event)"
-                    />
-                </label>
+                <button class="button-style choose-file-button" type="button" (click)="importLabelFile()">
+                    {{ 'chooseFile' | translate }}
+                </button>
                 <label class="filename" #labeltextfilename></label>
             </div>
             <div class="horizontal-line"></div>

@@ -29,6 +29,7 @@ export class LoadingSpinnerInterceptor implements HttpInterceptor {
                         this.pendingRequestsCount === 0 &&
                             link[link.length - 1] !== 'importstatus' &&
                             link[link.length - 1] !== 'filesysstatus' &&
+                            link[link.length - 1] !== 'labelfilestatus' &&
                             this._spinner.hideSpinner();
                     }
                 },
