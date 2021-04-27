@@ -6,7 +6,6 @@ import { DataSetProps, ProjectSchema, StarredProps, UploadThumbnailProps } from 
 import { distinctUntilChanged, first, map, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HTMLElementEvent } from 'src/shared/types/field/field.model';
 import { ImageLabellingModeService } from './../../components/image-labelling/image-labelling-mode.service';
 import { Message } from 'src/shared/types/message/message.model';
 import { Router } from '@angular/router';
@@ -67,7 +66,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         overflow: 'none',
     };
     @ViewChild('refProjectName') _refProjectName!: ElementRef<HTMLInputElement>;
-    @ViewChild('labeltextfile') _labelTextFile!: ElementRef<HTMLInputElement>;
     @ViewChild('labeltextfilename') _labelTextFilename!: ElementRef<HTMLLabelElement>;
     @ViewChild('refNewProjectName') _refNewProjectName!: ElementRef<HTMLInputElement>;
 
@@ -206,39 +204,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             });
     };
 
-    onFileChange = ({ target: { files } }: HTMLElementEvent<HTMLInputElement>): void => {
-        const filename = this._labelTextFile.nativeElement.files?.item(0)?.name;
-        this._labelTextFilename.nativeElement.innerHTML = filename === undefined ? '' : filename;
-        const reader = new FileReader();
-
-        if (files && files.length) {
-            const file = files.item(0);
-            reader.onload = () => {
-                // need to run CD since file load runs outside of zone
-                this._cd.markForCheck();
-            };
-            reader.onloadend = () => {
-                const labelResult = reader.result as string;
-                const labelSplitArr = labelResult.split('\n');
-                if (labelSplitArr.length > 0) {
-                    const newLabelArray = labelSplitArr.reduce((prev: string[], curr: string) => {
-                        const clearCharLabel = curr.replace(/[^A-Z0-9]+/gi, '').toLowerCase();
-                        prev.push(clearCharLabel);
-                        return prev;
-                    }, []);
-                    // clear entire array before giving it new set of data, prevents stacking more array of data
-                    this.labelTextUpload = [];
-                    // spread due to newLabelArray is already an array
-                    // with push would lead to nested array
-                    this.labelTextUpload.push(...newLabelArray);
-                    // console.log(this.labelTextUpload);
-                }
-            };
-            // console.log(file);
-            file && reader.readAsText(file);
-        }
-    };
-
     onStarred = ({ projectName, starred }: StarredProps) => {
         this._dataSetService
             .updateProjectStatus(projectName, starred, 'star')
@@ -283,9 +248,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     ? (this.form.get('projectName')?.setErrors({ exist: true }),
                       this._refProjectName.nativeElement.focus())
                     : (this.createProject(this.inputProjectName),
-                      (this.selectedProjectName = this.form.get('projectName')?.value),
-                      (this.labelTextUpload = []),
-                      (this._labelTextFilename.nativeElement.innerHTML = ''));
+                      (this.selectedProjectName = this.form.get('projectName')?.value));
             } else {
                 this.form.get('projectName')?.setErrors({ required: true });
                 this._refProjectName.nativeElement.focus();
@@ -452,6 +415,40 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         // make initial call
         this.subject$.next();
     };
+
+    importLabelFile() {
+        const importLabelFileStatus$ = this._dataSetService.importLabelFileStatus();
+        const importLabelFile$ = this._dataSetService.importLabelFile();
+        importLabelFile$
+            .pipe(
+                first(),
+                map(({ message }) => message),
+            )
+            .subscribe((message) => {
+                let windowClosed = false;
+                interval(500)
+                    .pipe(
+                        switchMap(() => importLabelFileStatus$),
+                        first((response) => {
+                            this.isOverlayOn = response.message === 0 ? true : false;
+                            if (response.message === 4) {
+                                this._labelTextFilename.nativeElement.innerHTML = response.label_file_path.replace(
+                                    /^.*[\\\/]/,
+                                    '',
+                                );
+                                this.labelTextUpload = response.label_list;
+                            }
+                            if (response.message === 1 || response.message === 4) {
+                                windowClosed = true;
+                            }
+                            return windowClosed;
+                        }),
+                    )
+                    .subscribe((response) => {
+                        this.getProjectList();
+                    });
+            });
+    }
 
     renameProject = (oldProjectName: string, newProjectName: string): void => {
         const renameProject$ = this._dataSetService.renameProject(oldProjectName, newProjectName);

@@ -111,6 +111,10 @@ $fontSize: 2vh;
     font-size: $fontSize;
 }
 
+.choose-file-button {
+    background-color: #444444;
+}
+
 .create-btn {
     background-color: #169887;
 }
@@ -143,12 +147,13 @@ $fontSize: 2vh;
 
 .filename {
     font-size: $fontSize;
-    padding-top: 0.5vh;
+    padding-top: 1vh;
+    padding-left: 1vw;
     color: white;
 }
 
 .overlay {
-    z-index: 2000;
+    z-index: 3000;
     position: absolute;
     background-color: rgb(0, 0, 0, 0.9);
     width: 99.9vw;
