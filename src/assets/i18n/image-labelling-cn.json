@@ -18,13 +18,16 @@
         "polygon": "多边形",
         "eraser": "橡皮",
         "fitCenter": "调整到屏幕大小",
-        "save": "存档"
+        "save": "存档",
+        "info": "快捷键资讯"
     },
     "rightSideBar": {
         "folderOrFiles": "文件夹 / 文件",
         "label": "标签",
         "annotation": "标注",
-        "statistic": "数据"
+        "statistic": "数据",
+        "export": "导出",
+        "reload": "重新加载"
     },
     "labellingProject": {
         "project": "项目",
@@ -48,10 +51,22 @@
         "mainRegionInfo": "主标签资讯",
         "subRegionInfo": "副标签资讯"
     },
+    "exportModal": {
+        "exportOptions": "导出选择",
+        "configFile": "配置文件",
+        "zipFile": "压缩文件",
+        "withData": "(包括数据)",
+        "cancel": "取消"
+    },
     "footer": {
         "size": "容量",
         "image": "格式",
         "dimension": "尺寸",
         "copyToClipboard": "复制"
-    }
+    },
+    "exportSuccess": "导出成功",
+    "exportFailed": "导出失败",
+    "reloadSuccess": "重新导入成功",
+    "reloadFailed": "重新导入失败",
+    "labelExist": "此标签已被使用，无法删除"
 }

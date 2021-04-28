@@ -1,74 +1,114 @@
+<div *ngIf="isOverlayOn" class="overlay">
+    <p style="margin-top: 40vh; color: rgb(255, 255, 255, 0.9); text-align: center; font-size: 3vh">
+        {{ isImageUploading ? 'Uploading the Images. Please Wait...' : 'Selection Window is Opened' }}
+    </p>
+</div>
 <page-header [_onChange]="onChangeSchema"></page-header>
 <div class="upper-container">
-    <data-set-side-menu (_onClick)="toggleModalDisplay($event)"></data-set-side-menu>
+    <data-set-side-menu (_onCreate)="toggleModalDisplay($event)" (_onImport)="importProject()"></data-set-side-menu>
     <div>
         <data-set-header></data-set-header>
         <data-set-card
             [_jsonSchema]="projectList"
             (_onClick)="onSubmit(false, $event)"
             (_onStarred)="onStarred($event)"
-            (_onUpload)="uploadThumbnail($event)"
+            (_onDelete)="deleteProject($event)"
+            (_onRename)="toggleRenameModalDisplay($event)"
         ></data-set-card>
     </div>
 </div>
 
-<div [hidden]="!displayModal">
-    <div class="model">
-        <form [formGroup]="form">
-            <div class="model-content">
-                <div class="content-container">
-                    <h1 class="content-header">{{ 'createNewProject' | translate }}</h1>
-                    <div class="new-project-container">
-                        <label class="label">{{ 'newProjectName' | translate }} </label>
-                        <input
-                            #refProjectName
-                            class="input-style"
-                            type="text"
-                            placeholder="Enter project name"
-                            formControlName="projectName"
-                            [value]="inputProjectName"
-                            (input)="onChange($event.target.value)"
-                        />
-                    </div>
-
-                    <ng-container *ngIf="form.get('projectName')?.touched">
-                        <div class="validation">
-                            <span *ngIf="form.get('projectName')?.getError('exist')">
-                                <small class="error-msg"> {{ 'projectNameExist' | translate }} </small>
-                            </span>
-                            <span *ngIf="form.get('projectName')?.getError('required')">
-                                <small class="error-msg"> {{ 'projectNameRequired' | translate }} </small>
-                            </span>
-                        </div>
-                    </ng-container>
-
-                    <div class="select-folder-container">
-                        <label class="label label-file">{{ 'labelListFile' | translate }} </label>
-                        <label class="choose-file-btn">
-                            {{ 'chooseFile' | translate
-                            }}<input
-                                type="file"
-                                #labeltextfile
-                                class="input-id"
-                                accept=".txt"
-                                (change)="onFileChange($event)"
-                            />
-                        </label>
-                        <label class="filename" #labeltextfilename></label>
-                    </div>
-                    <div class="horizontal-line"></div>
-                    <div class="model-button-container">
-                        <button class="button-style create-btn" type="submit" (click)="onSubmit(true)">
-                            {{ 'createButton' | translate }}
-                        </button>
-                        <button (click)="toggleModalDisplay(false)" class="button-style cancel-btn">
-                            {{ 'cancelButton' | translate }}
-                        </button>
-                    </div>
-                </div>
+<modal
+    [id]="modalIdCreateProject"
+    [modalBodyStyle]="createProjectModalBodyStyle"
+    [modalTitle]="'createNewProject' | translate"
+    [scrollable]="false"
+>
+    <form [formGroup]="form">
+        <div class="content-container">
+            <div class="new-project-container">
+                <label class="label">{{ 'newProjectName' | translate }} </label>
+                <input
+                    #refProjectName
+                    class="input-style"
+                    type="text"
+                    placeholder="Enter project name"
+                    formControlName="projectName"
+                    [value]="inputProjectName"
+                    (input)="onChange($event.target.value)"
+                />
             </div>
-        </form>
-    </div>
-</div>
+
+            <ng-container *ngIf="form.get('projectName')?.touched">
+                <div class="validation">
+                    <span *ngIf="form.get('projectName')?.getError('exist')">
+                        <small class="error-msg"> {{ 'projectNameExist' | translate }} </small>
+                    </span>
+                    <span *ngIf="form.get('projectName')?.getError('required')">
+                        <small class="error-msg"> {{ 'projectNameRequired' | translate }} </small>
+                    </span>
+                </div>
+            </ng-container>
+
+            <div class="select-file-container">
+                <label class="label label-file">{{ 'labelListFile' | translate }} </label>
+                <button class="button-style choose-file-button" type="button" (click)="importLabelFile()">
+                    {{ 'chooseFile' | translate }}
+                </button>
+            </div>
+            <div class="file-name-container">
+                <label class="filename" #labeltextfilename></label>
+            </div>
+            <div class="horizontal-line"></div>
+            <div class="model-button-container">
+                <button class="button-style create-btn" type="submit" (click)="onSubmit(true)">
+                    {{ 'createButton' | translate }}
+                </button>
+            </div>
+        </div>
+    </form>
+</modal>
+
+<modal
+    [id]="modalIdRenameProject"
+    [modalBodyStyle]="renameProjectModalBodyStyle"
+    [modalTitle]="'renameProject' | translate"
+    [scrollable]="false"
+>
+    <form [formGroup]="renameForm">
+        <div class="content-container">
+            <div class="new-project-container">
+                <label class="label">{{ 'newProjectName' | translate }} </label>
+                <input
+                    #refNewProjectName
+                    class="input-style"
+                    type="text"
+                    placeholder="Enter new project name"
+                    formControlName="newProjectName"
+                    [value]="inputProjectName"
+                    (input)="onChangeRename($event.target.value)"
+                />
+            </div>
+
+            <ng-container *ngIf="renameForm.get('newProjectName')?.touched">
+                <div class="validation">
+                    <span *ngIf="renameForm.get('newProjectName')?.getError('exist')">
+                        <small class="error-msg"> {{ 'projectNameExist' | translate }} </small>
+                    </span>
+                    <span *ngIf="renameForm.get('newProjectName')?.getError('required')">
+                        <small class="error-msg"> {{ 'projectNameRequired' | translate }} </small>
+                    </span>
+                </div>
+            </ng-container>
+
+            <div class="horizontal-line"></div>
+            <div class="model-button-container">
+                <button class="button-style create-btn" type="submit" (click)="onSubmitRename()">
+                    {{ 'updateButton' | translate }}
+                </button>
+            </div>
+        </div>
+    </form>
+</modal>
 
 <spinner [_loading]="isLoading"></spinner>

@@ -47,10 +47,17 @@
     line-height: 1vh;
     font-size: 1vw;
     padding: 0.5vw;
+    background: #262a2e;
+    color: azure;
 }
 
 .modal-button {
     @include button-style();
+}
+
+.close-button {
+    border: none;
+    cursor: pointer;
 }
 
 .float-right {
@@ -115,9 +122,9 @@
 }
 
 .hr-line {
-    height: 0.5vh;
-    color: black;
-    background: #8c8b8b;
+    // height: 0.5vh;
+    // color: black;
+    // background: #8c8b8b;
     margin: 5vh 0 5vh 0;
 }
 
@@ -148,6 +155,83 @@
     flex: 0 0 5%;
 }
 
+.modal {
+    position: fixed; /* Stay in place */
+    z-index: 1000; /*Sit on top*/
+    padding-top: 10vh; /* Location of the box */
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: transparent;
+    scrollbar-width: none;
+    position: fixed;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.modal-content {
+    background-color: #525353;
+    margin: auto;
+    padding: 1vw;
+    max-width: 20vw;
+    min-width: 20vw;
+    border-radius: 1vw;
+    margin-top: 15vh;
+}
+
+.model-content-container {
+    margin-left: 1.3vw;
+}
+
+.modal-content-header {
+    text-align: center;
+    color: white;
+    font-size: 3vh;
+}
+
+.modal-button-container {
+    display: flex;
+    justify-content: center;
+    padding: 1vw;
+}
+
+.modal-button-cancel {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.button-style {
+    border-radius: 1vh;
+    border: none;
+    outline: none;
+    color: white;
+    cursor: pointer;
+}
+
+.confg-btn {
+    padding: 1vh 1.5vw 1vh 1.5vw;
+    background-color: #169887;
+    margin-right: 0.7vw;
+    font-size: 2vh;
+    min-width: 8vw;
+}
+
+.confgdata-btn {
+    padding: 1vh 1.5vw 1vh 1.5vw;
+    background-color: #169887;
+    font-size: 2vh;
+    min-width: 8vw;
+}
+
+.with-data {
+    font-size: 1.5vh;
+}
+
+.cancel-btn {
+    padding: 1vh 1vw;
+    background-color: #444444;
+    font-size: 1.5vh;
+}
 .save-format-list {
     left: 0;
     top: 0;
@@ -266,4 +350,46 @@
 
 .save-format-btn:active:hover {
     border: 3px dashed green;
+}
+
+.shortcut-key-info-header {
+    font-size: 1.2vw;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 2vh;
+}
+
+.table-box {
+    width: 100%;
+    height: 90%;
+    overflow-y: auto;
+}
+
+table {
+    width: 100%;
+}
+
+table,
+th,
+td {
+    border-collapse: collapse;
+    text-align: center;
+    color: #fff;
+}
+
+th {
+    top: 0;
+    background: rgb(38, 42, 46);
+    color: #fff;
+    border-top: none !important;
+}
+
+tr td:nth-child(2) {
+    color: rgb(190, 190, 190);
+}
+
+tr th:nth-child(1) {
+    width: 60px;
+    text-align: center;
+    background: rgb(38, 42, 46);
 }

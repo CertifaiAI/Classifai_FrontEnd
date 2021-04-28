@@ -11,6 +11,12 @@ export type LabelList = {
     uuid_list: uuid[];
 };
 
+export type Labels = {
+    label_list: label_list;
+    message: message;
+    label_file_path: string;
+};
+
 export type ProjectStatus = {
     status: string;
     backgroundColour: number;

@@ -3,15 +3,16 @@ import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnIn
 import { cloneDeep } from 'lodash-es';
 import { DataSetLayoutService } from './data-set-layout-api.service';
 import { DataSetProps, ProjectSchema, StarredProps, UploadThumbnailProps } from './data-set-layout.model';
-import { distinctUntilChanged, first, map, mergeMap, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, first, map, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HTMLElementEvent } from 'src/shared/types/field/field.model';
 import { ImageLabellingModeService } from './../../components/image-labelling/image-labelling-mode.service';
 import { Message } from 'src/shared/types/message/message.model';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'src/components/spinner/spinner.service';
 import { LanguageService } from 'src/shared/services/language.service';
+import { ModalService } from 'src/components/modal/modal.service';
+import { ModalBodyStyle } from 'src/components/modal/modal.model';
 
 @Component({
     selector: 'data-set-layout',
@@ -31,20 +32,42 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         isFetching: false,
     };
     inputProjectName: string = '';
+    newInputProjectName: string = '';
     selectedProjectName: string = '';
+    oldProjectName: string = '';
     labelTextUpload: any[] = [];
     form!: FormGroup;
-    displayModal: boolean = false;
+    renameForm!: FormGroup;
     subject$: Subject<any> = new Subject();
     subjectSubscription?: Subscription;
     thumbnailList: BboxMetadata[] & PolyMetadata[] = [];
     labelList: string[] = [];
     unsubscribe$: Subject<any> = new Subject();
     isLoading = false;
+    isOverlayOn = false;
+    isImageUploading = false;
     imgLblMode: ImageLabellingMode = null;
+    readonly modalIdCreateProject = 'modal-create-project';
+    readonly modalIdRenameProject = 'modal-rename-project';
+    createProjectModalBodyStyle: ModalBodyStyle = {
+        minHeight: '35vh',
+        maxHeight: '35vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    renameProjectModalBodyStyle: ModalBodyStyle = {
+        minHeight: '23vh',
+        maxHeight: '23vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
     @ViewChild('refProjectName') _refProjectName!: ElementRef<HTMLInputElement>;
-    @ViewChild('labeltextfile') _labelTextFile!: ElementRef<HTMLInputElement>;
     @ViewChild('labeltextfilename') _labelTextFilename!: ElementRef<HTMLLabelElement>;
+    @ViewChild('refNewProjectName') _refNewProjectName!: ElementRef<HTMLInputElement>;
 
     constructor(
         private _fb: FormBuilder,
@@ -54,6 +77,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         private _spinnerService: SpinnerService,
         private _imgLblModeService: ImageLabellingModeService,
         private _languageService: LanguageService,
+        private _modalService: ModalService,
     ) {
         this._imgLblModeService.imgLabelMode$
             .pipe(distinctUntilChanged())
@@ -65,6 +89,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .subscribe((loading) => (this.isLoading = loading));
 
         this.createFormControls();
+        this.renameFormControls();
         const langsArr: string[] = ['data-set-page-en', 'data-set-page-cn', 'data-set-page-ms'];
         this._languageService.initializeLanguage(`data-set-page`, langsArr);
     }
@@ -116,48 +141,67 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         });
     };
 
+    renameFormControls = (): void => {
+        this.renameForm = this._fb.group({
+            newProjectName: ['', Validators.required],
+        });
+    };
+
     onChange = (val: string): void => {
         this.inputProjectName = val;
     };
 
-    toggleModalDisplay = (shown: boolean): void => {
-        shown ? this.form.reset() : null;
-        this.displayModal = shown;
-        /** timeOut needed to allow focus due to Angular's templating sys issue / bug */
-        setTimeout(() => this._refProjectName.nativeElement.focus());
+    onChangeRename = (val: string): void => {
+        this.newInputProjectName = val;
     };
 
-    onFileChange = ({ target: { files } }: HTMLElementEvent<HTMLInputElement>): void => {
-        const filename = this._labelTextFile.nativeElement.files?.item(0)?.name!;
-        this._labelTextFilename.nativeElement.innerHTML = filename === undefined ? '' : filename;
-        const reader = new FileReader();
+    toggleModalDisplay = (shown: boolean): void => {
+        this._labelTextFilename.nativeElement.innerHTML = '';
+        this.labelTextUpload = [];
+        shown ? this.form.reset() : null;
+        shown
+            ? this._modalService.open(this.modalIdCreateProject)
+            : this._modalService.close(this.modalIdCreateProject);
+        /** timeOut needed to allow focus due to Angular's templating sys issue / bug */
+        // setTimeout(() => this._refProjectName.nativeElement.focus());
+    };
 
-        if (files && files.length) {
-            const file = files.item(0);
-            reader.onload = () => {
-                // need to run CD since file load runs outside of zone
-                this._cd.markForCheck();
-            };
-            reader.onloadend = () => {
-                const labelResult = reader.result as string;
-                const labelSplitArr = labelResult.split('\n');
-                if (labelSplitArr.length > 0) {
-                    const newLabelArray = labelSplitArr.reduce((prev: string[], curr: string) => {
-                        const clearCharLabel = curr.replace(/[^A-Z0-9]+/gi, '').toLowerCase();
-                        prev.push(clearCharLabel);
-                        return prev;
-                    }, []);
-                    // clear entire array before giving it new set of data, prevents stacking more array of data
-                    this.labelTextUpload = [];
-                    // spread due to newLabelArray is already an array
-                    // with push would lead to nested array
-                    this.labelTextUpload.push(...newLabelArray);
-                    // console.log(this.labelTextUpload);
-                }
-            };
-            // console.log(file);
-            file && reader.readAsText(file);
-        }
+    toggleRenameModalDisplay = (event: any): void => {
+        event.shown ? this.renameForm.reset() : null;
+        event.shown
+            ? this._modalService.open(this.modalIdRenameProject)
+            : this._modalService.close(this.modalIdRenameProject);
+        this.oldProjectName = event.projectName;
+        /** timeOut needed to allow focus due to Angular's templating sys issue / bug */
+        // setTimeout(() => this._refNewProjectName.nativeElement.focus());
+    };
+
+    importProject = (): void => {
+        const importStatus$ = this._dataSetService.importStatus();
+        const importProject$ = this._dataSetService.importProject();
+        importProject$
+            .pipe(
+                first(),
+                map(({ message }) => message),
+            )
+            .subscribe((message) => {
+                let refreshProjectList = false;
+                interval(500)
+                    .pipe(
+                        switchMap(() => importStatus$),
+                        first((response) => {
+                            this.isOverlayOn = response.message === 0 ? true : false;
+                            if (response.message === 1 || response.message === 4) {
+                                refreshProjectList = true;
+                            }
+
+                            return refreshProjectList;
+                        }),
+                    )
+                    .subscribe((response) => {
+                        this.getProjectList();
+                    });
+            });
     };
 
     onStarred = ({ projectName, starred }: StarredProps) => {
@@ -211,6 +255,25 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             }
         }
     };
+
+    onSubmitRename() {
+        this.renameForm.markAllAsTouched();
+        if (this.newInputProjectName) {
+            const checkExistProject = this.projectList.projects
+                ? this.projectList.projects.find((project) =>
+                      project ? project.project_name === this.newInputProjectName : null,
+                  )
+                : null;
+            checkExistProject
+                ? (this.renameForm.get('newProjectName')?.setErrors({ exist: true }),
+                  this._refProjectName.nativeElement.focus())
+                : (this.renameProject(this.oldProjectName, this.newInputProjectName),
+                  (this.selectedProjectName = this.renameForm.get('newProjectName')?.value));
+        } else {
+            this.renameForm.get('newProjectName')?.setErrors({ required: true });
+            this._refProjectName.nativeElement.focus();
+        }
+    }
 
     startProject = (projectName: string): void => {
         this.selectedProjectName = projectName;
@@ -287,18 +350,21 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.subject$.next();
     };
 
-    uploadThumbnail = ({ projectName = this.inputProjectName, fileType }: UploadThumbnailProps): void => {
-        const uploadType$ = this._dataSetService.localUploadThumbnail(projectName, fileType);
+    createProject = (projectName: string): void => {
+        const createProj$ = this._dataSetService.createNewProject(projectName);
+        const updateLabel$ = this._dataSetService.updateLabelList(projectName, this.labelTextUpload);
         const uploadStatus$ = this._dataSetService.localUploadStatus(projectName);
         const thumbnail$ = this._dataSetService.getThumbnailList;
         let numberOfReq: number = 0;
 
         const returnResponse = ({ message }: Message): Observable<BboxMetadata & PolyMetadata> => {
-            return message !== 5 && message === 1
+            return message !== 5 && (message === 1 || message === 0)
                 ? interval(500).pipe(
                       mergeMap(() => uploadStatus$),
                       /** @property {number} message value 4 means upload completed, value 1 means cancelled */
                       first(({ message }) => {
+                          this.isOverlayOn = message === 0 || message === 2 ? true : false;
+                          this.isImageUploading = message === 2 ? true : false;
                           const isValidResponse: boolean = message === 4 || message === 1;
                           return isValidResponse;
                       }),
@@ -313,6 +379,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                                   ? { ...this.projectList, isUploading: true }
                                   : { ...this.projectList, isUploading: false };
                           numberOfReq = thumbnails.length;
+                          if (message === 4) {
+                              this.toggleModalDisplay(false);
+                          }
                           return thumbnails;
                       }),
                       // * this mergeMap responsible for flaten all observable into one layer
@@ -323,34 +392,14 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                       this.projectList = { ...this.projectList, isUploading: false };
                       return error;
                   });
-
-            // if (message === 1) {
-            //   const uploadTypeResponse = interval(500).pipe(
-            //     mergeMap(() => uploadStatus$),
-            //     first(({ message }) => message === 4),
-            //     mergeMap(({ uuid_list }) =>
-            //       uuid_list.length > 0
-            //         ? uuid_list.map((uuid) => thumbnail$(projectName, uuid))
-            //         : []
-            //     ),
-            //     // * this mergeMap responsible for flaten all observable into one layer
-            //     mergeMap((data) => data)
-            //   );
-            //   return uploadTypeResponse;
-            // }
-            // if (message === 5) {
-            //   catchError((err) => {
-            //     console.error(err);
-            //     return of(err);
-            //   });
-            // }
         };
         this.projectList = { ...this.projectList, isUploading: true };
         this.subjectSubscription = this.subject$
             .pipe(
                 first(),
-                mergeMap(() => uploadType$),
+                mergeMap(() => createProj$),
                 mergeMap((val) => returnResponse(val)),
+                mergeMap(() => updateLabel$),
             )
             .subscribe(
                 (res) => {
@@ -367,24 +416,80 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.subject$.next();
     };
 
-    createProject = (projectName: string): void => {
-        const createProj$ = this._dataSetService.createNewProject(projectName);
-        const updateLabel$ = this._dataSetService.updateLabelList(projectName, this.labelTextUpload);
-
-        createProj$
+    importLabelFile() {
+        const importLabelFileStatus$ = this._dataSetService.importLabelFileStatus();
+        const importLabelFile$ = this._dataSetService.importLabelFile();
+        importLabelFile$
             .pipe(
                 first(),
                 map(({ message }) => message),
-                mergeMap(() => updateLabel$),
             )
-            .subscribe(({ message }) => {
-                message === 1 ? (this.getProjectList(), this.toggleModalDisplay(false)) : null;
+            .subscribe((message) => {
+                let windowClosed = false;
+                interval(500)
+                    .pipe(
+                        switchMap(() => importLabelFileStatus$),
+                        first((response) => {
+                            this.isOverlayOn = response.message === 0 ? true : false;
+                            if (response.message === 4) {
+                                this._labelTextFilename.nativeElement.innerHTML = response.label_file_path.replace(
+                                    /^.*[\\\/]/,
+                                    '',
+                                );
+                                this.labelTextUpload = response.label_list;
+                            }
+                            if (response.message === 1 || response.message === 4) {
+                                windowClosed = true;
+                            }
+                            return windowClosed;
+                        }),
+                    )
+                    .subscribe((response) => {
+                        this.getProjectList();
+                    });
+            });
+    }
+
+    renameProject = (oldProjectName: string, newProjectName: string): void => {
+        const renameProject$ = this._dataSetService.renameProject(oldProjectName, newProjectName);
+
+        renameProject$
+            .pipe(
+                first(),
+                map(({ message }) => message),
+            )
+            .subscribe((message) => {
+                if (message === 1) {
+                    this._languageService._translate.get('renameSuccess').subscribe((translated: any) => {
+                        alert(oldProjectName + ' ' + translated);
+                    });
+                    this.getProjectList();
+                    this.toggleRenameModalDisplay(false);
+                }
+            });
+    };
+
+    deleteProject = (projectName: string): void => {
+        const deleteProj$ = this._dataSetService.deleteProject(projectName);
+
+        deleteProj$
+            .pipe(
+                first(),
+                map(({ message }) => message),
+            )
+            .subscribe((message) => {
+                if (message === 1) {
+                    this._languageService._translate.get('deleteSuccess').subscribe((translated: any) => {
+                        alert(projectName + ' ' + translated);
+                    });
+                    this.getProjectList();
+                }
             });
     };
 
     @HostListener('window:keydown', ['$event'])
     keyDownEvent = ({ key }: KeyboardEvent): void => {
-        key === 'Escape' && this.displayModal && this.toggleModalDisplay(false);
+        key === 'Escape' && this.toggleRenameModalDisplay(false) && this.toggleModalDisplay(false);
     };
 
     ngOnDestroy(): void {

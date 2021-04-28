@@ -4,6 +4,7 @@ type IconConfigs = {
     hoverLabel: string;
     alt: string;
     nonClickable?: boolean;
+    style?: string;
     // inputType?: string;
     // accept?: 'image/x-png,image/jpeg';
     toggleable?: boolean;

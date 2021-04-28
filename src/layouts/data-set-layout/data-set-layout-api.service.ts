@@ -1,7 +1,7 @@
 import { BboxMetadata, ImageLabellingMode, PolyMetadata } from 'src/components/image-labelling/image-labelling.model';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { environment } from 'src/environments/environment.prod';
-import { FileType, LabelList, Project } from './data-set-layout.model';
+import { LabelList, Labels, Project } from './data-set-layout.model';
 import { HttpClient } from '@angular/common/http';
 import { ImageLabellingModeService } from 'src/components/image-labelling/image-labelling-mode.service';
 import { Injectable } from '@angular/core';
@@ -33,9 +33,24 @@ export class DataSetLayoutService {
     };
 
     createNewProject = (projectName: string): Observable<Message> => {
-        return this.http.put<Message>(`${this.hostPort}${this.imageLabellingMode}/newproject/${projectName}`, {
+        return this.http.put<Message>(`${this.hostPort}v2/${this.imageLabellingMode}/newproject/${projectName}`, {
             newprojectid: projectName,
         });
+    };
+
+    importProject = (): Observable<Message> => {
+        return this.http.put<Message>(`${this.hostPort}v2/newproject`, {});
+    };
+
+    renameProject = (oldProjectName: string, newProjectName: string): Observable<Message> => {
+        return this.http.put<Message>(
+            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${oldProjectName}/rename/${newProjectName}`,
+            {},
+        );
+    };
+
+    deleteProject = (projectName: string): Observable<Message> => {
+        return this.http.delete<Message>(`${this.hostPort}${this.imageLabellingMode}/projects/${projectName}`);
     };
 
     updateProjectLoadStatus = (projectName: string): Observable<Message> => {
@@ -66,27 +81,16 @@ export class DataSetLayoutService {
         );
     };
 
-    /** @function responsible for returning an Observable of data type Message
-     *  @param {string} projectName - your current project name
-     *  @param {string} fileType - default w/o value is 'folder', else have to provide 'file' as value
-     */
-    localUploadThumbnail = (projectName: string, fileType: FileType = 'folder'): Observable<Message> => {
-        return this.http.get<Message>(
-            `${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/filesys/${fileType}`,
-        );
-    };
-
     localUploadStatus = (projectName: string): Observable<MessageUuidList> => {
         return this.http.get<MessageUuidList>(
-            `${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/filesysstatus`,
+            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/filesysstatus`,
         );
     };
 
     updateLabelList = (projectName: string, label_list: string[]): Observable<Message> => {
         // console.log(label_list);
-        const checkLabelList: string[] = label_list.length > 0 ? label_list : ['default'];
         return this.http.put<Message>(`${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/newlabels`, {
-            label_list: checkLabelList,
+            label_list: label_list,
         });
     };
 
@@ -104,4 +108,16 @@ export class DataSetLayoutService {
             },
         );
     };
+
+    importStatus = (): Observable<Message> => {
+        return this.http.get<Message>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/importstatus`);
+    };
+
+    importLabelFile() {
+        return this.http.put<Message>(`${this.hostPort}v2/labelfile`, {});
+    }
+
+    importLabelFileStatus() {
+        return this.http.get<Labels>(`${this.hostPort}v2/labelfilestatus`);
+    }
 }

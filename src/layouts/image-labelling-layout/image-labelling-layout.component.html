@@ -8,6 +8,8 @@
         <image-labelling-left-sidebar
             [_onChange]="onChangeSchema"
             [_currentUrl]="currentUrl"
+            [_tabStatus]="tabStatus"
+            (_openInfo)="onDisplayShortcutKeyInfo()"
         ></image-labelling-left-sidebar>
 
         <ng-container *ngIf="_router.url.includes('imglabel/bndbox')">
@@ -41,13 +43,14 @@
         <image-labelling-right-sidebar
             [_onChange]="onChangeSchema"
             (_onClick)="onToggleTab($event)"
+            (_onExport)="onExport()"
+            (_onReload)="onReload()"
         ></image-labelling-right-sidebar>
     </div>
     <image-labelling-footer [_thumbnailInfo]="selectedMetaData" [_imgSrc]="imgSrc"></image-labelling-footer>
 </div>
 
-<modal id="modal-save">
-    <button class="modal-button float-right" (click)="onCloseModal('modal-save')">X</button>
+<modal id="modal-save" [id]="'modal-save'" [modalBodyStyle]="saveModalBodyStyle" [scrollable]="true">
     <div class="save-format-list">
         <div class="save-format-content">
             <ng-container *ngIf="selectedMetaData?.bnd_box">
@@ -88,13 +91,13 @@
     </div>
 </modal>
 
-<modal id="modal-image-labelling">
-    <button class="modal-button float-right" (click)="onCloseModal('modal-image-labelling')">X</button>
+<modal id="modal-image-labelling" [id]="'modal-image-labelling'" [scrollable]="true" [showHeader]="false">
+    <button class="modal-button close-button float-right" (click)="onCloseModal()">&#10006;</button>
     <div>
         <h2 class="font-title">{{ 'labellingArea.mainLabel' | translate }}</h2>
         <div class="main-label-container">
             <label class="font-label">{{ 'labellingArea.label' | translate }}: </label>
-            <select class="static-select">
+            <select class="static-select" (change)="onChangeLabel($event.target.value)">
                 <ng-container *ngFor="let tab of tabStatus">
                     <ng-container *ngFor="let label of tab.label_list">
                         <option [value]="label" [selected]="label === currentAnnotationLabel">
@@ -172,6 +175,36 @@
             </ng-container>
         </ng-container>
     </ng-container>
+</modal>
+
+<modal [id]="modalExportOptions" [modalBodyStyle]="exportModalBodyStyle" [showHeader]="false">
+    <button class="modal-button close-button float-right" (click)="closeExportProjectModal()">&#10006;</button>
+    <div class="modal-content-container">
+        <h1 class="modal-content-header">
+            {{ 'exportModal.exportOptions' | translate }}
+        </h1>
+        <div class="modal-button-container">
+            <button class="button-style confg-btn" (click)="exportProject('cfg')">
+                {{ 'exportModal.configFile' | translate }}
+            </button>
+            <button class="button-style confgdata-btn" (click)="exportProject('cfgdata')">
+                {{ 'exportModal.zipFile' | translate }}
+                <br /><span class="with-data">{{ 'exportModal.withData' | translate }}</span>
+            </button>
+        </div>
+    </div>
+</modal>
+
+<modal [id]="modalShortcutKeyInfo" [modalBodyStyle]="infoModalBodyStyle" [scrollable]="true">
+    <div class="shortcut-key-info-header">{{ 'info.header' | translate }}</div>
+    <div class="table-box">
+        <table cellpadding="20">
+            <tr *ngFor="let info of shortcutKeyInfo()">
+                <td innerHTML="{{ info.shortcutKey | translate }}"></td>
+                <td innerHTML="{{ info.functionality | translate }}"></td>
+            </tr>
+        </table>
+    </div>
 </modal>
 
 <spinner [_loading]="isLoading"></spinner>

@@ -119,9 +119,9 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     ngOnChanges(changes: SimpleChanges): void {
         // console.log(changes);
-        // if (changes._selectMetadata?.currentValue) {
-        //     this.redrawImage(this._selectMetadata);
-        // }
+        if (changes._selectMetadata?.previousValue && changes._selectMetadata?.currentValue) {
+            this.redrawImage(this._selectMetadata);
+        }
 
         if (changes._imgSrc?.currentValue) {
             this.initializeCanvas();
@@ -362,59 +362,14 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('mouseup', ['$event'])
     mouseUp(event: MouseEvent) {
         try {
+            if (this.boundingBoxState.draw && this.mousedown) {
+                this.finishDrawBoundingBox(event);
+            }
             if (this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event)) {
                 if (this.boundingBoxState.drag && this.mousedown) {
                     this._boundingBoxCanvas.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
                 }
-                if (this.boundingBoxState.draw && this.mousedown) {
-                    const retObj = this._boundingBoxCanvas.mouseUpDrawEnable(this._selectMetadata, (isDone) => {
-                        if (isDone) {
-                            this._undoRedoService.isStateChange(this._selectMetadata.bnd_box) &&
-                                this._undoRedoService.appendStages({
-                                    meta: cloneDeep(this._selectMetadata),
-                                    method: 'draw',
-                                });
-                            this.getBBoxDistanceFromImage();
-                            this.emitMetadata();
-                        }
-                    });
-                    if (retObj.isNew) {
-                        this.getLabelList();
-                        const annotationList = this._tabStatus[2].annotation
-                            ? this._tabStatus[2].annotation[0].bnd_box
-                                ? this._tabStatus[2].annotation[0].bnd_box
-                                : []
-                            : [];
-                        this.sortingLabelList(this.labelList, annotationList);
-                        // Positioning the floating div at the bottom right corner of bounding box
-                        let posFromTop = event.offsetY * (100 / document.documentElement.clientHeight) + 8.5;
-                        let posFromLeft = event.offsetX * (100 / document.documentElement.clientWidth) + 2.5;
-                        // Re-adjustment of floating div position if it is outside of the canvas
-                        if (posFromTop < 9) {
-                            posFromTop = 9;
-                        }
-                        if (posFromTop > 76) {
-                            posFromTop = 76;
-                        }
-                        if (posFromLeft < 2.5) {
-                            posFromLeft = 2.5;
-                        }
-                        if (posFromLeft > 66) {
-                            posFromLeft = 66;
-                        }
-                        this.floatdiv.nativeElement.style.top = posFromTop.toString() + 'vh';
-                        this.floatdiv.nativeElement.style.left = posFromLeft.toString() + 'vw';
-                        this.showDropdownLabelBox = true;
-                        this.labelSearch = '';
-                        this.invalidInput = false;
-                        setTimeout(() => {
-                            this.lbltypetxt.nativeElement.focus();
-                        }, 100);
-                    } else {
-                        this.showDropdownLabelBox = false;
-                    }
-                    retObj.isNew && this.annotateSelectChange({ annotation: retObj.selBox, isDlbClick: false });
-                }
+
                 this.mousedown = false;
             }
         } catch (err) {
@@ -459,6 +414,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this.changeMouseCursorState({ grab: true });
                     }
                     if (this.boundingBoxState.draw && this.mousedown) {
+                        this.changeMouseCursorState({ crosshair: true });
                         this._boundingBoxCanvas.mouseMoveDrawEnable(event.offsetX, event.offsetY, this._selectMetadata);
                         this.redrawImage(this._selectMetadata);
                     }
@@ -510,6 +466,56 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         }
     }
 
+    finishDrawBoundingBox(event: MouseEvent) {
+        this.getLabelList();
+        const annotationList = this._tabStatus[2].annotation
+            ? this._tabStatus[2].annotation[0].bnd_box
+                ? this._tabStatus[2].annotation[0].bnd_box
+                : []
+            : [];
+        this.sortingLabelList(this.labelList, annotationList);
+        const retObj = this._boundingBoxCanvas.mouseUpDrawEnable(this._selectMetadata, this.labelList, (isDone) => {
+            if (isDone) {
+                this._undoRedoService.isStateChange(this._selectMetadata.bnd_box) &&
+                    this._undoRedoService.appendStages({
+                        meta: cloneDeep(this._selectMetadata),
+                        method: 'draw',
+                    });
+                this.getBBoxDistanceFromImage();
+                this.emitMetadata();
+            }
+        });
+        if (retObj.isNew || event.type === 'mouseout') {
+            // Positioning the floating div at the bottom right corner of bounding box
+            let posFromTop = event.offsetY * (100 / document.documentElement.clientHeight) + 8.5;
+            let posFromLeft = event.offsetX * (100 / document.documentElement.clientWidth) + 2.5;
+            // Re-adjustment of floating div position if it is outside of the canvas
+            if (posFromTop < 9) {
+                posFromTop = 9;
+            }
+            if (posFromTop > 76) {
+                posFromTop = 76;
+            }
+            if (posFromLeft < 2.5) {
+                posFromLeft = 2.5;
+            }
+            if (posFromLeft > 66) {
+                posFromLeft = 66;
+            }
+            this.floatdiv.nativeElement.style.top = posFromTop.toString() + 'vh';
+            this.floatdiv.nativeElement.style.left = posFromLeft.toString() + 'vw';
+            this.showDropdownLabelBox = true;
+            this.labelSearch = '';
+            this.invalidInput = false;
+            setTimeout(() => {
+                this.lbltypetxt.nativeElement.focus();
+            }, 100);
+        } else {
+            this.showDropdownLabelBox = false;
+        }
+        retObj.isNew && this.annotateSelectChange({ annotation: retObj.selBox, isDlbClick: false });
+    }
+
     changeMouseCursorState(mouseCursor?: Partial<MouseCursorState>) {
         this._mouseCursorService.setState(mouseCursor);
     }
@@ -523,6 +529,9 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('mouseout', ['$event'])
     mouseOut(event: MouseEvent) {
         try {
+            if (this.boundingBoxState.draw && this.mousedown) {
+                this.finishDrawBoundingBox(event);
+            }
             if (
                 ((event.target as Element).className === 'canvasstyle' ||
                     (event.target as Element).className.includes('unclosedOut')) &&
@@ -530,6 +539,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 !(event.relatedTarget as Element)?.className.includes('canvasstyle')
             ) {
                 this.showDropdownLabelBox = false;
+                if (this._selectMetadata.bnd_box.filter((bb) => bb.label == '').length != 0) {
+                    this._selectMetadata.bnd_box = this._selectMetadata.bnd_box.filter((bb) => bb.label != '');
+                    this._onChangeMetadata.emit(this._selectMetadata);
+                    this.redrawImage(this._selectMetadata);
+                    alert('Some bounding boxes will be deleted because they were not labelled.');
+                }
             }
             if (this.boundingBoxState.drag && this.mousedown) {
                 this._boundingBoxCanvas.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
@@ -602,7 +617,16 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     redrawImage({ img_x, img_y, img_w, img_h }: BboxMetadata) {
         this.clearCanvas();
         this.canvasContext.drawImage(this.image, img_x, img_y, img_w, img_h);
-        this._boundingBoxCanvas.drawAllBoxOn(this._selectMetadata.bnd_box, this.canvasContext);
+        if (this._tabStatus[2].annotation?.length != 0) {
+            this.getLabelList();
+            const annotationList = this._tabStatus[2].annotation
+                ? this._tabStatus[2].annotation[0].bnd_box
+                    ? this._tabStatus[2].annotation[0].bnd_box
+                    : []
+                : [];
+            this.sortingLabelList(this.labelList, annotationList);
+        }
+        this._boundingBoxCanvas.drawAllBoxOn(this.labelList, this._selectMetadata.bnd_box, this.canvasContext);
         // this.canvas.nativeElement.focus();
     }
 
@@ -645,8 +669,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     sortingLabelList(labelList: LabelInfo[], annotationList: any[]) {
         labelList.forEach((label, index) => {
             this.labelList[index].count = annotationList.filter((x) => x.label === label.name).length;
+            this.allLabelList[index].count = annotationList.filter((x) => x.label === label.name).length;
         });
         this.labelList.sort((a, b) => (a.count < b.count ? 1 : b.count < a.count ? -1 : 0));
+        this.allLabelList.sort((a, b) => (a.count < b.count ? 1 : b.count < a.count ? -1 : 0));
     }
 
     currentCursor() {
@@ -657,27 +683,17 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         const { value } = target;
         const valTrimmed = value.trim();
         if (valTrimmed) {
-            const validateVal: boolean = valTrimmed.match(/^[a-zA-Z0-9-]*$/) ? true : false;
-            if (validateVal) {
-                const isInvalidLabel: boolean = this._tabStatus.some(({ label_list }) =>
-                    label_list && label_list.length ? label_list.some((label) => label === valTrimmed) : null,
-                );
-                if (!isInvalidLabel) {
-                    this.invalidInput = false;
-                    const label_lists = this._tabStatus
-                        .map(({ label_list }) => (label_list ? label_list : []))
-                        .filter((tab) => tab.length > 0)[0];
-                    this._onEnterLabel.emit({ action: 1, label_list: label_lists ? [...label_lists, value] : [value] });
-                    this.showDropdownLabelBox = false;
-                    this._onChangeAnnotationLabel.emit({ label: value, index: this.annotateState.annotation });
-                    this.labelSearch = '';
-                } else {
-                    this.invalidInput = true;
-                    console.error(`Invalid existing label input`);
-                }
+            const isInvalidLabel: boolean = this._tabStatus.some(({ label_list }) =>
+                label_list && label_list.length ? label_list.some((label) => label === valTrimmed) : null,
+            );
+            if (!isInvalidLabel) {
+                this.invalidInput = false;
+                this.showDropdownLabelBox = false;
+                this._onChangeAnnotationLabel.emit({ label: value, index: this.annotateState.annotation });
+                this.labelSearch = '';
             } else {
                 this.invalidInput = true;
-                console.error(`Invalid input value`);
+                console.error(`Invalid existing label input`);
             }
         }
     };

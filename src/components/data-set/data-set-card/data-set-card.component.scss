@@ -89,11 +89,11 @@ $hoverBackground: #393838;
 }
 
 .project-status-available {
-    @include project-status(#4bf521);
+    @include project-status(#92c91b);
 }
 
-.project-status-not-available {
-    @include project-status(#f52121);
+.project-status-opened {
+    @include project-status(#258fc0);
 }
 
 .project-status-uploading {

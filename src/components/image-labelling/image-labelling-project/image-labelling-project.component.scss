@@ -201,9 +201,20 @@
     // border-radius: 1vh;
     max-height: 4.3vh;
     min-height: 4.3vh;
-    min-width: 3vw;
+    // min-width: 3vw;
     max-width: 3vw;
     // border: 0.0625vw solid rgb(255,255,255, 0.25);
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.img-skeleton {
+    max-height: 4.3vh;
+    min-height: 4.3vh;
+    min-width: 3vw;
+    max-width: 3vw;
+    border: 0.005vh color.$greyColor dotted;
 }
 
 .img-name {
@@ -353,7 +364,8 @@
     color: #999;
 }
 
-.delete-annotation {
+.delete-annotation,
+.delete-label {
     position: absolute;
     right: 2vw;
 }

@@ -25,7 +25,12 @@ export class LoadingSpinnerInterceptor implements HttpInterceptor {
                     // console.log(event);
                     if (event instanceof HttpResponse) {
                         this.pendingRequestsCount--;
-                        this.pendingRequestsCount === 0 && this._spinner.hideSpinner();
+                        let link = event.url ? event.url.toString().split('/') : '';
+                        this.pendingRequestsCount === 0 &&
+                            link[link.length - 1] !== 'importstatus' &&
+                            link[link.length - 1] !== 'filesysstatus' &&
+                            link[link.length - 1] !== 'labelfilestatus' &&
+                            this._spinner.hideSpinner();
                     }
                 },
                 (error) => {

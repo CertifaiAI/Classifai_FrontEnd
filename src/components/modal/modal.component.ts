@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { ModalBodyStyle } from './modal.model';
 import { ModalService } from './modal.service';
 
@@ -11,6 +11,8 @@ import { ModalService } from './modal.service';
 export class ModalComponent implements OnInit, OnDestroy {
     @Input() id: string = '';
     @Input() modalBodyStyle!: ModalBodyStyle;
+    @Input() modalTitle: string = '';
+    @Input() showHeader: boolean = true;
     @Input() scrollable: boolean = true;
     private element: HTMLDivElement;
 
@@ -65,4 +67,9 @@ export class ModalComponent implements OnInit, OnDestroy {
         document.body.classList.remove('modal-open');
         // this._el.nativeElement.children[0].style.background = null;
     }
+
+    @HostListener('window:keydown', ['$event'])
+    keyDownEvent = ({ key }: KeyboardEvent): void => {
+        key === 'Escape' && this.close();
+    };
 }
