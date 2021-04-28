@@ -9,6 +9,7 @@
             [_onChange]="onChangeSchema"
             [_currentUrl]="currentUrl"
             [_tabStatus]="tabStatus"
+            (_openInfo)="onDisplayShortcutKeyInfo()"
         ></image-labelling-left-sidebar>
 
         <ng-container *ngIf="_router.url.includes('imglabel/bndbox')">
@@ -191,6 +192,18 @@
                 <br /><span class="with-data">{{ 'exportModal.withData' | translate }}</span>
             </button>
         </div>
+    </div>
+</modal>
+
+<modal [id]="modalShortcutKeyInfo" [modalBodyStyle]="infoModalBodyStyle" [scrollable]="true">
+    <div class="shortcut-key-info-header">{{ 'info.header' | translate }}</div>
+    <div class="table-box">
+        <table cellpadding="20">
+            <tr *ngFor="let info of shortcutKeyInfo()">
+                <td innerHTML="{{ info.shortcutKey | translate }}"></td>
+                <td innerHTML="{{ info.functionality | translate }}"></td>
+            </tr>
+        </table>
     </div>
 </modal>
 

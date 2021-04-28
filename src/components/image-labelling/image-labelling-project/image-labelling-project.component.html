@@ -79,11 +79,12 @@
                                         </div>
                                     </label>
                                     <label class="action"
-                                        ><ng-container *ngIf="!action && i > 0"
+                                        ><ng-container *ngIf="label === selectedLabel"
                                             ><span
                                                 [ngClass]="clickAbilityToggle ? 'pointer' : null"
+                                                class="delete-label"
                                                 (click)="onDeleteLabel(label)"
-                                                >{{ 'labellingProject.delete' | translate }}</span
+                                                >-</span
                                             ></ng-container
                                         ></label
                                     >

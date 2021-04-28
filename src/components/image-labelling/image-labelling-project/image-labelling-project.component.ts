@@ -16,6 +16,7 @@ import {
     SelectedLabelProps,
     TabsProps,
 } from '../image-labelling.model';
+import { LanguageService } from 'src/shared/services/language.service';
 
 @Component({
     selector: 'image-labelling-project',
@@ -45,6 +46,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     constructor(
         private _annotateService: AnnotateSelectionService,
         private _imgLblState: ImageLabellingActionService,
+        private _languageService: LanguageService,
     ) {}
 
     ngOnInit(): void {
@@ -146,12 +148,31 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     }
 
     onDeleteLabel = (selectedLabel: string): void => {
-        const [{ label_list }] = this._tabStatus.filter((tab) => tab.label_list);
-        this._onClickLabel.emit({
-            selectedLabel,
-            label_list: label_list && label_list.length > 0 ? label_list : [],
-            action: 0,
+        let isLabelExist = false;
+        this._thumbnailList.forEach((thumbnail) => {
+            if (thumbnail.bnd_box) {
+                thumbnail.bnd_box.forEach((bndbox) => {
+                    if (bndbox.label === selectedLabel) isLabelExist = true;
+                });
+            }
+            if (thumbnail.polygons) {
+                thumbnail.polygons.forEach((polygon) => {
+                    if (polygon.label === selectedLabel) isLabelExist = true;
+                });
+            }
         });
+        if (isLabelExist) {
+            this._languageService._translate.get('labelExist').subscribe((translated: any) => {
+                alert(translated);
+            });
+        } else {
+            const [{ label_list }] = this._tabStatus.filter((tab) => tab.label_list);
+            this._onClickLabel.emit({
+                selectedLabel,
+                label_list: label_list && label_list.length > 0 ? label_list : [],
+                action: 0,
+            });
+        }
     };
 
     onClickLabel = (label: string) => {
