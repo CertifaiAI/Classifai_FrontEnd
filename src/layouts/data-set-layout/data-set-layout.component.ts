@@ -50,8 +50,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     createProjectModalBodyStyle: ModalBodyStyle = {
-        minHeight: '28vh',
-        maxHeight: '28vh',
+        minHeight: '35vh',
+        maxHeight: '35vh',
         minWidth: '31vw',
         maxWidth: '31vw',
         margin: '15vw 71vh',
@@ -398,8 +398,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .pipe(
                 first(),
                 mergeMap(() => createProj$),
-                mergeMap(() => updateLabel$),
                 mergeMap((val) => returnResponse(val)),
+                mergeMap(() => updateLabel$),
             )
             .subscribe(
                 (res) => {
