@@ -485,7 +485,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 this.emitMetadata();
             }
         });
-        if (retObj.isNew) {
+        if (retObj.isNew || event.type === 'mouseout') {
             // Positioning the floating div at the bottom right corner of bounding box
             let posFromTop = event.offsetY * (100 / document.documentElement.clientHeight) + 8.5;
             let posFromLeft = event.offsetX * (100 / document.documentElement.clientWidth) + 2.5;
