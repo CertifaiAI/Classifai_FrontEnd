@@ -398,8 +398,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .pipe(
                 first(),
                 mergeMap(() => createProj$),
-                mergeMap(() => updateLabel$),
                 mergeMap((val) => returnResponse(val)),
+                mergeMap(() => updateLabel$),
             )
             .subscribe(
                 (res) => {
