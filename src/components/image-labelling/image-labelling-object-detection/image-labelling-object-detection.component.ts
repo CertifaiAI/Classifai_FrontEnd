@@ -129,10 +129,29 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             this.loadImage(changes._imgSrc.currentValue);
             this._boundingBoxCanvas.setCurrentSelectedbBox(-1);
         }
+
+        if (changes._tabStatus) {
+            let adjustImagePosition = true;
+            for (var i = 0; i < this._tabStatus.length; i++) {
+                if (this._tabStatus[i].closed == false) {
+                    adjustImagePosition = false;
+                    break;
+                }
+            }
+            if (this.canvas) {
+                if (adjustImagePosition === true) {
+                    this.initializeCanvas('96%');
+                    this.imgFitToCenter();
+                } else {
+                    this.initializeCanvas();
+                    this.imgFitToCenter();
+                }
+            }
+        }
     }
 
-    initializeCanvas() {
-        this.canvas.nativeElement.style.width = '80%';
+    initializeCanvas(width: string = '80%') {
+        this.canvas.nativeElement.style.width = width;
         this.canvas.nativeElement.style.height = '90%';
         this.canvas.nativeElement.width = this.canvas.nativeElement.offsetWidth;
         this.canvas.nativeElement.height = this.canvas.nativeElement.offsetHeight;

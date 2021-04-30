@@ -42,6 +42,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     clickAbilityToggle: boolean = false;
     invalidInput: boolean = false;
     labelList: string[] = [];
+    isTabStillOpen: boolean = true;
 
     constructor(
         private _annotateService: AnnotateSelectionService,
@@ -234,6 +235,13 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
             const { currentValue }: { currentValue: TabsProps<CompleteMetadata>[] } = changes._tabStatus;
             this._tabStatus = [...currentValue];
             this.updateLabelList();
+            this.isTabStillOpen = false;
+            for (var i = 0; i < this._tabStatus.length; i++) {
+                if (this._tabStatus[i].closed == false) {
+                    this.isTabStillOpen = true;
+                    break;
+                }
+            }
         }
     }
 

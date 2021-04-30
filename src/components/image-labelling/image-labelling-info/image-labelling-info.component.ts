@@ -1,5 +1,5 @@
 import { IconSchema } from 'src/shared/types/icon/icon.model';
-import { ImgLabelProps, ThumbnailInfoProps } from '../image-labelling.model';
+import { CompleteMetadata, ImgLabelProps, TabsProps, ThumbnailInfoProps } from '../image-labelling.model';
 import {
     Component,
     EventEmitter,
@@ -19,8 +19,10 @@ import {
 })
 export class ImageLabellingInfoComponent implements OnInit, OnChanges {
     @Input() _onChange!: ImgLabelProps;
+    @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Output() _onClick: EventEmitter<ThumbnailInfoProps> = new EventEmitter();
     jsonSchema!: IconSchema;
+    isTabStillOpen: boolean = true;
     constructor() {}
 
     ngOnInit(): void {
@@ -78,8 +80,20 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
     };
 
     ngOnChanges(changes: SimpleChanges): void {
-        const { totalNumThumbnail } = changes._onChange.currentValue;
-        this._onChange.totalNumThumbnail = totalNumThumbnail;
-        this.bindImagePath();
+        if (changes._onChange) {
+            const { totalNumThumbnail } = changes._onChange.currentValue;
+            this._onChange.totalNumThumbnail = totalNumThumbnail;
+            this.bindImagePath();
+        }
+
+        if (changes._tabStatus) {
+            this.isTabStillOpen = false;
+            for (var i = 0; i < this._tabStatus.length; i++) {
+                if (this._tabStatus[i].closed == false) {
+                    this.isTabStillOpen = true;
+                    break;
+                }
+            }
+        }
     }
 }

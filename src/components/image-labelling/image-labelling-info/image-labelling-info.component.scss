@@ -37,6 +37,19 @@
     margin-right: 19vw;
 }
 
+.container-flex-center-adjust {
+    display: flex;
+    margin-left: 2vw;
+    align-items: center;
+    min-height: inherit;
+    max-height: inherit;
+}
+
+.container-flex-end-adjust {
+    display: flex;
+    margin-right: 3vw;
+}
+
 .logo-container {
     min-width: 2.2vw;
     max-width: 2.2vw;
