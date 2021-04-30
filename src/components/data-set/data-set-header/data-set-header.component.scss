@@ -34,11 +34,10 @@ $hoverBackground: #393838;
     min-width: 2vw;
     max-width: 2vw;
     cursor: pointer;
-}
-
-.dataset-icon:hover {
-    border-radius: 5vh;
-    background-color: $hoverBackground;
+    &:hover {
+        border-radius: 5vh;
+        background-color: $hoverBackground;
+    }
 }
 
 .dataset-select {
@@ -52,16 +51,15 @@ $hoverBackground: #393838;
     color: white;
     border: 0.1vw solid;
     text-align-last: center;
-}
-
-.dataset-select:focus,
-.dataset-select:hover {
-    // background: $hoverBackground $base64Arrow no-repeat 10vw;
-    background: $hoverBackground;
-    -moz-appearance: none;
-    -webkit-appearance: none;
-    // background-position: 100%;
-    // background-position: 12.1vh;
+    &:focus,
+    &:hover {
+        // background: $hoverBackground $base64Arrow no-repeat 10vw;
+        background: $hoverBackground;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        // background-position: 100%;
+        // background-position: 12.1vh;
+    }
 }
 
 select {

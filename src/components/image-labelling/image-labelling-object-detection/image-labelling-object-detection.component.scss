@@ -45,6 +45,9 @@
     // text-align: center;
     overflow: auto;
     scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 .lblList {
@@ -57,10 +60,9 @@
     padding: 0;
     justify-content: space-between;
     display: flex;
-}
-
-.lblElement:hover {
-    background-color: #111;
+    &:hover {
+        background-color: #111;
+    }
 }
 
 .lblName {
@@ -74,10 +76,6 @@
     margin-right: 0.2vw;
     padding: 0.1vh 0.2vw;
     border-radius: 0.2vw;
-}
-
-.availablelbl::-webkit-scrollbar {
-    display: none;
 }
 
 .notExist {

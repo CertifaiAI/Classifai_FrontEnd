@@ -82,6 +82,9 @@
     justify-content: center;
     display: flex;
     padding: 0 1.5vw;
+    &:hover {
+        background: #383535;
+    }
 }
 
 .last-btn-container {
@@ -98,10 +101,6 @@
     border: none;
     color: white;
     cursor: pointer;
-}
-
-.btn-container:hover {
-    background: #383535;
 }
 
 .active-link {
