@@ -153,12 +153,12 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         this._thumbnailList.forEach((thumbnail) => {
             if (thumbnail.bnd_box) {
                 thumbnail.bnd_box.forEach((bndbox) => {
-                    if (bndbox.label === selectedLabel) isLabelExist = true;
+                    bndbox.label === selectedLabel && (isLabelExist = true);
                 });
             }
             if (thumbnail.polygons) {
                 thumbnail.polygons.forEach((polygon) => {
-                    if (polygon.label === selectedLabel) isLabelExist = true;
+                    polygon.label === selectedLabel && (isLabelExist = true);
                 });
             }
         });
@@ -236,8 +236,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
             this._tabStatus = [...currentValue];
             this.updateLabelList();
             this.isTabStillOpen = false;
-            for (var i = 0; i < this._tabStatus.length; i++) {
-                if (this._tabStatus[i].closed == false) {
+            for (const { closed } of this._tabStatus) {
+                if (!closed) {
                     this.isTabStillOpen = true;
                     break;
                 }

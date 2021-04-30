@@ -88,8 +88,8 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
 
         if (changes._tabStatus) {
             this.isTabStillOpen = false;
-            for (var i = 0; i < this._tabStatus.length; i++) {
-                if (this._tabStatus[i].closed == false) {
+            for (const { closed } of this._tabStatus) {
+                if (!closed) {
                     this.isTabStillOpen = true;
                     break;
                 }

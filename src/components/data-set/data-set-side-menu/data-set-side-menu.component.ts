@@ -57,7 +57,6 @@ export class DataSetSideMenuComponent implements OnInit {
     };
 
     onClickButton = (id: string): void => {
-        if (id === 'importProject') this._onImport.emit();
-        else console.log('This feature is not available yet');
+        id === 'importProject' ? this._onImport.emit() : console.log('This feature is not available yet');
     };
 }
