@@ -48,8 +48,10 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     isOverlayOn = false;
     isImageUploading = false;
     imgLblMode: ImageLabellingMode = null;
+    modalSpanMessage: String = '';
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
+    readonly modalIdImportProject = 'modal-import-project';
     createProjectModalBodyStyle: ModalBodyStyle = {
         minHeight: '28vh',
         maxHeight: '28vh',
@@ -66,10 +68,20 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         margin: '15vw 71vh',
         overflow: 'none',
     };
+    importProjectModalBodyStyle: ModalBodyStyle = {
+        minHeight: '23vh',
+        maxHeight: '23vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
     @ViewChild('refProjectName') _refProjectName!: ElementRef<HTMLInputElement>;
     @ViewChild('labeltextfile') _labelTextFile!: ElementRef<HTMLInputElement>;
     @ViewChild('labeltextfilename') _labelTextFilename!: ElementRef<HTMLLabelElement>;
     @ViewChild('refNewProjectName') _refNewProjectName!: ElementRef<HTMLInputElement>;
+    @ViewChild('jsonImportProjectFile') _jsonImportProjectFile!: ElementRef<HTMLInputElement>;
+    @ViewChild('jsonImportProjectFilename') _jsonImportProjectFilename!: ElementRef<HTMLLabelElement>;
 
     constructor(
         private _fb: FormBuilder,
@@ -178,13 +190,21 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         // setTimeout(() => this._refNewProjectName.nativeElement.focus());
     };
 
-    importProject = (): void => {
+    toggleImportProjectModalDisplay = (event: any): void => {
+        event
+            ? this._modalService.open(this.modalIdImportProject)
+            : this._modalService.close(this.modalIdImportProject);
+    };
+
+    onSelectImportProjectJson = (): void => {
+        console.log('HI IMPORT BUTTON CLICKED');
+        this.toggleImportProjectModalDisplay(true);
         const importStatus$ = this._dataSetService.importStatus();
         const importProject$ = this._dataSetService.importProject();
         importProject$
             .pipe(
                 first(),
-                map(({ message }) => message),
+                map(({ error_code }) => error_code),
             )
             .subscribe((message) => {
                 let refreshProjectList = false;
@@ -192,8 +212,10 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     .pipe(
                         switchMap(() => importStatus$),
                         first((response) => {
-                            this.isOverlayOn = response.message === 0 ? true : false;
-                            if (response.message === 1 || response.message === 4) {
+                            console.log('RESPONSE IMPORT PROJECT MESSAGE', response);
+                            this.modalSpanMessage = response.error_message;
+                            this.isOverlayOn = response.error_code === 0 ? true : false;
+                            if (response.error_code === 1 || response.error_code === 4) {
                                 refreshProjectList = true;
                             }
 
@@ -204,6 +226,38 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         this.getProjectList();
                     });
             });
+    };
+
+    importProject = (): void => {
+        console.log('IMPORT PROEJCT CLICKED');
+        this.toggleImportProjectModalDisplay(true);
+        // const importStatus$ = this._dataSetService.importStatus();
+        // const importProject$ = this._dataSetService.importProject();
+        // importProject$
+        //     .pipe(
+        //         first(),
+        //         map(({ error_code }) => error_code),
+        //     )
+        //     .subscribe((message) => {
+        //         let refreshProjectList = false;
+        //         interval(500)
+        //             .pipe(
+        //                 switchMap(() => importStatus$),
+        //                 first((response) => {
+        //                     console.log("RESPONSE IMPORT PROJECT MESSAGE", response)
+        //                     this.modalSpanMessage = response.error_message
+        //                     this.isOverlayOn = response.error_code === 0 ? true : false;
+        //                     if (response.error_code === 1 || response.error_code === 4) {
+        //                         refreshProjectList = true;
+        //                     }
+
+        //                     return refreshProjectList;
+        //                 }),
+        //             )
+        //             .subscribe((response) => {
+        //                 this.getProjectList();
+        //             });
+        //     });
     };
 
     onFileChange = ({ target: { files } }: HTMLElementEvent<HTMLInputElement>): void => {
@@ -238,6 +292,39 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             file && reader.readAsText(file);
         }
     };
+
+    // onJSONFileChange = ({ target: { files } }: HTMLElementEvent<HTMLInputElement>): void => {
+    //     const filename = this._jsonImportProjectFile.nativeElement.files?.item(0)?.name;
+    //     this._jsonImportProjectFilename.nativeElement.innerHTML = filename === undefined ? '' : filename;
+    //     const reader = new FileReader();
+
+    //     if (files && files.length) {
+    //         const file = files.item(0);
+    //         reader.onload = () => {
+    //             // need to run CD since file load runs outside of zone
+    //             this._cd.markForCheck();
+    //         };
+    //         reader.onloadend = () => {
+    //             const labelResult = reader.result as string;
+    //             const labelSplitArr = labelResult.split('\n');
+    //             if (labelSplitArr.length > 0) {
+    //                 const newLabelArray = labelSplitArr.reduce((prev: string[], curr: string) => {
+    //                     const clearCharLabel = curr.replace(/[^A-Z0-9]+/gi, '').toLowerCase();
+    //                     prev.push(clearCharLabel);
+    //                     return prev;
+    //                 }, []);
+    //                 // clear entire array before giving it new set of data, prevents stacking more array of data
+    //                 this.labelTextUpload = [];
+    //                 // spread due to newLabelArray is already an array
+    //                 // with push would lead to nested array
+    //                 this.labelTextUpload.push(...newLabelArray);
+    //                 // console.log(this.labelTextUpload);
+    //             }
+    //         };
+    //         // console.log(file);
+    //         file && reader.readAsText(file);
+    //     }
+    // };
 
     onStarred = ({ projectName, starred }: StarredProps) => {
         this._dataSetService
@@ -291,6 +378,39 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 this._refProjectName.nativeElement.focus();
             }
         }
+    };
+
+    onOpenImportProject = (isNewProject: boolean, projectName?: string): void => {
+        console.log('BUTTON IMPORT CLICKED');
+        // this.form.markAllAsTouched();
+
+        // if (!isNewProject) {
+        //     projectName ? this.startProject(projectName) : null;
+        //     // if (this.form.get('selectExistProject')?.value) {
+        //     //     // this.startProject(this.form.get('selectExistProject')?.value);
+        //     //     this.selectedProjectName = this.form.get('selectExistProject')?.value;
+        //     // } else {
+        //     //     this.form.get('selectExistProject')?.setErrors({ required: true });
+        //     // }
+        // } else {
+        //     if (this.inputProjectName) {
+        //         const checkExistProject = this.projectList.projects
+        //             ? this.projectList.projects.find((project) =>
+        //                   project ? project.project_name === this.inputProjectName : null,
+        //               )
+        //             : null;
+        //         checkExistProject
+        //             ? (this.form.get('projectName')?.setErrors({ exist: true }),
+        //               this._refProjectName.nativeElement.focus())
+        //             : (this.createProject(this.inputProjectName),
+        //               (this.selectedProjectName = this.form.get('projectName')?.value),
+        //               (this.labelTextUpload = []),
+        //               (this._labelTextFilename.nativeElement.innerHTML = ''));
+        //     } else {
+        //         this.form.get('projectName')?.setErrors({ required: true });
+        //         this._refProjectName.nativeElement.focus();
+        //     }
+        // }
     };
 
     onSubmitRename() {

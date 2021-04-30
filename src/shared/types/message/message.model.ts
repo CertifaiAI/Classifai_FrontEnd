@@ -14,7 +14,8 @@ export type MessageContent<TContent = undefined> = {
 };
 
 export type Message = {
-    message: message;
+    error_code: message;
+    error_message: errormessage;
 };
 
 export type MessageUuidList = {
