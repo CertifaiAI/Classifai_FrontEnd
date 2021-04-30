@@ -29,10 +29,9 @@ $hoveredBackground: #393838;
     max-width: 10vw;
     min-height: 4vh;
     max-height: 4vh;
-}
-
-.new-project-btn:hover {
-    background-color: $hoveredBackground;
+    &:hover {
+        background-color: $hoveredBackground;
+    }
 }
 
 .add-icon {
@@ -70,10 +69,9 @@ $hoveredBackground: #393838;
     min-height: 5vh;
     max-height: 5vh;
     flex: 1 1 100%;
-}
-
-.current-project-btn:hover {
-    background-color: $normalBackground;
+    &:hover {
+        background-color: $normalBackground;
+    }
 }
 
 .project-icon {
