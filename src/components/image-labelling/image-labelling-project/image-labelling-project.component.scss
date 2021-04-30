@@ -35,7 +35,7 @@
     height: 100%;
     min-width: 16.3vw;
     max-width: 16.3vw;
-    background: rgb(105, 105, 105);
+    background: #383535;
     border: 0.0325vw solid rgb(255, 255, 255, 0.25);
     border-top: none;
     // border: none;
@@ -95,7 +95,7 @@
 
 .tab-name {
     font-size: 1.7vh;
-    padding: 0.5vw 2vw 0 2vw;
+    padding: 0.5vw 2vw 0 1vw;
     display: inline-block;
     color: white;
     position: absolute;
@@ -107,7 +107,7 @@
     min-height: 4vh;
     max-height: 4vh;
     color: rgb(105, 105, 105);
-    font-size: 2vh;
+    font-size: 1.8vh;
     line-height: 4vh;
     text-align: center;
     display: inline-grid;
@@ -127,6 +127,7 @@
 }
 
 .div-close {
+    margin-right: 0.5vw;
     min-width: 1.6vw;
     max-width: 1.6vw;
     min-height: 4vh;
