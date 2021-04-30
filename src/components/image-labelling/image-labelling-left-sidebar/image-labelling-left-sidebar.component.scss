@@ -22,11 +22,10 @@
 
 .utility-icon-light {
     @include icon.icon-styling();
-}
-
-.utility-icon-light:focus,
-.utility-icon-light:active {
-    background: color.$iconActiveBackgroundColor;
+    &:focus,
+    &:active {
+        background: color.$iconActiveBackgroundColor;
+    }
 }
 
 .plain-icon {
