@@ -73,6 +73,14 @@ $fontSize: 2vh;
     color: red;
 }
 
+.validation-error {
+    color: red;
+}
+
+.validation-success {
+    color: green;
+}
+
 .error-msg {
     font-size: $fontSize;
 }

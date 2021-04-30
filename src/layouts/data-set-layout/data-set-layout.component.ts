@@ -49,6 +49,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     isImageUploading = false;
     imgLblMode: ImageLabellingMode = null;
     modalSpanMessage: String = '';
+    spanClass: String = '';
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
@@ -225,9 +226,22 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     .subscribe((response) => {
                         console.log('RRS', response);
                         this.modalSpanMessage = response.error_message;
+                        if (response.error_code == 1) {
+                            this.processIsSuccess(false);
+                        } else {
+                            this.processIsSuccess(true);
+                        }
                         this.getProjectList();
                     });
             });
+    };
+
+    processIsSuccess = (success: boolean): void => {
+        if (success) {
+            this.spanClass = 'validation-success';
+        } else {
+            this.spanClass = 'validation-error';
+        }
     };
 
     importProject = (): void => {
