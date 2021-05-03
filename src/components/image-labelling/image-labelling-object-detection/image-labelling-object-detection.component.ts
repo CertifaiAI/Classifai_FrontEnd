@@ -129,10 +129,30 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             this.loadImage(changes._imgSrc.currentValue);
             this._boundingBoxCanvas.setCurrentSelectedbBox(-1);
         }
+
+        if (changes._tabStatus) {
+            let adjustImagePosition = true;
+            for (const { closed } of this._tabStatus) {
+                if (!closed) {
+                    adjustImagePosition = false;
+                    break;
+                }
+            }
+
+            if (this.canvas) {
+                if (adjustImagePosition === true) {
+                    this.initializeCanvas('96%');
+                    this.imgFitToCenter();
+                } else {
+                    this.initializeCanvas();
+                    this.imgFitToCenter();
+                }
+            }
+        }
     }
 
-    initializeCanvas() {
-        this.canvas.nativeElement.style.width = '80%';
+    initializeCanvas(width: string = '80%') {
+        this.canvas.nativeElement.style.width = width;
         this.canvas.nativeElement.style.height = '90%';
         this.canvas.nativeElement.width = this.canvas.nativeElement.offsetWidth;
         this.canvas.nativeElement.height = this.canvas.nativeElement.offsetHeight;
@@ -539,8 +559,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 !(event.relatedTarget as Element)?.className.includes('canvasstyle')
             ) {
                 this.showDropdownLabelBox = false;
-                if (this._selectMetadata.bnd_box.filter((bb) => bb.label == '').length != 0) {
-                    this._selectMetadata.bnd_box = this._selectMetadata.bnd_box.filter((bb) => bb.label != '');
+                if (this._selectMetadata.bnd_box.filter((bb) => bb.label === '').length !== 0) {
+                    this._selectMetadata.bnd_box = this._selectMetadata.bnd_box.filter((bb) => bb.label !== '');
                     this._onChangeMetadata.emit(this._selectMetadata);
                     this.redrawImage(this._selectMetadata);
                     alert('Some bounding boxes will be deleted because they were not labelled.');
@@ -617,7 +637,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     redrawImage({ img_x, img_y, img_w, img_h }: BboxMetadata) {
         this.clearCanvas();
         this.canvasContext.drawImage(this.image, img_x, img_y, img_w, img_h);
-        if (this._tabStatus[2].annotation?.length != 0) {
+        if (this._tabStatus[2].annotation?.length !== 0) {
             this.getLabelList();
             const annotationList = this._tabStatus[2].annotation
                 ? this._tabStatus[2].annotation[0].bnd_box

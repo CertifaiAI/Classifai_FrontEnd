@@ -1,7 +1,11 @@
 <div class="layout-container">
     <div>
         <page-header [_onChange]="onChangeSchema"></page-header>
-        <image-labelling-info [_onChange]="onChangeSchema" (_onClick)="navigateByAction($event)"></image-labelling-info>
+        <image-labelling-info
+            [_onChange]="onChangeSchema"
+            [_tabStatus]="tabStatus"
+            (_onClick)="navigateByAction($event)"
+        ></image-labelling-info>
     </div>
 
     <div class="content-container">

@@ -209,7 +209,7 @@ $hoverBackground: #393838;
 
 .no-project-title {
     font-size: 4vh;
-    color: black;
+    color: white;
     white-space: nowrap;
 }
 
@@ -219,7 +219,7 @@ $hoverBackground: #393838;
 
 .no-project-subtitle {
     font-size: 2vh;
-    color: #656667;
+    color: #bebebe;
     white-space: nowrap;
 }
 
@@ -228,6 +228,6 @@ $hoverBackground: #393838;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #c8c6c6;
+    background-color: #1f1f1f;
     width: 100%;
 }
