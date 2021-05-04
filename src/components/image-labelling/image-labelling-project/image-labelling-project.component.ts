@@ -120,8 +120,9 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         if (valTrimmed) {
             const validateVal: boolean = valTrimmed.match(/^[a-zA-Z0-9-]*$/) ? true : false;
             if (validateVal) {
-                const isInvalidLabel: boolean = this._tabStatus.some(({ label_list }) =>
-                    label_list && label_list.length ? label_list.some((label) => label === valTrimmed) : null,
+                const isInvalidLabel: boolean = this._tabStatus.some(
+                    ({ label_list }) =>
+                        label_list && label_list.length && label_list.some((label) => label === valTrimmed),
                 );
                 if (!isInvalidLabel) {
                     this.invalidInput = false;
@@ -163,7 +164,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
             }
         });
         if (isLabelExist) {
-            this._languageService._translate.get('labelExist').subscribe((translated: any) => {
+            this._languageService._translate.get('labelExist').subscribe((translated) => {
                 alert(translated);
             });
         } else {
@@ -179,9 +180,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     onClickLabel = (label: string) => {
         this.selectedLabel = label;
 
-        this.selectedIndexAnnotation > -1
-            ? this._onChangeAnnotationLabel.emit({ label, index: this.selectedIndexAnnotation })
-            : null;
+        this.selectedIndexAnnotation > -1 &&
+            this._onChangeAnnotationLabel.emit({ label, index: this.selectedIndexAnnotation });
     };
 
     onClickAnnotation = (index: number, { label }: Boundingbox & Polygons) => {
@@ -192,7 +192,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     };
 
     onDeleteAnnotation = () => {
-        this.selectedIndexAnnotation > -1 ? this._onDeleteAnnotation.emit(this.selectedIndexAnnotation) : null;
+        this.selectedIndexAnnotation > -1 && this._onDeleteAnnotation.emit(this.selectedIndexAnnotation);
     };
 
     // onClickAnnotation = <T extends BboxMetadata>({ bnd_box }: T) => {

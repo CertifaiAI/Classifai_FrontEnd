@@ -15,12 +15,7 @@
     <ng-container *ngIf="_jsonSchema.projects.length > 0; else noProject">
         <div class="card-layout-container scroll fade-in">
             <ng-container *ngFor="let project of _jsonSchema.projects; index as i">
-                <div
-                    class="card-container"
-                    [attr.data-index]="i"
-                    (dblclick)="onOpenProject(i, project)"
-                    [ngClass]="conditionalDisableProject(project)"
-                >
+                <div class="card-container" [attr.data-index]="i" (dblclick)="onOpenProject(i, project)">
                     <div class="card-header-style">
                         <div>
                             <ng-container *ngIf="isExactIndex(i) && _jsonSchema.isUploading; else newLabel">
@@ -46,13 +41,10 @@
                                 </ng-container></ng-template
                             >
                         </div>
-                        <div class="card-icon-container" [ngClass]="conditionalDisableProject(project)">
+                        <div class="card-icon-container">
                             <div
-                                (click)="
-                                    conditionalDisableClickEvent(project.is_loaded)
-                                        ? null
-                                        : onStarred(project, project.is_starred ? false : true)
-                                "
+                                (click)="onStarred(project, project.is_starred ? false : true)"
+                                (dblclick)="onDblClickStopPropagate($event)"
                             >
                                 <img
                                     class="card-icon-style"
@@ -60,12 +52,12 @@
                                 />
                             </div>
 
-                            <div (click)="conditionalDisableClickEvent(project.is_loaded) ? null : onDisplayMore(i)">
-                                <img class="card-icon-style" src="../../../assets/icons/more.svg" />
+                            <div (click)="onDisplayMore(i)" (dblclick)="onDblClickStopPropagate($event)">
+                                <img class="card-icon-style enabled" src="../../../assets/icons/more.svg" />
                             </div>
                             <ng-container *ngIf="isExactIndex(i)">
                                 <span>
-                                    <div class="popup-container">
+                                    <div class="popup-container enabled">
                                         <div class="popup-label" (click)="onRenameProject(project.project_name)">
                                             {{ 'datasetCard.renameProject' | translate }}
                                         </div>
