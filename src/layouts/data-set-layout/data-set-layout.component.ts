@@ -192,13 +192,13 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     toggleImportProjectModalDisplay = (event: any): void => {
+        this.modalSpanMessage = '';
         event
             ? this._modalService.open(this.modalIdImportProject)
             : this._modalService.close(this.modalIdImportProject);
     };
 
     onSelectImportProjectJson = (): void => {
-        console.log('HI IMPORT BUTTON CLICKED');
         this.toggleImportProjectModalDisplay(true);
         const importStatus$ = this._dataSetService.importStatus();
         const importProject$ = this._dataSetService.importProject();
