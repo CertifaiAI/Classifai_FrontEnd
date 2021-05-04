@@ -46,6 +46,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     isLoading = false;
     isOverlayOn = false;
     isImageUploading = false;
+    isProjectLoading = false;
     imgLblMode: ImageLabellingMode = null;
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
@@ -296,7 +297,10 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         ),
                     };
                     const { is_loaded } = content[0];
-                    return message === 1 && !is_loaded ? true : false;
+                    return (
+                        message === 1
+                        // && !is_loaded ? true : false
+                    );
                 }),
                 mergeMap(([{ message }]) => (!message ? [] : forkJoin([updateProjLoadStatus$, projLoadingStatus$]))),
                 mergeMap(([{ message: updateProjStatus }, { message: loadProjStatus, uuid_list, label_list }]) => {
@@ -324,6 +328,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             )
             .subscribe(
                 (res) => {
+                    this.isProjectLoading = true;
                     this.thumbnailList = [...this.thumbnailList, res];
                     // this.onChangeSchema = {
                     //     ...this.onChangeSchema,
@@ -339,7 +344,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     //     ? this.onProcessLabel({ selectedLabel: '', label_list: [], action: 1 })
                     //     : null;
                     // console.log(this.thumbnailList);
-
+                    this.isProjectLoading = false;
                     this._router.navigate([`imglabel/${this.imgLblMode}`], {
                         state: { thumbnailList: this.thumbnailList, projectName, labelList: this.labelList },
                     });
@@ -491,6 +496,15 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     keyDownEvent = ({ key }: KeyboardEvent): void => {
         key === 'Escape' && this.toggleRenameModalDisplay(false) && this.toggleModalDisplay(false);
     };
+
+    /** @event fires whenever browser is closing */
+    @HostListener('window:beforeunload', ['$event'])
+    onWindowClose(event: BeforeUnloadEvent): void {
+        event.preventDefault();
+        if (this.isProjectLoading) {
+            event.returnValue = 'Are you sure you want to leave this page?';
+        }
+    }
 
     ngOnDestroy(): void {
         this.unsubscribe$.next();

@@ -45,8 +45,8 @@ export class DataSetCardComponent implements OnInit, OnChanges {
     conditionalDisableClickEvent = (is_loaded: boolean): boolean => is_loaded;
 
     onOpenProject = (index: number, { project_name, is_loaded }: Project): void => {
-        is_loaded ? null : this.isExactIndex(index) ? null : this._onClick.emit(project_name);
-        // this.isExactIndex(index) ? null : this._onClick.emit(project_name);
+        // is_loaded ? null : this.isExactIndex(index) ? null : this._onClick.emit(project_name);
+        this.isExactIndex(index) ? null : this._onClick.emit(project_name);
     };
 
     onRenameProject(projectName: string) {
