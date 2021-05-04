@@ -15,7 +15,7 @@
     <ng-container *ngIf="_jsonSchema.projects.length > 0; else noProject">
         <div class="card-layout-container scroll fade-in">
             <ng-container *ngFor="let project of _jsonSchema.projects; index as i">
-                <div class="card-container" [attr.data-index]="i" (dblclick)="onOpenProject(i, project)">
+                <div class="card-container" [attr.data-index]="i" (dblclick)="onOpenProject(i, project, $event)">
                     <div class="card-header-style">
                         <div>
                             <ng-container *ngIf="isExactIndex(i) && _jsonSchema.isUploading; else newLabel">
