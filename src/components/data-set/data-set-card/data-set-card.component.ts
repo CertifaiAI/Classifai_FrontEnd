@@ -1,18 +1,22 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import {
-    FileType,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnInit,
+    Output,
+    SimpleChanges,
+} from '@angular/core';
+import {
     Project,
+    ProjectRename,
     ProjectSchema,
     StarredProps,
 } from './../../../layouts/data-set-layout/data-set-layout.model';
 
 type CardSchema = {
     clickIndex: number;
-};
-
-type FileTypeProps = {
-    projectName: string;
-    fileType: FileType;
 };
 
 @Component({
@@ -25,7 +29,7 @@ export class DataSetCardComponent implements OnInit, OnChanges {
     @Output() _onClick: EventEmitter<string> = new EventEmitter();
     @Output() _onStarred: EventEmitter<StarredProps> = new EventEmitter();
     @Output() _onDelete: EventEmitter<string> = new EventEmitter();
-    @Output() _onRename: EventEmitter<{ shown: boolean; projectName: string }> = new EventEmitter();
+    @Output() _onRename: EventEmitter<ProjectRename> = new EventEmitter();
 
     // clonedJsonSchema!: ProjectSchema;
     starredActiveIcon: string = `../../../assets/icons/starred_active.svg`;
@@ -34,7 +38,7 @@ export class DataSetCardComponent implements OnInit, OnChanges {
         clickIndex: -1,
     };
     previousProjectLength = 0;
-    constructor() {
+    constructor(private _cd: ChangeDetectorRef) {
         // this.clonedJsonSchema = cloneDeep(this._jsonSchema);
     }
 
@@ -44,12 +48,9 @@ export class DataSetCardComponent implements OnInit, OnChanges {
 
     conditionalDisableClickEvent = (is_loaded: boolean): boolean => is_loaded;
 
-    onOpenProject = (index: number, { project_name, is_loaded }: Project, $event: any): void => {
-        const className: string = $event.srcElement.className;
-        if (!className.includes('card-icon-style')) {
-            // is_loaded ? null : this.isExactIndex(index) ? null : this._onClick.emit(project_name);
-            this.isExactIndex(index) ? null : this._onClick.emit(project_name);
-        }
+    onOpenProject = (index: number, { project_name, is_loaded }: Project): void => {
+        // !is_loaded && !this.isExactIndex(index) && this._onClick.emit(project_name);
+        !this.isExactIndex(index) && this._onClick.emit(project_name);
     };
 
     onRenameProject(projectName: string) {
@@ -82,13 +83,12 @@ export class DataSetCardComponent implements OnInit, OnChanges {
 
     isExactIndex = (index: number): boolean => index === this.cardSchema.clickIndex;
 
-    ngOnChanges(changes: SimpleChanges): void {
-        // console.log(changes);
-        const { isUploading }: { isUploading: boolean } = changes._jsonSchema.currentValue;
-        isUploading ? null : this.onDisplayMore();
-    }
+    onDblClickStopPropagate = (event: MouseEvent) => event.stopPropagation();
 
-    ngDoCheck() {
+    ngOnChanges(changes: SimpleChanges): void {
+        const { isUploading }: { isUploading: boolean } = changes._jsonSchema.currentValue;
+        !isUploading && this.onDisplayMore();
+
         if (this._jsonSchema.projects.length !== this.previousProjectLength) {
             // Close 'display more' popup after create/delete a project
             this.cardSchema.clickIndex = -1;
