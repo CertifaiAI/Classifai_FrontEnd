@@ -5,7 +5,7 @@ import { ModalComponent } from './modal.component';
 export class ModalService {
     private modals: ModalComponent[] = [];
 
-    add = (modal: any) => {
+    add = (modal: ModalComponent) => {
         // add modal to array of active modals
         this.modals.push(modal);
     };

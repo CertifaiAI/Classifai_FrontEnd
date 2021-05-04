@@ -686,10 +686,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         this._onChangeAnnotationLabel.emit({ label, index: this.annotateState.annotation });
     }
 
-    sortingLabelList(labelList: LabelInfo[], annotationList: any[]) {
-        labelList.forEach((label, index) => {
-            this.labelList[index].count = annotationList.filter((x) => x.label === label.name).length;
-            this.allLabelList[index].count = annotationList.filter((x) => x.label === label.name).length;
+    sortingLabelList(labelList: LabelInfo[], annotationList: Boundingbox[]) {
+        labelList.forEach(({ name }, index) => {
+            this.labelList[index].count = annotationList.filter(({ label }) => label === name).length;
+            this.allLabelList[index].count = annotationList.filter(({ label }) => label === name).length;
         });
         this.labelList.sort((a, b) => (a.count < b.count ? 1 : b.count < a.count ? -1 : 0));
         this.allLabelList.sort((a, b) => (a.count < b.count ? 1 : b.count < a.count ? -1 : 0));
@@ -703,8 +703,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         const { value } = target;
         const valTrimmed = value.trim();
         if (valTrimmed) {
-            const isInvalidLabel: boolean = this._tabStatus.some(({ label_list }) =>
-                label_list && label_list.length ? label_list.some((label) => label === valTrimmed) : null,
+            const isInvalidLabel: boolean = this._tabStatus.some(
+                ({ label_list }) => label_list && label_list.length && label_list.some((label) => label === valTrimmed),
             );
             if (!isInvalidLabel) {
                 this.invalidInput = false;

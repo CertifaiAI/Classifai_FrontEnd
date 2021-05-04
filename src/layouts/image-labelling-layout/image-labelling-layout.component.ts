@@ -217,11 +217,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         const isExactTabState: boolean = this.tabStatus.some(
             (tab) => tab.name.toLowerCase() === name.toLowerCase() && tab.closed === closed,
         );
-        isExactTabState
-            ? null
-            : (this.tabStatus = this.tabStatus.map((tab) =>
-                  tab.name.toLowerCase() === name.toLowerCase() ? { ...tab, closed } : { ...tab },
-              ));
+        !isExactTabState &&
+            (this.tabStatus = this.tabStatus.map((tab) =>
+                tab.name.toLowerCase() === name.toLowerCase() ? { ...tab, closed } : { ...tab },
+            ));
     };
 
     onExport = (): void => {
@@ -233,11 +232,11 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         const exportProject$ = this._imgLblApiService.exportProject(projectName, exportType);
         exportProject$.pipe(first()).subscribe(({ message }) => {
             if (message === 1) {
-                this._languageService._translate.get('exportSuccess').subscribe((translated: any) => {
+                this._languageService._translate.get('exportSuccess').subscribe((translated) => {
                     alert(projectName + translated);
                 });
             } else {
-                this._languageService._translate.get('exportFailed').subscribe((translated: any) => {
+                this._languageService._translate.get('exportFailed').subscribe((translated) => {
                     alert(translated + projectName);
                 });
             }
@@ -459,7 +458,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 if (dynamicProp) {
                     const { subLabel } = dynamicProp[this.currentAnnotationIndex];
                     isPreExistSubLabel = subLabel && subLabel?.length > 0 ? true : false;
-                    isPreExistSubLabel ? subLabel?.some(({ label }) => (isDupSubLabel = label === value)) : null;
+                    isPreExistSubLabel && subLabel?.some(({ label }) => (isDupSubLabel = label === value));
                 } else {
                     console.log('missing prop bnd_box OR polygons');
                 }

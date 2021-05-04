@@ -1,18 +1,18 @@
 import { BboxMetadata, ImageLabellingMode, PolyMetadata } from 'src/components/image-labelling/image-labelling.model';
-import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { cloneDeep } from 'lodash-es';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from './data-set-layout-api.service';
-import { DataSetProps, ProjectSchema, StarredProps, UploadThumbnailProps } from './data-set-layout.model';
+import { DataSetProps, ProjectRename, ProjectSchema, StarredProps } from './data-set-layout.model';
 import { distinctUntilChanged, first, map, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ImageLabellingModeService } from './../../components/image-labelling/image-labelling-mode.service';
+import { LanguageService } from 'src/shared/services/language.service';
 import { Message } from 'src/shared/types/message/message.model';
+import { ModalBodyStyle } from 'src/components/modal/modal.model';
+import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'src/components/spinner/spinner.service';
-import { LanguageService } from 'src/shared/services/language.service';
-import { ModalService } from 'src/components/modal/modal.service';
-import { ModalBodyStyle } from 'src/components/modal/modal.model';
 
 @Component({
     selector: 'data-set-layout',
@@ -35,7 +35,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     newInputProjectName: string = '';
     selectedProjectName: string = '';
     oldProjectName: string = '';
-    labelTextUpload: any[] = [];
+    labelTextUpload: string[] = [];
     form!: FormGroup;
     renameForm!: FormGroup;
     subject$: Subject<any> = new Subject();
@@ -72,7 +72,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
 
     constructor(
         private _fb: FormBuilder,
-        private _cd: ChangeDetectorRef,
         private _router: Router,
         private _dataSetService: DataSetLayoutService,
         private _spinnerService: SpinnerService,
@@ -96,10 +95,10 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.getProjectList();
+        this.showProjectList();
     }
 
-    getProjectList = (): void => {
+    showProjectList = (): void => {
         this.projectList.isFetching = true;
         this._dataSetService
             .getProjectList()
@@ -116,8 +115,19 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         return newProjectList;
                     });
                     // console.log(formattedProjectList);
-                    this.projectList.projects = [...formattedProjectList];
-                    this.projectList.isFetching = false;
+                    /**
+                     * !! IMPORTANT
+                     * @author Daniel Lim Heng Jie
+                     * @description converted to ES6 style to trick Angular's Lifecycle
+                     * to allow the bypass of it to always be unequal object compare during lifecyckle hooks checking (ngOnChanges)
+                     * as comp "data-set-card" needs to check prop changes
+                     * via ngOnChanges to run logic
+                     */
+                    this.projectList = {
+                        ...this.projectList,
+                        projects: formattedProjectList,
+                        isFetching: false,
+                    };
                 }
             }),
             (error: Error) => {
@@ -159,7 +169,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     toggleModalDisplay = (shown: boolean): void => {
         this._labelTextFilename.nativeElement.innerHTML = '';
         this.labelTextUpload = [];
-        shown ? this.form.reset() : null;
+        shown && this.form.reset();
         shown
             ? this._modalService.open(this.modalIdCreateProject)
             : this._modalService.close(this.modalIdCreateProject);
@@ -167,12 +177,17 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         // setTimeout(() => this._refProjectName.nativeElement.focus());
     };
 
-    toggleRenameModalDisplay = (event: any): void => {
-        event.shown ? this.renameForm.reset() : null;
-        event.shown
-            ? this._modalService.open(this.modalIdRenameProject)
+    toggleRenameModalDisplay = (event?: ProjectRename): void => {
+        if (!event) {
+            this._modalService.close(this.modalIdRenameProject);
+            return;
+        }
+        const { shown, projectName } = event;
+        shown
+            ? (this.renameForm.reset(), this._modalService.open(this.modalIdRenameProject))
             : this._modalService.close(this.modalIdRenameProject);
-        this.oldProjectName = event.projectName;
+        this.oldProjectName = projectName;
+
         /** timeOut needed to allow focus due to Angular's templating sys issue / bug */
         // setTimeout(() => this._refNewProjectName.nativeElement.focus());
     };
@@ -200,7 +215,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         }),
                     )
                     .subscribe((response) => {
-                        this.getProjectList();
+                        this.showProjectList();
                     });
             });
     };
@@ -231,7 +246,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.form.markAllAsTouched();
 
         if (!isNewProject) {
-            projectName ? this.startProject(projectName) : null;
+            projectName && this.startProject(projectName);
             // if (this.form.get('selectExistProject')?.value) {
             //     // this.startProject(this.form.get('selectExistProject')?.value);
             //     this.selectedProjectName = this.form.get('selectExistProject')?.value;
@@ -240,11 +255,11 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             // }
         } else {
             if (this.inputProjectName) {
-                const checkExistProject = this.projectList.projects
-                    ? this.projectList.projects.find((project) =>
-                          project ? project.project_name === this.inputProjectName : null,
-                      )
-                    : null;
+                const checkExistProject =
+                    this.projectList.projects &&
+                    this.projectList.projects.find(
+                        (project) => project && project.project_name === this.inputProjectName,
+                    );
                 checkExistProject
                     ? (this.form.get('projectName')?.setErrors({ exist: true }),
                       this._refProjectName.nativeElement.focus())
@@ -260,11 +275,11 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     onSubmitRename() {
         this.renameForm.markAllAsTouched();
         if (this.newInputProjectName) {
-            const checkExistProject = this.projectList.projects
-                ? this.projectList.projects.find((project) =>
-                      project ? project.project_name === this.newInputProjectName : null,
-                  )
-                : null;
+            const checkExistProject =
+                this.projectList.projects &&
+                this.projectList.projects.find((project) =>
+                    project ? project.project_name === this.newInputProjectName : null,
+                );
             checkExistProject
                 ? (this.renameForm.get('newProjectName')?.setErrors({ exist: true }),
                   this._refProjectName.nativeElement.focus())
@@ -341,8 +356,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 () => {
                     // const [{ label_list }] = this.tabStatus;
                     // label_list && label_list.length < 1
-                    //     ? this.onProcessLabel({ selectedLabel: '', label_list: [], action: 1 })
-                    //     : null;
+                    //     && this.onProcessLabel({ selectedLabel: '', label_list: [], action: 1 });
                     // console.log(this.thumbnailList);
                     this.isProjectLoading = false;
                     this._router.navigate([`imglabel/${this.imgLblMode}`], {
@@ -403,7 +417,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .pipe(
                 first(),
                 mergeMap(() => createProj$),
-                mergeMap((val) => returnResponse(val)),
+                mergeMap((message) => returnResponse(message)),
                 mergeMap(() => updateLabel$),
             )
             .subscribe(
@@ -413,7 +427,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 },
                 (error: Error) => {},
                 () => {
-                    this.getProjectList();
+                    this.showProjectList();
                 },
             );
 
@@ -450,7 +464,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         }),
                     )
                     .subscribe((response) => {
-                        this.getProjectList();
+                        this.showProjectList();
                     });
             });
     }
@@ -465,11 +479,11 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             )
             .subscribe((message) => {
                 if (message === 1) {
-                    this._languageService._translate.get('renameSuccess').subscribe((translated: any) => {
+                    this._languageService._translate.get('renameSuccess').subscribe((translated) => {
                         alert(oldProjectName + ' ' + translated);
                     });
-                    this.getProjectList();
-                    this.toggleRenameModalDisplay(false);
+                    this.showProjectList();
+                    this.toggleRenameModalDisplay();
                 }
             });
     };
@@ -484,17 +498,17 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             )
             .subscribe((message) => {
                 if (message === 1) {
-                    this._languageService._translate.get('deleteSuccess').subscribe((translated: any) => {
+                    this._languageService._translate.get('deleteSuccess').subscribe((translated) => {
                         alert(projectName + ' ' + translated);
                     });
-                    this.getProjectList();
+                    this.showProjectList();
                 }
             });
     };
 
     @HostListener('window:keydown', ['$event'])
     keyDownEvent = ({ key }: KeyboardEvent): void => {
-        key === 'Escape' && this.toggleRenameModalDisplay(false) && this.toggleModalDisplay(false);
+        key === 'Escape' && this.toggleRenameModalDisplay() && this.toggleModalDisplay(false);
     };
 
     /** @event fires whenever browser is closing */
