@@ -14,7 +14,11 @@ export type MessageContent<TContent = undefined> = {
 };
 
 export type Message = {
-    error_code: message;
+    message: message;
+};
+
+export type ResponseMessage = {
+    error_code: error_code;
     error_message: errormessage;
 };
 

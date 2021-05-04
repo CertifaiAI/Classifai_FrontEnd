@@ -245,7 +245,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     importProject = (): void => {
-        console.log('IMPORT PROEJCT CLICKED');
+        //console.log('IMPORT PROEJCT CLICKED');
         this.toggleImportProjectModalDisplay(true);
         // const importStatus$ = this._dataSetService.importStatus();
         // const importProject$ = this._dataSetService.importProject();
