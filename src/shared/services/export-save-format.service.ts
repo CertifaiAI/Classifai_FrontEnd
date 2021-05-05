@@ -39,7 +39,7 @@ type SaveAsZip = {
     providedIn: 'any',
 })
 export class ExportSaveFormatService {
-    exportSaveFormat({
+    async exportSaveFormat({
         saveCurrentImage,
         saveFormat,
         metadata,
@@ -102,7 +102,7 @@ export class ExportSaveFormatService {
                     if (!pascalVocList) {
                         return alert('There are no labelling progress.');
                     }
-                    this.saveAsZip(pascalVocList, saveFormat, projectName);
+                    await this.saveAsZip(pascalVocList, saveFormat, projectName);
                 }
                 break;
             case 'yolo':
@@ -159,7 +159,7 @@ export class ExportSaveFormatService {
                     if (!yoloList) {
                         return alert('There are no labelling progress.');
                     }
-                    this.saveAsZip(yoloList, saveFormat, projectName);
+                    await this.saveAsZip(yoloList, saveFormat, projectName);
                 }
                 break;
             case 'ocr':

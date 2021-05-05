@@ -417,16 +417,18 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .pipe(
                 first(),
                 mergeMap(() => createProj$),
-                mergeMap((message) => returnResponse(message)),
                 mergeMap(() => updateLabel$),
+                mergeMap((message) => returnResponse(message)),
             )
             .subscribe(
                 (res) => {
+                    this.isProjectLoading = true;
                     numberOfReq = res ? --numberOfReq : numberOfReq;
                     numberOfReq < 1 && (this.projectList = { ...this.projectList, isUploading: false });
                 },
                 (error: Error) => {},
                 () => {
+                    this.isProjectLoading = false;
                     this.showProjectList();
                 },
             );

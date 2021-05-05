@@ -1,3 +1,4 @@
+import { ToastrModule } from './../components/toastr/toastr.module';
 import { CacheBustingInterceptor } from './interceptors/cache-busting.interceptor';
 import { CommonModule } from '@angular/common';
 import { FileNamePipe } from './pipe/file-name.pipe';
@@ -31,6 +32,7 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
         ReactiveFormsModule,
         ModalModule,
         SpinnerModule,
+        ToastrModule,
         PageHeaderModule,
         TranslateModule.forRoot({
             loader: {
@@ -46,6 +48,7 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
         // SanitizeSvgPipe,
         ModalModule,
         SpinnerModule,
+        ToastrModule,
         PageHeaderModule,
         FormsModule,
         ReactiveFormsModule,
