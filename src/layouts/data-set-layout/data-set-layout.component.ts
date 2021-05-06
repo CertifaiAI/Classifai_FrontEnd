@@ -70,7 +70,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         overflow: 'none',
     };
     importProjectModalBodyStyle: ModalBodyStyle = {
-        minHeight: '23vh',
+        minHeight: '20vh',
         maxHeight: '23vh',
         minWidth: '31vw',
         maxWidth: '31vw',
@@ -290,38 +290,38 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         //     });
     };
 
-    onFileChange = ({ target: { files } }: HTMLElementEvent<HTMLInputElement>): void => {
-        const filename = this._labelTextFile.nativeElement.files?.item(0)?.name;
-        this._labelTextFilename.nativeElement.innerHTML = filename === undefined ? '' : filename;
-        const reader = new FileReader();
+    // onFileChange = ({ target: { files } }: HTMLElementEvent<HTMLInputElement>): void => {
+    //     const filename = this._labelTextFile.nativeElement.files?.item(0)?.name;
+    //     this._labelTextFilename.nativeElement.innerHTML = filename === undefined ? '' : filename;
+    //     const reader = new FileReader();
 
-        if (files && files.length) {
-            const file = files.item(0);
-            reader.onload = () => {
-                // need to run CD since file load runs outside of zone
-                this._cd.markForCheck();
-            };
-            reader.onloadend = () => {
-                const labelResult = reader.result as string;
-                const labelSplitArr = labelResult.split('\n');
-                if (labelSplitArr.length > 0) {
-                    const newLabelArray = labelSplitArr.reduce((prev: string[], curr: string) => {
-                        const clearCharLabel = curr.replace(/[^A-Z0-9]+/gi, '').toLowerCase();
-                        prev.push(clearCharLabel);
-                        return prev;
-                    }, []);
-                    // clear entire array before giving it new set of data, prevents stacking more array of data
-                    this.labelTextUpload = [];
-                    // spread due to newLabelArray is already an array
-                    // with push would lead to nested array
-                    this.labelTextUpload.push(...newLabelArray);
-                    // console.log(this.labelTextUpload);
-                }
-            };
-            // console.log(file);
-            file && reader.readAsText(file);
-        }
-    };
+    //     if (files && files.length) {
+    //         const file = files.item(0);
+    //         reader.onload = () => {
+    //             // need to run CD since file load runs outside of zone
+    //             this._cd.markForCheck();
+    //         };
+    //         reader.onloadend = () => {
+    //             const labelResult = reader.result as string;
+    //             const labelSplitArr = labelResult.split('\n');
+    //             if (labelSplitArr.length > 0) {
+    //                 const newLabelArray = labelSplitArr.reduce((prev: string[], curr: string) => {
+    //                     const clearCharLabel = curr.replace(/[^A-Z0-9]+/gi, '').toLowerCase();
+    //                     prev.push(clearCharLabel);
+    //                     return prev;
+    //                 }, []);
+    //                 // clear entire array before giving it new set of data, prevents stacking more array of data
+    //                 this.labelTextUpload = [];
+    //                 // spread due to newLabelArray is already an array
+    //                 // with push would lead to nested array
+    //                 this.labelTextUpload.push(...newLabelArray);
+    //                 // console.log(this.labelTextUpload);
+    //             }
+    //         };
+    //         // console.log(file);
+    //         file && reader.readAsText(file);
+    //     }
+    // };
 
     // onJSONFileChange = ({ target: { files } }: HTMLElementEvent<HTMLInputElement>): void => {
     //     const filename = this._jsonImportProjectFile.nativeElement.files?.item(0)?.name;
