@@ -1,9 +1,4 @@
-<div class="tab-container">
-    <div class="tab-skeleton">
-        <p class="choose-tab">Choose any tab to start</p>
-        <p>or</p>
-        <p><span (click)="openAllTab()" class="open-all-tabs">Click here to open all tabs</span></p>
-    </div>
+<div class="tab-container" *ngIf="isTabStillOpen">
     <ng-container *ngFor="let tab of _tabStatus; index as i">
         <ng-container *ngIf="i === 0; else nonThumbnailTab">
             <div
@@ -12,7 +7,11 @@
                 [attr.data-index]="i"
             >
                 <label class="tab-name">{{ tab.name | translate }}</label>
-                <span class="tab-close-thumbnail"><div class="div-close" (click)="onClose(tab)">x</div></span>
+                <div class="flex-tab-icons">
+                    <span class="tab-close-thumbnailless">
+                        <div class="div-close" (click)="onClose(tab)">&#10006;</div>
+                    </span>
+                </div>
                 <section class="utility-inner-container tab-height scroll">
                     <ng-container *ngFor="let thumbnail of _thumbnailList; index as i">
                         <div class="img-container" (click)="onClick(thumbnail, i)">
@@ -47,10 +46,8 @@
                     <label class="tab-name">{{ tab.name | translate }}</label>
                     <div class="flex-tab-icons">
                         <span class="tab-close-thumbnailless"
-                            ><div class="div-close" (click)="onClose(tab)">x</div></span
+                            ><div class="div-close" (click)="onClose(tab)">&#10006;</div></span
                         >
-                        <span class="tab-extra-icons"></span>
-                        <span class="tab-extra-icons"> </span>
                     </div>
                     <div class="div-input">
                         <input
@@ -79,11 +76,12 @@
                                         </div>
                                     </label>
                                     <label class="action"
-                                        ><ng-container *ngIf="!action && i > 0"
+                                        ><ng-container *ngIf="label === selectedLabel"
                                             ><span
                                                 [ngClass]="clickAbilityToggle ? 'pointer' : null"
+                                                class="delete-label"
                                                 (click)="onDeleteLabel(label)"
-                                                >{{ 'labellingProject.delete' | translate }}</span
+                                                >-</span
                                             ></ng-container
                                         ></label
                                     >
@@ -105,10 +103,8 @@
                     <label class="tab-name">{{ tab.name | translate }}</label>
                     <div class="flex-tab-icons">
                         <span class="tab-close-thumbnailless"
-                            ><div class="div-close" (click)="onClose(tab)">x</div></span
+                            ><div class="div-close" (click)="onClose(tab)">&#10006;</div></span
                         >
-                        <span class="tab-extra-icons"></span>
-                        <span class="tab-extra-icons"></span>
                     </div>
                     <div class="utility-inner-container scroll tab-smaller-height" id="inner-container">
                         <div class="flex-item">

@@ -1,7 +1,7 @@
 import { BboxMetadata, ImageLabellingMode, PolyMetadata } from 'src/components/image-labelling/image-labelling.model';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { environment } from 'src/environments/environment.prod';
-import { FileType, LabelList, Project } from './data-set-layout.model';
+import { LabelList, Labels, Project } from './data-set-layout.model';
 import { HttpClient } from '@angular/common/http';
 import { ImageLabellingModeService } from 'src/components/image-labelling/image-labelling-mode.service';
 import { Injectable } from '@angular/core';
@@ -113,4 +113,12 @@ export class DataSetLayoutService {
     importStatus = (): Observable<ResponseMessage> => {
         return this.http.get<ResponseMessage>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/importstatus`);
     };
+
+    importLabelFile() {
+        return this.http.put<Message>(`${this.hostPort}v2/labelfile`, {});
+    }
+
+    importLabelFileStatus() {
+        return this.http.get<Labels>(`${this.hostPort}v2/labelfilestatus`);
+    }
 }

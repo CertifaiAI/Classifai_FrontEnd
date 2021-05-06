@@ -59,13 +59,11 @@
     cursor: pointer;
     padding: 0 0.2vw;
     border-radius: 0.5vw;
-}
-
-.footer-path-label:hover {
-    background: #636363;
-}
-
-.footer-path-label:focus,
-.footer-path-label:active {
-    background: #737474;
+    &:hover {
+        background: #636363;
+    }
+    &:focus,
+    &:active {
+        background: #737474;
+    }
 }

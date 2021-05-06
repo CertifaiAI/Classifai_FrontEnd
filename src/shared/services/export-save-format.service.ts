@@ -120,7 +120,6 @@ export class ExportSaveFormatService {
                 if (saveCurrentImage) {
                     const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
                     const filename = this.getFileName(metadata.img_path);
-                    const extensionName = this.getFileExtensionName(filename);
                     const { img_ori_w, img_ori_h } = metadata;
                     const yoloData = {
                         img_ori_w,
@@ -129,7 +128,7 @@ export class ExportSaveFormatService {
                     };
                     const content = this.generateYoloFormat({ ...yoloData }, labelList);
                     const splitfilenameArr = filename.split('.');
-                    const finalizedFilename = `${splitfilenameArr[0]}_${extensionName}.txt`;
+                    const finalizedFilename = `${splitfilenameArr[0]}.txt`;
                     this.saveFile({ content, filename: finalizedFilename, type: 'text/plain;charset=utf-8' });
                 } else {
                     if (!projectFullMetadata) {

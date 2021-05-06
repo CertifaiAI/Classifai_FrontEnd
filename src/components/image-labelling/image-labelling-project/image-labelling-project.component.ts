@@ -16,6 +16,7 @@ import {
     SelectedLabelProps,
     TabsProps,
 } from '../image-labelling.model';
+import { LanguageService } from 'src/shared/services/language.service';
 
 @Component({
     selector: 'image-labelling-project',
@@ -41,10 +42,12 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     clickAbilityToggle: boolean = false;
     invalidInput: boolean = false;
     labelList: string[] = [];
+    isTabStillOpen: boolean = true;
 
     constructor(
         private _annotateService: AnnotateSelectionService,
         private _imgLblState: ImageLabellingActionService,
+        private _languageService: LanguageService,
     ) {}
 
     ngOnInit(): void {
@@ -117,8 +120,9 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         if (valTrimmed) {
             const validateVal: boolean = valTrimmed.match(/^[a-zA-Z0-9-]*$/) ? true : false;
             if (validateVal) {
-                const isInvalidLabel: boolean = this._tabStatus.some(({ label_list }) =>
-                    label_list && label_list.length ? label_list.some((label) => label === valTrimmed) : null,
+                const isInvalidLabel: boolean = this._tabStatus.some(
+                    ({ label_list }) =>
+                        label_list && label_list.length && label_list.some((label) => label === valTrimmed),
                 );
                 if (!isInvalidLabel) {
                     this.invalidInput = false;
@@ -146,20 +150,38 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     }
 
     onDeleteLabel = (selectedLabel: string): void => {
-        const [{ label_list }] = this._tabStatus.filter((tab) => tab.label_list);
-        this._onClickLabel.emit({
-            selectedLabel,
-            label_list: label_list && label_list.length > 0 ? label_list : [],
-            action: 0,
+        let isLabelExist = false;
+        this._thumbnailList.forEach((thumbnail) => {
+            if (thumbnail.bnd_box) {
+                thumbnail.bnd_box.forEach((bndbox) => {
+                    bndbox.label === selectedLabel && (isLabelExist = true);
+                });
+            }
+            if (thumbnail.polygons) {
+                thumbnail.polygons.forEach((polygon) => {
+                    polygon.label === selectedLabel && (isLabelExist = true);
+                });
+            }
         });
+        if (isLabelExist) {
+            this._languageService._translate.get('labelExist').subscribe((translated) => {
+                alert(translated);
+            });
+        } else {
+            const [{ label_list }] = this._tabStatus.filter((tab) => tab.label_list);
+            this._onClickLabel.emit({
+                selectedLabel,
+                label_list: label_list && label_list.length > 0 ? label_list : [],
+                action: 0,
+            });
+        }
     };
 
     onClickLabel = (label: string) => {
         this.selectedLabel = label;
 
-        this.selectedIndexAnnotation > -1
-            ? this._onChangeAnnotationLabel.emit({ label, index: this.selectedIndexAnnotation })
-            : null;
+        this.selectedIndexAnnotation > -1 &&
+            this._onChangeAnnotationLabel.emit({ label, index: this.selectedIndexAnnotation });
     };
 
     onClickAnnotation = (index: number, { label }: Boundingbox & Polygons) => {
@@ -170,7 +192,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     };
 
     onDeleteAnnotation = () => {
-        this.selectedIndexAnnotation > -1 ? this._onDeleteAnnotation.emit(this.selectedIndexAnnotation) : null;
+        this.selectedIndexAnnotation > -1 && this._onDeleteAnnotation.emit(this.selectedIndexAnnotation);
     };
 
     // onClickAnnotation = <T extends BboxMetadata>({ bnd_box }: T) => {
@@ -213,6 +235,13 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
             const { currentValue }: { currentValue: TabsProps<CompleteMetadata>[] } = changes._tabStatus;
             this._tabStatus = [...currentValue];
             this.updateLabelList();
+            this.isTabStillOpen = false;
+            for (const { closed } of this._tabStatus) {
+                if (!closed) {
+                    this.isTabStillOpen = true;
+                    break;
+                }
+            }
         }
     }
 

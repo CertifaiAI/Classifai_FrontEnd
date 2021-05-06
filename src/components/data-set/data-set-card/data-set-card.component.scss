@@ -37,16 +37,16 @@ $hoverBackground: #393838;
     height: 80vh;
 }
 
-.scroll::-webkit-scrollbar-track {
-    @include scroll.scrollbar-track(color.$blackColor);
-}
-
-.scroll::-webkit-scrollbar {
-    @include scroll.scrollbar();
-}
-
-.scroll::-webkit-scrollbar-thumb {
-    @include scroll.scrollbar-thumb(color.$greyColor);
+.scroll {
+    &::-webkit-scrollbar-track {
+        @include scroll.scrollbar-track(color.$blackColor);
+    }
+    &::-webkit-scrollbar {
+        @include scroll.scrollbar();
+    }
+    &::-webkit-scrollbar-thumb {
+        @include scroll.scrollbar-thumb(color.$greyColor);
+    }
 }
 
 .card-container {
@@ -59,21 +59,19 @@ $hoverBackground: #393838;
     // background: #404040;
     background: rgb(46, 45, 45);
     position: relative;
-}
-
-.card-container:hover {
-    background: rgb(64, 64, 64);
-}
-
-.card-container::before {
-    content: '';
-    display: block;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 0.3vw;
-    background-color: rgb(54, 54, 54);
+    &:hover {
+        background: rgb(64, 64, 64);
+    }
+    &::before {
+        content: '';
+        display: block;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0.3vw;
+        background-color: rgb(54, 54, 54);
+    }
 }
 
 .enabled {
@@ -89,11 +87,11 @@ $hoverBackground: #393838;
 }
 
 .project-status-available {
-    @include project-status(#4bf521);
+    @include project-status(#92c91b);
 }
 
-.project-status-not-available {
-    @include project-status(#f52121);
+.project-status-opened {
+    @include project-status(#258fc0);
 }
 
 .project-status-uploading {
@@ -109,12 +107,11 @@ $hoverBackground: #393838;
     max-width: 1.5vw;
     min-height: 3vh;
     max-height: 3vh;
-}
-
-.card-icon-style:hover {
-    // cursor: pointer;
-    border-radius: 5vh;
-    background-color: $hoverBackground;
+    &:hover {
+        // cursor: pointer;
+        border-radius: 5vh;
+        background-color: $hoverBackground;
+    }
 }
 
 .card-header-style {
@@ -201,10 +198,9 @@ $hoverBackground: #393838;
     font-size: 2vh;
     padding: 0.5vw;
     // margin: 0.5vw;
-}
-
-.popup-label:hover {
-    background: #e9e9e9;
+    &:hover {
+        background: #e9e9e9;
+    }
 }
 
 //#########################
@@ -213,7 +209,7 @@ $hoverBackground: #393838;
 
 .no-project-title {
     font-size: 4vh;
-    color: black;
+    color: white;
     white-space: nowrap;
 }
 
@@ -223,7 +219,7 @@ $hoverBackground: #393838;
 
 .no-project-subtitle {
     font-size: 2vh;
-    color: #656667;
+    color: #bebebe;
     white-space: nowrap;
 }
 
@@ -232,6 +228,6 @@ $hoverBackground: #393838;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #c8c6c6;
+    background-color: #1f1f1f;
     width: 100%;
 }

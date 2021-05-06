@@ -35,37 +35,35 @@
     height: 100%;
     min-width: 16.3vw;
     max-width: 16.3vw;
-    background: rgb(105, 105, 105);
+    background: #383535;
     border: 0.0325vw solid rgb(255, 255, 255, 0.25);
     border-top: none;
     // border: none;
     z-index: 1000;
     align-items: stretch;
-}
-
-.utility-right-project-container::after {
-    position: absolute;
-    content: '';
-    top: 0;
-    min-width: 8.5vw;
-    max-width: 8.5vw;
-    min-height: 4vh;
-    max-height: 4vh;
-    background: #383535;
-    z-index: -1;
-    font-size: 1.5vh;
-    line-height: 3vh;
-    color: white;
-    padding: 0.5vh 0 0 2vw;
+    &::after {
+        position: absolute;
+        content: '';
+        top: 0;
+        min-width: 8.5vw;
+        max-width: 8.5vw;
+        min-height: 4vh;
+        max-height: 4vh;
+        background: #383535;
+        z-index: -1;
+        font-size: 1.5vh;
+        line-height: 3vh;
+        color: white;
+        padding: 0.5vh 0 0 2vw;
+    }
 }
 
 .tab {
     position: sticky;
     overflow: hidden;
-}
-
-.tab::before {
-    @include tab-after();
+    &::before {
+        @include tab-after();
+    }
 }
 
 .flex-fixed {
@@ -97,7 +95,7 @@
 
 .tab-name {
     font-size: 1.7vh;
-    padding: 0.5vw 2vw 0 2vw;
+    padding: 0.5vw 2vw 0 1vw;
     display: inline-block;
     color: white;
     position: absolute;
@@ -109,7 +107,7 @@
     min-height: 4vh;
     max-height: 4vh;
     color: rgb(105, 105, 105);
-    font-size: 2vh;
+    font-size: 1.8vh;
     line-height: 4vh;
     text-align: center;
     display: inline-grid;
@@ -129,6 +127,7 @@
 }
 
 .div-close {
+    margin-right: 0.5vw;
     min-width: 1.6vw;
     max-width: 1.6vw;
     min-height: 4vh;
@@ -138,10 +137,9 @@
     text-align: center;
     /* float is needed due to flex direction column would glitch the close button to left side permanently */
     float: right;
-}
-
-.div-close:active {
-    background: grey;
+    &:active {
+        background: grey;
+    }
 }
 
 .utility-inner-container {
@@ -161,16 +159,16 @@
     height: 60%;
 }
 
-.scroll::-webkit-scrollbar-track {
-    @include scrollbar.scrollbar-track(color.$blackColor);
-}
-
-.scroll::-webkit-scrollbar {
-    @include scrollbar.scrollbar();
-}
-
-.scroll::-webkit-scrollbar-thumb {
-    @include scrollbar.scrollbar-thumb(color.$greyColor);
+.scroll {
+    &::-webkit-scrollbar-track {
+        @include scrollbar.scrollbar-track(color.$blackColor);
+    }
+    &::-webkit-scrollbar {
+        @include scrollbar.scrollbar();
+    }
+    &::-webkit-scrollbar-thumb {
+        @include scrollbar.scrollbar-thumb(color.$greyColor);
+    }
 }
 
 .utility-icon-container {
@@ -190,11 +188,10 @@
     cursor: pointer;
     margin: 0vh 0.3vw;
     padding: 0.1vh 0.4vw;
-}
-
-.img-container:hover {
-    background-color: #444;
-    border-radius: 2px;
+    &:hover {
+        background-color: #444;
+        border-radius: 2px;
+    }
 }
 
 .img {
@@ -291,10 +288,9 @@
 
 .extra-icons {
     cursor: pointer;
-}
-
-.extra-icons:active {
-    background: grey;
+    &:active {
+        background: grey;
+    }
 }
 
 .tab-extra-icons {
@@ -364,7 +360,8 @@
     color: #999;
 }
 
-.delete-annotation {
+.delete-annotation,
+.delete-label {
     position: absolute;
     right: 2vw;
 }
@@ -373,15 +370,13 @@
     cursor: pointer;
     padding: 0.2vh 0.2vw;
     border-radius: 0.7vw;
-}
-
-.open-all-tabs:hover {
-    background: #636363;
-}
-
-.open-all-tabs:focus,
-.open-all-tabs:active {
-    background: #737474;
+    &:hover {
+        background: #636363;
+    }
+    &:focus,
+    &:active {
+        background: #737474;
+    }
 }
 
 .tab-skeleton {

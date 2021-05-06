@@ -85,10 +85,17 @@ $fontSize: 2vh;
     font-size: $fontSize;
 }
 
-.select-folder-container {
+.select-file-container {
     display: flex;
     flex-direction: row;
     margin: 2vh 0 0 0;
+}
+
+.file-name-container {
+    display: flex;
+    flex-direction: row;
+    margin: 1.5vh 0 0 19vh;
+    min-height: 4vh;
 }
 
 .input {
@@ -100,13 +107,12 @@ $fontSize: 2vh;
     min-height: 0.3vh;
     max-height: 0.3vh;
     margin: 2vh auto;
-    margin-top: 2vh;
 }
 
 .model-button-container {
     display: flex;
     flex-direction: row-reverse;
-    padding: 1vw;
+    padding: 0.5vw;
 }
 
 .button-style {
@@ -117,6 +123,10 @@ $fontSize: 2vh;
     color: white;
     cursor: pointer;
     font-size: $fontSize;
+}
+
+.choose-file-button {
+    background-color: #444444;
 }
 
 .create-btn {
@@ -151,12 +161,13 @@ $fontSize: 2vh;
 
 .filename {
     font-size: $fontSize;
-    padding-top: 0.5vh;
     color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .overlay {
-    z-index: 2000;
+    z-index: 3000;
     position: absolute;
     background-color: rgb(0, 0, 0, 0.9);
     width: 99.9vw;

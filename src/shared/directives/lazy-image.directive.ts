@@ -6,8 +6,9 @@ import { AfterViewInit, Directive, ElementRef, HostBinding, Input } from '@angul
 export class LazyLoadImgDirective implements AfterViewInit {
     // stop the image from loading immediately with the use of @HostBinding()
     // As long as srcAttr is set to null, the image will not attempt to load
-    // also expose the src @Input() property to capture the reference to the intended image’s source. (set hostbinding property to input property)
-    @HostBinding('attr.src') srcAttr: any = null;
+    // also expose the src @Input() property to capture the reference to the intended image’s source.
+    // (set hostbinding property to input property)
+    @HostBinding('attr.src') srcAttr: string | null = null;
     @Input() src!: string;
 
     constructor(private el: ElementRef) {}
