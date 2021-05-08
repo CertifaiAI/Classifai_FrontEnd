@@ -10,7 +10,12 @@ export type MouseCursorState = {
     crosshair: boolean;
     'zoom-in': boolean;
     'zoom-out': boolean;
-    resize: boolean;
+    'n-resize': boolean;
+    'w-resize': boolean;
+    'ne-resize': boolean;
+    'nw-resize': boolean;
+    'se-resize': boolean;
+    'sw-resize': boolean;
 };
 
 const initialState: MouseCursorState = {
@@ -21,7 +26,12 @@ const initialState: MouseCursorState = {
     crosshair: false,
     'zoom-in': false,
     'zoom-out': false,
-    resize: false,
+    'n-resize': false,
+    'w-resize': false,
+    'ne-resize': false,
+    'nw-resize': false,
+    'se-resize': false,
+    'sw-resize': false,
 };
 
 @Injectable({

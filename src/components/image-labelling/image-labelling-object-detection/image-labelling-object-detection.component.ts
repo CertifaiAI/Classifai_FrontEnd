@@ -434,45 +434,46 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this.changeMouseCursorState({ grab: true });
                     }
                     if (this.boundingBoxState.draw && this.mousedown) {
-                        this.changeMouseCursorState({ crosshair: true });
                         this._boundingBoxCanvas.mouseMoveDrawEnable(event.offsetX, event.offsetY, this._selectMetadata);
                         this.redrawImage(this._selectMetadata);
                     }
                     if (this.boundingBoxState.draw && !this.mousedown) {
-                        const { box } = this._boundingBoxCanvas.getCurrentClickBox(
+                        const { box, pos } = this._boundingBoxCanvas.getCurrentClickBox(
                             event.offsetX,
                             event.offsetY,
                             this._selectMetadata.bnd_box,
                         );
 
                         if (box !== -1) {
-                            this.changeMouseCursorState({ move: true });
-                            // const { x1, x2, y1, y2 } = this._selectMetadata.bnd_box[box];
-                            // const { offsetX, offsetY } = event;
-                            // // 4 cases:
-                            // // 1. top left
-                            // if (this.checkCloseEnough(offsetX, x1) && this.checkCloseEnough(offsetY, y1)) {
-                            //     this.changeMouseCursorState({ resize: true });
-                            // }
-                            // // 2. top right
-                            // else if (this.checkCloseEnough(offsetX, x2) && this.checkCloseEnough(offsetY, y1)) {
-                            //     this.changeMouseCursorState({ resize: true });
-                            // }
-                            // // 2. top center & bottom center
-                            // // else if (
-                            // //     this.checkCloseEnough(offsetX, (x2 + x1) / 2) &&
-                            // //     this.checkCloseEnough(offsetY, (y2 + y1) / 2)
-                            // // ) {
-                            // //     this.changeMouseCursorState({ resize: true });
-                            // // }
-                            // // 3. bottom left
-                            // else if (this.checkCloseEnough(offsetX, x1) && this.checkCloseEnough(offsetY, y2)) {
-                            //     this.changeMouseCursorState({ resize: true });
-                            // }
-                            // // 4. bottom right
-                            // else if (this.checkCloseEnough(offsetX, x2) && this.checkCloseEnough(offsetY, y2)) {
-                            //     this.changeMouseCursorState({ resize: true });
-                            // }
+                            // 7 cases:
+                            // 1. top left
+                            if (pos === 'tl') {
+                                this.changeMouseCursorState({ 'nw-resize': true });
+                            }
+                            // 2. top right
+                            else if (pos === 'tr') {
+                                this.changeMouseCursorState({ 'ne-resize': true });
+                            }
+                            // 3. bottom left
+                            else if (pos === 'bl') {
+                                this.changeMouseCursorState({ 'sw-resize': true });
+                            }
+                            // 4. bottom right
+                            else if (pos === 'br') {
+                                this.changeMouseCursorState({ 'se-resize': true });
+                            }
+                            // 5. left center & right center
+                            else if (pos === 'l' || pos === 'r') {
+                                this.changeMouseCursorState({ 'w-resize': true });
+                            }
+                            // 6. top center & bottom center
+                            else if (pos === 't' || pos === 'b') {
+                                this.changeMouseCursorState({ 'n-resize': true });
+                            }
+                            // 7. Else
+                            else {
+                                this.changeMouseCursorState({ move: true });
+                            }
                         } else {
                             this.changeMouseCursorState({ crosshair: true });
                         }
@@ -538,12 +539,6 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     changeMouseCursorState(mouseCursor?: Partial<MouseCursorState>) {
         this._mouseCursorService.setState(mouseCursor);
-    }
-
-    checkCloseEnough(p1: number, p2: number) {
-        const ss = Math.abs(p1 - p2) < this.closeEnough;
-        console.log(ss);
-        return ss;
     }
 
     @HostListener('mouseout', ['$event'])
@@ -686,10 +681,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         this._onChangeAnnotationLabel.emit({ label, index: this.annotateState.annotation });
     }
 
-    sortingLabelList(labelList: LabelInfo[], annotationList: any[]) {
-        labelList.forEach((label, index) => {
-            this.labelList[index].count = annotationList.filter((x) => x.label === label.name).length;
-            this.allLabelList[index].count = annotationList.filter((x) => x.label === label.name).length;
+    sortingLabelList(labelList: LabelInfo[], annotationList: Boundingbox[]) {
+        labelList.forEach(({ name }, index) => {
+            this.labelList[index].count = annotationList.filter(({ label }) => label === name).length;
+            this.allLabelList[index].count = annotationList.filter(({ label }) => label === name).length;
         });
         this.labelList.sort((a, b) => (a.count < b.count ? 1 : b.count < a.count ? -1 : 0));
         this.allLabelList.sort((a, b) => (a.count < b.count ? 1 : b.count < a.count ? -1 : 0));
@@ -703,8 +698,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         const { value } = target;
         const valTrimmed = value.trim();
         if (valTrimmed) {
-            const isInvalidLabel: boolean = this._tabStatus.some(({ label_list }) =>
-                label_list && label_list.length ? label_list.some((label) => label === valTrimmed) : null,
+            const isInvalidLabel: boolean = this._tabStatus.some(
+                ({ label_list }) => label_list && label_list.length && label_list.some((label) => label === valTrimmed),
             );
             if (!isInvalidLabel) {
                 this.invalidInput = false;

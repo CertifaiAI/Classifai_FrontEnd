@@ -1,0 +1,10 @@
+<ng-container *ngIf="_processingNum > 0 || doneProcess">
+    <div class="toastr">
+        <div class="text">
+            <span *ngIf="_processingNum > 0">Zipping {{ _processingNum }} file</span>
+            <span *ngIf="_processingNum === 0">Done</span>
+        </div>
+        <div class="loader" *ngIf="_processingNum > 0"></div>
+        <div *ngIf="_processingNum === 0" class="done">&#10004;</div>
+    </div>
+</ng-container>

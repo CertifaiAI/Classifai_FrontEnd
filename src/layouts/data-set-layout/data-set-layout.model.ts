@@ -61,3 +61,8 @@ export type StarredProps = {
     projectName: string;
     starred: boolean;
 };
+
+export type ProjectRename = {
+    shown: boolean;
+    projectName: string;
+};
