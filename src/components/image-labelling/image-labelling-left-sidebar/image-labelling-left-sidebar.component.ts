@@ -83,7 +83,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                           imgPath: `../../../assets/icons/rec_bounding_box.svg`,
                           hoverLabel: `leftSideBar.rectangularBB`,
                           alt: `RectangularBB`,
-                          toggleable: this.labelList.length !== 0 ? true : false,
+                          toggleable: true,
                           onClick: () => {
                               this.resetSelectedAnnotate();
                               this._imgLabelState.setState({ draw: true, drag: false, scroll: false });
@@ -93,7 +93,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                           imgPath: `../../../assets/icons/polygon.svg`,
                           hoverLabel: `leftSideBar.polygon`,
                           alt: `Polygon`,
-                          toggleable: this.labelList.length !== 0 ? true : false,
+                          toggleable: true,
                           onClick: () => {
                               if (this.labelList.length !== 0) {
                                   this.resetSelectedAnnotate();
