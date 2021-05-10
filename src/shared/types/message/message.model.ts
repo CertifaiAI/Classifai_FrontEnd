@@ -17,6 +17,11 @@ export type Message = {
     message: message;
 };
 
+export type ImportResponse = {
+    message: error_code;
+    error_message: errormessage;
+};
+
 export type MessageUuidList = {
     message: message;
     uuid_list: uuid[];
