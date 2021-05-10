@@ -131,7 +131,7 @@
                 <label class="filename" #jsonImportProjectFilename></label>
             </div>
 
-            <ng-container *ngIf="modalSpanMessage != ''">
+            <ng-container *ngIf="!modalSpanMessage.trim()">
                 <div [ngClass]="spanClass">
                     <span>
                         <small class="error-msg" [innerHTML]="modalSpanMessage"></small>
