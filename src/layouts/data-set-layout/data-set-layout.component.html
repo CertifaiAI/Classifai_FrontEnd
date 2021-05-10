@@ -133,7 +133,7 @@
             <ng-container *ngIf="modalSpanMessage != ''">
                 <div [ngClass]="spanClass">
                     <span>
-                        <small class="error-msg"> {{ modalSpanMessage }} </small>
+                        <small class="error-msg" [innerHTML]="modalSpanMessage"></small>
                     </span>
                 </div>
             </ng-container>

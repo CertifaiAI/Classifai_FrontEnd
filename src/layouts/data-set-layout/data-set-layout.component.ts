@@ -239,7 +239,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     )
                     .subscribe((response) => {
                         console.log('RRS', response);
-                        this.modalSpanMessage = response.error_message;
+                        console.log(response.error_message.replace(/(\r\n|\n|\r)/gm, '<br>'));
+                        this.modalSpanMessage = response.error_message.replace(/(\r\n|\n|\r)/gm, '<br>');
                         if (response.error_code == 1) {
                             this.processIsSuccess(false);
                         } else {
