@@ -12,7 +12,7 @@ import {
     MessageContent,
     MessageProjectProgress,
     MessageUuidList,
-    ResponseMessage,
+    ImportResponse,
 } from 'src/shared/types/message/message.model';
 
 @Injectable({ providedIn: 'any' })
@@ -39,8 +39,8 @@ export class DataSetLayoutService {
         });
     };
 
-    importProject = (): Observable<ResponseMessage> => {
-        return this.http.put<ResponseMessage>(`${this.hostPort}v2/newproject`, {});
+    importProject = (): Observable<ImportResponse> => {
+        return this.http.put<ImportResponse>(`${this.hostPort}v2/newproject`, {});
     };
 
     renameProject = (oldProjectName: string, newProjectName: string): Observable<Message> => {
@@ -110,8 +110,8 @@ export class DataSetLayoutService {
         );
     };
 
-    importStatus = (): Observable<ResponseMessage> => {
-        return this.http.get<ResponseMessage>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/importstatus`);
+    importStatus = (): Observable<ImportResponse> => {
+        return this.http.get<ImportResponse>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/importstatus`);
     };
 
     importLabelFile() {

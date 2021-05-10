@@ -17,7 +17,7 @@ export type Message = {
     message: message;
 };
 
-export type ResponseMessage = {
+export type ImportResponse = {
     message: error_code;
     error_message: errormessage;
 };
