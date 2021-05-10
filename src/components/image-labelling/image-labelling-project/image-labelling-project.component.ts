@@ -2,7 +2,7 @@ import { AnnotateSelectionService } from 'src/shared/services/annotate-selection
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { HTMLElementEvent } from 'src/shared/types/field/field.model';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
-import { isEqual } from 'lodash-es';
+import { cloneDeep, isEqual } from 'lodash-es';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import {
@@ -17,6 +17,7 @@ import {
     TabsProps,
 } from '../image-labelling.model';
 import { LanguageService } from 'src/shared/services/language.service';
+import { UndoRedoService } from 'src/shared/services/undo-redo.service';
 
 @Component({
     selector: 'image-labelling-project',
@@ -25,6 +26,7 @@ import { LanguageService } from 'src/shared/services/language.service';
     // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDestroy {
+    @Input() _selectMetadata!: BboxMetadata & PolyMetadata;
     @Input() _thumbnailList: CompleteMetadata[] = [];
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
@@ -48,6 +50,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         private _annotateService: AnnotateSelectionService,
         private _imgLblState: ImageLabellingActionService,
         private _languageService: LanguageService,
+        private _undoRedoService: UndoRedoService,
     ) {}
 
     ngOnInit(): void {
@@ -182,6 +185,11 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
 
         this.selectedIndexAnnotation > -1 &&
             this._onChangeAnnotationLabel.emit({ label, index: this.selectedIndexAnnotation });
+        this._selectMetadata.bnd_box[this.selectedIndexAnnotation].label = label;
+        this._undoRedoService.appendStages({
+            meta: this._selectMetadata,
+            method: 'draw',
+        });
     };
 
     onClickAnnotation = (index: number, { label }: Boundingbox & Polygons) => {
@@ -192,7 +200,14 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     };
 
     onDeleteAnnotation = () => {
-        this.selectedIndexAnnotation > -1 && this._onDeleteAnnotation.emit(this.selectedIndexAnnotation);
+        if (this.selectedIndexAnnotation > -1) {
+            this._onDeleteAnnotation.emit(this.selectedIndexAnnotation);
+            this._selectMetadata.bnd_box.splice(this.selectedIndexAnnotation, 1) &&
+                this._undoRedoService.appendStages({
+                    meta: cloneDeep(this._selectMetadata),
+                    method: 'draw',
+                });
+        }
     };
 
     // onClickAnnotation = <T extends BboxMetadata>({ bnd_box }: T) => {
