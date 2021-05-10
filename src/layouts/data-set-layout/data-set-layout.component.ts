@@ -8,7 +8,7 @@ import { forkJoin, interval, Observable, Subject, Subscription, throwError } fro
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ImageLabellingModeService } from './../../components/image-labelling/image-labelling-mode.service';
 import { LanguageService } from 'src/shared/services/language.service';
-import { Message } from 'src/shared/types/message/message.model';
+import { Message, MessageUuidList } from 'src/shared/types/message/message.model';
 import { ModalBodyStyle } from 'src/components/modal/modal.model';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
@@ -543,10 +543,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         const createProj$ = this._dataSetService.createNewProject(projectName);
         const updateLabel$ = this._dataSetService.updateLabelList(projectName, this.labelTextUpload);
         const uploadStatus$ = this._dataSetService.localUploadStatus(projectName);
-        const thumbnail$ = this._dataSetService.getThumbnailList;
         let numberOfReq: number = 0;
 
-        const returnResponse = ({ message }: Message): Observable<BboxMetadata & PolyMetadata> => {
+        const returnResponse = ({ message }: Message): Observable<MessageUuidList> => {
             return message !== 5 && (message === 1 || message === 0)
                 ? interval(500).pipe(
                       mergeMap(() => uploadStatus$),
@@ -557,24 +556,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                           const isValidResponse: boolean = message === 4 || message === 1;
                           return isValidResponse;
                       }),
-                      mergeMap(({ uuid_list, message }) => {
-                          /** @property {number} message if value 4 means client has received uploaded item(s) */
-                          const thumbnails =
-                              message === 4 && uuid_list.length > 0
-                                  ? uuid_list.map((uuid) => thumbnail$(projectName, uuid))
-                                  : [];
-                          this.projectList =
-                              thumbnails.length > 0
-                                  ? { ...this.projectList, isUploading: true }
-                                  : { ...this.projectList, isUploading: false };
-                          numberOfReq = thumbnails.length;
-                          if (message === 4) {
-                              this.toggleModalDisplay(false);
-                          }
-                          return thumbnails;
-                      }),
-                      // * this mergeMap responsible for flaten all observable into one layer
-                      mergeMap((data) => data),
                   )
                 : throwError((error: any) => {
                       console.error(error);
@@ -587,16 +568,21 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .pipe(
                 first(),
                 mergeMap(() => createProj$),
-                mergeMap((message) => returnResponse(message)),
                 mergeMap(() => updateLabel$),
+                mergeMap((message) => returnResponse(message)),
             )
             .subscribe(
                 (res) => {
+                    if (res.message === 4) {
+                        this.toggleModalDisplay(false);
+                    }
+                    this.isProjectLoading = true;
                     numberOfReq = res ? --numberOfReq : numberOfReq;
                     numberOfReq < 1 && (this.projectList = { ...this.projectList, isUploading: false });
                 },
                 (error: Error) => {},
                 () => {
+                    this.isProjectLoading = false;
                     this.showProjectList();
                 },
             );

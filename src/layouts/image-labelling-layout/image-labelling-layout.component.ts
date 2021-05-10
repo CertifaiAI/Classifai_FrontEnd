@@ -71,6 +71,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     currentImageDisplayIndex = -1;
     isLoading: boolean = false;
     showLoading: boolean = false;
+    processingNum: number = 0;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
     exportModalBodyStyle: ModalBodyStyle = {
@@ -228,9 +229,11 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     exportProject = (exportType: string): void => {
+        exportType === 'cfgdata' && this.processingNum++;
         const projectName = this.selectedProjectName;
         const exportProject$ = this._imgLblApiService.exportProject(projectName, exportType);
         exportProject$.pipe(first()).subscribe(({ message }) => {
+            exportType === 'cfgdata' && this.processingNum--;
             if (message === 1) {
                 this._languageService._translate.get('exportSuccess').subscribe((translated) => {
                     alert(projectName + translated);
@@ -448,7 +451,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onSubmitLabel = () => {
         const { value } = this._subLabelSelect.nativeElement;
-
+        if (!value.trim()) {
+            return;
+        }
         let isPreExistSubLabel: boolean = false;
         let isDupSubLabel: boolean = false;
 
@@ -529,8 +534,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         };
     };
 
-    onClickDownload = (saveFormat: SaveFormat) => {
-        this._exportSaveFormatService.exportSaveFormat({
+    onClickDownload = async (saveFormat: SaveFormat) => {
+        this.saveType.saveBulk && this.processingNum++;
+        await this._exportSaveFormatService.exportSaveFormat({
             ...this.saveType,
             saveFormat,
             metadata: this.selectedMetaData,
@@ -543,6 +549,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 labelList: this.tabStatus.map(({ label_list }) => label_list)[1],
             }),
         });
+        this.saveType.saveBulk && this.processingNum--;
     };
 
     onChangeLabel(value: string) {
