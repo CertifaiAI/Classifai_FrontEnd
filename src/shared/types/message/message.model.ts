@@ -18,7 +18,7 @@ export type Message = {
 };
 
 export type ResponseMessage = {
-    error_code: error_code;
+    message: error_code;
     error_message: errormessage;
 };
 

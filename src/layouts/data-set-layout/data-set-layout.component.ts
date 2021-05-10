@@ -219,7 +219,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         importProject$
             .pipe(
                 first(),
-                map(({ error_code }) => error_code),
+                map(({ message }) => message),
             )
             .subscribe((message) => {
                 let refreshProjectList = false;
@@ -229,8 +229,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         first((response) => {
                             //console.log('RESPONSE IMPORT PROJECT MESSAGE', response);
                             // this.modalSpanMessage = response.error_message;
-                            this.isOverlayOn = response.error_code === 0 ? true : false;
-                            if (response.error_code === 1 || response.error_code === 4) {
+                            this.isOverlayOn = response.message === 0 ? true : false;
+                            if (response.message === 1 || response.message === 4) {
                                 refreshProjectList = true;
                             }
 
@@ -241,7 +241,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         console.log('RRS', response);
                         console.log(response.error_message.replace(/(\r\n|\n|\r)/gm, '<br>'));
                         this.modalSpanMessage = response.error_message.replace(/(\r\n|\n|\r)/gm, '<br>');
-                        if (response.error_code == 1) {
+                        if (response.message == 1) {
                             this.processIsSuccess(false);
                         } else {
                             this.processIsSuccess(true);
