@@ -111,4 +111,42 @@
     </form>
 </modal>
 
+<modal
+    [id]="modalIdImportProject"
+    [modalBodyStyle]="importProjectModalBodyStyle"
+    [modalTitle]="'Import Project'"
+    [scrollable]="false"
+>
+    <br />
+    <form [formGroup]="form">
+        <div class="content-container">
+            <div class="select-folder-container">
+                <label class="label label-file">{{ 'Select JSON File' }} </label>
+                <label class="choose-file-btn">
+                    {{ 'Choose File' }}
+                    <button class="input-id" type="button" (click)="onSelectImportProjectJson()">
+                        {{ 'Import' }}
+                    </button>
+                </label>
+                <label class="filename" #jsonImportProjectFilename></label>
+            </div>
+
+            <ng-container *ngIf="!modalSpanMessage.trim()">
+                <div [ngClass]="spanClass">
+                    <span>
+                        <small class="error-msg" [innerHTML]="modalSpanMessage"></small>
+                    </span>
+                </div>
+            </ng-container>
+
+            <div class="horizontal-line"></div>
+            <div class="model-button-container">
+                <button class="button-style create-btn" type="submit" (click)="toggleImportProjectModalDisplay(false)">
+                    {{ 'Close' }}
+                </button>
+            </div>
+        </div>
+    </form>
+</modal>
+
 <spinner [_loading]="isLoading"></spinner>
