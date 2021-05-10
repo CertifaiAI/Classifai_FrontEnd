@@ -200,13 +200,14 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     };
 
     onDeleteAnnotation = () => {
-        this.selectedIndexAnnotation > -1 &&
-            this._onDeleteAnnotation.emit(this.selectedIndexAnnotation) &&
+        if (this.selectedIndexAnnotation > -1) {
+            this._onDeleteAnnotation.emit(this.selectedIndexAnnotation);
             this._selectMetadata.bnd_box.splice(this.selectedIndexAnnotation, 1) &&
-            this._undoRedoService.appendStages({
-                meta: cloneDeep(this._selectMetadata),
-                method: 'draw',
-            });
+                this._undoRedoService.appendStages({
+                    meta: cloneDeep(this._selectMetadata),
+                    method: 'draw',
+                });
+        }
     };
 
     // onClickAnnotation = <T extends BboxMetadata>({ bnd_box }: T) => {
