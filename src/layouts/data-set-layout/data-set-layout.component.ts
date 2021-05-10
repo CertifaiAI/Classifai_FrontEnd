@@ -48,8 +48,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     isImageUploading = false;
     isProjectLoading = false;
     imgLblMode: ImageLabellingMode = null;
-    modalSpanMessage: String = '';
-    spanClass: String = '';
+    modalSpanMessage: string = '';
+    spanClass: string = '';
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
@@ -227,7 +227,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     .pipe(
                         switchMap(() => importStatus$),
                         first((response) => {
-                            //console.log('RESPONSE IMPORT PROJECT MESSAGE', response);
+                            // console.log('RESPONSE IMPORT PROJECT MESSAGE', response);
                             // this.modalSpanMessage = response.error_message;
                             this.isOverlayOn = response.message === 0 ? true : false;
                             if (response.message === 1 || response.message === 4) {
@@ -241,7 +241,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         console.log('RRS', response);
                         console.log(response.error_message.replace(/(\r\n|\n|\r)/gm, '<br>'));
                         this.modalSpanMessage = response.error_message.replace(/(\r\n|\n|\r)/gm, '<br>');
-                        if (response.message == 1) {
+                        if (response.message === 1) {
                             this.processIsSuccess(false);
                         } else {
                             this.processIsSuccess(true);
@@ -260,7 +260,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     importProject = (): void => {
-        //console.log('IMPORT PROEJCT CLICKED');
+        // console.log('IMPORT PROEJCT CLICKED');
         this.toggleImportProjectModalDisplay(true);
         // const importStatus$ = this._dataSetService.importStatus();
         // const importProject$ = this._dataSetService.importProject();
