@@ -35,6 +35,7 @@
         </ng-container>
 
         <image-labelling-project
+            [_selectMetadata]="selectedMetaData"
             [_thumbnailList]="thumbnailList"
             [_tabStatus]="tabStatus"
             (_onClose)="onToggleTab($event)"
