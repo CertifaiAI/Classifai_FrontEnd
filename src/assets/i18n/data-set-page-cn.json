@@ -44,5 +44,7 @@
         "createNew": "开始新的项目吧！"
     },
     "deleteSuccess": "已被删除!",
-    "renameSuccess": "名称更新成功!"
+    "renameSuccess": "名称更新成功!",
+    "deleteProject": "删除项目",
+    "exportProject": "导出项目"
 }

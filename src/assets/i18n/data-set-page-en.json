@@ -44,5 +44,7 @@
         "createNew": "Gear up and start creating new project!"
     },
     "deleteSuccess": "is successfully deleted!",
-    "renameSuccess": "is successfully renamed!"
+    "renameSuccess": "is successfully renamed!",
+    "deleteProject": "Delete Project",
+    "exportProject": "Export Project"
 }

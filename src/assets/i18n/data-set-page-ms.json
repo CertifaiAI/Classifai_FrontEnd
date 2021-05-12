@@ -44,5 +44,7 @@
         "createNew": "Bersedia dan jom mulakan projek baru!"
     },
     "deleteSuccess": "telah berjaya dipadam!",
-    "renameSuccess": "telah berjaya dinamakan semula!"
+    "renameSuccess": "telah berjaya dinamakan semula!",
+    "deleteProject": "Padam Projek",
+    "exportProject": "Eksport Projek"
 }
