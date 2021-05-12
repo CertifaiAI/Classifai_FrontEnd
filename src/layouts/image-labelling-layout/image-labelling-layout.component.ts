@@ -72,7 +72,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     isLoading: boolean = false;
     showLoading: boolean = false;
     processingNum: number = 0;
+    spanClass: string = '';
+    modalSpanMessage: string = '';
     readonly modalExportOptions = 'modal-export-options';
+    readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
     exportModalBodyStyle: ModalBodyStyle = {
         minHeight: '19vh',
@@ -95,6 +98,14 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         maxWidth: '40vw',
         margin: '20vh 23vw',
         padding: '0vh 0vw 3vh 0vw',
+        overflow: 'none',
+    };
+    exportProjectBodyStyle: ModalBodyStyle = {
+        minHeight: '10vh',
+        maxHeight: '15vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
         overflow: 'none',
     };
     saveType: ExportSaveType = {
@@ -225,6 +236,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     onExport = (): void => {
+        this.modalSpanMessage = '';
         this._modalService.open(this.modalExportOptions);
     };
 
@@ -236,15 +248,37 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             exportType === 'cfgdata' && this.processingNum--;
             if (message === 1) {
                 this._languageService._translate.get('exportSuccess').subscribe((translated) => {
-                    alert(projectName + translated);
+                    //alert(projectName + translated);
+                    this.toggleExportProjectModalMessage(true);
+                    this.modalSpanMessage = projectName + translated;
+                    this.processIsSuccess(true);
                 });
             } else {
                 this._languageService._translate.get('exportFailed').subscribe((translated) => {
-                    alert(translated + projectName);
+                    //alert(translated + projectName);
+                    this.toggleExportProjectModalMessage(true);
+                    this.modalSpanMessage = translated + projectName;
+                    this.processIsSuccess(false);
                 });
             }
         });
         this.closeExportProjectModal();
+    };
+
+    toggleExportProjectModalMessage = (open: boolean): void => {
+        if (open) {
+            this._modalService.open(this.modalExportProject);
+        } else {
+            this._modalService.open(this.modalExportProject);
+        }
+    };
+
+    processIsSuccess = (success: boolean): void => {
+        if (success) {
+            this.spanClass = 'validation-success';
+        } else {
+            this.spanClass = 'validation-error';
+        }
     };
 
     closeExportProjectModal() {
