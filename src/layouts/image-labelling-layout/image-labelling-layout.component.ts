@@ -451,7 +451,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onSubmitLabel = () => {
         const { value } = this._subLabelSelect.nativeElement;
-
+        if (!value.trim()) {
+            return;
+        }
         let isPreExistSubLabel: boolean = false;
         let isDupSubLabel: boolean = false;
 
