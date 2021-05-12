@@ -53,6 +53,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
+    readonly modalIdDeleteProject = 'modal-delete-project';
     createProjectModalBodyStyle: ModalBodyStyle = {
         minHeight: '35vh',
         maxHeight: '35vh',
@@ -72,6 +73,14 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     importProjectModalBodyStyle: ModalBodyStyle = {
         minHeight: '15vh',
         maxHeight: '20vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    deleteProjectBodyStyle: ModalBodyStyle = {
+        minHeight: '10vh',
+        maxHeight: '15vh',
         minWidth: '31vw',
         maxWidth: '31vw',
         margin: '15vw 71vh',
@@ -655,7 +664,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .subscribe((message) => {
                 if (message === 1) {
                     this._languageService._translate.get('deleteSuccess').subscribe((translated) => {
-                        alert(projectName + ' ' + translated);
+                        this.modalSpanMessage = projectName + ' ' + translated;
+                        this._modalService.open(this.modalIdDeleteProject);
                     });
                     this.showProjectList();
                 }

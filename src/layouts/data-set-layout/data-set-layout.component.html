@@ -149,4 +149,18 @@
     </form>
 </modal>
 
+<modal
+    [id]="modalIdDeleteProject"
+    [modalBodyStyle]="deleteProjectBodyStyle"
+    [modalTitle]="'Delete Project'"
+    [scrollable]="false"
+>
+    <br />
+    <div class="content-container">
+        <div class="validation-success">
+            <p class="error-msg" [innerHTML]="modalSpanMessage"></p>
+        </div>
+    </div>
+</modal>
+
 <spinner [_loading]="isLoading"></spinner>
