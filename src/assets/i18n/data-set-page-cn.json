@@ -7,7 +7,7 @@
     "labelListFile": "标签列表文件 (*.txt): ",
     "chooseFile": "选择文件",
     "createButton": "创建",
-    "updateButton": "更新",
+    "updateButton": "继续",
     "cancelButton": "取消",
     "menuName": {
         "newProject": "创建新项目",

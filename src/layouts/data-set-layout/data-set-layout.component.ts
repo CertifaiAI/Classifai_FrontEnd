@@ -70,8 +70,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         overflow: 'none',
     };
     importProjectModalBodyStyle: ModalBodyStyle = {
-        minHeight: '20vh',
-        maxHeight: '28vh',
+        minHeight: '15vh',
+        maxHeight: '20vh',
         minWidth: '31vw',
         maxWidth: '31vw',
         margin: '15vw 71vh',
