@@ -6,13 +6,20 @@
                 [ngClass]="checkCloseToggle(tab)"
                 [attr.data-index]="i"
             >
-                <label class="tab-name">{{ tab.name | translate }}</label>
+                <label class="tab-name"
+                    >{{ tab.name | translate }} ({{ _thumbnailList.length }}/{{ _totalUuid }})</label
+                >
                 <div class="flex-tab-icons">
                     <span class="tab-close-thumbnailless">
                         <div class="div-close" (click)="onClose(tab)">&#10006;</div>
                     </span>
                 </div>
-                <section class="utility-inner-container tab-height scroll">
+                <div
+                    class="utility-inner-container tab-height scroll"
+                    id="thumbnaillist"
+                    #thumbnaillist
+                    (scroll)="mouseScroll()"
+                >
                     <ng-container *ngFor="let thumbnail of _thumbnailList; index as i">
                         <div class="img-container" (click)="onClick(thumbnail, i)">
                             <div class="img-skeleton">
@@ -32,7 +39,7 @@
                             </div>
                         </div>
                     </ng-container>
-                </section>
+                </div>
             </div>
         </ng-container>
 

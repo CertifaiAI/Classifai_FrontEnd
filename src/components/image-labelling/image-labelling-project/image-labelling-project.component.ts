@@ -1,5 +1,17 @@
 import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    EventEmitter,
+    HostListener,
+    Input,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    Output,
+    SimpleChanges,
+    ViewChild,
+} from '@angular/core';
 import { HTMLElementEvent } from 'src/shared/types/field/field.model';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
 import { cloneDeep, isEqual } from 'lodash-es';
@@ -26,7 +38,9 @@ import { UndoRedoService } from 'src/shared/services/undo-redo.service';
     // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDestroy {
+    @Input() _totalUuid: number = 0;
     @Input() _selectMetadata!: BboxMetadata & PolyMetadata;
+    @ViewChild('thumbnaillist') thumbnaillist!: ElementRef<HTMLDivElement>;
     @Input() _thumbnailList: CompleteMetadata[] = [];
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
@@ -35,6 +49,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
     @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
     @Output() _onDeleteAnnotation: EventEmitter<number> = new EventEmitter();
+    @Output() _loadMoreThumbnails: EventEmitter<void> = new EventEmitter();
     action: number = -1;
     displayInputLabel: boolean = false;
     inputLabel: string = '';
@@ -45,6 +60,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     invalidInput: boolean = false;
     labelList: string[] = [];
     isTabStillOpen: boolean = true;
+    tempMax: number = 0;
+    max: number = 0;
 
     constructor(
         private _annotateService: AnnotateSelectionService,
@@ -264,6 +281,16 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         this._tabStatus.forEach((tab) => {
             tab.closed = false;
         });
+    }
+
+    @HostListener('scroll', ['$event'])
+    mouseScroll() {
+        const pos = this.thumbnaillist.nativeElement.scrollTop + this.thumbnaillist.nativeElement.clientHeight;
+        this.max = this.thumbnaillist.nativeElement.scrollHeight;
+        if (pos + 1500 >= this.max && this.tempMax !== this.max) {
+            this.tempMax = this.max;
+            this._loadMoreThumbnails.emit();
+        }
     }
 
     ngOnDestroy(): void {
