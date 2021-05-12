@@ -46,5 +46,7 @@
     "deleteSuccess": "is successfully deleted!",
     "renameSuccess": "is successfully renamed!",
     "deleteProject": "Delete Project",
-    "exportProject": "Export Project"
+    "exportProject": "Export Project",
+    "importJson": "Select Json File",
+    "selectJson": "Config File"
 }

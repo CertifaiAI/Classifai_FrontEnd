@@ -46,5 +46,7 @@
     "deleteSuccess": "已被删除!",
     "renameSuccess": "名称更新成功!",
     "deleteProject": "删除项目",
-    "exportProject": "导出项目"
+    "exportProject": "导出项目",
+    "importJson": "导入配置文件",
+    "selectJson": "配置文件"
 }
