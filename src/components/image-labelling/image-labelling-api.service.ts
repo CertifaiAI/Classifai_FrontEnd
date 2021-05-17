@@ -33,7 +33,7 @@ export class ImageLabellingApiService {
 
     updateLabelList = (projectName: string, label_list: string[]): Observable<Message> => {
         return this.http.put<Message>(`${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/newlabels`, {
-            label_list: label_list,
+            label_list,
         });
     };
 
