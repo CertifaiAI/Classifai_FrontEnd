@@ -12,7 +12,7 @@ import { LanguageService } from 'src/shared/services/language.service';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'src/components/spinner/spinner.service';
-import { interval, Observable, Subject, Subscription, throwError } from 'rxjs';
+import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import {
     AddSubLabel,
     BboxMetadata,
@@ -29,6 +29,7 @@ import {
 } from 'src/components/image-labelling/image-labelling.model';
 import { Message } from 'src/shared/types/message/message.model';
 import { ModalBodyStyle } from 'src/components/modal/modal.model';
+import { ProjectSchema } from '../data-set-layout/data-set-layout.model';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -72,6 +73,11 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     isLoading: boolean = false;
     showLoading: boolean = false;
     processingNum: number = 0;
+    sliceNum: number = 0;
+    labelList: string[] = [];
+    isOverlayOn = false;
+    blockLoadThumbnails: boolean = false;
+    totalUuid: number = 0;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
     exportModalBodyStyle: ModalBodyStyle = {
@@ -101,6 +107,11 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         saveCurrentImage: true,
         saveBulk: false,
     };
+    projectList: ProjectSchema = {
+        projects: [],
+        isUploading: false,
+        isFetching: false,
+    };
 
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
 
@@ -127,7 +138,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.thumbnailList = thumbnailList;
         this.selectedProjectName = projectName;
         this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: thumbnailList.length };
-        this.navigateByAction({ thumbnailAction: 1 });
+        this.startProject(this.selectedProjectName);
         const newLabelList = this._imgLblLayoutService.displayLabelList<CompleteMetadata>(this.tabStatus, labelList);
         this.tabStatus = newLabelList;
 
@@ -179,12 +190,117 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             //     this.onCloseModal('modal-save');
             // }
         });
-
-        this._spinnerService
-            .returnAsObservable()
-            .pipe(takeUntil(this.unsubscribe$))
-            .subscribe((loading) => (this.isLoading = this.showLoading && loading));
     }
+
+    startProject = (projectName: string): void => {
+        this.isLoading = true;
+        this.selectedProjectName = projectName;
+        const projMetaStatus$ = this._dataSetService.checkProjectStatus(projectName);
+        const updateProjLoadStatus$ = this._dataSetService.updateProjectLoadStatus(projectName);
+        const projLoadingStatus$ = this._dataSetService.checkExistProjectStatus(projectName);
+        const thumbnail$ = this._dataSetService.getThumbnailList;
+
+        this.subjectSubscription = this.subject$
+            .pipe(
+                mergeMap(() => forkJoin([projMetaStatus$])),
+                first(([{ message, content }]) => {
+                    this.totalUuid = content[0].total_uuid;
+                    this.projectList = {
+                        isUploading: this.projectList.isUploading,
+                        isFetching: this.projectList.isFetching,
+                        projects: this.projectList.projects.map((project) =>
+                            project.project_name === content[0].project_name
+                                ? { ...content[0], created_date: project.created_date }
+                                : project,
+                        ),
+                    };
+                    const { is_loaded } = content[0];
+                    return message === 1 && !is_loaded ? true : false;
+                }),
+                mergeMap(([{ message }]) => (!message ? [] : forkJoin([updateProjLoadStatus$, projLoadingStatus$]))),
+                mergeMap(([{ message: updateProjStatus }, { message: loadProjStatus, uuid_list, label_list }]) => {
+                    if (loadProjStatus === 2) {
+                        this.labelList = [...label_list];
+                        return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
+                    } else {
+                        const thumbnailResponse = interval(500).pipe(
+                            mergeMap(() => projLoadingStatus$),
+                            first(({ message }) => message === 2),
+                            mergeMap(({ uuid_list, label_list }) => {
+                                console.log(uuid_list.length);
+                                this.tabStatus[1].label_list = label_list;
+                                return uuid_list.length > 0
+                                    ? uuid_list
+                                          .slice(this.sliceNum, (this.sliceNum += 20))
+                                          .map((uuid) => thumbnail$(projectName, uuid))
+                                    : [];
+                            }),
+                        );
+
+                        return thumbnailResponse;
+                    }
+                }),
+                // * this mergeMap responsible for flaten all observable into one layer
+                mergeMap((data) => data),
+            )
+            .subscribe(
+                (res) => {
+                    this.thumbnailList = [...this.thumbnailList, res];
+                    this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: this.thumbnailList.length };
+                },
+                (error: Error) => {},
+                () => {
+                    this.isLoading = false;
+                    this.navigateByAction({ thumbnailAction: 1 });
+                    this._spinnerService.hideSpinner();
+                },
+            );
+        // make initial call
+        this.subject$.next();
+    };
+
+    loadThumbnails = (): void => {
+        if (!this.blockLoadThumbnails && this.sliceNum < this.totalUuid) {
+            this.blockLoadThumbnails = true;
+            const projLoadingStatus$ = this._dataSetService.checkExistProjectStatus(this.selectedProjectName);
+            const thumbnail$ = this._dataSetService.getThumbnailList;
+
+            this.subjectSubscription = this.subject$
+                .pipe(
+                    first(),
+                    mergeMap(() => {
+                        const thumbnailResponse = interval(500).pipe(
+                            mergeMap(() => projLoadingStatus$),
+                            first(({ message }) => message === 2),
+                            mergeMap(({ uuid_list }) => {
+                                return uuid_list.length > 0
+                                    ? uuid_list
+                                          .slice(this.sliceNum, (this.sliceNum += 10))
+                                          .map((uuid) => thumbnail$(this.selectedProjectName, uuid))
+                                    : [];
+                            }),
+                        );
+
+                        return thumbnailResponse;
+                    }),
+                    // * this mergeMap responsible for flaten all observable into one layer
+                    mergeMap((data) => data),
+                )
+                .subscribe(
+                    (res) => {
+                        this.thumbnailList = [...this.thumbnailList, res];
+                        this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: this.thumbnailList.length };
+                    },
+                    (error: Error) => {},
+                    () => {
+                        this.blockLoadThumbnails = false;
+                        this._spinnerService.hideSpinner();
+                    },
+                );
+            // make initial call
+            this.subject$.next();
+        }
+    };
 
     updateProjectProgress = (): void => {
         const projectName = this.selectedProjectName;
@@ -276,14 +392,18 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                           });
                           uuid_add_list.forEach((uuid) => {
                               listTemp.push(uuid);
+                              this.totalUuid++;
                           });
                           uuid_delete_list.forEach((uuid) => {
                               listTemp = listTemp.filter((e) => e !== uuid);
+                              this.totalUuid--;
                           });
-                          // console.log(listTemp);
+                          this.sliceNum = 0;
                           const thumbnails =
                               message === 4 && listTemp.length > 0
-                                  ? listTemp.map((uuid) => thumbnail$(projectName, uuid))
+                                  ? listTemp
+                                        .slice(this.sliceNum, (this.sliceNum += 20))
+                                        .map((uuid) => thumbnail$(projectName, uuid))
                                   : [];
 
                           // console.log(thumbnails);
@@ -314,6 +434,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 () => {
                     this.thumbnailList = thumbnailListTemp;
                     this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: this.thumbnailList.length };
+                    this.currentImageDisplayIndex = -1;
+                    this.navigateByAction({ thumbnailAction: 1 });
                     this.isLoading = false;
                 },
             );
@@ -328,9 +450,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     @HostListener('window:keydown', ['$event'])
-    keyDownEvent = ({ key }: KeyboardEvent): void => {
+    keyDownEvent = ({ key, repeat }: KeyboardEvent): void => {
         this._imgLblActionService.action$.pipe(first()).subscribe(({ draw }) => {
-            if (!draw) {
+            if (!draw && !repeat) {
                 switch (key) {
                     case 'ArrowLeft':
                         this.navigateByAction({ thumbnailAction: -1 });
@@ -350,7 +472,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     navigateByAction = ({ thumbnailAction }: EventEmitter_Action): void => {
         if (thumbnailAction) {
-            this.showLoading = true;
             const calculatedIndex = this._imgLblLayoutService.calculateIndex(
                 thumbnailAction,
                 this.currentImageDisplayIndex,
@@ -361,8 +482,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 this.currentImageDisplayIndex = calculatedIndex;
                 const filteredThumbMetadata = this.thumbnailList.find((_, i) => i === calculatedIndex);
                 const thumbnailIndex = this.thumbnailList.findIndex((_, i) => i === calculatedIndex);
+                thumbnailIndex + 3 === this.thumbnailList.length && this.loadThumbnails();
                 filteredThumbMetadata &&
                     thumbnailIndex !== -1 &&
+                    !this.showLoading &&
                     this.displayImage({ ...filteredThumbMetadata, thumbnailIndex });
             }
         }
@@ -373,6 +496,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         projectName = this.selectedProjectName,
     ): void => {
         if (this.selectedMetaData?.uuid !== thumbnail.uuid) {
+            this.showLoading = true;
             const getImage$ = this._imgLblApiService.getBase64Thumbnail(projectName, thumbnail.uuid);
 
             getImage$.pipe(first()).subscribe(
@@ -562,6 +686,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onDisplayShortcutKeyInfo() {
         this._modalService.open(this.modalShortcutKeyInfo);
+    }
+
+    onLoadMoreThumbnails() {
+        this.loadThumbnails();
     }
 
     shortcutKeyInfo() {
