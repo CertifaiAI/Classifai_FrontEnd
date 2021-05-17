@@ -365,6 +365,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             if (message === 1) {
                 this._languageService._translate.get('exportSuccess').subscribe((translated) => {
                     //alert(projectName + translated);
+                    exportProject$.pipe().subscribe(({ message }) => {
+                        console.log('EXPORT', message);
+                    });
                     this.toggleExportProjectModalMessage(true);
                     this.modalSpanMessage = projectName + translated;
                     this.processIsSuccess(true);
