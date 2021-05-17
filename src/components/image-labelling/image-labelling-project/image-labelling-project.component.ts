@@ -40,7 +40,7 @@ import { UndoRedoService } from 'src/shared/services/undo-redo.service';
 export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDestroy {
     @Input() _totalUuid: number = 0;
     @Input() _selectMetadata!: BboxMetadata & PolyMetadata;
-    @ViewChild('thumbnaillist') thumbnaillist!: ElementRef<HTMLDivElement>;
+    @ViewChild('thumbnailList') thumbnailList!: ElementRef<HTMLDivElement>;
     @Input() _thumbnailList: CompleteMetadata[] = [];
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
@@ -285,8 +285,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
 
     @HostListener('scroll', ['$event'])
     mouseScroll() {
-        const pos = this.thumbnaillist.nativeElement.scrollTop + this.thumbnaillist.nativeElement.clientHeight;
-        this.max = this.thumbnaillist.nativeElement.scrollHeight;
+        const pos = this.thumbnailList.nativeElement.scrollTop + this.thumbnailList.nativeElement.clientHeight;
+        this.max = this.thumbnailList.nativeElement.scrollHeight;
         if (pos + 1500 >= this.max && this.tempMax !== this.max) {
             this.tempMax = this.max;
             this._loadMoreThumbnails.emit();

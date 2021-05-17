@@ -260,7 +260,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     loadThumbnails = (): void => {
-        if (this.blockLoadThumbnails === false && this.sliceNum < this.totalUuid) {
+        if (!this.blockLoadThumbnails && this.sliceNum < this.totalUuid) {
             this.blockLoadThumbnails = true;
             const projLoadingStatus$ = this._dataSetService.checkExistProjectStatus(this.selectedProjectName);
             const thumbnail$ = this._dataSetService.getThumbnailList;
