@@ -7,7 +7,7 @@
     "labelListFile": "Label list file (*.txt):",
     "chooseFile": "Choose File",
     "createButton": "Create",
-    "updateButton": "Update",
+    "updateButton": "Proceed",
     "cancelButton": "Cancel",
     "menuName": {
         "newProject": "New Project",

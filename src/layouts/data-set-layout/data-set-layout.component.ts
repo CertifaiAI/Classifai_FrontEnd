@@ -70,8 +70,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         overflow: 'none',
     };
     importProjectModalBodyStyle: ModalBodyStyle = {
-        minHeight: '20vh',
-        maxHeight: '28vh',
+        minHeight: '15vh',
+        maxHeight: '20vh',
         minWidth: '31vw',
         maxWidth: '31vw',
         margin: '15vw 71vh',
@@ -462,81 +462,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     }
 
     startProject = (projectName: string): void => {
-        this.selectedProjectName = projectName;
-        const projMetaStatus$ = this._dataSetService.checkProjectStatus(projectName);
-        const updateProjLoadStatus$ = this._dataSetService.updateProjectLoadStatus(projectName);
-        const projLoadingStatus$ = this._dataSetService.checkExistProjectStatus(projectName);
-        const thumbnail$ = this._dataSetService.getThumbnailList;
-
-        this.subjectSubscription = this.subject$
-            .pipe(
-                mergeMap(() => forkJoin([projMetaStatus$])),
-                first(([{ message, content }]) => {
-                    this.projectList = {
-                        isUploading: this.projectList.isUploading,
-                        isFetching: this.projectList.isFetching,
-                        projects: this.projectList.projects.map((project) =>
-                            project.project_name === content[0].project_name
-                                ? { ...content[0], created_date: project.created_date }
-                                : project,
-                        ),
-                    };
-                    const { is_loaded } = content[0];
-                    return (
-                        message === 1
-                        // && !is_loaded ? true : false
-                    );
-                }),
-                mergeMap(([{ message }]) => (!message ? [] : forkJoin([updateProjLoadStatus$, projLoadingStatus$]))),
-                mergeMap(([{ message: updateProjStatus }, { message: loadProjStatus, uuid_list, label_list }]) => {
-                    if (loadProjStatus === 2) {
-                        this.labelList = [...label_list];
-
-                        return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
-                    } else {
-                        const thumbnailResponse = interval(500).pipe(
-                            mergeMap(() => projLoadingStatus$),
-                            first(({ message }) => message === 2),
-                            mergeMap(({ uuid_list, label_list }) => {
-                                this.labelList = [...label_list];
-                                return uuid_list.length > 0
-                                    ? uuid_list.map((uuid) => thumbnail$(projectName, uuid))
-                                    : [];
-                            }),
-                        );
-
-                        return thumbnailResponse;
-                    }
-                }),
-                // * this mergeMap responsible for flaten all observable into one layer
-                mergeMap((data) => data),
-            )
-            .subscribe(
-                (res) => {
-                    this.isProjectLoading = true;
-                    this.thumbnailList = [...this.thumbnailList, res];
-                    // this.onChangeSchema = {
-                    //     ...this.onChangeSchema,
-                    //     currentThumbnailIndex: 0,
-                    //     totalNumThumbnail: this.thumbnailList.length,
-
-                    // this.tabStatus = [...this.tabStatus, { name: 'Label', closed, label_list: [] }];
-                },
-                (error: Error) => {},
-                () => {
-                    // const [{ label_list }] = this.tabStatus;
-                    // label_list && label_list.length < 1
-                    //     && this.onProcessLabel({ selectedLabel: '', label_list: [], action: 1 });
-                    // console.log(this.thumbnailList);
-                    this.isProjectLoading = false;
-                    this._router.navigate([`imglabel/${this.imgLblMode}`], {
-                        state: { thumbnailList: this.thumbnailList, projectName, labelList: this.labelList },
-                    });
-                    this._spinnerService.hideSpinner();
-                },
-            );
-        // make initial call
-        this.subject$.next();
+        this._router.navigate([`imglabel/${this.imgLblMode}`], {
+            state: { thumbnailList: this.thumbnailList, projectName, labelList: this.labelList },
+        });
     };
 
     createProject = (projectName: string): void => {

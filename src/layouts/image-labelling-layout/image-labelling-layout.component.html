@@ -2,6 +2,7 @@
     <div>
         <page-header [_onChange]="onChangeSchema"></page-header>
         <image-labelling-info
+            [_totalUuid]="totalUuid"
             [_onChange]="onChangeSchema"
             [_tabStatus]="tabStatus"
             (_onClick)="navigateByAction($event)"
@@ -35,6 +36,8 @@
         </ng-container>
 
         <image-labelling-project
+            [_selectMetadata]="selectedMetaData"
+            [_totalUuid]="totalUuid"
             [_thumbnailList]="thumbnailList"
             [_tabStatus]="tabStatus"
             (_onClose)="onToggleTab($event)"
@@ -43,6 +46,7 @@
             (_onEnterLabel)="onProcessLabel($event)"
             (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
             (_onDeleteAnnotation)="onDeleteAnnotation($event)"
+            (_loadMoreThumbnails)="onLoadMoreThumbnails()"
         ></image-labelling-project>
         <image-labelling-right-sidebar
             [_onChange]="onChangeSchema"

@@ -81,7 +81,6 @@ export class ExportSaveFormatService {
                         // if (metadata.bnd_box && metadata.bnd_box.length > 0) {
                         const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
                         const filename = this.getFileName(metadata.img_path);
-                        const extensionName = this.getFileExtensionName(filename);
                         const { img_path, img_depth, img_ori_w, img_ori_h } = metadata;
                         const pascalVocData = {
                             img_path,
@@ -92,7 +91,7 @@ export class ExportSaveFormatService {
                         };
                         const content = this.generatePascalVocFormat(pascalVocData);
                         const splitfilenameArr = filename.split('.');
-                        const finalizedFilename = `${splitfilenameArr[0]}_${extensionName}.xml`;
+                        const finalizedFilename = `${splitfilenameArr[0]}.xml`;
                         pascalVocList.push({
                             filename: finalizedFilename,
                             content,
@@ -140,7 +139,6 @@ export class ExportSaveFormatService {
                         // if (metadata.bnd_box && metadata.bnd_box.length > 0) {
                         const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
                         const filename = this.getFileName(metadata.img_path);
-                        const extensionName = this.getFileExtensionName(filename);
                         const { img_ori_w, img_ori_h } = metadata;
                         const yoloData = {
                             img_ori_w,
@@ -149,7 +147,7 @@ export class ExportSaveFormatService {
                         };
                         const content = this.generateYoloFormat({ ...yoloData }, labelList);
                         const splitfilenameArr = filename.split('.');
-                        const finalizedFilename = `${splitfilenameArr[0]}_${extensionName}.txt`;
+                        const finalizedFilename = `${splitfilenameArr[0]}.txt`;
                         yoloList.push({
                             filename: finalizedFilename,
                             content,
@@ -431,9 +429,9 @@ export class ExportSaveFormatService {
         return `${projectName}_segmentation_JSON.json`;
     }
 
-    private getFileExtensionName(filename: string) {
-        return filename.split('.').pop();
-    }
+    // private getFileExtensionName(filename: string) {
+    //     return filename.split('.').pop();
+    // }
 
     private getCocoContent(metadata: PolyMetadata[], labelList?: string[]) {
         let cocoContent: string = '{';
