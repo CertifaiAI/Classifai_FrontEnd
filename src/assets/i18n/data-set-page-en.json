@@ -47,6 +47,6 @@
     "renameSuccess": "is successfully renamed!",
     "deleteProject": "Delete Project",
     "exportProject": "Export Project",
-    "importJson": "Select Json File",
+    "importJson": "Select Config File",
     "selectJson": "Config File"
 }

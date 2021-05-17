@@ -18,6 +18,7 @@ import {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingInfoComponent implements OnInit, OnChanges {
+    @Input() _totalUuid: number = 0;
     @Input() _onChange!: ImgLabelProps;
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Output() _onClick: EventEmitter<ThumbnailInfoProps> = new EventEmitter();
