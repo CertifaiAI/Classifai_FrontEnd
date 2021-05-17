@@ -120,7 +120,7 @@
     <br />
     <form [formGroup]="form">
         <div class="content-container">
-            <div class="select-folder-container">
+            <div class="select-file-container">
                 <label class="label label-file">{{ 'importJson' | translate }} </label>
                 <label class="choose-file-btn">
                     {{ 'chooseFile' | translate }}
@@ -128,7 +128,15 @@
                         {{ 'Import' }}
                     </button>
                 </label>
+                <!-- <img style="width: 30px; height: 30px" src="../../assets/icons/info.svg" class="tooltip" />
+                <span class="tooltiptext">Tooltip text</span> -->
+
                 <label class="filename" #jsonImportProjectFilename></label>
+            </div>
+
+            <div class="tooltip">
+                What is Config File?
+                <span class="tooltiptext">JSON File Exported from Project</span>
             </div>
 
             <ng-container *ngIf="modalSpanMessage.trim()">
