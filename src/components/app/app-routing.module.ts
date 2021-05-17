@@ -27,6 +27,11 @@ const routes: Routes = [
                 ({ ImageLabellingLayoutModule }) => ImageLabellingLayoutModule,
             ),
     },
+    {
+        path: 'video',
+        loadChildren: () =>
+            import('../video-timeline/video-timeline.module').then(({ VideoTimelineModule }) => VideoTimelineModule),
+    },
     { path: '500', component: ServerErrorComponent },
     { path: '**', component: PageNotFoundComponent },
 ];
