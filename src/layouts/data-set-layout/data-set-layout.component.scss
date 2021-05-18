@@ -90,7 +90,7 @@ $fontSize: 2vh;
 .select-file-container {
     display: flex;
     flex-direction: row;
-    margin: 2vh 0 0 0;
+    margin: 0 0 0 0;
 }
 
 .file-name-container {
@@ -183,6 +183,7 @@ $fontSize: 2vh;
     border-bottom: 1px dotted black;
     font-size: 15px;
     text-decoration: underline;
+    margin-top: 1vh;
 }
 
 .tooltip .tooltiptext {

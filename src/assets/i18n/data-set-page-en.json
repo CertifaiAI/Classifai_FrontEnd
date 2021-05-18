@@ -48,5 +48,7 @@
     "deleteProject": "Delete Project",
     "exportProject": "Export Project",
     "importJson": "Select Config File",
-    "selectJson": "Config File"
+    "selectJson": "Config File",
+    "configFileInfoTitle": "What is Config File? ",
+    "configFileInfoDest": "JSON file exported from project."
 }

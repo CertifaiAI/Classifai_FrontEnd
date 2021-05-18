@@ -48,5 +48,7 @@
     "deleteProject": "Padam Projek",
     "exportProject": "Eksport Projek",
     "importJson": "Fail Json",
-    "selectJson": "Fail Konfig"
+    "selectJson": "Fail Konfig",
+    "configFileInfoTitle": "Apa itu Fail Konfig? ",
+    "configFileInfoDest": "Fail JSON telah Dieksport dari Projek."
 }
