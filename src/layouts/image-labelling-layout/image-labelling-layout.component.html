@@ -218,11 +218,12 @@
 <modal
     [id]="modalExportProject"
     [modalBodyStyle]="exportProjectBodyStyle"
-    [modalTitle]="'Export Project'"
+    [modalTitle]="'exportTitle' | translate"
     [scrollable]="false"
 >
     <br />
     <div class="model-content-container">
+        <p *ngIf="modalSpanLocationPath.trim()">{{ 'location' | translate }}{{ modalSpanLocationPath }}</p>
         <div [ngClass]="spanClass">
             <p class="error-msg" [innerHTML]="modalSpanMessage"></p>
         </div>

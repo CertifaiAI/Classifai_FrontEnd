@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { ImageLabellingModeService } from './image-labelling-mode.service';
 import { Injectable } from '@angular/core';
 import {
+    ExportResponse,
     Message,
     MessageBase64Img,
     MessageProjectProgress,
@@ -60,8 +61,8 @@ export class ImageLabellingApiService {
         }
     }
 
-    exportProject = (projectName: string, exportType: string): Observable<Message> => {
-        return this.http.put<Message>(
+    exportProject = (projectName: string, exportType: string): Observable<ExportResponse> => {
+        return this.http.put<ExportResponse>(
             `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/export/${exportType}`,
             {
                 newprojectid: projectName,

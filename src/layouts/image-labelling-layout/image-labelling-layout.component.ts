@@ -75,6 +75,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     processingNum: number = 0;
     spanClass: string = '';
     modalSpanMessage: string = '';
+    modalSpanLocationPath: string = '';
     sliceNum: number = 0;
     labelList: string[] = [];
     isOverlayOn = false;
@@ -353,6 +354,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onExport = (): void => {
         this.modalSpanMessage = '';
+        this.modalSpanLocationPath = '';
         this._modalService.open(this.modalExportOptions);
     };
 
@@ -360,16 +362,15 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         exportType === 'cfgdata' && this.processingNum++;
         const projectName = this.selectedProjectName;
         const exportProject$ = this._imgLblApiService.exportProject(projectName, exportType);
-        exportProject$.pipe(first()).subscribe(({ message }) => {
+        exportProject$.pipe(first()).subscribe(({ message, project_config_path }) => {
             exportType === 'cfgdata' && this.processingNum--;
             if (message === 1) {
+                console.log(this._languageService._translate.get('exportSuccess').subscribe());
                 this._languageService._translate.get('exportSuccess').subscribe((translated) => {
                     //alert(projectName + translated);
-                    exportProject$.pipe().subscribe(({ message }) => {
-                        console.log('EXPORT', message);
-                    });
                     this.toggleExportProjectModalMessage(true);
                     this.modalSpanMessage = projectName + translated;
+                    this.modalSpanLocationPath = project_config_path;
                     this.processIsSuccess(true);
                 });
             } else {
