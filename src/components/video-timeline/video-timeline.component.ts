@@ -6,10 +6,11 @@ import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChi
     styleUrls: ['./video-timeline.component.scss'],
 })
 export class VideoTimelineComponent implements OnInit, OnChanges {
-    occupiedSpace = [...Array(27)];
+    // occupiedSpace = [...Array(27)];
+    occupiedSpace = [];
     @Input() _totalFrame = 0;
     @ViewChild('videoTimelineRef') _videoTimelineRef!: ElementRef<HTMLDivElement>;
-    totalFrameArr: number[] = [];
+    totalFrameArr: number[] = [...Array(100)];
     activeFrame = 0;
     constructor() {}
 
@@ -22,7 +23,9 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
     }
 
     onScroll = ({ deltaY }: WheelEvent) => {
+        //console.log('DELTA Y', deltaY);
         const scrollTo = this._videoTimelineRef.nativeElement.scrollLeft;
+        console.log('SCROLL TO', scrollTo);
         scrollTo !== undefined &&
             this._videoTimelineRef.nativeElement.scrollTo({
                 ...(deltaY > 0 ? { left: scrollTo + 25 } : { left: scrollTo - 25 }),
