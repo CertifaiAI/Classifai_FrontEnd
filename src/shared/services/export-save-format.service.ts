@@ -101,7 +101,7 @@ export class ExportSaveFormatService {
                     if (!pascalVocList) {
                         return alert('There are no labelling progress.');
                     }
-                    await this.saveAsZip(pascalVocList, saveFormat, projectName);
+                    await this.saveAsZip(pascalVocList, 'pascal_voc', projectName);
                 }
                 break;
             case 'yolo':
@@ -186,7 +186,7 @@ export class ExportSaveFormatService {
                 }
                 this.saveFile({
                     content: ocrText,
-                    filename: `${projectName}_Textocr_labels.csv`,
+                    filename: `${projectName}_text_ocr_labels.csv`,
                     type: 'text/csv;charset=utf-8',
                 });
                 break;
