@@ -669,11 +669,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             ...((this.saveType.saveBulk || saveFormat === 'ocr' || saveFormat === 'json' || saveFormat === 'coco') && {
                 projectFullMetadata: this.thumbnailList,
             }),
-            ...((saveFormat === 'label' ||
-                saveFormat === 'yolo' ||
-                saveFormat === 'coco' ||
-                saveFormat === 'pascalVoc' ||
-                saveFormat === 'ocr') && {
+            ...(saveFormat !== 'json' && {
                 labelList: this.tabStatus.map(({ label_list }) => label_list)[1],
             }),
         });

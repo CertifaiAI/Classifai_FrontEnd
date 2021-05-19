@@ -8,7 +8,6 @@ import {
     PolyMetadata,
     Polygons,
 } from 'src/components/image-labelling/image-labelling.model';
-import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 export type SaveFormat = 'pascalVoc' | 'yolo' | 'ocr' | 'label' | 'coco' | 'json';
 
@@ -326,7 +325,7 @@ export class ExportSaveFormatService {
         const objectNode = this.createNode('object');
 
         for (const [_, { label, x1, x2, y1, y2 }] of bnd_box.entries()) {
-            if (labelList.indexOf(label) != -1) {
+            if (labelList.indexOf(label) !== -1) {
                 pVocStart += '\t' + objectNode[0] + '\n';
                 const nameChildNode = this.createNode('name');
                 const poseChildNode = this.createNode('pose');
@@ -360,7 +359,7 @@ export class ExportSaveFormatService {
         labelList: string[],
     ) {
         const yoloContent = bnd_box.reduce((prev, { x1, x2, y1, y2, label }, i) => {
-            if (labelList.indexOf(label) == -1) {
+            if (labelList.indexOf(label) === -1) {
                 prev += '\n';
                 return prev;
             }
@@ -386,7 +385,7 @@ export class ExportSaveFormatService {
 
     private generateOCRFormat({ bnd_box }: Pick<BboxMetadata, 'bnd_box'>, filename: string, labelList: string[]) {
         const textOCRContent = bnd_box.reduce((prev, { x1, x2, y1, y2, label }) => {
-            if (labelList.indexOf(label) == -1) {
+            if (labelList.indexOf(label) === -1) {
                 prev += `${filename},${x1.toString()},${y1.toString()}`;
                 prev += `,${x2.toString()},${y2.toString()},${label.toString()}\n`;
                 return prev;
