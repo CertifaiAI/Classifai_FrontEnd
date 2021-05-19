@@ -8,9 +8,9 @@ import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChi
 export class VideoTimelineComponent implements OnInit, OnChanges {
     // occupiedSpace = [...Array(27)];
     occupiedSpace = [];
-    @Input() _totalFrame = 0;
+    @Input() _totalFrame = 100;
     @ViewChild('videoTimelineRef') _videoTimelineRef!: ElementRef<HTMLDivElement>;
-    totalFrameArr: number[] = [...Array(100)];
+    totalFrameArr: number[] = [...Array(this._totalFrame)];
     activeFrame = 0;
     constructor() {}
 
