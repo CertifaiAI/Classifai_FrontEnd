@@ -12,9 +12,17 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
     @ViewChild('videoTimelineRef') _videoTimelineRef!: ElementRef<HTMLDivElement>;
     totalFrameArr: number[] = [...Array(this._totalFrame)];
     activeFrame = 0;
+
+    interval: number = 1;
+    object1: number[] = [...Array(15)];
+    object2: number[] = [10, 11, 12, 13];
+
     constructor() {}
 
-    ngOnInit() {}
+    ngOnInit() {
+        console.log(this.object1);
+        console.log(this.object2);
+    }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes._totalFrame.currentValue) {
@@ -23,25 +31,23 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
     }
 
     onScroll = ({ deltaY }: WheelEvent) => {
-        //console.log('DELTA Y', deltaY);
         const scrollTo = this._videoTimelineRef.nativeElement.scrollLeft;
-        console.log('SCROLL TO', scrollTo);
         scrollTo !== undefined &&
             this._videoTimelineRef.nativeElement.scrollTo({
                 ...(deltaY > 0 ? { left: scrollTo + 25 } : { left: scrollTo - 25 }),
             });
         deltaY > 0
             ? this.activeFrame !== this._totalFrame - 1
-                ? (this.activeFrame += 1)
+                ? (this.activeFrame += this.interval)
                 : this.activeFrame
             : this.activeFrame !== 0
-            ? (this.activeFrame -= 1)
+            ? (this.activeFrame -= this.interval)
             : this.activeFrame;
     };
 
     displayFrameIndicator = (index: number): string => {
         let className = '';
-        className += index === 0 && ' figure ';
+        index in this.object2.values() ? (className += ' figure ') : className;
         className += this.activeFrame === index && ' cursor row';
         className += ' timelineCell clickable';
         return className;
