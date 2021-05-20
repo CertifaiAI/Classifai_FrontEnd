@@ -114,21 +114,26 @@
 <modal
     [id]="modalIdImportProject"
     [modalBodyStyle]="importProjectModalBodyStyle"
-    [modalTitle]="'Import Project'"
+    [modalTitle]="'menuName.importProject' | translate"
     [scrollable]="false"
 >
     <br />
     <form [formGroup]="form">
         <div class="content-container">
-            <div class="select-folder-container">
-                <label class="label label-file">{{ 'Select JSON File' }} </label>
+            <div class="select-file-container">
+                <label class="label label-file">{{ 'importJson' | translate }} </label>
                 <label class="choose-file-btn">
-                    {{ 'Choose File' }}
+                    {{ 'chooseFile' | translate }}
                     <button class="input-id" type="button" (click)="onSelectImportProjectJson()">
                         {{ 'Import' }}
                     </button>
                 </label>
                 <label class="filename" #jsonImportProjectFilename></label>
+            </div>
+
+            <div class="tooltip">
+                <div class="tooltiptitle">{{ 'configFileInfoTitle' | translate }}</div>
+                <span class="tooltiptext">{{ 'configFileInfoDest' | translate }}</span>
             </div>
 
             <ng-container *ngIf="modalSpanMessage.trim()">
@@ -147,6 +152,20 @@
             </div> -->
         </div>
     </form>
+</modal>
+
+<modal
+    [id]="modalIdDeleteProject"
+    [modalBodyStyle]="deleteProjectBodyStyle"
+    [modalTitle]="'deleteProject' | translate"
+    [scrollable]="false"
+>
+    <br />
+    <div class="content-container">
+        <div class="validation-success">
+            <p class="error-msg" [innerHTML]="modalSpanMessage"></p>
+        </div>
+    </div>
 </modal>
 
 <spinner [_loading]="isLoading"></spinner>

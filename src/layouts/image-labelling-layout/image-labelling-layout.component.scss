@@ -388,3 +388,23 @@ tr th:nth-child(1) {
     text-align: center;
     background: rgb(38, 42, 46);
 }
+
+.validation-error {
+    margin: 1px 1px 1px 1px;
+    color: red;
+}
+
+.validation-success {
+    margin: 1px 1px 1px 1px;
+    color: green;
+}
+
+.label {
+    color: white;
+    font-size: 2vh;
+    margin-right: 1vw;
+}
+
+.label-file {
+    padding-top: 0.5vh;
+}
