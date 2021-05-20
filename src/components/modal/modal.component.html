@@ -9,4 +9,4 @@
         <ng-content></ng-content>
     </div>
 </div>
-<div class="modal-background" (click)="close()"></div>
+<div class="modal-background" [ngStyle]="{ 'z-index': zIndex * 1000 }" (click)="close()"></div>

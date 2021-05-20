@@ -312,6 +312,10 @@
     }
 }
 
+.no-margin-left {
+    margin-left: 0;
+}
+
 .space-verticle {
     background-color: transparent;
     outline: none;
@@ -347,6 +351,34 @@
     }
 }
 
+.adv-settings {
+    padding: 1vh;
+    margin: 1vh 1.2vw;
+    color: #ccc;
+    font-size: x-small;
+    cursor: pointer;
+    width: fit-content;
+    background: #30353a;
+    border-radius: 0.5vh;
+    float: right;
+}
+
+.adv-settings:hover {
+    background: #373d42;
+}
+
+.modal-adv-container {
+    margin: 1vh 1vw;
+}
+
+.modal-adv-instruction {
+    color: white;
+    opacity: 50%;
+}
+
+.modal-adv-label {
+    font-size: 1.5vh;
+}
 .shortcut-key-info-header {
     font-size: 1.2vw;
     color: #fff;
@@ -407,4 +439,11 @@ tr th:nth-child(1) {
 
 .label-file {
     padding-top: 0.5vh;
+}
+
+.flex-center-width {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0.3vh;
 }

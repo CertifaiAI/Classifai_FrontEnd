@@ -85,6 +85,7 @@
                         <p>Bulk Saving</p>
                     </label>
                 </div>
+                <div class="adv-settings" (click)="onDisplayModal('modal-adv')">Advance Settings</div>
                 <button class="save-format-btn" (click)="onClickDownload('pascalVoc')">Pascal VOC</button><br />
                 <button class="save-format-btn" (click)="onClickDownload('yolo')">YOLO</button><br />
                 <button class="save-format-btn" (click)="onClickDownload('ocr')">Text OCR</button><br />
@@ -95,6 +96,31 @@
                 <button class="save-format-btn" (click)="onClickDownload('json')">JSON</button><br />
                 <button class="save-format-btn" (click)="onClickDownload('label')">Label</button><br />
             </ng-container>
+        </div>
+    </div>
+</modal>
+
+<modal
+    id="modal-adv"
+    [id]="'modal-adv'"
+    [modalBodyStyle]="advModalBodyStyle"
+    [modalTitle]="'Advance Settings'"
+    [scrollable]="true"
+    [zIndex]="2"
+>
+    <div class="modal-adv-container">
+        <p class="modal-adv-instruction">Choose label to save :</p>
+        <div *ngFor="let labelC of labelChoosen; let i = index" class="flex-center-width">
+            <label class="switch no-margin-left">
+                <input
+                    type="checkbox"
+                    class="checkBox"
+                    [checked]="labelC.isChoosen"
+                    (change)="labelC.isChoosen = !labelC.isChoosen"
+                />
+                <span class="slider round"></span>
+            </label>
+            <label class="modal-adv-label">{{ labelC.label }}</label>
         </div>
     </div>
 </modal>
