@@ -360,7 +360,6 @@ export class ExportSaveFormatService {
     ) {
         const yoloContent = bnd_box.reduce((prev, { x1, x2, y1, y2, label }, i) => {
             if (labelList.indexOf(label) === -1) {
-                prev += '\n';
                 return prev;
             }
 
