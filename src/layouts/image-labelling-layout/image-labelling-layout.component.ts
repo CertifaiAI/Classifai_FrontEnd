@@ -367,7 +367,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             if (message === 1) {
                 console.log(this._languageService._translate.get('exportSuccess').subscribe());
                 this._languageService._translate.get('exportSuccess').subscribe((translated) => {
-                    //alert(projectName + translated);
+                    // alert(projectName + translated);
                     this.toggleExportProjectModalMessage(true);
                     this.modalSpanMessage = projectName + translated;
                     this.modalSpanLocationPath = project_config_path;
@@ -375,7 +375,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 });
             } else {
                 this._languageService._translate.get('exportFailed').subscribe((translated) => {
-                    //alert(translated + projectName);
+                    // alert(translated + projectName);
                     this.toggleExportProjectModalMessage(true);
                     this.modalSpanMessage = translated + projectName;
                     this.processIsSuccess(false);
@@ -707,7 +707,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             ...((this.saveType.saveBulk || saveFormat === 'ocr' || saveFormat === 'json' || saveFormat === 'coco') && {
                 projectFullMetadata: this.thumbnailList,
             }),
-            ...((saveFormat === 'label' || saveFormat === 'yolo' || saveFormat === 'coco') && {
+            ...(saveFormat !== 'json' && {
                 labelList: this.tabStatus.map(({ label_list }) => label_list)[1],
             }),
         });

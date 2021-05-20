@@ -25,7 +25,7 @@ export class LoadingSpinnerInterceptor implements HttpInterceptor {
                     // console.log(event);
                     if (event instanceof HttpResponse) {
                         this.pendingRequestsCount--;
-                        let link = event.url ? event.url.toString().split('/') : '';
+                        const link = event.url ? event.url.toString().split('/') : '';
                         this.pendingRequestsCount === 0 &&
                             link[link.length - 1] !== 'importstatus' &&
                             link[link.length - 1] !== 'filesysstatus' &&
