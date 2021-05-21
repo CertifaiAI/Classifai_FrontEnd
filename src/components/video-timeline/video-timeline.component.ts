@@ -1,4 +1,5 @@
 import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { LabelledFrame } from './video-timeline.model';
 
 @Component({
     selector: 'video-timeline',
@@ -13,16 +14,20 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
     totalFrameArr: number[] = [...Array(this._totalFrame)];
     activeFrame = 0;
 
-    interval: number = 1;
-    object1: number[] = [...Array(15)];
-    object2: number[] = [10, 11, 12, 13];
+    labelledFrame: LabelledFrame[] = [
+        {
+            frame: [5, 6, 7, 8],
+            object: 'Person 1',
+        },
+        {
+            frame: [1, 2, 3, 4],
+            object: 'Person 2',
+        },
+    ];
 
     constructor() {}
 
-    ngOnInit() {
-        console.log(this.object1);
-        console.log(this.object2);
-    }
+    ngOnInit() {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes._totalFrame.currentValue) {
@@ -38,22 +43,25 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
             });
         deltaY > 0
             ? this.activeFrame !== this._totalFrame - 1
-                ? (this.activeFrame += this.interval)
+                ? (this.activeFrame += 1)
                 : this.activeFrame
             : this.activeFrame !== 0
-            ? (this.activeFrame -= this.interval)
+            ? (this.activeFrame -= 1)
             : this.activeFrame;
     };
 
-    displayFrameIndicator = (index: number): string => {
+    displayFrameIndicator = (index: number, frame: any): string => {
         let className = '';
-        index in this.object2.values() ? (className += ' figure ') : className;
+        frame.forEach((element: number) => {
+            index === element ? (className += ' figure ') : className;
+        });
         className += this.activeFrame === index && ' cursor row';
         className += ' timelineCell clickable';
         return className;
     };
 
-    onClickVideoTImeline = (index: number) => {
+    onClickVideoTImeline = (index: number, object: any) => {
+        console.log('CLICKED FRAME', index, 'OBJECT', object);
         this.activeFrame = index;
     };
 }
