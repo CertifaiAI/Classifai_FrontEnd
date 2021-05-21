@@ -103,8 +103,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
     advModalBodyStyle: ModalBodyStyle = {
         maxHeight: '80vh',
-        minWidth: '20vw',
-        maxWidth: '20vw',
+        minWidth: '18vw',
+        maxWidth: '18vw',
         margin: '10vh 28vw',
         overflow: 'none',
     };
@@ -740,6 +740,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onLoadMoreThumbnails() {
         this.loadThumbnails();
+    }
+
+    saveAdvSettings(labelChoosen: LabelChoosen) {
+        console.log(labelChoosen);
     }
 
     shortcutKeyInfo() {

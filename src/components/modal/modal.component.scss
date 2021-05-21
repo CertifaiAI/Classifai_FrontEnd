@@ -59,7 +59,10 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    @include button-style();
+    font-size: 1vw;
+    padding: 0.5vw;
+    background: #262a2e;
+    color: azure;
 }
 
 .modal-button {
