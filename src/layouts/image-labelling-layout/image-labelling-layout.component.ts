@@ -742,7 +742,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.loadThumbnails();
     }
 
-    saveAdvSettings(labelChoosen: LabelChoosen) {
+    saveAdvSettings(labelChoosen: LabelChoosen[]) {
         console.log(labelChoosen);
     }
 
