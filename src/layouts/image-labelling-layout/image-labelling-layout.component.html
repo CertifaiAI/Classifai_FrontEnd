@@ -85,7 +85,7 @@
                         <p>Bulk Saving</p>
                     </label>
                 </div>
-                <div class="adv-settings" (click)="onDisplayModal('modal-adv')">Advanced Settings</div>
+                <div class="adv-settings" (click)="showAdvSettings()">Advanced Settings</div>
                 <button class="save-format-btn" (click)="onClickDownload('pascalVoc')">Pascal VOC</button><br />
                 <button class="save-format-btn" (click)="onClickDownload('yolo')">YOLO</button><br />
                 <button class="save-format-btn" (click)="onClickDownload('ocr')">Text OCR</button><br />
@@ -110,7 +110,7 @@
 >
     <div class="modal-adv-container">
         <p class="modal-adv-instruction">Toggle left to disable the label</p>
-        <div *ngFor="let labelC of labelChoosen; let i = index" class="margin-bottom">
+        <div *ngFor="let labelC of tempLabelChoosen; let i = index" class="margin-bottom">
             <label class="switch-2 no-margin-left">
                 <input
                     type="checkbox"
@@ -122,7 +122,7 @@
             </label>
             <label class="modal-adv-label">{{ labelC.label }}</label>
         </div>
-        <button class="button-style modal-adv-btn" (click)="saveAdvSettings(labelChoosen)">
+        <button class="button-style modal-adv-btn" (click)="saveAdvSettings()">
             {{ 'leftSideBar.save' | translate }}
         </button>
     </div>

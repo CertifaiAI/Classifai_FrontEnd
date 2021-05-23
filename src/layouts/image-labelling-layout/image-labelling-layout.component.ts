@@ -83,6 +83,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     blockLoadThumbnails: boolean = false;
     totalUuid: number = 0;
     labelChoosen: LabelChoosen[] = [];
+    tempLabelChoosen: LabelChoosen[] = [];
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
@@ -270,7 +271,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                                 this.labelChoosen = this.tabStatus[1].label_list
                                     ? this.tabStatus[1].label_list.map((label) => ({ label, isChoosen: true }))
                                     : [];
-                                console.log(this.labelChoosen);
                                 this.onDisplayModal('modal-save');
                             }
                         });
@@ -742,8 +742,14 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.loadThumbnails();
     }
 
-    saveAdvSettings(labelChoosen: LabelChoosen[]) {
-        console.log(labelChoosen);
+    showAdvSettings() {
+        this.tempLabelChoosen = this.labelChoosen.map((x) => Object.assign({}, x));
+        this.onDisplayModal('modal-adv');
+    }
+
+    saveAdvSettings() {
+        this.labelChoosen = this.tempLabelChoosen.map((x) => Object.assign({}, x));
+        this.onCloseModal('modal-adv');
     }
 
     shortcutKeyInfo() {
