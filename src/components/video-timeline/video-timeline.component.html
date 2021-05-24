@@ -1,5 +1,8 @@
-<div class="videoTimelineContainer" (wheel)="onScroll($event)">
-    <div class="videoTimeline" #videoTimelineRef>
+<div class="videoTimelineContainer">
+    <div *ngIf="activePreview !== null">
+        <img class="activeFrame" src="{{ activePreview }}" />
+    </div>
+    <div class="videoTimeline" (wheel)="onScroll($event)" #videoTimelineRef>
         <table class="table">
             <tbody>
                 <tr *ngFor="let item of labelledFrame; index as idx">
@@ -10,7 +13,7 @@
                             </div>
                             <div
                                 [ngClass]="displayFrameIndicator(i, item.frame)"
-                                (click)="onClickVideoTImeline(i, item.object)"
+                                (click)="onClickVideoTImeline(i)"
                             ></div>
                         </td>
                     </ng-container>
