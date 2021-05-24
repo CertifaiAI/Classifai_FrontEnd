@@ -14,6 +14,7 @@ export class ModalComponent implements OnInit, OnDestroy {
     @Input() modalTitle: string = '';
     @Input() showHeader: boolean = true;
     @Input() scrollable: boolean = true;
+    @Input() zIndex: number = 1; // Assign [zIndex]="2" , if it is the second modal show in display at one time.
     private element: HTMLDivElement;
 
     constructor(private _modalService: ModalService, private _el: ElementRef) {
@@ -23,6 +24,7 @@ export class ModalComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.zIndex !== 1 && (this.modalBodyStyle.zIndex = (this.zIndex * 2000).toString());
         // ensure id attribute exists
         if (!this.id) {
             console.error('modal must have an id');

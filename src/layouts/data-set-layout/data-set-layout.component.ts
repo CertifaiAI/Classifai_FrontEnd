@@ -472,7 +472,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
 
     startProject = (projectName: string): void => {
         this._router.navigate([`imglabel/${this.imgLblMode}`], {
-            state: { thumbnailList: this.thumbnailList, projectName, labelList: this.labelList },
+            state: { projectName },
         });
     };
 
