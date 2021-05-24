@@ -175,4 +175,9 @@ export type LabelInfo = {
     count: number;
 };
 
+export type LabelChoosen = {
+    label: string;
+    isChoosen: boolean;
+};
+
 export type DiffXY = { diffX: number; diffY: number };

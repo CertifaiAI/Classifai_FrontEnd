@@ -23,6 +23,7 @@ import {
     EventEmitter_Url,
     ImageLabelUrl,
     ImgLabelProps,
+    LabelChoosen,
     PolyMetadata,
     SelectedLabelProps,
     TabsProps,
@@ -81,6 +82,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     isOverlayOn = false;
     blockLoadThumbnails: boolean = false;
     totalUuid: number = 0;
+    labelChoosen: LabelChoosen[] = [];
+    tempLabelChoosen: LabelChoosen[] = [];
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
@@ -96,6 +99,13 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         maxHeight: '80vh',
         minWidth: '28vw',
         maxWidth: '28vw',
+        margin: '10vh 28vw',
+        overflow: 'none',
+    };
+    advModalBodyStyle: ModalBodyStyle = {
+        maxHeight: '80vh',
+        minWidth: '18vw',
+        maxWidth: '18vw',
         margin: '10vh 28vw',
         overflow: 'none',
     };
@@ -146,62 +156,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.currentUrl = this._router.url as ImageLabelUrl;
-        const { thumbnailList, labelList, projectName } = this._imgLblLayoutService.getRouteState(history);
-        this.thumbnailList = thumbnailList;
+        const { projectName } = this._imgLblLayoutService.getRouteState(history);
         this.selectedProjectName = projectName;
-        this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: thumbnailList.length };
+        this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: this.thumbnailList.length };
         this.startProject(this.selectedProjectName);
-        const newLabelList = this._imgLblLayoutService.displayLabelList<CompleteMetadata>(this.tabStatus, labelList);
-        this.tabStatus = newLabelList;
-
-        this._annotateService.labelStaging$
-            .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(({ annotation: annnotationIndex, isDlbClick }) => {
-                if (isDlbClick) {
-                    this.currentAnnotationIndex = annnotationIndex;
-                    this.tabStatus.forEach(({ annotation }) =>
-                        annotation?.forEach(({ bnd_box, polygons }) => {
-                            const dynamicProp = bnd_box ?? polygons;
-                            if (dynamicProp) {
-                                const { label, region } = dynamicProp[annnotationIndex];
-                                this.currentAnnotationLabel = label;
-                                this.mainLabelRegionVal = region || '';
-                            } else {
-                                console.log('missing prop bnd_box OR polygons');
-                            }
-                        }),
-                    );
-                    this._imgLblActionService.setState({
-                        isActiveModal: true,
-                        draw: false,
-                        drag: false,
-                        scroll: false,
-                    });
-                    this.onDisplayModal();
-                } else {
-                    this.currentAnnotationLabel = '';
-                    this.currentAnnotationIndex = annnotationIndex;
-                }
-            });
-
-        // subscription logic to check if clear is true then empty the current display image's metadata
-        this._imgLblActionService.action$.pipe(takeUntil(this.unsubscribe$)).subscribe(({ clear, save }) => {
-            if (clear) {
-                this.thumbnailList[0].bnd_box && (this.thumbnailList[this.currentImageDisplayIndex].bnd_box = []);
-                this.thumbnailList[0].polygons && (this.thumbnailList[this.currentImageDisplayIndex].polygons = []);
-
-                this.onChangeSchema = {
-                    ...this.onChangeSchema,
-                    hasAnnotation: false,
-                };
-            }
-            if (save) {
-                this.onDisplayModal('modal-save');
-            }
-            //  else {
-            //     this.onCloseModal('modal-save');
-            // }
-        });
     }
 
     startProject = (projectName: string): void => {
@@ -233,6 +191,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 mergeMap(([{ message: updateProjStatus }, { message: loadProjStatus, uuid_list, label_list }]) => {
                     if (loadProjStatus === 2) {
                         this.labelList = [...label_list];
+                        this.tabStatus[1].label_list = this.labelList;
                         return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
                     } else {
                         const thumbnailResponse = interval(500).pipe(
@@ -263,6 +222,58 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 (error: Error) => {},
                 () => {
                     this.isLoading = false;
+                    this._annotateService.labelStaging$
+                        .pipe(takeUntil(this.unsubscribe$))
+                        .subscribe(({ annotation: annnotationIndex, isDlbClick }) => {
+                            if (isDlbClick) {
+                                this.currentAnnotationIndex = annnotationIndex;
+                                this.tabStatus.forEach(({ annotation }) =>
+                                    annotation?.forEach(({ bnd_box, polygons }) => {
+                                        const dynamicProp = bnd_box ?? polygons;
+                                        if (dynamicProp) {
+                                            const { label, region } = dynamicProp[annnotationIndex];
+                                            this.currentAnnotationLabel = label;
+                                            this.mainLabelRegionVal = region || '';
+                                        } else {
+                                            console.log('missing prop bnd_box OR polygons');
+                                        }
+                                    }),
+                                );
+                                this._imgLblActionService.setState({
+                                    isActiveModal: true,
+                                    draw: false,
+                                    drag: false,
+                                    scroll: false,
+                                });
+                                this.onDisplayModal();
+                            } else {
+                                this.currentAnnotationLabel = '';
+                                this.currentAnnotationIndex = annnotationIndex;
+                            }
+                        });
+
+                    // subscription logic to check if clear is true then empty the current display image's metadata
+                    this._imgLblActionService.action$
+                        .pipe(takeUntil(this.unsubscribe$))
+                        .subscribe(({ clear, save }) => {
+                            if (clear) {
+                                this.thumbnailList[0].bnd_box &&
+                                    (this.thumbnailList[this.currentImageDisplayIndex].bnd_box = []);
+                                this.thumbnailList[0].polygons &&
+                                    (this.thumbnailList[this.currentImageDisplayIndex].polygons = []);
+
+                                this.onChangeSchema = {
+                                    ...this.onChangeSchema,
+                                    hasAnnotation: false,
+                                };
+                            }
+                            if (save) {
+                                this.labelChoosen = this.tabStatus[1].label_list
+                                    ? this.tabStatus[1].label_list.map((label) => ({ label, isChoosen: true }))
+                                    : [];
+                                this.onDisplayModal('modal-save');
+                            }
+                        });
                     this.navigateByAction({ thumbnailAction: 1 });
                     this._spinnerService.hideSpinner();
                 },
@@ -697,6 +708,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     onClickDownload = async (saveFormat: SaveFormat) => {
+        const labelList = this.labelChoosen.filter((e) => e.isChoosen === true).map((e) => e.label);
         this.saveType.saveBulk && this.processingNum++;
         await this._exportSaveFormatService.exportSaveFormat({
             ...this.saveType,
@@ -708,7 +720,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 projectFullMetadata: this.thumbnailList,
             }),
             ...(saveFormat !== 'json' && {
-                labelList: this.tabStatus.map(({ label_list }) => label_list)[1],
+                labelList,
             }),
         });
         this.saveType.saveBulk && this.processingNum--;
@@ -728,6 +740,16 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onLoadMoreThumbnails() {
         this.loadThumbnails();
+    }
+
+    showAdvSettings() {
+        this.tempLabelChoosen = this.labelChoosen.map((x) => Object.assign({}, x));
+        this.onDisplayModal('modal-adv');
+    }
+
+    saveAdvSettings() {
+        this.labelChoosen = this.tempLabelChoosen.map((x) => Object.assign({}, x));
+        this.onCloseModal('modal-adv');
     }
 
     shortcutKeyInfo() {
