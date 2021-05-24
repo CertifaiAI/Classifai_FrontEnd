@@ -71,7 +71,7 @@
                             (change)="onSwitchSaveType()"
                         />
                         <span class="slider round"></span>
-                        <p>Current Image</p>
+                        <p>{{ 'singleSave' | translate }}</p>
                     </label>
                     <span class="space-verticle"></span>
                     <label class="switch">
@@ -82,10 +82,10 @@
                             (change)="onSwitchSaveType()"
                         />
                         <span class="slider round"></span>
-                        <p>Bulk Saving</p>
+                        <p>{{ 'bulkSave' | translate }}</p>
                     </label>
                 </div>
-                <div class="adv-settings" (click)="showAdvSettings()">Advanced Settings</div>
+                <div class="adv-settings" (click)="showAdvSettings()">{{ 'advModal.title' | translate }}</div>
                 <button class="save-format-btn" (click)="onClickDownload('pascalVoc')">Pascal VOC</button><br />
                 <button class="save-format-btn" (click)="onClickDownload('yolo')">YOLO</button><br />
                 <button class="save-format-btn" (click)="onClickDownload('ocr')">Text OCR</button><br />
@@ -104,12 +104,14 @@
     id="modal-adv"
     [id]="'modal-adv'"
     [modalBodyStyle]="advModalBodyStyle"
-    [modalTitle]="'Advanced Settings'"
+    [modalTitle]="'advModal.title' | translate"
     [scrollable]="true"
     [zIndex]="2"
 >
     <div class="modal-adv-container">
-        <p class="modal-adv-instruction">Toggle left to disable the label</p>
+        <p *ngIf="tempLabelChoosen.length !== 0" class="modal-adv-instruction">
+            {{ 'advModal.instructionText' | translate }}
+        </p>
         <div *ngFor="let labelC of tempLabelChoosen; let i = index" class="margin-bottom">
             <label class="switch-2 no-margin-left">
                 <input
@@ -122,8 +124,12 @@
             </label>
             <label class="modal-adv-label">{{ labelC.label }}</label>
         </div>
-        <button class="button-style modal-adv-btn" (click)="saveAdvSettings()">
-            {{ 'leftSideBar.save' | translate }}
+        <div *ngIf="tempLabelChoosen.length === 0">
+            {{ 'advModal.noLabel' | translate }}
+        </div>
+
+        <button *ngIf="tempLabelChoosen.length !== 0" class="button-style modal-adv-btn" (click)="saveAdvSettings()">
+            {{ 'advModal.btnSave' | translate }}
         </button>
     </div>
 </modal>
