@@ -82,25 +82,25 @@ export class ExportSaveFormatService {
                     const pascalVocList: { filename: string; content: string }[] = [];
 
                     projectFullMetadata.forEach((metadata) => {
-                        // if (metadata.bnd_box && metadata.bnd_box.length > 0) {
-                        const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
-                        const filename = this.getFileName(metadata.img_path);
-                        const { img_path, img_depth, img_ori_w, img_ori_h } = metadata;
-                        const pascalVocData = {
-                            img_path,
-                            img_depth,
-                            img_ori_w,
-                            img_ori_h,
-                            bnd_box: calculatedBoxMetadata,
-                        };
-                        const content = this.generatePascalVocFormat(pascalVocData, labelList);
-                        const splitfilenameArr = filename.split('.');
-                        const finalizedFilename = `${splitfilenameArr[0]}.xml`;
-                        pascalVocList.push({
-                            filename: finalizedFilename,
-                            content,
-                        });
-                        // }
+                        if (metadata.bnd_box && metadata.bnd_box.length > 0) {
+                            const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
+                            const filename = this.getFileName(metadata.img_path);
+                            const { img_path, img_depth, img_ori_w, img_ori_h } = metadata;
+                            const pascalVocData = {
+                                img_path,
+                                img_depth,
+                                img_ori_w,
+                                img_ori_h,
+                                bnd_box: calculatedBoxMetadata,
+                            };
+                            const content = this.generatePascalVocFormat(pascalVocData, labelList);
+                            const splitfilenameArr = filename.split('.');
+                            const finalizedFilename = `${splitfilenameArr[0]}.xml`;
+                            pascalVocList.push({
+                                filename: finalizedFilename,
+                                content,
+                            });
+                        }
                     });
                     if (!pascalVocList) {
                         return alert('There are no labelling progress.');
@@ -139,24 +139,23 @@ export class ExportSaveFormatService {
 
                     const yoloList: { filename: string; content: string }[] = [];
                     projectFullMetadata.forEach((metadata) => {
-                        // if (metadata.bnd_box && metadata.bnd_box.length > 0) {
-                        const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
-                        const filename = this.getFileName(metadata.img_path);
-                        const { img_ori_w, img_ori_h } = metadata;
-                        const yoloData = {
-                            img_ori_w,
-                            img_ori_h,
-                            bnd_box: calculatedBoxMetadata,
-                        };
-                        const content = this.generateYoloFormat({ ...yoloData }, labelList);
-                        const splitfilenameArr = filename.split('.');
-                        const finalizedFilename = `${splitfilenameArr[0]}.txt`;
-                        yoloList.push({
-                            filename: finalizedFilename,
-                            content,
-                        });
-
-                        // }
+                        if (metadata.bnd_box && metadata.bnd_box.length > 0) {
+                            const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
+                            const filename = this.getFileName(metadata.img_path);
+                            const { img_ori_w, img_ori_h } = metadata;
+                            const yoloData = {
+                                img_ori_w,
+                                img_ori_h,
+                                bnd_box: calculatedBoxMetadata,
+                            };
+                            const content = this.generateYoloFormat({ ...yoloData }, labelList);
+                            const splitfilenameArr = filename.split('.');
+                            const finalizedFilename = `${splitfilenameArr[0]}.txt`;
+                            yoloList.push({
+                                filename: finalizedFilename,
+                                content,
+                            });
+                        }
                     });
                     if (!yoloList) {
                         return alert('There are no labelling progress.');
