@@ -11,6 +11,13 @@
     overflow: hidden;
 }
 
+.video-tbody {
+    display: block;
+    overflow: auto;
+    height: 300px;
+    width: 100%;
+}
+
 .activeFrame {
     width: 1200px;
     height: 600px;
