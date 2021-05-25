@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, HostListener } from '@angular/core';
 import { LabelledFrame } from './video-timeline.model';
 
 @Component({
@@ -14,6 +14,8 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
     totalFrameArr: number[] = [...Array(this._totalFrame)];
     activeFrame = 0;
     activePreview: string = '';
+
+    verticalScroll: boolean = false;
 
     labelledFrame: LabelledFrame[] = [
         {
@@ -211,22 +213,24 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
     }
 
     onScroll = ({ deltaY }: WheelEvent) => {
-        const scrollTo = this._videoTimelineRef.nativeElement.scrollLeft;
-        scrollTo !== undefined &&
-            this._videoTimelineRef.nativeElement.scrollTo({
-                ...(deltaY > 0 ? { left: scrollTo + 25 } : { left: scrollTo - 25 }),
-            });
-        deltaY > 0
-            ? this.activeFrame !== this._totalFrame - 1
-                ? (this.activeFrame += 1)
-                : this.activeFrame
-            : this.activeFrame !== 0
-            ? (this.activeFrame -= 1)
-            : this.activeFrame;
+        if (this.verticalScroll) {
+            const scrollTo = this._videoTimelineRef.nativeElement.scrollLeft;
+            scrollTo !== undefined &&
+                this._videoTimelineRef.nativeElement.scrollTo({
+                    ...(deltaY > 0 ? { left: scrollTo + 25 } : { left: scrollTo - 25 }),
+                });
+            deltaY > 0
+                ? this.activeFrame !== this._totalFrame - 1
+                    ? (this.activeFrame += 1)
+                    : this.activeFrame
+                : this.activeFrame !== 0
+                ? (this.activeFrame -= 1)
+                : this.activeFrame;
 
-        this.activeFrame > this.labelledFrame.length
-            ? (this.activePreview = '')
-            : (this.activePreview = this.labelledFrame[this.activeFrame].imageURL);
+            this.activeFrame > this.labelledFrame.length
+                ? (this.activePreview = '')
+                : (this.activePreview = this.labelledFrame[this.activeFrame].imageURL);
+        }
     };
 
     displayFrameIndicator = (index: number, frame: any): string => {
@@ -245,4 +249,17 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
             ? (this.activePreview = '')
             : (this.activePreview = this.labelledFrame[index].imageURL);
     };
+
+    @HostListener('window:keydown', ['$event'])
+    onHoldKey({ shiftKey }: KeyboardEvent) {
+        document.getElementById('videoTimeline')?.focus();
+        if (shiftKey) {
+            this.verticalScroll = true;
+        }
+    }
+
+    @HostListener('window:keyup', ['$event'])
+    onReleaseKey() {
+        this.verticalScroll = false;
+    }
 }
