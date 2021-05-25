@@ -82,7 +82,9 @@ export class ExportSaveFormatService {
                     const pascalVocList: { filename: string; content: string }[] = [];
 
                     projectFullMetadata.forEach((metadata) => {
-                        if (metadata.bnd_box && metadata.bnd_box.length > 0) {
+                        const bboxLabels = metadata.bnd_box ? metadata.bnd_box.map((x) => x.label) : [];
+                        const found = bboxLabels.some((r) => labelList.indexOf(r) >= 0);
+                        if (metadata.bnd_box && metadata.bnd_box.length > 0 && found) {
                             const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
                             const filename = this.getFileName(metadata.img_path);
                             const { img_path, img_depth, img_ori_w, img_ori_h } = metadata;
@@ -139,7 +141,9 @@ export class ExportSaveFormatService {
 
                     const yoloList: { filename: string; content: string }[] = [];
                     projectFullMetadata.forEach((metadata) => {
-                        if (metadata.bnd_box && metadata.bnd_box.length > 0) {
+                        const bboxLabels = metadata.bnd_box ? metadata.bnd_box.map((x) => x.label) : [];
+                        const found = bboxLabels.some((r) => labelList.indexOf(r) >= 0);
+                        if (metadata.bnd_box && metadata.bnd_box.length > 0 && found) {
                             const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
                             const filename = this.getFileName(metadata.img_path);
                             const { img_ori_w, img_ori_h } = metadata;
