@@ -1,4 +1,5 @@
 import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, HostListener } from '@angular/core';
+import { delay } from 'rxjs/operators';
 import { LabelledFrame } from './video-timeline.model';
 
 @Component({
@@ -16,6 +17,7 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
     activePreview: string = '';
 
     verticalScroll: boolean = false;
+    isPlayingFrame: boolean = false;
 
     labelledFrame: LabelledFrame[] = [
         {
@@ -262,4 +264,16 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
     onReleaseKey() {
         this.verticalScroll = false;
     }
+
+    clickPlay = async () => {
+        this.isPlayingFrame = true;
+        this.totalFrameArr.forEach((element, index) => {
+            setTimeout(() => {
+                this.onClickVideoTImeline(index);
+            }, 100 * index);
+        });
+        this.isPlayingFrame = false;
+    };
+
+    playFrame = (index: number) => {};
 }
