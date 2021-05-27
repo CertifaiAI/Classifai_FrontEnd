@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Use of this source code is governed by Apache License 2.0 that can be
+ * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
+ */
+
 import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, HostListener } from '@angular/core';
 import { delay } from 'rxjs/operators';
 import { LabelledFrame } from './video-timeline.model';

@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Use of this source code is governed by Apache License 2.0 that can be
+ * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
+ */
+
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
@@ -7,9 +13,6 @@ import { Environment } from './environment.model';
 export const environment: Environment = {
     production: false,
     baseURL: 'http://localhost:4200/',
-    awsBucketName: `classifai-v2`,
-    awsAccessKeyId: '44LLO49S6VBXQ6APPW56',
-    awsSecretAccessKey: 'Diy1eCM9tNlzwqlwNS1eANSyucu2mePwJkdLXae0',
 };
 
 /*
