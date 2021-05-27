@@ -1,7 +1,7 @@
 name: Copy to Repo Classifai Job
 on:
   push:
-    branches: faris_added_copypaste_workflow
+    branches: main
 
     paths:
       # Triggered when only this path has code changes during push
@@ -28,7 +28,7 @@ jobs:
           dst_path: classifai-core/src/main/resources/webroot/. # Destination to be pasted
           dst_owner: CertifaiAI # Destination owner's name
           dst_repo_name: classifai # Destination repo's name
-          src_branch: faris_added_copypaste_workflow # Source repo's branch
-          dst_branch: faris_auto_pr # Destination repo's branch
+          src_branch: main # Source repo's branch
+          dst_branch: faris_auto_pr # Destination repo's branch / It will create if branch not exist
           clean: true # Set to 'true' for emptying destination path prior pasting 
            
