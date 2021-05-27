@@ -6,7 +6,6 @@ on:
     paths:
       # Triggered when only this path has code changes during push
       - 'dist/classifai/**'
-      - '.github/workflows/copy.yml'
 
 jobs:
   copy:
@@ -23,13 +22,13 @@ jobs:
       - name: Copy dist items into Repo Classifai
         uses: andstor/copycat-action@v3
         with:
-          commit_message: Update files from Repo Classifai_FrontEnd, branch ${{ steps.vars.outputs.branch }} at commit ${{ steps.vars.outputs.sha_short }}
-          personal_token: ${{ secrets.PERSONAL_TOKEN }}
-          src_path: dist/classifai/.
-          dst_path: classifai-core/src/main/resources/webroot/.
-          dst_owner: CertifaiAI
-          dst_repo_name: classifai
-          src_branch: main
-          dst_branch: faris_auto_pr
-          clean: true
+          commit_message: Update files from Repo Classifai_FrontEnd, branch ${{ steps.vars.outputs.branch }} at commit ${{ steps.vars.outputs.sha_short }} # Commit message at repo classifai
+          personal_token: ${{ secrets.PERSONAL_TOKEN }} # Personal token to solve permission issue
+          src_path: dist/classifai/. # Source to copied
+          dst_path: classifai-core/src/main/resources/webroot/. # Destination to be pasted
+          dst_owner: CertifaiAI # Destination owner's name
+          dst_repo_name: classifai # Destination repo's name
+          src_branch: main # Source repo's branch
+          dst_branch: faris_auto_pr # Destination repo's branch
+          clean: true # Set to 'true' for emptying destination path prior pasting 
            
