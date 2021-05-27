@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Use of this source code is governed by Apache License 2.0 that can be
+ * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
+ */
+
 import { first } from 'rxjs/operators';
 import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
 import { Injectable } from '@angular/core';

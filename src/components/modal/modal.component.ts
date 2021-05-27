@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Use of this source code is governed by Apache License 2.0 that can be
+ * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
+ */
+
 import { Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { ModalBodyStyle } from './modal.model';
 import { ModalService } from './modal.service';
