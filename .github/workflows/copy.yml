@@ -6,6 +6,7 @@ on:
     paths:
       # Triggered when only this path has code changes during push
       - 'dist/classifai/**'
+      - '.github/workflows/copy.yml'
 
 jobs:
   copy:
