@@ -1,6 +1,8 @@
-# Intellabel
+# Classifai_FrontEnd
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.0.
+
+Source code of Classifai with compiled front-end can be found in [here](https://github.com/CertifaiAI/classifai).
 
 ## SPA communicate with RestAPI
 Sample to refer: [Diagram - Concept](https://drive.google.com/file/d/1xDNitESxmUsZibmf3eKJ88bUmTY-oGqh/view?usp=sharing)
