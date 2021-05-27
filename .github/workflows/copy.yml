@@ -31,5 +31,5 @@ jobs:
           dst_repo_name: classifai
           src_branch: main
           dst_branch: faris_auto_pr
-          clean: false
+          clean: true
            
