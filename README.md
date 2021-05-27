@@ -19,7 +19,7 @@ Option 1 (Auto) Preferred:
 4) Lastly, click on 'start', located just below package.json
 5) NPM will starts to execute your project with `custom scripts`
 
-Option 2 (Manual):\
+Option 2 (Manual):
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding
@@ -33,6 +33,8 @@ Option 2 (Manual):\
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
 ## Build Production
+
+Default backend endpoint is `http://localhost:9999`. Please navigate to `src/environments/environment.prod.ts` and change the endpoint is necessary.
 
 Option 1 (Auto) Preferred:
 1) Ensure backend API is running, then open project.
