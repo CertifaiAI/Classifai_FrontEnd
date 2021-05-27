@@ -24,7 +24,7 @@ jobs:
         with:
           commit_message: Update files from Repo Classifai_FrontEnd, branch ${{ steps.vars.outputs.branch }} at commit ${{ steps.vars.outputs.sha_short }} # Commit message at repo classifai
           personal_token: ${{ secrets.PERSONAL_TOKEN }} # Personal token to solve permission issue
-          src_path: dist/classifai/. # Source to copied
+          src_path: dist/classifai/. # Source to be copied
           dst_path: classifai-core/src/main/resources/webroot/. # Destination to be pasted
           dst_owner: CertifaiAI # Destination owner's name
           dst_repo_name: classifai # Destination repo's name
