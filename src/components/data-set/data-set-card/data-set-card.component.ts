@@ -32,8 +32,8 @@ export class DataSetCardComponent implements OnInit, OnChanges {
     @Output() _onRename: EventEmitter<ProjectRename> = new EventEmitter();
 
     // clonedJsonSchema!: ProjectSchema;
-    starredActiveIcon: string = `../../../assets/icons/starred_active.svg`;
-    starredInactiveIcon: string = `../../../assets/icons/starred.svg`;
+    starredActiveIcon: string = `assets/icons/starred_active.svg`;
+    starredInactiveIcon: string = `assets/icons/starred.svg`;
     cardSchema: CardSchema = {
         clickIndex: -1,
     };

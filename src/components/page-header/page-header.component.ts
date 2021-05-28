@@ -17,7 +17,7 @@ type HeaderLabelSchema = {
 export class PageHeaderComponent implements OnInit {
     @Input() _onChange!: ImgLabelProps;
     // @Output() _navigate: EventEmitter<UrlProps> = new EventEmitter();
-    logoSrc: string = `../../../assets/icons/classifai_logo_white.svg`;
+    logoSrc: string = `assets/icons/classifai_logo_white.svg`;
     jsonSchema!: IconSchema;
     headerLabels: HeaderLabelSchema[] = [
         {
@@ -45,25 +45,25 @@ export class PageHeaderComponent implements OnInit {
                 url === '/imglabel'
                     ? [
                           {
-                              imgPath: `../../../assets/icons/add_user.svg`,
+                              imgPath: `assets/icons/add_user.svg`,
                               hoverLabel: `Add user to project`,
                               alt: `pageHeader.addUser`,
                               onClick: () => null,
                           },
                           // {
-                          //     imgPath: `../../../assets/icons/workspaces.svg`,
+                          //     imgPath: `assets/icons/workspaces.svg`,
                           //     hoverLabel: `Workspaces`,
                           //     alt: `Workspaces`,
                           // },
                           // {
-                          //     imgPath: `../../../assets/icons/upload.svg`,
+                          //     imgPath: `assets/icons/upload.svg`,
                           //     hoverLabel: `Share / Upload`,
                           //     alt: `Upload`,
                           // },
                       ]
                     : [
                           {
-                              imgPath: `../../../assets/icons/profile.svg`,
+                              imgPath: `assets/icons/profile.svg`,
                               hoverLabel: `pageHeader.profile`,
                               alt: `Profile`,
                               onClick: () => null,

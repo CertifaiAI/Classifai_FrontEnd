@@ -14,33 +14,33 @@ type MenuSchema = {
 export class DataSetSideMenuComponent implements OnInit {
     menuSchema: MenuSchema[] = [
         {
-            src: '../../../assets/icons/add.svg',
+            src: 'assets/icons/add.svg',
             id: 'newProject',
             name: 'menuName.newProject',
         },
         {
-            src: '../../../assets/icons/import.svg',
+            src: 'assets/icons/import.svg',
             id: 'importProject',
             name: 'menuName.importProject',
             style: 'width: 1.3vw; padding: 0.3vw;',
         },
         {
-            src: '../../../assets/icons/project.svg',
+            src: 'assets/icons/project.svg',
             id: 'myProject',
             name: 'menuName.myProject',
         },
         {
-            src: '../../../assets/icons/starred.svg',
+            src: 'assets/icons/starred.svg',
             id: 'starred',
             name: 'menuName.starred',
         },
         {
-            src: '../../../assets/icons/history.svg',
+            src: 'assets/icons/history.svg',
             id: 'recent',
             name: 'menuName.recent',
         },
         {
-            src: '../../../assets/icons/trash.svg',
+            src: 'assets/icons/trash.svg',
             id: 'trash',
             name: 'menuName.trash',
         },

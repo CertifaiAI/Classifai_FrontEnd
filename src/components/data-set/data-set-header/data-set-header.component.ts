@@ -13,17 +13,17 @@ export class DataSetHeaderComponent implements OnInit {
         // this.jsonSchema = {
         //     icons: [
         //         {
-        //             imgPath: `../../../assets/icons/list_view.svg`,
+        //             imgPath: `assets/icons/list_view.svg`,
         //             hoverLabel: `Toggle List View`,
         //             alt: `List`,
         //         },
         //         {
-        //             imgPath: `../../../assets/icons/starred.svg`,
+        //             imgPath: `assets/icons/starred.svg`,
         //             hoverLabel: `Filter Starred`,
         //             alt: `Starred`,
         //         },
         //         {
-        //             imgPath: `../../../assets/icons/more.svg`,
+        //             imgPath: `assets/icons/more.svg`,
         //             hoverLabel: `Extra Filter`,
         //             alt: `More`,
         //         },

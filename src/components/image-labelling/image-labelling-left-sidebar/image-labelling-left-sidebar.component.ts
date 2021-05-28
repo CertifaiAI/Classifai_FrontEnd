@@ -52,7 +52,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
         this.jsonSchema = {
             logos: [
                 {
-                    imgPath: `../../../assets/icons/separator.svg`,
+                    imgPath: `assets/icons/separator.svg`,
                     hoverLabel: ``,
                     alt: ``,
                     nonClickable: true,
@@ -60,7 +60,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     onClick: () => null,
                 },
                 {
-                    imgPath: `../../../assets/icons/pointer.svg`,
+                    imgPath: `assets/icons/pointer.svg`,
                     hoverLabel: 'leftSideBar.pointer',
                     alt: `Pointer`,
                     toggleable: true,
@@ -70,7 +70,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     },
                 },
                 // {
-                //     imgPath: `../../../assets/icons/move.svg`,
+                //     imgPath: `assets/icons/move.svg`,
                 //     hoverLabel: `Move Image`,
                 //     alt: `Move Image`,
                 //     toggleable: true,
@@ -80,7 +80,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                 // },
                 this._currentUrl === '/imglabel/bndbox'
                     ? {
-                          imgPath: `../../../assets/icons/rec_bounding_box.svg`,
+                          imgPath: `assets/icons/rec_bounding_box.svg`,
                           hoverLabel: `leftSideBar.rectangularBB`,
                           alt: `RectangularBB`,
                           toggleable: this.labelList.length !== 0 ? true : false,
@@ -90,7 +90,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                           },
                       }
                     : {
-                          imgPath: `../../../assets/icons/polygon.svg`,
+                          imgPath: `assets/icons/polygon.svg`,
                           hoverLabel: `leftSideBar.polygon`,
                           alt: `Polygon`,
                           toggleable: this.labelList.length !== 0 ? true : false,
@@ -104,32 +104,32 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                           },
                       },
                 // {
-                //   imgPath: `../../../assets/icons/bounding_box.svg`,
+                //   imgPath: `assets/icons/bounding_box.svg`,
                 //   hoverLabel: `Bounding Box`,
                 //   alt: `BoundingBox`,
                 // },
                 // {
-                //     imgPath: `../../../assets/icons/polygon.svg`,
+                //     imgPath: `assets/icons/polygon.svg`,
                 //     hoverLabel: `Polygon`,
                 //     alt: `Polygon`,
                 // },
                 // {
-                //   imgPath: `../../../assets/icons/auto_select.svg`,
+                //   imgPath: `assets/icons/auto_select.svg`,
                 //   hoverLabel: `Auto Select`,
                 //   alt: `AutoSelect`,
                 // },
                 // {
-                //   imgPath: `../../../assets/icons/brush_segmentation.svg`,
+                //   imgPath: `assets/icons/brush_segmentation.svg`,
                 //   hoverLabel: `Brush Segmentation`,
                 //   alt: `BrushSeg`,
                 // },
                 // {
-                //   imgPath: `../../../assets/icons/key_point.svg`,
+                //   imgPath: `assets/icons/key_point.svg`,
                 //   hoverLabel: `Key Point`,
                 //   alt: `KeyPoint`,
                 // },
                 {
-                    imgPath: `../../../assets/icons/eraser.svg`,
+                    imgPath: `assets/icons/eraser.svg`,
                     hoverLabel: `leftSideBar.eraser`,
                     alt: `Eraser`,
                     toggleable: false,
@@ -146,7 +146,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     },
                 },
                 {
-                    imgPath: `../../../assets/icons/fit_center.svg`,
+                    imgPath: `assets/icons/fit_center.svg`,
                     hoverLabel: `leftSideBar.fitCenter`,
                     alt: `Fit Center`,
                     toggleable: false,
@@ -157,7 +157,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     },
                 },
                 {
-                    imgPath: `../../../assets/icons/save.svg`,
+                    imgPath: `assets/icons/save.svg`,
                     hoverLabel: `leftSideBar.save`,
                     alt: `Save`,
                     toggleable: false,
@@ -175,7 +175,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     },
                 },
                 {
-                    imgPath: `../../../assets/icons/info.svg`,
+                    imgPath: `assets/icons/info.svg`,
                     hoverLabel: `leftSideBar.info`,
                     alt: `KeyPoint`,
                     toggleable: false,
