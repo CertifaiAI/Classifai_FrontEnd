@@ -278,7 +278,7 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
                 this.onClickVideoTImeline(index);
             }, 100 * index);
         });
-        this.isPlayingFrame = false;
+        this.isPlayingFrame = true;
     };
 
     playFrame = (index: number) => {};
