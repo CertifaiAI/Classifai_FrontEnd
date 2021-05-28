@@ -1,6 +1,9 @@
 {
   "name": "classifai",
+  "author": "Certifai",
+  "description": "Annotation tool",
   "version": "0.0.0",
+  "main": "main.js",
   "scripts": {
     "format:prettier": "./node_modules/.bin/prettier --write src/**/*.{js,ts,json,css,scss,md}",
     "start:dev": "nodemon -w ./webpack.config.js --exec \"ng s --hmr --extra-webpack-config webpack.config.js\"",
@@ -11,7 +14,11 @@
     "analyze:stats": "npm run analyze",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "start:electron": "electron-forge start",
+    "make:electron": "electron-forge make",
+    "package:electron": "electron-forge package",
+    "import:electron-forge": "npx electron-forge import"
   },
   "private": true,
   "dependencies": {
@@ -25,6 +32,7 @@
     "@angular/router": "~11.0.2",
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
+    "electron-squirrel-startup": "^1.0.0",
     "file-saver": "^2.0.5",
     "jszip": "^3.5.0",
     "lodash-es": "^4.17.15",
@@ -39,12 +47,18 @@
     "@angular/cli": "^11.0.2",
     "@angular/compiler-cli": "~11.0.2",
     "@angular/language-service": "~11.0.2",
+    "@electron-forge/cli": "^6.0.0-beta.57",
+    "@electron-forge/maker-deb": "^6.0.0-beta.57",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.57",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.57",
+    "@electron-forge/maker-zip": "^6.0.0-beta.57",
     "@types/file-saver": "^2.0.2",
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "~2.0.3",
     "@types/lodash-es": "^4.17.3",
-    "@types/node": "^12.11.1",
+    "@types/node": "^14.17.1",
     "codelyzer": "^6.0.0",
+    "electron": "^12.0.9",
     "husky": "^4.2.5",
     "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",
@@ -70,5 +84,34 @@
     "src/**/*.{js,html,ts,json,css,scss,md}": [
       "prettier --write"
     ]
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {
+        "asar": true
+      },
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "classifai"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
   }
 }

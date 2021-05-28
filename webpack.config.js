@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 module.exports = {
+  target: 'electron-renderer',
   plugins: [
     // /**  @remark - project only deal with Malaysia date format, thus remove the rest */
     // new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /ms-my/),
