@@ -1,1 +1,79 @@
+<header id="titlebar">
+    <div id="drag-region">
+        <div id="window-title">
+            <span>Classifai</span>
+        </div>
+
+        <div id="window-controls">
+            <div class="button" id="min-button" (click)="minWindow()">
+                <img
+                    class="icon"
+                    srcset="
+                        assets/electron-icons/min-w-10.png 1x,
+                        assets/electron-icons/min-w-12.png 1.25x,
+                        assets/electron-icons/min-w-15.png 1.5x,
+                        assets/electron-icons/min-w-15.png 1.75x,
+                        assets/electron-icons/min-w-20.png 2x,
+                        assets/electron-icons/min-w-20.png 2.25x,
+                        assets/electron-icons/min-w-24.png 2.5x,
+                        assets/electron-icons/min-w-30.png 3x,
+                        assets/electron-icons/min-w-30.png 3.5x
+                    "
+                    draggable="false"
+                />
+            </div>
+            <div class="button" id="max-button" (click)="maxWindow()">
+                <img
+                    class="icon"
+                    srcset="
+                        assets/electron-icons/max-w-10.png 1x,
+                        assets/electron-icons/max-w-12.png 1.25x,
+                        assets/electron-icons/max-w-15.png 1.5x,
+                        assets/electron-icons/max-w-15.png 1.75x,
+                        assets/electron-icons/max-w-20.png 2x,
+                        assets/electron-icons/max-w-20.png 2.25x,
+                        assets/electron-icons/max-w-24.png 2.5x,
+                        assets/electron-icons/max-w-30.png 3x,
+                        assets/electron-icons/max-w-30.png 3.5x
+                    "
+                    draggable="false"
+                />
+            </div>
+            <div class="button" id="restore-button" (click)="restoreWindow()" *ngIf="win.isMaximized()">
+                <img
+                    class="icon"
+                    srcset="
+                        assets/electron-icons/restore-w-10.png 1x,
+                        assets/electron-icons/restore-w-12.png 1.25x,
+                        assets/electron-icons/restore-w-15.png 1.5x,
+                        assets/electron-icons/restore-w-15.png 1.75x,
+                        assets/electron-icons/restore-w-20.png 2x,
+                        assets/electron-icons/restore-w-20.png 2.25x,
+                        assets/electron-icons/restore-w-24.png 2.5x,
+                        assets/electron-icons/restore-w-30.png 3x,
+                        assets/electron-icons/restore-w-30.png 3.5x
+                    "
+                    draggable="false"
+                />
+            </div>
+            <div class="button" id="close-button" (click)="closeWindow()">
+                <img
+                    class="icon"
+                    srcset="
+                        assets/electron-icons/close-w-10.png 1x,
+                        assets/electron-icons/close-w-12.png 1.25x,
+                        assets/electron-icons/close-w-15.png 1.5x,
+                        assets/electron-icons/close-w-15.png 1.75x,
+                        assets/electron-icons/close-w-20.png 2x,
+                        assets/electron-icons/close-w-20.png 2.25x,
+                        assets/electron-icons/close-w-24.png 2.5x,
+                        assets/electron-icons/close-w-30.png 3x,
+                        assets/electron-icons/close-w-30.png 3.5x
+                    "
+                    draggable="false"
+                />
+            </div>
+        </div>
+    </div>
+</header>
 <router-outlet></router-outlet>
