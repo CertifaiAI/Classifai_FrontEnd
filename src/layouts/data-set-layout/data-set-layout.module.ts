@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Use of this source code is governed by Apache License 2.0 that can be
+ * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
+ */
+
 import { CommonModule } from '@angular/common';
 import { DataSetCardComponent } from 'src/components/data-set/data-set-card/data-set-card.component';
 import { DataSetHeaderComponent } from 'src/components/data-set/data-set-header/data-set-header.component';
