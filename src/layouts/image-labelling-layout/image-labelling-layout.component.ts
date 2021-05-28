@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Use of this source code is governed by Apache License 2.0 that can be
+ * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
+ */
+
 import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from '../data-set-layout/data-set-layout-api.service';
@@ -12,7 +18,7 @@ import { LanguageService } from 'src/shared/services/language.service';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'src/components/spinner/spinner.service';
-import { interval, Observable, Subject, Subscription, throwError } from 'rxjs';
+import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import {
     AddSubLabel,
     BboxMetadata,
@@ -23,12 +29,14 @@ import {
     EventEmitter_Url,
     ImageLabelUrl,
     ImgLabelProps,
+    LabelChoosen,
     PolyMetadata,
     SelectedLabelProps,
     TabsProps,
 } from 'src/components/image-labelling/image-labelling.model';
 import { Message } from 'src/shared/types/message/message.model';
 import { ModalBodyStyle } from 'src/components/modal/modal.model';
+import { ProjectSchema } from '../data-set-layout/data-set-layout.model';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -72,7 +80,18 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     isLoading: boolean = false;
     showLoading: boolean = false;
     processingNum: number = 0;
+    spanClass: string = '';
+    modalSpanMessage: string = '';
+    modalSpanLocationPath: string = '';
+    sliceNum: number = 0;
+    labelList: string[] = [];
+    isOverlayOn = false;
+    blockLoadThumbnails: boolean = false;
+    totalUuid: number = 0;
+    labelChoosen: LabelChoosen[] = [];
+    tempLabelChoosen: LabelChoosen[] = [];
     readonly modalExportOptions = 'modal-export-options';
+    readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
     exportModalBodyStyle: ModalBodyStyle = {
         minHeight: '19vh',
@@ -89,6 +108,13 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         margin: '10vh 28vw',
         overflow: 'none',
     };
+    advModalBodyStyle: ModalBodyStyle = {
+        maxHeight: '80vh',
+        minWidth: '18vw',
+        maxWidth: '18vw',
+        margin: '10vh 28vw',
+        overflow: 'none',
+    };
     infoModalBodyStyle: ModalBodyStyle = {
         maxHeight: '80vh',
         minWidth: '40vw',
@@ -97,9 +123,22 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         padding: '0vh 0vw 3vh 0vw',
         overflow: 'none',
     };
+    exportProjectBodyStyle: ModalBodyStyle = {
+        minHeight: '10vh',
+        maxHeight: '15vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
     saveType: ExportSaveType = {
         saveCurrentImage: true,
         saveBulk: false,
+    };
+    projectList: ProjectSchema = {
+        projects: [],
+        isUploading: false,
+        isFetching: false,
     };
 
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
@@ -123,68 +162,174 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.currentUrl = this._router.url as ImageLabelUrl;
-        const { thumbnailList, labelList, projectName } = this._imgLblLayoutService.getRouteState(history);
-        this.thumbnailList = thumbnailList;
+        const { projectName } = this._imgLblLayoutService.getRouteState(history);
         this.selectedProjectName = projectName;
-        this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: thumbnailList.length };
-        this.navigateByAction({ thumbnailAction: 1 });
-        const newLabelList = this._imgLblLayoutService.displayLabelList<CompleteMetadata>(this.tabStatus, labelList);
-        this.tabStatus = newLabelList;
-
-        this._annotateService.labelStaging$
-            .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(({ annotation: annnotationIndex, isDlbClick }) => {
-                if (isDlbClick) {
-                    this.currentAnnotationIndex = annnotationIndex;
-                    this.tabStatus.forEach(({ annotation }) =>
-                        annotation?.forEach(({ bnd_box, polygons }) => {
-                            const dynamicProp = bnd_box ?? polygons;
-                            if (dynamicProp) {
-                                const { label, region } = dynamicProp[annnotationIndex];
-                                this.currentAnnotationLabel = label;
-                                this.mainLabelRegionVal = region || '';
-                            } else {
-                                console.log('missing prop bnd_box OR polygons');
-                            }
-                        }),
-                    );
-                    this._imgLblActionService.setState({
-                        isActiveModal: true,
-                        draw: false,
-                        drag: false,
-                        scroll: false,
-                    });
-                    this.onDisplayModal();
-                } else {
-                    this.currentAnnotationLabel = '';
-                    this.currentAnnotationIndex = annnotationIndex;
-                }
-            });
-
-        // subscription logic to check if clear is true then empty the current display image's metadata
-        this._imgLblActionService.action$.pipe(takeUntil(this.unsubscribe$)).subscribe(({ clear, save }) => {
-            if (clear) {
-                this.thumbnailList[0].bnd_box && (this.thumbnailList[this.currentImageDisplayIndex].bnd_box = []);
-                this.thumbnailList[0].polygons && (this.thumbnailList[this.currentImageDisplayIndex].polygons = []);
-
-                this.onChangeSchema = {
-                    ...this.onChangeSchema,
-                    hasAnnotation: false,
-                };
-            }
-            if (save) {
-                this.onDisplayModal('modal-save');
-            }
-            //  else {
-            //     this.onCloseModal('modal-save');
-            // }
-        });
-
-        this._spinnerService
-            .returnAsObservable()
-            .pipe(takeUntil(this.unsubscribe$))
-            .subscribe((loading) => (this.isLoading = this.showLoading && loading));
+        this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: this.thumbnailList.length };
+        this.startProject(this.selectedProjectName);
     }
+
+    startProject = (projectName: string): void => {
+        this.isLoading = true;
+        this.selectedProjectName = projectName;
+        const projMetaStatus$ = this._dataSetService.checkProjectStatus(projectName);
+        const updateProjLoadStatus$ = this._dataSetService.updateProjectLoadStatus(projectName);
+        const projLoadingStatus$ = this._dataSetService.checkExistProjectStatus(projectName);
+        const thumbnail$ = this._dataSetService.getThumbnailList;
+
+        this.subjectSubscription = this.subject$
+            .pipe(
+                mergeMap(() => forkJoin([projMetaStatus$])),
+                first(([{ message, content }]) => {
+                    this.totalUuid = content[0].total_uuid;
+                    this.projectList = {
+                        isUploading: this.projectList.isUploading,
+                        isFetching: this.projectList.isFetching,
+                        projects: this.projectList.projects.map((project) =>
+                            project.project_name === content[0].project_name
+                                ? { ...content[0], created_date: project.created_date }
+                                : project,
+                        ),
+                    };
+                    const { is_loaded } = content[0];
+                    return message === 1 && !is_loaded ? true : false;
+                }),
+                mergeMap(([{ message }]) => (!message ? [] : forkJoin([updateProjLoadStatus$, projLoadingStatus$]))),
+                mergeMap(([{ message: updateProjStatus }, { message: loadProjStatus, uuid_list, label_list }]) => {
+                    if (loadProjStatus === 2) {
+                        this.labelList = [...label_list];
+                        this.tabStatus[1].label_list = this.labelList;
+                        return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
+                    } else {
+                        const thumbnailResponse = interval(500).pipe(
+                            mergeMap(() => projLoadingStatus$),
+                            first(({ message }) => message === 2),
+                            mergeMap(({ uuid_list, label_list }) => {
+                                console.log(uuid_list.length);
+                                this.tabStatus[1].label_list = label_list;
+                                return uuid_list.length > 0
+                                    ? uuid_list
+                                          .slice(this.sliceNum, (this.sliceNum += 20))
+                                          .map((uuid) => thumbnail$(projectName, uuid))
+                                    : [];
+                            }),
+                        );
+
+                        return thumbnailResponse;
+                    }
+                }),
+                // * this mergeMap responsible for flaten all observable into one layer
+                mergeMap((data) => data),
+            )
+            .subscribe(
+                (res) => {
+                    this.thumbnailList = [...this.thumbnailList, res];
+                    this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: this.thumbnailList.length };
+                },
+                (error: Error) => {},
+                () => {
+                    this.isLoading = false;
+                    this._annotateService.labelStaging$
+                        .pipe(takeUntil(this.unsubscribe$))
+                        .subscribe(({ annotation: annnotationIndex, isDlbClick }) => {
+                            if (isDlbClick) {
+                                this.currentAnnotationIndex = annnotationIndex;
+                                this.tabStatus.forEach(({ annotation }) =>
+                                    annotation?.forEach(({ bnd_box, polygons }) => {
+                                        const dynamicProp = bnd_box ?? polygons;
+                                        if (dynamicProp) {
+                                            const { label, region } = dynamicProp[annnotationIndex];
+                                            this.currentAnnotationLabel = label;
+                                            this.mainLabelRegionVal = region || '';
+                                        } else {
+                                            console.log('missing prop bnd_box OR polygons');
+                                        }
+                                    }),
+                                );
+                                this._imgLblActionService.setState({
+                                    isActiveModal: true,
+                                    draw: false,
+                                    drag: false,
+                                    scroll: false,
+                                });
+                                this.onDisplayModal();
+                            } else {
+                                this.currentAnnotationLabel = '';
+                                this.currentAnnotationIndex = annnotationIndex;
+                            }
+                        });
+
+                    // subscription logic to check if clear is true then empty the current display image's metadata
+                    this._imgLblActionService.action$
+                        .pipe(takeUntil(this.unsubscribe$))
+                        .subscribe(({ clear, save }) => {
+                            if (clear) {
+                                this.thumbnailList[0].bnd_box &&
+                                    (this.thumbnailList[this.currentImageDisplayIndex].bnd_box = []);
+                                this.thumbnailList[0].polygons &&
+                                    (this.thumbnailList[this.currentImageDisplayIndex].polygons = []);
+
+                                this.onChangeSchema = {
+                                    ...this.onChangeSchema,
+                                    hasAnnotation: false,
+                                };
+                            }
+                            if (save) {
+                                this.labelChoosen = this.tabStatus[1].label_list
+                                    ? this.tabStatus[1].label_list.map((label) => ({ label, isChoosen: true }))
+                                    : [];
+                                this.onDisplayModal('modal-save');
+                            }
+                        });
+                    this.navigateByAction({ thumbnailAction: 1 });
+                    this._spinnerService.hideSpinner();
+                },
+            );
+        // make initial call
+        this.subject$.next();
+    };
+
+    loadThumbnails = (): void => {
+        if (!this.blockLoadThumbnails && this.sliceNum < this.totalUuid) {
+            this.blockLoadThumbnails = true;
+            const projLoadingStatus$ = this._dataSetService.checkExistProjectStatus(this.selectedProjectName);
+            const thumbnail$ = this._dataSetService.getThumbnailList;
+
+            this.subjectSubscription = this.subject$
+                .pipe(
+                    first(),
+                    mergeMap(() => {
+                        const thumbnailResponse = interval(500).pipe(
+                            mergeMap(() => projLoadingStatus$),
+                            first(({ message }) => message === 2),
+                            mergeMap(({ uuid_list }) => {
+                                return uuid_list.length > 0
+                                    ? uuid_list
+                                          .slice(this.sliceNum, (this.sliceNum += 10))
+                                          .map((uuid) => thumbnail$(this.selectedProjectName, uuid))
+                                    : [];
+                            }),
+                        );
+
+                        return thumbnailResponse;
+                    }),
+                    // * this mergeMap responsible for flaten all observable into one layer
+                    mergeMap((data) => data),
+                )
+                .subscribe(
+                    (res) => {
+                        this.thumbnailList = [...this.thumbnailList, res];
+                        this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: this.thumbnailList.length };
+                    },
+                    (error: Error) => {},
+                    () => {
+                        this.blockLoadThumbnails = false;
+                        this._spinnerService.hideSpinner();
+                    },
+                );
+            // make initial call
+            this.subject$.next();
+        }
+    };
 
     updateProjectProgress = (): void => {
         const projectName = this.selectedProjectName;
@@ -225,6 +370,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     onExport = (): void => {
+        this.modalSpanMessage = '';
+        this.modalSpanLocationPath = '';
         this._modalService.open(this.modalExportOptions);
     };
 
@@ -232,19 +379,43 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         exportType === 'cfgdata' && this.processingNum++;
         const projectName = this.selectedProjectName;
         const exportProject$ = this._imgLblApiService.exportProject(projectName, exportType);
-        exportProject$.pipe(first()).subscribe(({ message }) => {
+        exportProject$.pipe(first()).subscribe(({ message, project_config_path }) => {
             exportType === 'cfgdata' && this.processingNum--;
             if (message === 1) {
+                console.log(this._languageService._translate.get('exportSuccess').subscribe());
                 this._languageService._translate.get('exportSuccess').subscribe((translated) => {
-                    alert(projectName + translated);
+                    // alert(projectName + translated);
+                    this.toggleExportProjectModalMessage(true);
+                    this.modalSpanMessage = projectName + translated;
+                    this.modalSpanLocationPath = project_config_path;
+                    this.processIsSuccess(true);
                 });
             } else {
                 this._languageService._translate.get('exportFailed').subscribe((translated) => {
-                    alert(translated + projectName);
+                    // alert(translated + projectName);
+                    this.toggleExportProjectModalMessage(true);
+                    this.modalSpanMessage = translated + projectName;
+                    this.processIsSuccess(false);
                 });
             }
         });
         this.closeExportProjectModal();
+    };
+
+    toggleExportProjectModalMessage = (open: boolean): void => {
+        if (open) {
+            this._modalService.open(this.modalExportProject);
+        } else {
+            this._modalService.open(this.modalExportProject);
+        }
+    };
+
+    processIsSuccess = (success: boolean): void => {
+        if (success) {
+            this.spanClass = 'validation-success';
+        } else {
+            this.spanClass = 'validation-error';
+        }
     };
 
     closeExportProjectModal() {
@@ -276,14 +447,18 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                           });
                           uuid_add_list.forEach((uuid) => {
                               listTemp.push(uuid);
+                              this.totalUuid++;
                           });
                           uuid_delete_list.forEach((uuid) => {
                               listTemp = listTemp.filter((e) => e !== uuid);
+                              this.totalUuid--;
                           });
-                          // console.log(listTemp);
+                          this.sliceNum = 0;
                           const thumbnails =
                               message === 4 && listTemp.length > 0
-                                  ? listTemp.map((uuid) => thumbnail$(projectName, uuid))
+                                  ? listTemp
+                                        .slice(this.sliceNum, (this.sliceNum += 20))
+                                        .map((uuid) => thumbnail$(projectName, uuid))
                                   : [];
 
                           // console.log(thumbnails);
@@ -314,6 +489,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 () => {
                     this.thumbnailList = thumbnailListTemp;
                     this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: this.thumbnailList.length };
+                    this.currentImageDisplayIndex = -1;
+                    this.navigateByAction({ thumbnailAction: 1 });
                     this.isLoading = false;
                 },
             );
@@ -328,9 +505,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     @HostListener('window:keydown', ['$event'])
-    keyDownEvent = ({ key }: KeyboardEvent): void => {
+    keyDownEvent = ({ key, repeat }: KeyboardEvent): void => {
         this._imgLblActionService.action$.pipe(first()).subscribe(({ draw }) => {
-            if (!draw) {
+            if (!draw && !repeat) {
                 switch (key) {
                     case 'ArrowLeft':
                         this.navigateByAction({ thumbnailAction: -1 });
@@ -350,7 +527,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     navigateByAction = ({ thumbnailAction }: EventEmitter_Action): void => {
         if (thumbnailAction) {
-            this.showLoading = true;
             const calculatedIndex = this._imgLblLayoutService.calculateIndex(
                 thumbnailAction,
                 this.currentImageDisplayIndex,
@@ -361,8 +537,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 this.currentImageDisplayIndex = calculatedIndex;
                 const filteredThumbMetadata = this.thumbnailList.find((_, i) => i === calculatedIndex);
                 const thumbnailIndex = this.thumbnailList.findIndex((_, i) => i === calculatedIndex);
+                thumbnailIndex + 3 === this.thumbnailList.length && this.loadThumbnails();
                 filteredThumbMetadata &&
                     thumbnailIndex !== -1 &&
+                    !this.showLoading &&
                     this.displayImage({ ...filteredThumbMetadata, thumbnailIndex });
             }
         }
@@ -373,6 +551,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         projectName = this.selectedProjectName,
     ): void => {
         if (this.selectedMetaData?.uuid !== thumbnail.uuid) {
+            this.showLoading = true;
             const getImage$ = this._imgLblApiService.getBase64Thumbnail(projectName, thumbnail.uuid);
 
             getImage$.pipe(first()).subscribe(
@@ -451,7 +630,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onSubmitLabel = () => {
         const { value } = this._subLabelSelect.nativeElement;
-
+        if (!value.trim()) {
+            return;
+        }
         let isPreExistSubLabel: boolean = false;
         let isDupSubLabel: boolean = false;
 
@@ -533,6 +714,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     onClickDownload = async (saveFormat: SaveFormat) => {
+        const labelList = this.labelChoosen.filter((e) => e.isChoosen === true).map((e) => e.label);
         this.saveType.saveBulk && this.processingNum++;
         await this._exportSaveFormatService.exportSaveFormat({
             ...this.saveType,
@@ -543,8 +725,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             ...((this.saveType.saveBulk || saveFormat === 'ocr' || saveFormat === 'json' || saveFormat === 'coco') && {
                 projectFullMetadata: this.thumbnailList,
             }),
-            ...((saveFormat === 'label' || saveFormat === 'yolo' || saveFormat === 'coco') && {
-                labelList: this.tabStatus.map(({ label_list }) => label_list)[1],
+            ...(saveFormat !== 'json' && {
+                labelList,
             }),
         });
         this.saveType.saveBulk && this.processingNum--;
@@ -560,6 +742,20 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onDisplayShortcutKeyInfo() {
         this._modalService.open(this.modalShortcutKeyInfo);
+    }
+
+    onLoadMoreThumbnails() {
+        this.loadThumbnails();
+    }
+
+    showAdvSettings() {
+        this.tempLabelChoosen = this.labelChoosen.map((x) => Object.assign({}, x));
+        this.onDisplayModal('modal-adv');
+    }
+
+    saveAdvSettings() {
+        this.labelChoosen = this.tempLabelChoosen.map((x) => Object.assign({}, x));
+        this.onCloseModal('modal-adv');
     }
 
     shortcutKeyInfo() {

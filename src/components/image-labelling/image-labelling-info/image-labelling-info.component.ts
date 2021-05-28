@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Use of this source code is governed by Apache License 2.0 that can be
+ * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
+ */
+
 import { IconSchema } from 'src/shared/types/icon/icon.model';
 import { CompleteMetadata, ImgLabelProps, TabsProps, ThumbnailInfoProps } from '../image-labelling.model';
 import {
@@ -18,6 +24,7 @@ import {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingInfoComponent implements OnInit, OnChanges {
+    @Input() _totalUuid: number = 0;
     @Input() _onChange!: ImgLabelProps;
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Output() _onClick: EventEmitter<ThumbnailInfoProps> = new EventEmitter();

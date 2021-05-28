@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Use of this source code is governed by Apache License 2.0 that can be
+ * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
+ */
+
 import { AnnotateActionState, AnnotateSelectionService } from '../../../shared/services/annotate-selection.service';
 import { BoundingBoxCanvasService } from './bounding-box-canvas.service';
 import { cloneDeep } from 'lodash-es';
@@ -679,6 +685,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     labelNameClicked(label: string) {
         this.showDropdownLabelBox = false;
         this._onChangeAnnotationLabel.emit({ label, index: this.annotateState.annotation });
+        this._selectMetadata.bnd_box[this.annotateState.annotation].label = label;
+        this._undoRedoService.isStateChange(this._selectMetadata.bnd_box) &&
+            this._undoRedoService.appendStages({
+                meta: this._selectMetadata,
+                method: 'draw',
+            });
     }
 
     sortingLabelList(labelList: LabelInfo[], annotationList: Boundingbox[]) {
@@ -705,6 +717,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 this.invalidInput = false;
                 this.showDropdownLabelBox = false;
                 this._onChangeAnnotationLabel.emit({ label: value, index: this.annotateState.annotation });
+                this._selectMetadata.bnd_box[this.annotateState.annotation].label = value;
+                this._undoRedoService.isStateChange(this._selectMetadata.bnd_box) &&
+                    this._undoRedoService.appendStages({
+                        meta: this._selectMetadata,
+                        method: 'draw',
+                    });
                 this.labelSearch = '';
             } else {
                 this.invalidInput = true;

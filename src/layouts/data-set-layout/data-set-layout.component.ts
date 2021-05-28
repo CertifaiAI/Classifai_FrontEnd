@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Use of this source code is governed by Apache License 2.0 that can be
+ * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
+ */
+
 import { BboxMetadata, ImageLabellingMode, PolyMetadata } from 'src/components/image-labelling/image-labelling.model';
 import { cloneDeep } from 'lodash-es';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
@@ -8,7 +14,7 @@ import { forkJoin, interval, Observable, Subject, Subscription, throwError } fro
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ImageLabellingModeService } from './../../components/image-labelling/image-labelling-mode.service';
 import { LanguageService } from 'src/shared/services/language.service';
-import { Message } from 'src/shared/types/message/message.model';
+import { Message, MessageUuidList } from 'src/shared/types/message/message.model';
 import { ModalBodyStyle } from 'src/components/modal/modal.model';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
@@ -48,8 +54,12 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     isImageUploading = false;
     isProjectLoading = false;
     imgLblMode: ImageLabellingMode = null;
+    modalSpanMessage: string = '';
+    spanClass: string = '';
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
+    readonly modalIdImportProject = 'modal-import-project';
+    readonly modalIdDeleteProject = 'modal-delete-project';
     createProjectModalBodyStyle: ModalBodyStyle = {
         minHeight: '35vh',
         maxHeight: '35vh',
@@ -66,9 +76,27 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         margin: '15vw 71vh',
         overflow: 'none',
     };
+    importProjectModalBodyStyle: ModalBodyStyle = {
+        minHeight: '15vh',
+        maxHeight: '25vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    deleteProjectBodyStyle: ModalBodyStyle = {
+        minHeight: '10vh',
+        maxHeight: '15vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
     @ViewChild('refProjectName') _refProjectName!: ElementRef<HTMLInputElement>;
     @ViewChild('labeltextfilename') _labelTextFilename!: ElementRef<HTMLLabelElement>;
     @ViewChild('refNewProjectName') _refNewProjectName!: ElementRef<HTMLInputElement>;
+    @ViewChild('jsonImportProjectFile') _jsonImportProjectFile!: ElementRef<HTMLInputElement>;
+    @ViewChild('jsonImportProjectFilename') _jsonImportProjectFilename!: ElementRef<HTMLLabelElement>;
 
     constructor(
         private _fb: FormBuilder,
@@ -192,7 +220,15 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         // setTimeout(() => this._refNewProjectName.nativeElement.focus());
     };
 
-    importProject = (): void => {
+    toggleImportProjectModalDisplay = (event: any): void => {
+        this.modalSpanMessage = '';
+        event
+            ? this._modalService.open(this.modalIdImportProject)
+            : this._modalService.close(this.modalIdImportProject);
+    };
+
+    onSelectImportProjectJson = (): void => {
+        this.toggleImportProjectModalDisplay(true);
         const importStatus$ = this._dataSetService.importStatus();
         const importProject$ = this._dataSetService.importProject();
         importProject$
@@ -206,6 +242,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     .pipe(
                         switchMap(() => importStatus$),
                         first((response) => {
+                            // console.log('RESPONSE IMPORT PROJECT MESSAGE', response);
+                            // this.modalSpanMessage = response.error_message;
                             this.isOverlayOn = response.message === 0 ? true : false;
                             if (response.message === 1 || response.message === 4) {
                                 refreshProjectList = true;
@@ -215,10 +253,124 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         }),
                     )
                     .subscribe((response) => {
+                        console.log('RRS', response);
+                        console.log(response.error_message.replace(/(\r\n|\n|\r)/gm, '<br>'));
+                        this.modalSpanMessage = response.error_message.replace(/(\r\n|\n|\r)/gm, '<br>');
+                        if (response.message === 1) {
+                            this.processIsSuccess(false);
+                        } else {
+                            this.processIsSuccess(true);
+                        }
                         this.showProjectList();
                     });
             });
     };
+
+    processIsSuccess = (success: boolean): void => {
+        if (success) {
+            this.spanClass = 'validation-success';
+        } else {
+            this.spanClass = 'validation-error';
+        }
+    };
+
+    importProject = (): void => {
+        // console.log('IMPORT PROEJCT CLICKED');
+        this.toggleImportProjectModalDisplay(true);
+        // const importStatus$ = this._dataSetService.importStatus();
+        // const importProject$ = this._dataSetService.importProject();
+        // importProject$
+        //     .pipe(
+        //         first(),
+        //         map(({ error_code }) => error_code),
+        //     )
+        //     .subscribe((message) => {
+        //         let refreshProjectList = false;
+        //         interval(500)
+        //             .pipe(
+        //                 switchMap(() => importStatus$),
+        //                 first((response) => {
+        //                     console.log("RESPONSE IMPORT PROJECT MESSAGE", response)
+        //                     this.modalSpanMessage = response.error_message
+        //                     this.isOverlayOn = response.error_code === 0 ? true : false;
+        //                     if (response.error_code === 1 || response.error_code === 4) {
+        //                         refreshProjectList = true;
+        //                     }
+
+        //                     return refreshProjectList;
+        //                 }),
+        //             )
+        //             .subscribe((response) => {
+        //                 this.getProjectList();
+        //             });
+        //     });
+    };
+
+    // onFileChange = ({ target: { files } }: HTMLElementEvent<HTMLInputElement>): void => {
+    //     const filename = this._labelTextFile.nativeElement.files?.item(0)?.name;
+    //     this._labelTextFilename.nativeElement.innerHTML = filename === undefined ? '' : filename;
+    //     const reader = new FileReader();
+
+    //     if (files && files.length) {
+    //         const file = files.item(0);
+    //         reader.onload = () => {
+    //             // need to run CD since file load runs outside of zone
+    //             this._cd.markForCheck();
+    //         };
+    //         reader.onloadend = () => {
+    //             const labelResult = reader.result as string;
+    //             const labelSplitArr = labelResult.split('\n');
+    //             if (labelSplitArr.length > 0) {
+    //                 const newLabelArray = labelSplitArr.reduce((prev: string[], curr: string) => {
+    //                     const clearCharLabel = curr.replace(/[^A-Z0-9]+/gi, '').toLowerCase();
+    //                     prev.push(clearCharLabel);
+    //                     return prev;
+    //                 }, []);
+    //                 // clear entire array before giving it new set of data, prevents stacking more array of data
+    //                 this.labelTextUpload = [];
+    //                 // spread due to newLabelArray is already an array
+    //                 // with push would lead to nested array
+    //                 this.labelTextUpload.push(...newLabelArray);
+    //                 // console.log(this.labelTextUpload);
+    //             }
+    //         };
+    //         // console.log(file);
+    //         file && reader.readAsText(file);
+    //     }
+    // };
+
+    // onJSONFileChange = ({ target: { files } }: HTMLElementEvent<HTMLInputElement>): void => {
+    //     const filename = this._jsonImportProjectFile.nativeElement.files?.item(0)?.name;
+    //     this._jsonImportProjectFilename.nativeElement.innerHTML = filename === undefined ? '' : filename;
+    //     const reader = new FileReader();
+
+    //     if (files && files.length) {
+    //         const file = files.item(0);
+    //         reader.onload = () => {
+    //             // need to run CD since file load runs outside of zone
+    //             this._cd.markForCheck();
+    //         };
+    //         reader.onloadend = () => {
+    //             const labelResult = reader.result as string;
+    //             const labelSplitArr = labelResult.split('\n');
+    //             if (labelSplitArr.length > 0) {
+    //                 const newLabelArray = labelSplitArr.reduce((prev: string[], curr: string) => {
+    //                     const clearCharLabel = curr.replace(/[^A-Z0-9]+/gi, '').toLowerCase();
+    //                     prev.push(clearCharLabel);
+    //                     return prev;
+    //                 }, []);
+    //                 // clear entire array before giving it new set of data, prevents stacking more array of data
+    //                 this.labelTextUpload = [];
+    //                 // spread due to newLabelArray is already an array
+    //                 // with push would lead to nested array
+    //                 this.labelTextUpload.push(...newLabelArray);
+    //                 // console.log(this.labelTextUpload);
+    //             }
+    //         };
+    //         // console.log(file);
+    //         file && reader.readAsText(file);
+    //     }
+    // };
 
     onStarred = ({ projectName, starred }: StarredProps) => {
         this._dataSetService
@@ -272,6 +424,39 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         }
     };
 
+    onOpenImportProject = (isNewProject: boolean, projectName?: string): void => {
+        console.log('BUTTON IMPORT CLICKED');
+        // this.form.markAllAsTouched();
+
+        // if (!isNewProject) {
+        //     projectName ? this.startProject(projectName) : null;
+        //     // if (this.form.get('selectExistProject')?.value) {
+        //     //     // this.startProject(this.form.get('selectExistProject')?.value);
+        //     //     this.selectedProjectName = this.form.get('selectExistProject')?.value;
+        //     // } else {
+        //     //     this.form.get('selectExistProject')?.setErrors({ required: true });
+        //     // }
+        // } else {
+        //     if (this.inputProjectName) {
+        //         const checkExistProject = this.projectList.projects
+        //             ? this.projectList.projects.find((project) =>
+        //                   project ? project.project_name === this.inputProjectName : null,
+        //               )
+        //             : null;
+        //         checkExistProject
+        //             ? (this.form.get('projectName')?.setErrors({ exist: true }),
+        //               this._refProjectName.nativeElement.focus())
+        //             : (this.createProject(this.inputProjectName),
+        //               (this.selectedProjectName = this.form.get('projectName')?.value),
+        //               (this.labelTextUpload = []),
+        //               (this._labelTextFilename.nativeElement.innerHTML = ''));
+        //     } else {
+        //         this.form.get('projectName')?.setErrors({ required: true });
+        //         this._refProjectName.nativeElement.focus();
+        //     }
+        // }
+    };
+
     onSubmitRename() {
         this.renameForm.markAllAsTouched();
         if (this.newInputProjectName) {
@@ -292,91 +477,18 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     }
 
     startProject = (projectName: string): void => {
-        this.selectedProjectName = projectName;
-        const projMetaStatus$ = this._dataSetService.checkProjectStatus(projectName);
-        const updateProjLoadStatus$ = this._dataSetService.updateProjectLoadStatus(projectName);
-        const projLoadingStatus$ = this._dataSetService.checkExistProjectStatus(projectName);
-        const thumbnail$ = this._dataSetService.getThumbnailList;
-
-        this.subjectSubscription = this.subject$
-            .pipe(
-                mergeMap(() => forkJoin([projMetaStatus$])),
-                first(([{ message, content }]) => {
-                    this.projectList = {
-                        isUploading: this.projectList.isUploading,
-                        isFetching: this.projectList.isFetching,
-                        projects: this.projectList.projects.map((project) =>
-                            project.project_name === content[0].project_name
-                                ? { ...content[0], created_date: project.created_date }
-                                : project,
-                        ),
-                    };
-                    const { is_loaded } = content[0];
-                    return (
-                        message === 1
-                        // && !is_loaded ? true : false
-                    );
-                }),
-                mergeMap(([{ message }]) => (!message ? [] : forkJoin([updateProjLoadStatus$, projLoadingStatus$]))),
-                mergeMap(([{ message: updateProjStatus }, { message: loadProjStatus, uuid_list, label_list }]) => {
-                    if (loadProjStatus === 2) {
-                        this.labelList = [...label_list];
-
-                        return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
-                    } else {
-                        const thumbnailResponse = interval(500).pipe(
-                            mergeMap(() => projLoadingStatus$),
-                            first(({ message }) => message === 2),
-                            mergeMap(({ uuid_list, label_list }) => {
-                                this.labelList = [...label_list];
-                                return uuid_list.length > 0
-                                    ? uuid_list.map((uuid) => thumbnail$(projectName, uuid))
-                                    : [];
-                            }),
-                        );
-
-                        return thumbnailResponse;
-                    }
-                }),
-                // * this mergeMap responsible for flaten all observable into one layer
-                mergeMap((data) => data),
-            )
-            .subscribe(
-                (res) => {
-                    this.isProjectLoading = true;
-                    this.thumbnailList = [...this.thumbnailList, res];
-                    // this.onChangeSchema = {
-                    //     ...this.onChangeSchema,
-                    //     currentThumbnailIndex: 0,
-                    //     totalNumThumbnail: this.thumbnailList.length,
-
-                    // this.tabStatus = [...this.tabStatus, { name: 'Label', closed, label_list: [] }];
-                },
-                (error: Error) => {},
-                () => {
-                    // const [{ label_list }] = this.tabStatus;
-                    // label_list && label_list.length < 1
-                    //     && this.onProcessLabel({ selectedLabel: '', label_list: [], action: 1 });
-                    // console.log(this.thumbnailList);
-                    this.isProjectLoading = false;
-                    this._router.navigate([`imglabel/${this.imgLblMode}`], {
-                        state: { thumbnailList: this.thumbnailList, projectName, labelList: this.labelList },
-                    });
-                    this._spinnerService.hideSpinner();
-                },
-            );
-        // make initial call
-        this.subject$.next();
+        this._router.navigate([`imglabel/${this.imgLblMode}`], {
+            state: { projectName },
+        });
     };
 
     createProject = (projectName: string): void => {
         const createProj$ = this._dataSetService.createNewProject(projectName);
         const updateLabel$ = this._dataSetService.updateLabelList(projectName, this.labelTextUpload);
         const uploadStatus$ = this._dataSetService.localUploadStatus(projectName);
-        const thumbnail$ = this._dataSetService.getThumbnailList;
         let numberOfReq: number = 0;
 
-        const returnResponse = ({ message }: Message): Observable<BboxMetadata & PolyMetadata> => {
+        const returnResponse = ({ message }: Message): Observable<MessageUuidList> => {
             return message !== 5 && (message === 1 || message === 0)
                 ? interval(500).pipe(
                       mergeMap(() => uploadStatus$),
@@ -387,24 +499,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                           const isValidResponse: boolean = message === 4 || message === 1;
                           return isValidResponse;
                       }),
-                      mergeMap(({ uuid_list, message }) => {
-                          /** @property {number} message if value 4 means client has received uploaded item(s) */
-                          const thumbnails =
-                              message === 4 && uuid_list.length > 0
-                                  ? uuid_list.map((uuid) => thumbnail$(projectName, uuid))
-                                  : [];
-                          this.projectList =
-                              thumbnails.length > 0
-                                  ? { ...this.projectList, isUploading: true }
-                                  : { ...this.projectList, isUploading: false };
-                          numberOfReq = thumbnails.length;
-                          if (message === 4) {
-                              this.toggleModalDisplay(false);
-                          }
-                          return thumbnails;
-                      }),
-                      // * this mergeMap responsible for flaten all observable into one layer
-                      mergeMap((data) => data),
                   )
                 : throwError((error: any) => {
                       console.error(error);
@@ -422,6 +516,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             )
             .subscribe(
                 (res) => {
+                    if (res.message === 4) {
+                        this.toggleModalDisplay(false);
+                    }
                     this.isProjectLoading = true;
                     numberOfReq = res ? --numberOfReq : numberOfReq;
                     numberOfReq < 1 && (this.projectList = { ...this.projectList, isUploading: false });
@@ -501,7 +598,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .subscribe((message) => {
                 if (message === 1) {
                     this._languageService._translate.get('deleteSuccess').subscribe((translated) => {
-                        alert(projectName + ' ' + translated);
+                        this.modalSpanMessage = projectName + ' ' + translated;
+                        this._modalService.open(this.modalIdDeleteProject);
                     });
                     this.showProjectList();
                 }

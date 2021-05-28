@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Use of this source code is governed by Apache License 2.0 that can be
+ * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
+ */
+
 import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { IconSchema } from 'src/shared/types/icon/icon.model';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
@@ -83,7 +89,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                           imgPath: `assets/icons/rec_bounding_box.svg`,
                           hoverLabel: `leftSideBar.rectangularBB`,
                           alt: `RectangularBB`,
-                          toggleable: this.labelList.length !== 0 ? true : false,
+                          toggleable: true,
                           onClick: () => {
                               this.resetSelectedAnnotate();
                               this._imgLabelState.setState({ draw: true, drag: false, scroll: false });
@@ -93,7 +99,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                           imgPath: `assets/icons/polygon.svg`,
                           hoverLabel: `leftSideBar.polygon`,
                           alt: `Polygon`,
-                          toggleable: this.labelList.length !== 0 ? true : false,
+                          toggleable: true,
                           onClick: () => {
                               if (this.labelList.length !== 0) {
                                   this.resetSelectedAnnotate();

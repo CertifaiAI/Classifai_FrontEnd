@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Use of this source code is governed by Apache License 2.0 that can be
+ * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
+ */
+
 import * as fileSaver from 'file-saver';
 import * as jszip from 'jszip';
 import { Injectable } from '@angular/core';
@@ -56,6 +62,9 @@ export class ExportSaveFormatService {
                 if (!metadata?.bnd_box) {
                     return alert('There are no bounding box.');
                 }
+                if (!labelList) {
+                    return alert('There are no label list.');
+                }
 
                 if (saveCurrentImage) {
                     const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
@@ -68,7 +77,7 @@ export class ExportSaveFormatService {
                         img_ori_h,
                         bnd_box: calculatedBoxMetadata,
                     };
-                    const content = this.generatePascalVocFormat(pascalVocData);
+                    const content = this.generatePascalVocFormat(pascalVocData, labelList);
                     const splitfilenameArr = filename.split('.');
                     const finalizedFilename = splitfilenameArr[0] + '.xml';
                     this.saveFile({ content, filename: finalizedFilename, type: 'text/xml;charset=utf-8' });
@@ -77,32 +86,34 @@ export class ExportSaveFormatService {
                         return alert('There are no image list.');
                     }
                     const pascalVocList: { filename: string; content: string }[] = [];
+
                     projectFullMetadata.forEach((metadata) => {
-                        // if (metadata.bnd_box && metadata.bnd_box.length > 0) {
-                        const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
-                        const filename = this.getFileName(metadata.img_path);
-                        const extensionName = this.getFileExtensionName(filename);
-                        const { img_path, img_depth, img_ori_w, img_ori_h } = metadata;
-                        const pascalVocData = {
-                            img_path,
-                            img_depth,
-                            img_ori_w,
-                            img_ori_h,
-                            bnd_box: calculatedBoxMetadata,
-                        };
-                        const content = this.generatePascalVocFormat(pascalVocData);
-                        const splitfilenameArr = filename.split('.');
-                        const finalizedFilename = `${splitfilenameArr[0]}_${extensionName}.xml`;
-                        pascalVocList.push({
-                            filename: finalizedFilename,
-                            content,
-                        });
-                        // }
+                        const bboxLabels = metadata.bnd_box ? metadata.bnd_box.map((x) => x.label) : [];
+                        const found = bboxLabels.some((r) => labelList.indexOf(r) >= 0);
+                        if (metadata.bnd_box && metadata.bnd_box.length > 0 && found) {
+                            const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
+                            const filename = this.getFileName(metadata.img_path);
+                            const { img_path, img_depth, img_ori_w, img_ori_h } = metadata;
+                            const pascalVocData = {
+                                img_path,
+                                img_depth,
+                                img_ori_w,
+                                img_ori_h,
+                                bnd_box: calculatedBoxMetadata,
+                            };
+                            const content = this.generatePascalVocFormat(pascalVocData, labelList);
+                            const splitfilenameArr = filename.split('.');
+                            const finalizedFilename = `${splitfilenameArr[0]}.xml`;
+                            pascalVocList.push({
+                                filename: finalizedFilename,
+                                content,
+                            });
+                        }
                     });
                     if (!pascalVocList) {
                         return alert('There are no labelling progress.');
                     }
-                    await this.saveAsZip(pascalVocList, saveFormat, projectName);
+                    await this.saveAsZip(pascalVocList, 'pascal_voc', projectName);
                 }
                 break;
             case 'yolo':
@@ -112,7 +123,6 @@ export class ExportSaveFormatService {
                 if (!metadata?.bnd_box) {
                     return alert('There are no bounding box.');
                 }
-
                 if (!labelList) {
                     return alert('There are no label list.');
                 }
@@ -137,24 +147,25 @@ export class ExportSaveFormatService {
 
                     const yoloList: { filename: string; content: string }[] = [];
                     projectFullMetadata.forEach((metadata) => {
-                        // if (metadata.bnd_box && metadata.bnd_box.length > 0) {
-                        const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
-                        const filename = this.getFileName(metadata.img_path);
-                        const extensionName = this.getFileExtensionName(filename);
-                        const { img_ori_w, img_ori_h } = metadata;
-                        const yoloData = {
-                            img_ori_w,
-                            img_ori_h,
-                            bnd_box: calculatedBoxMetadata,
-                        };
-                        const content = this.generateYoloFormat({ ...yoloData }, labelList);
-                        const splitfilenameArr = filename.split('.');
-                        const finalizedFilename = `${splitfilenameArr[0]}_${extensionName}.txt`;
-                        yoloList.push({
-                            filename: finalizedFilename,
-                            content,
-                        });
-                        // }
+                        const bboxLabels = metadata.bnd_box ? metadata.bnd_box.map((x) => x.label) : [];
+                        const found = bboxLabels.some((r) => labelList.indexOf(r) >= 0);
+                        if (metadata.bnd_box && metadata.bnd_box.length > 0 && found) {
+                            const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
+                            const filename = this.getFileName(metadata.img_path);
+                            const { img_ori_w, img_ori_h } = metadata;
+                            const yoloData = {
+                                img_ori_w,
+                                img_ori_h,
+                                bnd_box: calculatedBoxMetadata,
+                            };
+                            const content = this.generateYoloFormat({ ...yoloData }, labelList);
+                            const splitfilenameArr = filename.split('.');
+                            const finalizedFilename = `${splitfilenameArr[0]}.txt`;
+                            yoloList.push({
+                                filename: finalizedFilename,
+                                content,
+                            });
+                        }
                     });
                     if (!yoloList) {
                         return alert('There are no labelling progress.');
@@ -172,6 +183,9 @@ export class ExportSaveFormatService {
                 if (!projectFullMetadata) {
                     return alert('There are no image list.');
                 }
+                if (!labelList) {
+                    return alert('There are no image list.');
+                }
 
                 let ocrText = '';
                 projectFullMetadata.forEach((metadata, i) => {
@@ -180,7 +194,7 @@ export class ExportSaveFormatService {
                     }
                     const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
                     const filename = this.getFileName(metadata.img_path);
-                    const content = this.generateOCRFormat({ bnd_box: calculatedBoxMetadata }, filename);
+                    const content = this.generateOCRFormat({ bnd_box: calculatedBoxMetadata }, filename, labelList);
                     ocrText += `${content}`;
                 });
                 if (!ocrText) {
@@ -188,7 +202,7 @@ export class ExportSaveFormatService {
                 }
                 this.saveFile({
                     content: ocrText,
-                    filename: `${projectName}_Textocr_labels.csv`,
+                    filename: `${projectName}_text_ocr_labels.csv`,
                     type: 'text/csv;charset=utf-8',
                 });
                 break;
@@ -278,16 +292,19 @@ export class ExportSaveFormatService {
         return calculatedMetadata;
     }
 
-    private generatePascalVocFormat({
-        bnd_box,
-        img_path,
-        img_depth,
-        img_ori_w,
-        img_ori_h,
-    }: WithOptional<
-        Pick<BboxMetadata, 'bnd_box' | 'img_path' | 'img_depth' | 'img_ori_w' | 'img_ori_h'>,
-        'img_depth'
-    >) {
+    private generatePascalVocFormat(
+        {
+            bnd_box,
+            img_path,
+            img_depth,
+            img_ori_w,
+            img_ori_h,
+        }: WithOptional<
+            Pick<BboxMetadata, 'bnd_box' | 'img_path' | 'img_depth' | 'img_ori_w' | 'img_ori_h'>,
+            'img_depth'
+        >,
+        labelList: string[],
+    ) {
         let pVocStart = '<annotation>\n';
         const filename = this.getItemName('file', img_path);
         const foldername = this.getItemName('folder', img_path);
@@ -317,27 +334,29 @@ export class ExportSaveFormatService {
         const objectNode = this.createNode('object');
 
         for (const [_, { label, x1, x2, y1, y2 }] of bnd_box.entries()) {
-            pVocStart += '\t' + objectNode[0] + '\n';
-            const nameChildNode = this.createNode('name');
-            const poseChildNode = this.createNode('pose');
-            const truncatedChildNode = this.createNode('truncated');
-            const difficultChildNode = this.createNode('difficult');
-            const bndboxChildNode = this.createNode('bndbox');
-            const xMinSubChildNode = this.createNode('xmin');
-            const yMinSubChildNode = this.createNode('ymin');
-            const xMaxSubChildNode = this.createNode('xmax');
-            const yMaxSubChildNode = this.createNode('ymax');
-            pVocStart += '\t\t' + nameChildNode[0] + label + nameChildNode[1];
-            pVocStart += '\t\t' + poseChildNode[0] + 'Unspecified' + poseChildNode[1];
-            pVocStart += '\t\t' + truncatedChildNode[0] + '0' + truncatedChildNode[1];
-            pVocStart += '\t\t' + difficultChildNode[0] + '0' + difficultChildNode[1];
-            pVocStart += '\t\t' + bndboxChildNode[0] + '\n';
-            pVocStart += '\t\t\t' + xMinSubChildNode[0] + Math.floor(x1).toString() + xMinSubChildNode[1];
-            pVocStart += '\t\t\t' + yMinSubChildNode[0] + Math.floor(y1).toString() + yMinSubChildNode[1];
-            pVocStart += '\t\t\t' + xMaxSubChildNode[0] + Math.floor(x2).toString() + xMaxSubChildNode[1];
-            pVocStart += '\t\t\t' + yMaxSubChildNode[0] + Math.floor(y2).toString() + yMaxSubChildNode[1];
-            pVocStart += '\t\t' + bndboxChildNode[1];
-            pVocStart += '\t' + objectNode[1];
+            if (labelList.indexOf(label) !== -1) {
+                pVocStart += '\t' + objectNode[0] + '\n';
+                const nameChildNode = this.createNode('name');
+                const poseChildNode = this.createNode('pose');
+                const truncatedChildNode = this.createNode('truncated');
+                const difficultChildNode = this.createNode('difficult');
+                const bndboxChildNode = this.createNode('bndbox');
+                const xMinSubChildNode = this.createNode('xmin');
+                const yMinSubChildNode = this.createNode('ymin');
+                const xMaxSubChildNode = this.createNode('xmax');
+                const yMaxSubChildNode = this.createNode('ymax');
+                pVocStart += '\t\t' + nameChildNode[0] + label + nameChildNode[1];
+                pVocStart += '\t\t' + poseChildNode[0] + 'Unspecified' + poseChildNode[1];
+                pVocStart += '\t\t' + truncatedChildNode[0] + '0' + truncatedChildNode[1];
+                pVocStart += '\t\t' + difficultChildNode[0] + '0' + difficultChildNode[1];
+                pVocStart += '\t\t' + bndboxChildNode[0] + '\n';
+                pVocStart += '\t\t\t' + xMinSubChildNode[0] + Math.floor(x1).toString() + xMinSubChildNode[1];
+                pVocStart += '\t\t\t' + yMinSubChildNode[0] + Math.floor(y1).toString() + yMinSubChildNode[1];
+                pVocStart += '\t\t\t' + xMaxSubChildNode[0] + Math.floor(x2).toString() + xMaxSubChildNode[1];
+                pVocStart += '\t\t\t' + yMaxSubChildNode[0] + Math.floor(y2).toString() + yMaxSubChildNode[1];
+                pVocStart += '\t\t' + bndboxChildNode[1];
+                pVocStart += '\t' + objectNode[1];
+            }
         }
         pVocStart += '</annotation>';
 
@@ -349,6 +368,10 @@ export class ExportSaveFormatService {
         labelList: string[],
     ) {
         const yoloContent = bnd_box.reduce((prev, { x1, x2, y1, y2, label }, i) => {
+            if (labelList.indexOf(label) === -1) {
+                return prev;
+            }
+
             const centerX = (x1 + x2) / 2;
             const centerY = (y1 + y2) / 2;
             const width = x2 - x1;
@@ -368,11 +391,15 @@ export class ExportSaveFormatService {
         return yoloContent;
     }
 
-    private generateOCRFormat({ bnd_box }: Pick<BboxMetadata, 'bnd_box'>, filename: string) {
+    private generateOCRFormat({ bnd_box }: Pick<BboxMetadata, 'bnd_box'>, filename: string, labelList: string[]) {
         const textOCRContent = bnd_box.reduce((prev, { x1, x2, y1, y2, label }) => {
-            prev += `${filename},${x1.toString()},${y1.toString()}`;
-            prev += `,${x2.toString()},${y2.toString()},${label.toString()}\n`;
-            return prev;
+            if (labelList.indexOf(label) === -1) {
+                prev += `${filename},${x1.toString()},${y1.toString()}`;
+                prev += `,${x2.toString()},${y2.toString()},${label.toString()}\n`;
+                return prev;
+            } else {
+                return prev;
+            }
         }, '');
         return textOCRContent;
     }
@@ -431,9 +458,9 @@ export class ExportSaveFormatService {
         return `${projectName}_segmentation_JSON.json`;
     }
 
-    private getFileExtensionName(filename: string) {
-        return filename.split('.').pop();
-    }
+    // private getFileExtensionName(filename: string) {
+    //     return filename.split('.').pop();
+    // }
 
     private getCocoContent(metadata: PolyMetadata[], labelList?: string[]) {
         let cocoContent: string = '{';

@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Use of this source code is governed by Apache License 2.0 that can be
+ * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
+ */
+
 import { uuid } from 'src/shared/types/message/message.model';
 import { WithOptional } from 'src/shared/types/with-optional/with-optional';
 
@@ -173,6 +179,11 @@ export type FitScreenCalc = {
 export type LabelInfo = {
     name: string;
     count: number;
+};
+
+export type LabelChoosen = {
+    label: string;
+    isChoosen: boolean;
 };
 
 export type DiffXY = { diffX: number; diffY: number };

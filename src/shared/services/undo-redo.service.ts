@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Use of this source code is governed by Apache License 2.0 that can be
+ * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
+ */
+
 import { Injectable } from '@angular/core';
 import { Utils } from '../types/utils/utils';
 import {
@@ -171,13 +177,17 @@ export class UndoRedoService {
                 if (thisBox.length !== compareBox.length) {
                     return true;
                 } else {
-                    for (const [i, { x1, x2, y1, y2 }] of thisBox.entries()) {
-                        return x1 !== compareBox[i].x1 ||
+                    for (const [i, { x1, x2, y1, y2, label }] of thisBox.entries()) {
+                        // if condition is true, stop the loop and return true
+                        if (
+                            x1 !== compareBox[i].x1 ||
                             x2 !== compareBox[i].x2 ||
                             y1 !== compareBox[i].y1 ||
-                            y2 !== compareBox[i].y2
-                            ? true
-                            : null;
+                            y2 !== compareBox[i].y2 ||
+                            label !== compareBox[i].label
+                        ) {
+                            return true;
+                        }
                     }
                 }
             }

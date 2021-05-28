@@ -1,9 +1,16 @@
+/**
+ * @license
+ * Use of this source code is governed by Apache License 2.0 that can be
+ * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
+ */
+
 import { distinctUntilChanged } from 'rxjs/operators';
 import { environment } from 'src/environments/environment.prod';
 import { HttpClient } from '@angular/common/http';
 import { ImageLabellingModeService } from './image-labelling-mode.service';
 import { Injectable } from '@angular/core';
 import {
+    ExportResponse,
     Message,
     MessageBase64Img,
     MessageProjectProgress,
@@ -33,7 +40,7 @@ export class ImageLabellingApiService {
 
     updateLabelList = (projectName: string, label_list: string[]): Observable<Message> => {
         return this.http.put<Message>(`${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/newlabels`, {
-            label_list: label_list,
+            label_list,
         });
     };
 
@@ -60,8 +67,8 @@ export class ImageLabellingApiService {
         }
     }
 
-    exportProject = (projectName: string, exportType: string): Observable<Message> => {
-        return this.http.put<Message>(
+    exportProject = (projectName: string, exportType: string): Observable<ExportResponse> => {
+        return this.http.put<ExportResponse>(
             `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/export/${exportType}`,
             {
                 newprojectid: projectName,

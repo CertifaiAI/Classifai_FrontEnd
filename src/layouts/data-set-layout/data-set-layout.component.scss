@@ -73,6 +73,16 @@ $fontSize: 2vh;
     color: red;
 }
 
+.validation-error {
+    margin: 1px 1px 1px 1px;
+    color: red;
+}
+
+.validation-success {
+    margin: 1px 1px 1px 1px;
+    color: green;
+}
+
 .error-msg {
     font-size: $fontSize;
 }
@@ -80,7 +90,7 @@ $fontSize: 2vh;
 .select-file-container {
     display: flex;
     flex-direction: row;
-    margin: 2vh 0 0 0;
+    margin: 0 0 0 0;
 }
 
 .file-name-container {
@@ -165,6 +175,40 @@ $fontSize: 2vh;
     width: 99.9vw;
     height: 99.7vh;
     cursor: not-allowed;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+    font-size: 15px;
+    text-decoration: underline;
+    margin-top: 1vh;
+}
+
+.tooltiptitle {
+    opacity: 0.3;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 240px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: 100%;
+    left: 50%;
+    margin-left: -60px;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
 }
 
 // .file-input {

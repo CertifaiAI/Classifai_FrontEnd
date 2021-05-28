@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Use of this source code is governed by Apache License 2.0 that can be
+ * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
+ */
+
 import { BboxMetadata, ImageLabellingMode, PolyMetadata } from 'src/components/image-labelling/image-labelling.model';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { environment } from 'src/environments/environment.prod';
@@ -12,6 +18,7 @@ import {
     MessageContent,
     MessageProjectProgress,
     MessageUuidList,
+    ImportResponse,
 } from 'src/shared/types/message/message.model';
 
 @Injectable({ providedIn: 'any' })
@@ -38,8 +45,8 @@ export class DataSetLayoutService {
         });
     };
 
-    importProject = (): Observable<Message> => {
-        return this.http.put<Message>(`${this.hostPort}v2/newproject`, {});
+    importProject = (): Observable<ImportResponse> => {
+        return this.http.put<ImportResponse>(`${this.hostPort}v2/newproject`, {});
     };
 
     renameProject = (oldProjectName: string, newProjectName: string): Observable<Message> => {
@@ -109,8 +116,8 @@ export class DataSetLayoutService {
         );
     };
 
-    importStatus = (): Observable<Message> => {
-        return this.http.get<Message>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/importstatus`);
+    importStatus = (): Observable<ImportResponse> => {
+        return this.http.get<ImportResponse>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/importstatus`);
     };
 
     importLabelFile() {

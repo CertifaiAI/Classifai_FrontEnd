@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Use of this source code is governed by Apache License 2.0 that can be
+ * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
+ */
+
 type error_code = number;
 type errormessage = string;
 type content = string[];
@@ -6,6 +12,7 @@ export type uuid = string;
 type img_src = string;
 type uuid_add_list = string[];
 type uuid_delete_list = string[];
+type project_config_path = string;
 
 export type MessageContent<TContent = undefined> = {
     content: TContent extends undefined ? content : TContent;
@@ -15,6 +22,16 @@ export type MessageContent<TContent = undefined> = {
 
 export type Message = {
     message: message;
+};
+
+export type ExportResponse = {
+    message: message;
+    project_config_path: project_config_path;
+};
+
+export type ImportResponse = {
+    message: error_code;
+    error_message: errormessage;
 };
 
 export type MessageUuidList = {

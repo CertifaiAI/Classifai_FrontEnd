@@ -2,6 +2,7 @@
     <div>
         <page-header [_onChange]="onChangeSchema"></page-header>
         <image-labelling-info
+            [_totalUuid]="totalUuid"
             [_onChange]="onChangeSchema"
             [_tabStatus]="tabStatus"
             (_onClick)="navigateByAction($event)"
@@ -35,6 +36,8 @@
         </ng-container>
 
         <image-labelling-project
+            [_selectMetadata]="selectedMetaData"
+            [_totalUuid]="totalUuid"
             [_thumbnailList]="thumbnailList"
             [_tabStatus]="tabStatus"
             (_onClose)="onToggleTab($event)"
@@ -43,6 +46,7 @@
             (_onEnterLabel)="onProcessLabel($event)"
             (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
             (_onDeleteAnnotation)="onDeleteAnnotation($event)"
+            (_loadMoreThumbnails)="onLoadMoreThumbnails()"
         ></image-labelling-project>
         <image-labelling-right-sidebar
             [_onChange]="onChangeSchema"
@@ -67,7 +71,7 @@
                             (change)="onSwitchSaveType()"
                         />
                         <span class="slider round"></span>
-                        <p>Current Image</p>
+                        <p>{{ 'singleSave' | translate }}</p>
                     </label>
                     <span class="space-verticle"></span>
                     <label class="switch">
@@ -78,9 +82,10 @@
                             (change)="onSwitchSaveType()"
                         />
                         <span class="slider round"></span>
-                        <p>Bulk Saving</p>
+                        <p>{{ 'bulkSave' | translate }}</p>
                     </label>
                 </div>
+                <div class="adv-settings" (click)="showAdvSettings()">{{ 'advModal.title' | translate }}</div>
                 <button class="save-format-btn" (click)="onClickDownload('pascalVoc')">Pascal VOC</button><br />
                 <button class="save-format-btn" (click)="onClickDownload('yolo')">YOLO</button><br />
                 <button class="save-format-btn" (click)="onClickDownload('ocr')">Text OCR</button><br />
@@ -92,6 +97,40 @@
                 <button class="save-format-btn" (click)="onClickDownload('label')">Label</button><br />
             </ng-container>
         </div>
+    </div>
+</modal>
+
+<modal
+    id="modal-adv"
+    [id]="'modal-adv'"
+    [modalBodyStyle]="advModalBodyStyle"
+    [modalTitle]="'advModal.title' | translate"
+    [scrollable]="true"
+    [zIndex]="2"
+>
+    <div class="modal-adv-container">
+        <p *ngIf="tempLabelChoosen.length !== 0" class="modal-adv-instruction">
+            {{ 'advModal.instructionText' | translate }}
+        </p>
+        <div *ngFor="let labelC of tempLabelChoosen; let i = index" class="margin-bottom">
+            <label class="switch-2 no-margin-left">
+                <input
+                    type="checkbox"
+                    class="checkBox"
+                    [checked]="labelC.isChoosen"
+                    (change)="labelC.isChoosen = !labelC.isChoosen"
+                />
+                <span class="slider round"></span>
+            </label>
+            <label class="modal-adv-label">{{ labelC.label }}</label>
+        </div>
+        <div *ngIf="tempLabelChoosen.length === 0">
+            {{ 'advModal.noLabel' | translate }}
+        </div>
+
+        <button *ngIf="tempLabelChoosen.length !== 0" class="button-style modal-adv-btn" (click)="saveAdvSettings()">
+            {{ 'advModal.btnSave' | translate }}
+        </button>
     </div>
 </modal>
 
@@ -210,6 +249,37 @@
         </table>
     </div>
 </modal>
+
+<modal
+    [id]="modalExportProject"
+    [modalBodyStyle]="exportProjectBodyStyle"
+    [modalTitle]="'exportTitle' | translate"
+    [scrollable]="false"
+>
+    <br />
+    <div class="model-content-container">
+        <p *ngIf="modalSpanLocationPath.trim()">{{ 'location' | translate }}{{ modalSpanLocationPath }}</p>
+        <div [ngClass]="spanClass">
+            <p class="error-msg" [innerHTML]="modalSpanMessage"></p>
+        </div>
+    </div>
+</modal>
+
+<!-- <modal [id]="modalExportProject" [modalBodyStyle]="exportProjectBodyStyle" [scrollable]="false">
+    <div class="model-content-container">
+        <div>
+            <label class="label label-file">{{ 'Export Project' }} </label>
+        </div>
+
+        <div [ngClass]="spanClass">
+            <span>
+                <small class="error-msg" [innerHTML]="modalSpanMessage"></small>
+            </span>
+        </div>
+
+        <div class="horizontal-line"></div>
+    </div>
+</modal> -->
 
 <spinner [_loading]="isLoading"></spinner>
 <toastr [_processingNum]="processingNum"></toastr>

@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Use of this source code is governed by Apache License 2.0 that can be
+ * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
+ */
+
 import { Component, ElementRef, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { LanguageService } from 'src/shared/services/language.service';
 import { TranslateService } from '@ngx-translate/core';
