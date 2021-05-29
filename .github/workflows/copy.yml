@@ -1,12 +1,11 @@
 name: Copy to Repo Classifai Job
 on:
   push:
-    branches: faris_update_auto_commit
+    branches: main
 
     paths:
       # Triggered when only this path has code changes during push
       - 'dist/classifai/**'
-      - '.github/workflows/copy.yml'
 
 jobs:
   copy:
@@ -27,9 +26,9 @@ jobs:
           personal_token: ${{ secrets.PERSONAL_TOKEN }} # Personal token to solve permission issue
           src_path: dist/classifai/. # Source to be copied
           dst_path: classifai-core/src/main/resources/webroot/. # Destination to be pasted
-          dst_owner: fariskamaludin-skymind # Destination owner's name
-          dst_repo_name: Repo-B # Destination repo's name
+          dst_owner: CertifaiAI # Destination owner's name
+          dst_repo_name: classifai # Destination repo's name
           src_branch: main # Source repo's branch
-          dst_branch: main # Destination repo's branch / It will create if branch not exist
+          dst_branch: faris_auto_pr # Destination repo's branch / It will create if branch not exist
           clean: true # Set to 'true' for emptying destination path prior pasting 
-           
+          
