@@ -27,11 +27,11 @@ export class AppComponent implements OnInit {
     }
 
     maxWindow() {
-        this.win.maximize();
+        process.platform === 'darwin' ? this.win.setFullScreen(true) : this.win.maximize();
     }
 
     restoreWindow() {
-        this.win.unmaximize();
+        process.platform === 'darwin' ? this.win.setFullScreen(false) : this.win.unmaximize();
     }
 
     closeWindow() {
