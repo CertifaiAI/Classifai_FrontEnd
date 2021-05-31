@@ -39,7 +39,12 @@
                     draggable="false"
                 />
             </div>
-            <div class="button" id="restore-button" (click)="restoreWindow()" *ngIf="win.isMaximized()">
+            <div
+                class="button"
+                id="restore-button"
+                (click)="restoreWindow()"
+                *ngIf="win.isMaximized() || win.isFullScreen()"
+            >
                 <img
                     class="icon"
                     srcset="
