@@ -3,6 +3,7 @@
         <img class="activeFrame" src="{{ activePreview }}" />
     </div>
     <button type="button" [disabled]="isPlayingFrame" (click)="clickPlay()">Play</button>
+    <button type="button" [disabled]="isPausingFrame" (click)="clickPause()">Pause</button>
     <div class="videoTimeline" id="videoTimeline" (wheel)="onScroll($event)" #videoTimelineRef>
         <table class="table">
             <tbody class="video-tbody">

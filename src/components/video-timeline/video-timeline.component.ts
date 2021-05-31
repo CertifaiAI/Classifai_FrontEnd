@@ -7,6 +7,7 @@
 import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, HostListener } from '@angular/core';
 import { delay } from 'rxjs/operators';
 import { LabelledFrame } from './video-timeline.model';
+import { timer } from 'rxjs';
 
 @Component({
     selector: 'video-timeline',
@@ -21,9 +22,10 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
     totalFrameArr: number[] = [...Array(this._totalFrame)];
     activeFrame = 0;
     activePreview: string = '';
-
     verticalScroll: boolean = false;
     isPlayingFrame: boolean = false;
+    isPausingFrame: boolean = true;
+    pauseFrameIndex: number = 0;
 
     labelledFrame: LabelledFrame[] = [
         {
@@ -258,11 +260,57 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
             : (this.activePreview = this.labelledFrame[index].imageURL);
     };
 
+    clickPlay = () => {
+        this.isPlayingFrame = true;
+        this.isPausingFrame = false;
+        let isLooping: boolean = true;
+        let counting: number = 0;
+        let timeOut: number = 0;
+        // this.totalFrameArr.forEach((element, index) => {
+
+        // });
+
+        for (let index = this.activeFrame; index < this.totalFrameArr.length; index++) {
+            timer(100 * timeOut).subscribe((x) => {
+                if (isLooping) {
+                    if (!this.isPausingFrame) {
+                        console.log('Playing...', index);
+                        this.onClickVideoTImeline(index);
+                        counting++;
+                        if (index === this.totalFrameArr.length - 1) {
+                            this.isPlayingFrame = false;
+                            this.isPausingFrame = true;
+                            this.activeFrame = 0;
+                        }
+                    } else {
+                        this.isPlayingFrame = false;
+                        isLooping = false;
+                        this.pauseFrameIndex = index;
+                        console.log('PAUSING', index);
+                    }
+                }
+            });
+            timeOut++;
+        }
+    };
+
+    clickPause = () => {
+        if (this.isPlayingFrame) {
+            this.isPausingFrame = true;
+        } else {
+            this.clickPlay();
+        }
+    };
+
     @HostListener('window:keydown', ['$event'])
-    onHoldKey({ shiftKey }: KeyboardEvent) {
-        document.getElementById('videoTimeline')?.focus();
-        if (shiftKey) {
+    onKeyDown(event: any) {
+        console.log(event.code);
+        if (event.code === 'ShiftLeft') {
             this.verticalScroll = true;
+        }
+
+        if (event.code === 'Space') {
+            this.clickPause();
         }
     }
 
@@ -270,16 +318,4 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
     onReleaseKey() {
         this.verticalScroll = false;
     }
-
-    clickPlay = async () => {
-        this.isPlayingFrame = true;
-        this.totalFrameArr.forEach((element, index) => {
-            setTimeout(() => {
-                this.onClickVideoTImeline(index);
-            }, 100 * index);
-        });
-        this.isPlayingFrame = true;
-    };
-
-    playFrame = (index: number) => {};
 }
