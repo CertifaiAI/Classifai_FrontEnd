@@ -247,7 +247,7 @@ export class SegmentationCanvasService {
                 label: 'default',
                 id: uuid,
                 lineWidth: 2,
-                color: '#FFFAFA',
+                color: 'rgba(0,255,0,1.0)',
                 region: tmpRegion,
                 subLabel: [],
             };
@@ -549,6 +549,7 @@ export class SegmentationCanvasService {
             metadata.polygons = metadata.polygons.map((poly, i) => ({
                 ...poly,
                 lineWidth: i === polyIndex ? (poly.lineWidth = 2) : (poly.lineWidth = 1),
+                color: i === polyIndex ? (poly.color = 'rgba(0,255,0,1.0)') : (poly.color = 'rgba(255,255,0,0.8)'),
             }));
         } catch (err) {
             console.log('setPolygonLineWidth', err);
@@ -595,7 +596,7 @@ export class SegmentationCanvasService {
                     const { length } = pol.polygons;
                     if (this.tmpPolygon) {
                         pol.polygons.push(cloneDeep(this.tmpPolygon));
-                        this.setPolygonLineWidth(pol, length - 1);
+                        this.setPolygonLineWidth(pol, length);
                         this.tmpPolygon = null;
                     }
                     this.setNewPolygon(false);
