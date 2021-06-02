@@ -70,13 +70,14 @@
 }
 
 .btn-container {
-    min-height: 4.36vh;
-    max-height: 4.36vh;
+    min-height: 4.3vh;
+    max-height: 4.3vh;
     // min-width: 9vw;
     // max-width: 12vw;
     font-size: 2vh;
     background: #525353;
     border-left: 0.0625vw solid rgb(255, 255, 255, 0.25);
+    //border-bottom: 0.0625vw solid rgb(255, 255, 255, 0.25);
     cursor: pointer;
     align-items: center;
     justify-content: center;
