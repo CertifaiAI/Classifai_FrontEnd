@@ -601,6 +601,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     onChangeAnnotationLabel = (changeAnnoLabel: ChangeAnnotationLabel): void => {
+        changeAnnoLabel.index = this.currentAnnotationIndex;
         this.tabStatus = this._imgLblLayoutService.changeAnnotationLabel(this.tabStatus, changeAnnoLabel);
         this.updateStateToRenderChild();
         this.updateProjectProgress();

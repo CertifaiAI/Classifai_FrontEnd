@@ -102,6 +102,9 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        if (changes._selectMetadata?.previousValue && changes._selectMetadata?.currentValue) {
+            this.redrawImage(this._selectMetadata);
+        }
         if (changes._imgSrc?.currentValue) {
             this.initializeCanvas();
             this._undoRedoService.clearAllStages();
