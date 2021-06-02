@@ -11,6 +11,9 @@
                     <td style="width: 50px; color: white">
                         <p>{{ item.object }}</p>
                     </td>
+                    <td style="width: 50px; color: white" (click)="onHide(idx)">
+                        <img id="eye_{{ idx }}" src="../../assets//icons//eye_show.svg" />
+                    </td>
                     <ng-container *ngFor="let frame of totalFrameArr; index as i">
                         <td class="tableTiming">
                             <div *ngIf="idx == 0" [ngClass]="activeFrame === i ? 'active row' : null">

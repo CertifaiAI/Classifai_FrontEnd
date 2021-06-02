@@ -6,7 +6,7 @@
 
 import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, HostListener } from '@angular/core';
 import { delay } from 'rxjs/operators';
-import { LabelledFrame } from './video-timeline.model';
+import { LabelledFrame, FrameArray } from './video-timeline.model';
 import { timer } from 'rxjs';
 
 @Component({
@@ -17,9 +17,7 @@ import { timer } from 'rxjs';
 export class VideoTimelineComponent implements OnInit, OnChanges {
     // occupiedSpace = [...Array(27)];
     occupiedSpace = [];
-    @Input() _totalFrame = 30;
     @ViewChild('videoTimelineRef') _videoTimelineRef!: ElementRef<HTMLDivElement>;
-    totalFrameArr: number[] = [...Array(this._totalFrame)];
     activeFrame = 0;
     activePreview: string = '';
     verticalScroll: boolean = false;
@@ -27,193 +25,328 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
     isPausingFrame: boolean = true;
     pauseFrameIndex: number = 0;
 
+    totalFrameArr: FrameArray[] = [
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/b9210967dbc8b5e411d36371f3bed975-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/38637dc576add631cbc6e238b2944108-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/e11763bf97ddbaca99e1a0aea9a5faed-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/b9210967dbc8b5e411d36371f3bed975-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/fd6a17196b7c19bf492fd7a644700c0c-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/38637dc576add631cbc6e238b2944108-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/76960c0367bda882ffa044b092e7bf62-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/acfda8d971aee2bc4294666fb0027294-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/9f3a00679779bb034efd50a4fad87674-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/b9210967dbc8b5e411d36371f3bed975-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/38637dc576add631cbc6e238b2944108-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/e11763bf97ddbaca99e1a0aea9a5faed-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/b9210967dbc8b5e411d36371f3bed975-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/fd6a17196b7c19bf492fd7a644700c0c-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/38637dc576add631cbc6e238b2944108-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/76960c0367bda882ffa044b092e7bf62-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/acfda8d971aee2bc4294666fb0027294-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/9f3a00679779bb034efd50a4fad87674-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/b9210967dbc8b5e411d36371f3bed975-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/38637dc576add631cbc6e238b2944108-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/e11763bf97ddbaca99e1a0aea9a5faed-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/b9210967dbc8b5e411d36371f3bed975-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/fd6a17196b7c19bf492fd7a644700c0c-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+        },
+        {
+            frameURL:
+                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+        },
+    ];
+
+    @Input() _totalFrame = this.totalFrameArr.length;
+
     labelledFrame: LabelledFrame[] = [
         {
             frame: [5, 6, 7, 8],
             object: 'Person 1',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            isShow: true,
+        },
+        {
+            frame: [1, 2, 3, 4, 7, 8, 9],
+            object: 'Person 2',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/b9210967dbc8b5e411d36371f3bed975-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/38637dc576add631cbc6e238b2944108-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/e11763bf97ddbaca99e1a0aea9a5faed-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/b9210967dbc8b5e411d36371f3bed975-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/fd6a17196b7c19bf492fd7a644700c0c-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/38637dc576add631cbc6e238b2944108-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/76960c0367bda882ffa044b092e7bf62-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/acfda8d971aee2bc4294666fb0027294-full.jpg',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/9f3a00679779bb034efd50a4fad87674-full.jpg',
+            isShow: true,
         },
         {
             frame: [5, 6, 7, 8],
             object: 'Person 1',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/b9210967dbc8b5e411d36371f3bed975-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/38637dc576add631cbc6e238b2944108-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/e11763bf97ddbaca99e1a0aea9a5faed-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/b9210967dbc8b5e411d36371f3bed975-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/fd6a17196b7c19bf492fd7a644700c0c-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/38637dc576add631cbc6e238b2944108-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/76960c0367bda882ffa044b092e7bf62-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/acfda8d971aee2bc4294666fb0027294-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/9f3a00679779bb034efd50a4fad87674-full.jpg',
+            isShow: true,
         },
         {
             frame: [5, 6, 7, 8],
             object: 'Person 1',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/b9210967dbc8b5e411d36371f3bed975-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/38637dc576add631cbc6e238b2944108-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/e11763bf97ddbaca99e1a0aea9a5faed-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/b9210967dbc8b5e411d36371f3bed975-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/fd6a17196b7c19bf492fd7a644700c0c-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/38637dc576add631cbc6e238b2944108-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/76960c0367bda882ffa044b092e7bf62-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/acfda8d971aee2bc4294666fb0027294-full.jpg',
+            isShow: true,
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
-            imageURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/9f3a00679779bb034efd50a4fad87674-full.jpg',
+            isShow: true,
         },
     ];
 
     constructor() {}
 
     ngOnInit() {
-        this.activePreview = this.labelledFrame[0].imageURL;
+        this.activePreview = this.totalFrameArr[0].frameURL;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -237,9 +370,9 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
                 ? (this.activeFrame -= 1)
                 : this.activeFrame;
 
-            this.activeFrame > this.labelledFrame.length
+            this.activeFrame > this.totalFrameArr.length
                 ? (this.activePreview = '')
-                : (this.activePreview = this.labelledFrame[this.activeFrame].imageURL);
+                : (this.activePreview = this.totalFrameArr[this.activeFrame].frameURL);
         }
     };
 
@@ -255,20 +388,16 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
 
     onClickVideoTImeline = (index: number) => {
         this.activeFrame = index;
-        index > this.labelledFrame.length
+        index > this.totalFrameArr.length
             ? (this.activePreview = '')
-            : (this.activePreview = this.labelledFrame[index].imageURL);
+            : (this.activePreview = this.totalFrameArr[index].frameURL);
     };
 
     clickPlay = () => {
         this.isPlayingFrame = true;
         this.isPausingFrame = false;
         let isLooping: boolean = true;
-        let counting: number = 0;
         let timeOut: number = 0;
-        // this.totalFrameArr.forEach((element, index) => {
-
-        // });
 
         for (let index = this.activeFrame; index < this.totalFrameArr.length; index++) {
             timer(100 * timeOut).subscribe((x) => {
@@ -276,7 +405,6 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
                     if (!this.isPausingFrame) {
                         console.log('Playing...', index);
                         this.onClickVideoTImeline(index);
-                        counting++;
                         if (index === this.totalFrameArr.length - 1) {
                             this.isPlayingFrame = false;
                             this.isPausingFrame = true;
@@ -302,9 +430,17 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
         }
     };
 
+    onHide = (idx: number) => {
+        this.labelledFrame[idx].isShow = !this.labelledFrame[idx].isShow;
+        if (this.labelledFrame[idx].isShow) {
+            document.getElementById('eye_' + idx).src = '../../assets/icons/eye_show.svg';
+        } else {
+            document.getElementById('eye_' + idx).src = '../../assets/icons/eye_hide.svg';
+        }
+    };
+
     @HostListener('window:keydown', ['$event'])
     onKeyDown(event: any) {
-        console.log(event.code);
         if (event.code === 'ShiftLeft') {
             this.verticalScroll = true;
         }

@@ -1,5 +1,9 @@
 export type LabelledFrame = {
     frame: number[];
     object: string;
-    imageURL: string;
+    isShow: boolean;
+};
+
+export type FrameArray = {
+    frameURL: string;
 };
