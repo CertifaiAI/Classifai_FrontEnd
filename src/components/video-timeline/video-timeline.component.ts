@@ -4,8 +4,18 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, HostListener } from '@angular/core';
-import { delay } from 'rxjs/operators';
+import {
+    Component,
+    ElementRef,
+    Input,
+    OnChanges,
+    OnInit,
+    SimpleChanges,
+    ViewChild,
+    HostListener,
+    Output,
+    EventEmitter,
+} from '@angular/core';
 import { LabelledFrame, FrameArray } from './video-timeline.model';
 import { timer } from 'rxjs';
 
@@ -17,6 +27,7 @@ import { timer } from 'rxjs';
 export class VideoTimelineComponent implements OnInit, OnChanges {
     // occupiedSpace = [...Array(27)];
     occupiedSpace = [];
+    @Output() _onHide: EventEmitter<LabelledFrame> = new EventEmitter();
     @ViewChild('videoTimelineRef') _videoTimelineRef!: ElementRef<HTMLDivElement>;
     activeFrame = 0;
     activePreview: string = '';
@@ -24,6 +35,9 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
     isPlayingFrame: boolean = false;
     isPausingFrame: boolean = true;
     pauseFrameIndex: number = 0;
+
+    showDetailsIcon: string = `../../../assets/icons/eye_show.svg`;
+    hideDetailsIcon: string = `../../../assets/icons/eye_hide.svg`;
 
     totalFrameArr: FrameArray[] = [
         {
@@ -432,10 +446,12 @@ export class VideoTimelineComponent implements OnInit, OnChanges {
 
     onHide = (idx: number) => {
         this.labelledFrame[idx].isShow = !this.labelledFrame[idx].isShow;
+        this._onHide.emit(this.labelledFrame[idx]);
+
         if (this.labelledFrame[idx].isShow) {
-            document.getElementById('eye_' + idx).src = '../../assets/icons/eye_show.svg';
+            //document.getElementById('eye_' + idx).src = '../../assets/icons/eye_show.svg';
         } else {
-            document.getElementById('eye_' + idx).src = '../../assets/icons/eye_hide.svg';
+            //document.getElementById('eye_' + idx).src = '../../assets/icons/eye_hide.svg';
         }
     };
 

@@ -12,7 +12,7 @@
                         <p>{{ item.object }}</p>
                     </td>
                     <td style="width: 50px; color: white" (click)="onHide(idx)">
-                        <img id="eye_{{ idx }}" src="../../assets//icons//eye_show.svg" />
+                        <img id="eye_{{ idx }}" [src]="item.isShow ? showDetailsIcon : hideDetailsIcon" />
                     </td>
                     <ng-container *ngFor="let frame of totalFrameArr; index as i">
                         <td class="tableTiming">
