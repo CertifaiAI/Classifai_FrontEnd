@@ -1,0 +1,12 @@
+@use '../../shared/scss/ellipsis' as ellipsis;
+
+.layout-container {
+    user-select: none;
+}
+
+.content-container {
+    display: flex;
+    justify-content: space-between;
+    min-width: 97.8vw;
+    max-width: 97.8vw;
+}

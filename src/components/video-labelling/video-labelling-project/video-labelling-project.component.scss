@@ -1,0 +1,105 @@
+@use "../../../shared/scss/variables" as color;
+
+.videoTimelineContainer {
+    //position: relative;
+    // background: #121212;
+    // width: 130vh;
+
+    // display: flex;
+    // flex-flow: column;
+    height: 100%;
+    right: 0;
+    //position: fixed;
+    z-index: 1000;
+    width: 97.8%;
+    // min-width: 95.5vw;
+    // max-width: 95.5vw;
+    padding-top: 2px;
+    padding-right: 45px;
+    //padding-bottom: 50px;
+    padding-left: 45px;
+}
+
+.active-frame-container {
+    padding: 50px;
+    display: flex;
+    justify-content: center;
+}
+
+.videoTimeline {
+    display: flex;
+    text-align: center;
+    font-size: 12px;
+    height: 100%;
+    overflow: hidden;
+    background-color: (color.$greyColor);
+}
+
+.video-tbody {
+    display: block;
+    overflow: auto;
+    height: 350px;
+    width: 100%;
+}
+
+.activeFrame {
+    width: 800px;
+    height: 400px;
+}
+
+.timelineCell {
+    border-radius: 4px;
+    display: inline-block;
+    width: 28px;
+    height: 20px;
+    box-sizing: border-box;
+    border: 1px solid #121212;
+    line-height: 20px;
+    font-size: 11px;
+    color: #1f2428;
+    position: relative;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.clickable:hover {
+    background-color: #293540;
+}
+
+.figure {
+    background: #334554;
+    border-width: 0;
+}
+
+.cursor {
+    border: 2px solid red;
+}
+
+.table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.active {
+    font-size: 12px;
+    font-weight: bold;
+    color: red;
+    background: #121212;
+}
+
+.row {
+    width: 28px;
+    padding: 0;
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.tableTiming {
+    font-size: 10px;
+    vertical-align: middle;
+    color: snow;
+    height: 28px;
+    width: 28px;
+}

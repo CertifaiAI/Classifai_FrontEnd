@@ -34,9 +34,16 @@ const routes: Routes = [
             ),
     },
     {
-        path: 'video',
+        path: 'video1',
         loadChildren: () =>
             import('../video-timeline/video-timeline.module').then(({ VideoTimelineModule }) => VideoTimelineModule),
+    },
+    {
+        path: 'videolbl/bndbox',
+        loadChildren: () =>
+            import('../../layouts/video-labelling-layout/video-labelling-layout.module').then(
+                ({ VideoLabellingLayoutModule }) => VideoLabellingLayoutModule,
+            ),
     },
     { path: '500', component: ServerErrorComponent },
     { path: '**', component: PageNotFoundComponent },
