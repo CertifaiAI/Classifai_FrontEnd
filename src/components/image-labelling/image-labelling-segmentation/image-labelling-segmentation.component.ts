@@ -48,6 +48,9 @@ import {
 })
 export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, OnDestroy {
     @ViewChild('canvasdrawing') canvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('floatdiv') floatdiv!: ElementRef<HTMLDivElement>;
+    @ViewChild('lbltypetxt') lbltypetxt!: ElementRef<HTMLInputElement>;
+    @ViewChild('availablelbl') availablelbl!: ElementRef<HTMLDivElement>;
     private canvasContext!: CanvasRenderingContext2D;
     private image: HTMLImageElement = new Image();
     private isMouseWithinPoint: boolean = false;
@@ -281,7 +284,6 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                         : []
                     : [];
                 this.sortingLabelList(this.labelList, annotationList);
-                this.showDropdownLabelBox = true;
                 this._segCanvasService.drawNewPolygon(
                     this._selectMetadata,
                     this.image,
@@ -289,6 +291,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                     this.canvas.nativeElement,
                     true,
                 );
+                this.positioningLabelListPopup(this._selectMetadata.polygons);
                 this._segCanvasService.validateXYDistance(this._selectMetadata);
                 this.redrawImage(this._selectMetadata);
                 this.emitMetadata();
@@ -316,7 +319,6 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                                     : []
                                 : [];
                             this.sortingLabelList(this.labelList, annotationList);
-                            this.showDropdownLabelBox = true;
                             this._segCanvasService.drawNewPolygon(
                                 this._selectMetadata,
                                 this.image,
@@ -324,6 +326,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                                 this.canvas.nativeElement,
                                 true,
                             );
+                            this.positioningLabelListPopup(this._selectMetadata.polygons);
                             this.annotateStateChange({ annotation: this._selectMetadata.polygons.length - 1 });
                             // this._segCanvasService.setSelectedPolygon(annotation);
                             this._segCanvasService.validateXYDistance(this._selectMetadata);
@@ -483,6 +486,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                     this.redrawImage(this._selectMetadata);
                 }
                 if (this.segState.draw) {
+                    this.showDropdownLabelBox = false;
                     // needed when mouse down then mouse move to get correct coordinate
                     const polyIndex = this._segCanvasService.mouseDownDraw(
                         event,
@@ -689,6 +693,41 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
 
     currentCursor() {
         return this._mouseCursorService.changeCursor(this.mouseCursor);
+    }
+
+    positioningLabelListPopup(polygons: Polygons[]) {
+        const offsetX =
+            polygons[this._selectMetadata.polygons.length - 1].coorPt[
+                this._selectMetadata.polygons[this._selectMetadata.polygons.length - 1].coorPt.length - 1
+            ].x;
+        const offsetY =
+            polygons[this._selectMetadata.polygons.length - 1].coorPt[
+                this._selectMetadata.polygons[this._selectMetadata.polygons.length - 1].coorPt.length - 1
+            ].y;
+        // Positioning the floating div at the bottom right corner of bounding box
+        let posFromTop = offsetY * (100 / document.documentElement.clientHeight) + 8.5;
+        let posFromLeft = offsetX * (100 / document.documentElement.clientWidth) + 2.5;
+        // Re-adjustment of floating div position if it is outside of the canvas
+        if (posFromTop < 9) {
+            posFromTop = 9;
+        }
+        if (posFromTop > 76) {
+            posFromTop = 76;
+        }
+        if (posFromLeft < 2.5) {
+            posFromLeft = 2.5;
+        }
+        if (posFromLeft > 66) {
+            posFromLeft = 66;
+        }
+        this.floatdiv.nativeElement.style.top = posFromTop.toString() + 'vh';
+        this.floatdiv.nativeElement.style.left = posFromLeft.toString() + 'vw';
+        this.showDropdownLabelBox = true;
+        this.labelSearch = '';
+        // this.invalidInput = false;
+        setTimeout(() => {
+            this.lbltypetxt.nativeElement.focus();
+        }, 100);
     }
 
     getLabelList() {
