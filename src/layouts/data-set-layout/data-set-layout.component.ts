@@ -14,7 +14,7 @@ import { forkJoin, interval, Observable, Subject, Subscription, throwError } fro
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ImageLabellingModeService } from './../../components/image-labelling/image-labelling-mode.service';
 import { LanguageService } from 'src/shared/services/language.service';
-import { Message, MessageUuidList } from 'src/shared/types/message/message.model';
+import { Message, MessageUploadStatus } from 'src/shared/types/message/message.model';
 import { ModalBodyStyle } from 'src/components/modal/modal.model';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
@@ -41,7 +41,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     newInputProjectName: string = '';
     selectedProjectName: string = '';
     oldProjectName: string = '';
-    labelTextUpload: string[] = [];
     form!: FormGroup;
     renameForm!: FormGroup;
     subject$: Subject<any> = new Subject();
@@ -56,13 +55,15 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     imgLblMode: ImageLabellingMode = null;
     modalSpanMessage: string = '';
     spanClass: string = '';
+    labelPath: string = '';
+    projectFolderPath: string = '';
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
     readonly modalIdDeleteProject = 'modal-delete-project';
     createProjectModalBodyStyle: ModalBodyStyle = {
-        minHeight: '35vh',
-        maxHeight: '35vh',
+        minHeight: '45vh',
+        maxHeight: '45vh',
         minWidth: '31vw',
         maxWidth: '31vw',
         margin: '15vw 71vh',
@@ -93,6 +94,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         overflow: 'none',
     };
     @ViewChild('refProjectName') _refProjectName!: ElementRef<HTMLInputElement>;
+    @ViewChild('projectfoldername') _projectFoldername!: ElementRef<HTMLLabelElement>;
     @ViewChild('labeltextfilename') _labelTextFilename!: ElementRef<HTMLLabelElement>;
     @ViewChild('refNewProjectName') _refNewProjectName!: ElementRef<HTMLInputElement>;
     @ViewChild('jsonImportProjectFile') _jsonImportProjectFile!: ElementRef<HTMLInputElement>;
@@ -195,8 +197,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     toggleModalDisplay = (shown: boolean): void => {
+        this._projectFoldername.nativeElement.innerHTML = '';
         this._labelTextFilename.nativeElement.innerHTML = '';
-        this.labelTextUpload = [];
         shown && this.form.reset();
         shown
             ? this._modalService.open(this.modalIdCreateProject)
@@ -253,8 +255,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         }),
                     )
                     .subscribe((response) => {
-                        console.log('RRS', response);
-                        console.log(response.error_message.replace(/(\r\n|\n|\r)/gm, '<br>'));
                         this.modalSpanMessage = response.error_message.replace(/(\r\n|\n|\r)/gm, '<br>');
                         if (response.message === 1) {
                             this.processIsSuccess(false);
@@ -482,21 +482,24 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         });
     };
 
+    isCreateFormIncomplete() {
+        return this.inputProjectName === '' || this.projectFolderPath === '';
+    }
+
     createProject = (projectName: string): void => {
-        const createProj$ = this._dataSetService.createNewProject(projectName);
-        const updateLabel$ = this._dataSetService.updateLabelList(projectName, this.labelTextUpload);
+        const createProj$ = this._dataSetService.createNewProject(projectName, this.labelPath, this.projectFolderPath);
         const uploadStatus$ = this._dataSetService.localUploadStatus(projectName);
         let numberOfReq: number = 0;
 
-        const returnResponse = ({ message }: Message): Observable<MessageUuidList> => {
-            return message !== 5 && (message === 1 || message === 0)
+        const returnResponse = ({ message }: Message): Observable<MessageUploadStatus> => {
+            return message === 1
                 ? interval(500).pipe(
                       mergeMap(() => uploadStatus$),
                       /** @property {number} message value 4 means upload completed, value 1 means cancelled */
-                      first(({ message }) => {
-                          this.isOverlayOn = message === 0 || message === 2 ? true : false;
-                          this.isImageUploading = message === 2 ? true : false;
-                          const isValidResponse: boolean = message === 4 || message === 1;
+                      first(({ file_system_status }) => {
+                          this.isOverlayOn = file_system_status === 1 || file_system_status === 2 ? true : false;
+                          this.isImageUploading = file_system_status === 2 ? true : false;
+                          const isValidResponse: boolean = file_system_status === 3;
                           return isValidResponse;
                       }),
                   )
@@ -511,12 +514,11 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .pipe(
                 first(),
                 mergeMap(() => createProj$),
-                mergeMap(() => updateLabel$),
                 mergeMap((message) => returnResponse(message)),
             )
             .subscribe(
                 (res) => {
-                    if (res.message === 4) {
+                    if (res.file_system_status === 3) {
                         this.toggleModalDisplay(false);
                     }
                     this.isProjectLoading = true;
@@ -534,6 +536,40 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.subject$.next();
     };
 
+    selectProjectFolder() {
+        const importProjectFolderStatus$ = this._dataSetService.importProjectFolderStatus();
+        const importProjectFolder$ = this._dataSetService.importProjectFolder();
+        importProjectFolder$
+            .pipe(
+                first(),
+                map(({ message }) => message),
+            )
+            .subscribe((message) => {
+                let windowClosed = false;
+                interval(500)
+                    .pipe(
+                        switchMap(() => importProjectFolderStatus$),
+                        first((response) => {
+                            this.isOverlayOn = response.window_status === 0 ? true : false;
+                            if (response.window_status === 1 && response.project_path !== '') {
+                                this._projectFoldername.nativeElement.innerHTML = response.project_path.replace(
+                                    /^.*[\\\/]/,
+                                    '',
+                                );
+                                this.projectFolderPath = response.project_path;
+                            }
+                            if (response.window_status === 1) {
+                                windowClosed = true;
+                            }
+                            return windowClosed;
+                        }),
+                    )
+                    .subscribe((response) => {
+                        this.showProjectList();
+                    });
+            });
+    }
+
     importLabelFile() {
         const importLabelFileStatus$ = this._dataSetService.importLabelFileStatus();
         const importLabelFile$ = this._dataSetService.importLabelFile();
@@ -548,15 +584,15 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     .pipe(
                         switchMap(() => importLabelFileStatus$),
                         first((response) => {
-                            this.isOverlayOn = response.message === 0 ? true : false;
-                            if (response.message === 4) {
+                            this.isOverlayOn = response.window_status === 0 ? true : false;
+                            if (response.window_status === 1 && response.label_file_path !== '') {
                                 this._labelTextFilename.nativeElement.innerHTML = response.label_file_path.replace(
                                     /^.*[\\\/]/,
                                     '',
                                 );
-                                this.labelTextUpload = response.label_list;
+                                this.labelPath = response.label_file_path;
                             }
-                            if (response.message === 1 || response.message === 4) {
+                            if (response.window_status === 1) {
                                 windowClosed = true;
                             }
                             return windowClosed;

@@ -87,17 +87,27 @@ $fontSize: 2vh;
     font-size: $fontSize;
 }
 
+.select-folder-container,
 .select-file-container {
     display: flex;
     flex-direction: row;
     margin: 0 0 0 0;
 }
 
+.folder-name-container,
 .file-name-container {
     display: flex;
     flex-direction: row;
-    margin: 1.5vh 0 0 19vh;
-    min-height: 4vh;
+    margin: 1.5vh 0 0 22vh;
+    min-height: 2vh;
+}
+
+.foldername,
+.filename {
+    font-size: 1.8vh;
+    color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .input {
@@ -127,12 +137,19 @@ $fontSize: 2vh;
     font-size: $fontSize;
 }
 
+.choose-folder-button,
 .choose-file-button {
     background-color: #444444;
 }
 
 .create-btn {
     background-color: #169887;
+}
+
+.disabled-create-btn {
+    cursor: not-allowed;
+    background-color: #444444 !important;
+    color: #777777 !important;
 }
 
 .cancel-btn {
@@ -152,20 +169,23 @@ $fontSize: 2vh;
     cursor: pointer;
 }
 
-.label-file {
+.label-name {
+    width: 9.5vw;
+}
+
+.label-select-folder {
     padding-top: 0.5vh;
+    width: 9.5vw;
+}
+
+.label-select-file {
+    padding-top: 0.5vh;
+    width: 9.5vw;
 }
 
 .input-id {
     font-size: $fontSize;
     display: none;
-}
-
-.filename {
-    font-size: $fontSize;
-    color: white;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .overlay {

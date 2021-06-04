@@ -34,9 +34,10 @@ export type ImportResponse = {
     error_message: errormessage;
 };
 
-export type MessageUuidList = {
+export type MessageUploadStatus = {
     message: message;
-    uuid_list: uuid[];
+    file_system_status: number;
+    file_system_message: string;
 };
 
 export type MessageBase64Img = {
