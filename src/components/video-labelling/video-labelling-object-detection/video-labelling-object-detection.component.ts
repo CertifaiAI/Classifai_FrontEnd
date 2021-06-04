@@ -14,11 +14,11 @@ import { timer } from 'rxjs';
 import { FrameArray, LabelledFrame } from 'src/components/video-timeline/video-timeline.model';
 
 @Component({
-    selector: 'video-labelling-project',
-    templateUrl: './video-labelling-project.component.html',
-    styleUrls: ['./video-labelling-project.component.scss'],
+    selector: 'video-labelling-object-detection',
+    templateUrl: './video-labelling-object-detection.component.html',
+    styleUrls: ['./video-labelling-object-detection.component.scss'],
 })
-export class VideoLabellingProjectComponent implements OnInit, OnChanges {
+export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges {
     // occupiedSpace = [...Array(27)];
     occupiedSpace = [];
     @Output() _onHide: EventEmitter<LabelledFrame> = new EventEmitter();
@@ -384,7 +384,7 @@ export class VideoLabellingProjectComponent implements OnInit, OnChanges {
         }
     };
 
-    displayFrameIndicator = (index: number, frame: any): string => {
+    displayFrameIndicator = (index: number, frame: []): string => {
         let className = '';
         frame.forEach((element: number) => {
             index === element ? (className += ' figure ') : className;
@@ -441,12 +441,6 @@ export class VideoLabellingProjectComponent implements OnInit, OnChanges {
     onHide = (idx: number) => {
         this.labelledFrame[idx].isShow = !this.labelledFrame[idx].isShow;
         this._onHide.emit(this.labelledFrame[idx]);
-
-        if (this.labelledFrame[idx].isShow) {
-            //document.getElementById('eye_' + idx).src = '../../assets/icons/eye_show.svg';
-        } else {
-            //document.getElementById('eye_' + idx).src = '../../assets/icons/eye_hide.svg';
-        }
     };
 
     @HostListener('window:keydown', ['$event'])

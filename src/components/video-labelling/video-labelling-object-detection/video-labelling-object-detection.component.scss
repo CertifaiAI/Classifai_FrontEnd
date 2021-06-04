@@ -21,7 +21,7 @@
 }
 
 .active-frame-container {
-    padding: 50px;
+    padding: 38px;
     display: flex;
     justify-content: center;
 }
@@ -38,13 +38,13 @@
 .video-tbody {
     display: block;
     overflow: auto;
-    height: 350px;
+    height: 300px;
     width: 100%;
 }
 
 .activeFrame {
-    width: 800px;
-    height: 400px;
+    width: 960px;
+    height: 480px;
 }
 
 .timelineCell {
@@ -102,4 +102,23 @@
     color: snow;
     height: 28px;
     width: 28px;
+}
+
+.info-container {
+    background-color: (color.$greyColor);
+    height: 30px;
+}
+
+.label-display {
+    width: 80px;
+    color: white;
+
+    text-align: left;
+}
+
+.eye-display {
+    width: 50px;
+    color: white;
+    border-right: 2px black solid;
+    padding-right: 1vh;
 }
