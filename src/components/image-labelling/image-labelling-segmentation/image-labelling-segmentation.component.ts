@@ -277,13 +277,6 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     canvasDblClickEvent(_: MouseEvent) {
         if (this.validateEndDrawPolygon(this.segState, this.isMouseWithinPoint, this.canvasContext)) {
             if (this._segCanvasService.isNewPolygon()) {
-                this.getLabelList();
-                const annotationList = this._tabStatus[2].annotation
-                    ? this._tabStatus[2].annotation[0].polygons
-                        ? this._tabStatus[2].annotation[0].polygons
-                        : []
-                    : [];
-                this.sortingLabelList(this.labelList, annotationList);
                 this._segCanvasService.drawNewPolygon(
                     this._selectMetadata,
                     this.image,
@@ -312,13 +305,6 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                     const { annotation } = this.annotateState;
                     switch (key) {
                         case 'Enter':
-                            this.getLabelList();
-                            const annotationList = this._tabStatus[2].annotation
-                                ? this._tabStatus[2].annotation[0].polygons
-                                    ? this._tabStatus[2].annotation[0].polygons
-                                    : []
-                                : [];
-                            this.sortingLabelList(this.labelList, annotationList);
                             this._segCanvasService.drawNewPolygon(
                                 this._selectMetadata,
                                 this.image,
@@ -486,6 +472,13 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                     this.redrawImage(this._selectMetadata);
                 }
                 if (this.segState.draw) {
+                    this.getLabelList();
+                    const annotationList = this._tabStatus[2].annotation
+                        ? this._tabStatus[2].annotation[0].polygons
+                            ? this._tabStatus[2].annotation[0].polygons
+                            : []
+                        : [];
+                    this.sortingLabelList(this.labelList, annotationList);
                     this.showDropdownLabelBox = false;
                     // needed when mouse down then mouse move to get correct coordinate
                     const polyIndex = this._segCanvasService.mouseDownDraw(
@@ -496,6 +489,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                         this.canvasContext,
                         this.ctrlKey,
                         this.altKey,
+                        this.labelList,
                     );
 
                     if (polyIndex > -1) {
