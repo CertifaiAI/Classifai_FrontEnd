@@ -63,10 +63,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     readonly modalIdDeleteProject = 'modal-delete-project';
     createProjectModalBodyStyle: ModalBodyStyle = {
         minHeight: '45vh',
-        maxHeight: '45vh',
         minWidth: '31vw',
         maxWidth: '31vw',
-        margin: '15vw 71vh',
+        margin: '12vw 71vh',
         overflow: 'none',
     };
     renameProjectModalBodyStyle: ModalBodyStyle = {

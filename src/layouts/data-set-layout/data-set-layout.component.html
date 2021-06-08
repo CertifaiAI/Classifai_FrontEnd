@@ -38,8 +38,9 @@
                     (input)="onChange($event.target.value)"
                 />
             </div>
-
-            <ng-container *ngIf="form.get('projectName')?.touched; else emptycontainer">
+            <ng-container
+                *ngIf="form.get('projectName')?.touched && form.get('projectName')?.invalid; else emptycontainer"
+            >
                 <div class="validation">
                     <span *ngIf="form.get('projectName')?.getError('exist')">
                         <small class="error-msg"> {{ 'projectNameExist' | translate }} </small>
