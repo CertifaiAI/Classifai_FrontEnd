@@ -44,7 +44,8 @@
         "createNew": "Bersedia dan jom mulakan projek baru!"
     },
     "deleteMsg": "dipadam ",
-    "deleteSuccess": "berjaya",
+    "success": "berjaya",
+    "renameMsg": "dinamakan semula",
     "renameSuccess": "telah berjaya dinamakan semula!",
     "deleteProject": "Padam Projek",
     "exportProject": "Eksport Projek",

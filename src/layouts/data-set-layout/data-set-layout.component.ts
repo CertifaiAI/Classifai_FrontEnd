@@ -62,6 +62,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
     readonly modalIdDeleteProject = 'modal-delete-project';
+    readonly modalIdRenameSuccess = 'modal-rename-success';
     createProjectModalBodyStyle: ModalBodyStyle = {
         minHeight: '35vh',
         maxHeight: '35vh',
@@ -87,6 +88,14 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         overflow: 'none',
     };
     deleteProjectBodyStyle: ModalBodyStyle = {
+        minHeight: '11vh',
+        maxHeight: '11vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    renameSuccessBodyStyle: ModalBodyStyle = {
         minHeight: '11vh',
         maxHeight: '11vh',
         minWidth: '31vw',
@@ -581,7 +590,10 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .subscribe((message) => {
                 if (message === 1) {
                     this._languageService._translate.get('renameSuccess').subscribe((translated) => {
-                        alert(oldProjectName + ' ' + translated);
+                        // alert(oldProjectName + ' ' + translated);
+                        this.projectName = oldProjectName;
+                        this.modalSpanMessage = translated;
+                        this._modalService.open(this.modalIdRenameSuccess);
                     });
                     this.showProjectList();
                     this.toggleRenameModalDisplay();

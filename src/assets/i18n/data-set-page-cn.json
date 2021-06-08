@@ -44,7 +44,8 @@
         "createNew": "开始新的项目吧！"
     },
     "deleteMsg": "删除 ",
-    "deleteSuccess": "成功",
+    "success": "成功",
+    "renameMsg": "名称更新 ",
     "renameSuccess": "名称更新成功!",
     "deleteProject": "删除项目",
     "exportProject": "导出项目",

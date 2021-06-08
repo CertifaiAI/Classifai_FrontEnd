@@ -44,8 +44,8 @@
         "createNew": "Gear up and start creating new project!"
     },
     "deleteMsg": "deleted ",
-    "deleteSuccess": "successfully",
-    "renameSuccess": "is successfully renamed!",
+    "renameMsg": "renamed ",
+    "success": "successfully",
     "deleteProject": "Delete Project",
     "exportProject": "Export Project",
     "importJson": "Select Config File",

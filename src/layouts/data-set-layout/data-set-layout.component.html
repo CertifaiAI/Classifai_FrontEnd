@@ -155,16 +155,33 @@
 </modal>
 
 <modal
+    [id]="modalIdRenameSuccess"
+    [modalBodyStyle]="renameSuccessBodyStyle"
+    [modalTitle]="'renameProject' | translate"
+    [scrollable]="false"
+>
+    <div class="modal-message-container">
+        <div class="display-message-container">
+            <p class="display-msg">
+                {{ projectName }} {{ 'renameMsg' | translate }}
+                <b class="validation-success">{{ 'success' | translate }}</b
+                >!
+            </p>
+        </div>
+    </div>
+</modal>
+
+<modal
     [id]="modalIdDeleteProject"
     [modalBodyStyle]="deleteProjectBodyStyle"
     [modalTitle]="'deleteProject' | translate"
     [scrollable]="false"
 >
-    <div class="modal-delete-container">
+    <div class="modal-message-container">
         <div class="display-message-container">
             <p class="display-msg">
                 {{ projectName }} {{ 'deleteMsg' | translate }}
-                <b class="validation-success">{{ 'deleteSuccess' | translate }}</b
+                <b class="validation-success">{{ 'success' | translate }}</b
                 >!
             </p>
         </div>
