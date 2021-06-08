@@ -31,7 +31,9 @@
             <image-labelling-segmentation
                 [_selectMetadata]="selectedMetaData"
                 [_imgSrc]="imgSrc"
+                [_tabStatus]="tabStatus"
                 (_onChangeMetadata)="onChangeMetadata($event)"
+                (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
             ></image-labelling-segmentation>
         </ng-container>
 
