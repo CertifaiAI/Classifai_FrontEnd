@@ -327,7 +327,7 @@ export class BoundingBoxCanvasService {
     ) {
         try {
             for (const box of boxes) {
-                console.log(box);
+                // console.log(box);
                 const newW: number = (box.x2 - box.x1) * scalefactor;
                 const newH: number = (box.y2 - box.y1) * scalefactor;
                 const X1: number = box.distancetoImg.x * scalefactor + imgX;
