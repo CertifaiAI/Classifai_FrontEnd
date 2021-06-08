@@ -71,6 +71,9 @@ $fontSize: 2vh;
 
 .validation {
     color: red;
+    margin-left: 11vw;
+    margin-top: 1.05vh;
+    margin-bottom: 0.25vh;
 }
 
 .validation-error {
@@ -94,6 +97,7 @@ $fontSize: 2vh;
     margin: 0 0 0 0;
 }
 
+.empty-container,
 .folder-name-container,
 .file-name-container {
     display: flex;

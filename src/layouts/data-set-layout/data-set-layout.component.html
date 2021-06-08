@@ -39,7 +39,7 @@
                 />
             </div>
 
-            <ng-container *ngIf="form.get('projectName')?.touched">
+            <ng-container *ngIf="form.get('projectName')?.touched; else emptycontainer">
                 <div class="validation">
                     <span *ngIf="form.get('projectName')?.getError('exist')">
                         <small class="error-msg"> {{ 'projectNameExist' | translate }} </small>
@@ -49,6 +49,9 @@
                     </span>
                 </div>
             </ng-container>
+            <ng-template #emptycontainer>
+                <div class="empty-container"></div>
+            </ng-template>
             <br />
             <div class="select-folder-container">
                 <label class="label label-select-folder">{{ 'projectFolder' | translate }}</label>
