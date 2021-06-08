@@ -99,10 +99,12 @@
     background: #262a2e;
     color: white;
     box-shadow: inset -0.5vw 6.25vw 1vw 0 rgba(0, 0, 0, 0.2), inset -0.5vw -0.5vw 1vw 0 rgba(255, 255, 255, 0.4);
+
     &:hover {
         box-shadow: inset -0.375vw -0.375vw 0.625vw 0 rgba(0, 0, 0, 0.2),
             inset 0.375vw 0.375vw 0.625vw 0 rgba(255, 255, 255, 0.5);
     }
+
     &:active {
         box-shadow: inset 0.375vw 0.375vw 0.625vw 0 rgba(0, 0, 0, 0.2),
             inset -0.375vw -0.375vw 0.625vw 0 rgba(255, 255, 255, 0.5);
@@ -177,7 +179,7 @@
     margin-top: 15vh;
 }
 
-.model-content-container {
+.modal-content-container {
     margin-left: 1.3vw;
 }
 
@@ -198,6 +200,10 @@
     justify-content: flex-end;
 }
 
+.export-content-container {
+    margin-left: 0.5vw;
+}
+
 .button-style {
     border-radius: 1vh;
     border: none;
@@ -207,16 +213,16 @@
 }
 
 .confg-btn {
-    padding: 1vh 1.5vw 1vh 1.5vw;
-    background-color: #169887;
+    padding: 1vh 0.5vw 1vh 0.5vw;
+    background-color: #2d8ceb;
     margin-right: 0.7vw;
     font-size: 2vh;
     min-width: 8vw;
 }
 
 .confgdata-btn {
-    padding: 1vh 1.5vw 1vh 1.5vw;
-    background-color: #169887;
+    padding: 1vh 0.5vw 1vh 0.5vw;
+    background-color: #2d8ceb;
     font-size: 2vh;
     min-width: 8vw;
 }
@@ -230,6 +236,43 @@
     background-color: #444444;
     font-size: 1.5vh;
 }
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    //border-bottom: 1px dotted black;
+    font-size: 15px;
+    text-decoration: underline;
+    margin-top: 1vh;
+    padding-left: 0.8vw;
+}
+
+.tooltiptitle {
+    opacity: 0.3;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 240px;
+    background-color: black;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding-left: 0.5vw;
+    padding-right: 0.5vw;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: 100%;
+    left: 50%;
+    margin-left: -60px;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
 .save-format-list {
     left: 0;
     top: 0;
@@ -269,6 +312,7 @@
         background-size: 100% 100%;
         background-position: center;
     }
+
     .checkBox:checked + .slider:before {
         -webkit-transform: translateX(2.2em);
         -ms-transform: translateX(2.2em);
@@ -285,6 +329,7 @@
         background-color: #ccc;
         -webkit-transition: 0.8s;
         transition: 0.8s;
+
         &::before {
             position: absolute;
             content: '';
@@ -300,6 +345,7 @@
 
     .round {
         border-radius: 1.2em;
+
         &::before {
             border-radius: 50%;
         }
@@ -331,6 +377,7 @@
         background-size: 100% 100%;
         background-position: center;
     }
+
     .checkBox:checked + .slider:before {
         -webkit-transform: translateX(1.5em);
         -ms-transform: translateX(1.5em);
@@ -347,6 +394,7 @@
         background-color: #ccc;
         -webkit-transition: 0.5s;
         transition: 0.5s;
+
         &::before {
             position: absolute;
             content: '';
@@ -361,6 +409,7 @@
 
     .round {
         border-radius: 1.2em;
+
         &::before {
             border-radius: 50%;
         }
@@ -407,6 +456,7 @@
         box-shadow: 5px 5px 10px #888888, -5px -5px 10px #888888;
         cursor: pointer;
     }
+
     &:active:hover {
         border: 3px dashed green;
     }
