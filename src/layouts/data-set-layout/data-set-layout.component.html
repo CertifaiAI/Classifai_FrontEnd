@@ -121,7 +121,7 @@
     <form [formGroup]="form">
         <div class="content-container">
             <div class="select-file-container">
-                <label class="label label-file">{{ 'importJson' | translate }} </label>
+                <label class="label config-file">{{ 'importJson' | translate }} </label>
                 <label class="choose-file-btn">
                     {{ 'chooseFile' | translate }}
                     <button class="input-id" type="button" (click)="onSelectImportProjectJson()">
@@ -143,7 +143,7 @@
                     </span>
                 </div>
             </ng-container>
-
+            <div style="padding-bottom: 2vh"></div>
             <div class="horizontal-line"></div>
             <!-- <div class="model-button-container">
                 <button class="button-style create-btn" type="submit" (click)="toggleImportProjectModalDisplay(false)">
