@@ -43,7 +43,8 @@
         "noProject": "Wait a minute... there's no project",
         "createNew": "Gear up and start creating new project!"
     },
-    "deleteSuccess": "is successfully deleted!",
+    "deleteMsg": "deleted ",
+    "deleteSuccess": "successfully",
     "renameSuccess": "is successfully renamed!",
     "deleteProject": "Delete Project",
     "exportProject": "Export Project",

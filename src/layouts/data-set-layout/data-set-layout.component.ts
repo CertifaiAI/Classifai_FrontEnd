@@ -53,6 +53,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     isOverlayOn = false;
     isImageUploading = false;
     isProjectLoading = false;
+    isDeleteSuccess = false;
+    projectName: string = '';
     imgLblMode: ImageLabellingMode = null;
     modalSpanMessage: string = '';
     spanClass: string = '';
@@ -85,8 +87,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         overflow: 'none',
     };
     deleteProjectBodyStyle: ModalBodyStyle = {
-        minHeight: '10vh',
-        maxHeight: '15vh',
+        minHeight: '11vh',
+        maxHeight: '11vh',
         minWidth: '31vw',
         maxWidth: '31vw',
         margin: '15vw 71vh',
@@ -598,7 +600,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .subscribe((message) => {
                 if (message === 1) {
                     this._languageService._translate.get('deleteSuccess').subscribe((translated) => {
-                        this.modalSpanMessage = projectName + ' ' + translated;
+                        this.isDeleteSuccess = true;
+                        this.projectName = projectName;
                         this._modalService.open(this.modalIdDeleteProject);
                     });
                     this.showProjectList();

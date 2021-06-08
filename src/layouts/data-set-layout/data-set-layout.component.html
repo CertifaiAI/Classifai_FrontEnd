@@ -160,10 +160,13 @@
     [modalTitle]="'deleteProject' | translate"
     [scrollable]="false"
 >
-    <br />
-    <div class="content-container">
-        <div class="validation-success">
-            <p class="error-msg" [innerHTML]="modalSpanMessage"></p>
+    <div class="modal-delete-container">
+        <div class="display-message-container">
+            <p class="display-msg">
+                {{ projectName }} {{ 'deleteMsg' | translate }}
+                <b class="validation-success">{{ 'deleteSuccess' | translate }}</b
+                >!
+            </p>
         </div>
     </div>
 </modal>

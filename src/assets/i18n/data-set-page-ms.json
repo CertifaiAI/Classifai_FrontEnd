@@ -43,7 +43,8 @@
         "noProject": "Tunggu sekejap... tidak ada projek pun",
         "createNew": "Bersedia dan jom mulakan projek baru!"
     },
-    "deleteSuccess": "telah berjaya dipadam!",
+    "deleteMsg": "dipadam ",
+    "deleteSuccess": "berjaya",
     "renameSuccess": "telah berjaya dinamakan semula!",
     "deleteProject": "Padam Projek",
     "exportProject": "Eksport Projek",
