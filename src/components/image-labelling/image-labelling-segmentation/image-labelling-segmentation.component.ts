@@ -209,11 +209,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         this.canvasContext.drawImage(this.image, img_x, img_y, img_w, img_h);
         if (this._tabStatus[2].annotation?.length !== 0) {
             this.getLabelList();
-            const annotationList = this._tabStatus[2].annotation
-                ? this._tabStatus[2].annotation[0].polygons
-                    ? this._tabStatus[2].annotation[0].polygons
-                    : []
-                : [];
+            const annotationList = this._tabStatus[2].annotation ? this._tabStatus[2].annotation[0].polygons ?? [] : [];
             this.sortingLabelList(this.labelList, annotationList);
         }
         this._segCanvasService.drawAllPolygon(this._selectMetadata, this.canvasContext, this.annotateState.annotation);
@@ -474,9 +470,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 if (this.segState.draw) {
                     this.getLabelList();
                     const annotationList = this._tabStatus[2].annotation
-                        ? this._tabStatus[2].annotation[0].polygons
-                            ? this._tabStatus[2].annotation[0].polygons
-                            : []
+                        ? this._tabStatus[2].annotation[0].polygons ?? []
                         : [];
                     this.sortingLabelList(this.labelList, annotationList);
                     this.showDropdownLabelBox = false;
@@ -672,7 +666,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 !(event.relatedTarget as Element)?.className.includes('canvasstyle')
             ) {
                 this.showDropdownLabelBox = false;
-                if (this._selectMetadata.polygons.filter((poly) => poly.label === '').length !== 0) {
+                if (this._selectMetadata.polygons.filter((poly) => !poly.label).length !== 0) {
                     this._selectMetadata.polygons = this._selectMetadata.polygons.filter((poly) => poly.label !== '');
                     this._onChangeMetadata.emit(this._selectMetadata);
                     this.redrawImage(this._selectMetadata);
@@ -727,15 +721,13 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     getLabelList() {
         this.labelList = [];
         this.allLabelList = [];
-        (this._tabStatus[1].label_list ? this._tabStatus[1].label_list : []).forEach((name: string) => {
-            this.labelList.push({
+        (this._tabStatus[1].label_list ?? []).forEach((name: string) => {
+            const labels = {
                 name,
                 count: 0,
-            });
-            this.allLabelList.push({
-                name,
-                count: 0,
-            });
+            };
+            this.labelList.push(labels);
+            this.allLabelList.push(labels);
         });
     }
 
