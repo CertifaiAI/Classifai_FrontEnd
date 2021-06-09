@@ -159,7 +159,7 @@
             <ng-container *ngIf="modalSpanMessage.trim()">
                 <div [ngClass]="spanClass">
                     <span>
-                        <small class="error-msg" [innerHTML]="modalSpanMessage"></small>
+                        <small class="error-msg">{{ modalSpanMessage | translate }}{{ modalImportProjectName }}</small>
                     </span>
                 </div>
             </ng-container>

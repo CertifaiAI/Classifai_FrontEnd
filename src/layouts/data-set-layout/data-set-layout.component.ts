@@ -54,6 +54,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     isProjectLoading = false;
     imgLblMode: ImageLabellingMode = null;
     modalSpanMessage: string = '';
+    modalImportProjectName: string = '';
     spanClass: string = '';
     labelPath: string = '';
     projectFolderPath: string = '';
@@ -260,9 +261,11 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     )
                     .subscribe((response) => {
                         this.modalSpanMessage =
-                            response.file_system_message === 'DATABASE_UPDATED'
-                                ? `Import project success. Rename as ${response.project_name}.`
-                                : 'Import project aborted.';
+                            response.file_system_message === 'DATABASE_UPDATED' ? 'importSuccess' : 'importAborted';
+                        this.modalImportProjectName =
+                            response.file_system_message === 'DATABASE_UPDATED' && response.project_name
+                                ? response.project_name
+                                : '';
                         if (response.file_system_status === 5) {
                             this.processIsSuccess(false);
                         } else {
