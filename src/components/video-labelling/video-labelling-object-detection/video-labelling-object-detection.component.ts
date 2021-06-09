@@ -11,7 +11,7 @@ import {
     ViewChild,
 } from '@angular/core';
 import { timer } from 'rxjs';
-import { FrameArray, LabelledFrame } from 'src/components/video-timeline/video-timeline.model';
+import { FrameArray, LabelledFrame } from '../video-labelling.modal';
 
 @Component({
     selector: 'video-labelling-object-detection',
@@ -203,151 +203,181 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             frame: [5, 6, 7, 8],
             object: 'Person 1',
             isShow: true,
+            color: 'green',
         },
         {
             frame: [1, 2, 3, 4, 7, 8, 9],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
+        },
+        {
+            frame: [0, 1, 2, 3, 4],
+            object: 'Person 2',
+            isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
+            color: 'yellow',
         },
         {
             frame: [5, 6, 7, 8],
             object: 'Person 1',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [5, 6, 7, 8],
             object: 'Person 1',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
         {
             frame: [1, 2, 3, 4],
             object: 'Person 2',
             isShow: true,
+            color: 'yellow',
         },
     ];
 
@@ -384,10 +414,10 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         }
     };
 
-    displayFrameIndicator = (index: number, frame: []): string => {
+    displayFrameIndicator = (idx: number, index: number, frame: number[]): string => {
         let className = '';
         frame.forEach((element: number) => {
-            index === element ? (className += ' figure ') : className;
+            index === element ? (idx % 2 === 0 ? (className += ' figure1 ') : (className += ' figure2 ')) : className;
         });
         className += this.activeFrame === index && ' cursor row';
         className += ' timelineCell clickable';

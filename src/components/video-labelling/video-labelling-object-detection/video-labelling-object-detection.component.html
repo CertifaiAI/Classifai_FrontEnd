@@ -23,7 +23,7 @@
                                 {{ i }}
                             </div>
                             <div
-                                [ngClass]="displayFrameIndicator(i, item.frame)"
+                                [ngClass]="displayFrameIndicator(idx, i, item.frame)"
                                 (click)="onClickVideoTImeline(i)"
                             ></div>
                         </td>
