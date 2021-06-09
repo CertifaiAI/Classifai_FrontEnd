@@ -57,6 +57,8 @@ export type MessageProjectProgress = {
 
 export type MessageReload = {
     message: message;
+    file_system_status: number;
+    file_system_message: string;
     uuid_add_list: uuid_add_list;
     uuid_delete_list: uuid_delete_list;
 };
