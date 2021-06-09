@@ -31,7 +31,9 @@ export type ExportResponse = {
 
 export type ImportResponse = {
     message: error_code;
-    error_message: errormessage;
+    file_system_status: number;
+    file_system_message: string;
+    project_name?: string;
 };
 
 export type MessageUploadStatus = {

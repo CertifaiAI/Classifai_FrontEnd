@@ -245,8 +245,13 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         first((response) => {
                             // console.log('RESPONSE IMPORT PROJECT MESSAGE', response);
                             // this.modalSpanMessage = response.error_message;
-                            this.isOverlayOn = response.message === 0 ? true : false;
-                            if (response.message === 1 || response.message === 4) {
+                            this.isOverlayOn =
+                                response.file_system_status === 1 || response.file_system_status === 2 ? true : false;
+                            if (
+                                response.file_system_status === 0 ||
+                                response.file_system_status === 3 ||
+                                response.file_system_status === 5
+                            ) {
                                 refreshProjectList = true;
                             }
 
@@ -254,8 +259,11 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         }),
                     )
                     .subscribe((response) => {
-                        this.modalSpanMessage = response.error_message.replace(/(\r\n|\n|\r)/gm, '<br>');
-                        if (response.message === 1) {
+                        this.modalSpanMessage =
+                            response.file_system_message === 'DATABASE_UPDATED'
+                                ? `Import project success. Rename as ${response.project_name}.`
+                                : 'Import project aborted.';
+                        if (response.file_system_status === 5) {
                             this.processIsSuccess(false);
                         } else {
                             this.processIsSuccess(true);
