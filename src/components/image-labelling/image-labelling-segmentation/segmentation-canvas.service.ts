@@ -1,3 +1,4 @@
+import { LabelInfo } from './../image-labelling.model';
 /**
  * @license
  * Use of this source code is governed by Apache License 2.0 that can be
@@ -37,6 +38,7 @@ export class SegmentationCanvasService {
     private selectedPolygonIndex: number = -1;
     private util: Utils = new Utils();
     private isNewPoly: boolean = false;
+    private labelList: LabelInfo[] = [];
     // private currentSelectedImg = { uid: -1, idx: -1 };
 
     constructor() {}
@@ -49,7 +51,9 @@ export class SegmentationCanvasService {
         context: CanvasRenderingContext2D,
         ctrlKey: boolean,
         altKey: boolean,
+        labelList: LabelInfo[],
     ): number {
+        this.labelList = labelList;
         const { offsetX, offsetY } = event;
         this.polygonAreaIndex = this.findPolygonArea(event, metadata);
         this.clickPoint = this.findClickPoint(offsetX, offsetY, metadata);
@@ -244,10 +248,10 @@ export class SegmentationCanvasService {
             const tmpRegion: string = (len + 1).toString();
             this.tmpPolygon = {
                 coorPt: [],
-                label: 'default',
+                label: this.labelList.length > 0 ? this.labelList[0].name : '',
                 id: uuid,
                 lineWidth: 2,
-                color: '#FFFAFA',
+                color: 'rgba(0,255,0,1.0)',
                 region: tmpRegion,
                 subLabel: [],
             };
@@ -549,6 +553,7 @@ export class SegmentationCanvasService {
             metadata.polygons = metadata.polygons.map((poly, i) => ({
                 ...poly,
                 lineWidth: i === polyIndex ? (poly.lineWidth = 2) : (poly.lineWidth = 1),
+                color: i === polyIndex ? (poly.color = 'rgba(0,255,0,1.0)') : (poly.color = 'rgba(255,255,0,0.8)'),
             }));
         } catch (err) {
             console.log('setPolygonLineWidth', err);
@@ -595,7 +600,7 @@ export class SegmentationCanvasService {
                     const { length } = pol.polygons;
                     if (this.tmpPolygon) {
                         pol.polygons.push(cloneDeep(this.tmpPolygon));
-                        this.setPolygonLineWidth(pol, length - 1);
+                        this.setPolygonLineWidth(pol, length);
                         this.tmpPolygon = null;
                     }
                     this.setNewPolygon(false);

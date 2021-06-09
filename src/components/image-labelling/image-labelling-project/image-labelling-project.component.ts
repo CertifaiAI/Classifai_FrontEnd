@@ -205,10 +205,9 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
 
     onClickLabel = (label: string) => {
         this.selectedLabel = label;
-
-        this.selectedIndexAnnotation > -1 &&
-            this._onChangeAnnotationLabel.emit({ label, index: this.selectedIndexAnnotation });
-        this._selectMetadata.bnd_box[this.selectedIndexAnnotation].label = label;
+        // this.selectedIndexAnnotation > -1 &&
+        this._onChangeAnnotationLabel.emit({ label, index: this.selectedIndexAnnotation });
+        // this._selectMetadata.bnd_box[this.selectedIndexAnnotation].label = label;
         this._undoRedoService.appendStages({
             meta: this._selectMetadata,
             method: 'draw',
