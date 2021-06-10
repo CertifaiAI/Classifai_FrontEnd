@@ -17,7 +17,7 @@
 
 .footer-label-container {
     display: flex;
-    justify-content: center;
+    justify-content: start;
     align-items: baseline;
     width: 80%;
 }
@@ -25,14 +25,19 @@
 @mixin footer-texts($flex) {
     font-size: 1.6vh;
     color: white;
-    flex: 0 1 $flex;
     outline: none;
     border-right: 0.05vw solid white;
     padding: 0 1vw 0 1vw;
 }
+
 .footer-label {
     @include footer-texts(15%);
-    text-align: center;
+    text-align: left;
+}
+
+.footer-project-name {
+    @include ellipsis.ellipsis-styling();
+    max-width: 20vw;
 }
 
 .footer-image-path {
