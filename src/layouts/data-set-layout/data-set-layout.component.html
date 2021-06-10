@@ -141,7 +141,11 @@
     <form [formGroup]="form">
         <div class="content-container">
             <div class="select-file-container">
-                <label class="label config-file">{{ 'importJson' | translate }} </label>
+                <label class="label-config">{{ 'importJson' | translate }} </label>
+                <div class="help-icon-container">
+                    <img class="help-icon" src="../../assets/icons/help.svg" />
+                    <span class="tooltiptext">{{ 'configFileInfoDest' | translate }}</span>
+                </div>
                 <label class="choose-file-btn">
                     {{ 'chooseFile' | translate }}
                     <button class="input-id" type="button" (click)="onSelectImportProjectJson()">
@@ -151,10 +155,10 @@
                 <label class="filename" #jsonImportProjectFilename></label>
             </div>
 
-            <div class="tooltip">
-                <div class="tooltiptitle">{{ 'configFileInfoTitle' | translate }}</div>
-                <span class="tooltiptext">{{ 'configFileInfoDest' | translate }}</span>
-            </div>
+            <!--            <div class="tooltip">-->
+            <!--                <div class="tooltiptitle">{{ 'configFileInfoTitle' | translate }}</div>-->
+            <!--                <span class="tooltiptext">{{ 'configFileInfoDest' | translate }}</span>-->
+            <!--            </div>-->
 
             <ng-container *ngIf="modalSpanMessage.trim()">
                 <div [ngClass]="spanClass">
