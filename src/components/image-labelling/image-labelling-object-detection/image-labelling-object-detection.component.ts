@@ -322,7 +322,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         }
     }
 
-    @HostListener('mousewheel', ['$event'])
+    // @HostListener('mousewheel', ['$event'])
     @HostListener('DOMMouseScroll', ['$event'])
     mouseScroll(event: WheelEvent & WheelDelta) {
         try {
