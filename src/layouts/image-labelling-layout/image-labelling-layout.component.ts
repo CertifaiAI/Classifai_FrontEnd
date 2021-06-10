@@ -434,28 +434,28 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 ? interval(500).pipe(
                       mergeMap(() => reloadStatus$),
                       /** @property {number} message value 4 means upload completed, value 1 means cancelled */
-                      first(({ message }) => {
-                          const isValidResponse: boolean = message === 4 || message === 1;
+                      first(({ file_system_status }) => {
+                          const isValidResponse: boolean = file_system_status === 3 || file_system_status === 0;
                           return isValidResponse;
                       }),
-                      mergeMap(({ uuid_add_list, uuid_delete_list, message }) => {
+                      mergeMap((res) => {
                           /** @property {number} message if value 4 means client has received uploaded item(s) */
                           this.isLoading = true;
                           let listTemp: string[] = [];
                           this.thumbnailList.forEach((element) => {
                               listTemp.push(element.uuid);
                           });
-                          uuid_add_list.forEach((uuid) => {
+                          res.uuid_add_list.forEach((uuid) => {
                               listTemp.push(uuid);
                               this.totalUuid++;
                           });
-                          uuid_delete_list.forEach((uuid) => {
+                          res.uuid_delete_list.forEach((uuid) => {
                               listTemp = listTemp.filter((e) => e !== uuid);
                               this.totalUuid--;
                           });
                           this.sliceNum = 0;
                           const thumbnails =
-                              message === 4 && listTemp.length > 0
+                              res.file_system_status === 3 && listTemp.length > 0
                                   ? listTemp
                                         .slice(this.sliceNum, (this.sliceNum += 20))
                                         .map((uuid) => thumbnail$(projectName, uuid))

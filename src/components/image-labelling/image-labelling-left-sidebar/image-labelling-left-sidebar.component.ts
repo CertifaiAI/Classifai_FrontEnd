@@ -32,6 +32,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Output() _navigate: EventEmitter<any> = new EventEmitter();
     @Output() _openInfo = new EventEmitter();
+    @Output() _modalNoLabel = new EventEmitter();
     jsonSchema!: IconSchema;
     iconIndex!: number;
     labelList: string[] = [];

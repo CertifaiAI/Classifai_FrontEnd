@@ -37,18 +37,6 @@ $fontSize: 2vh;
     margin-left: 1.3vw;
 }
 
-modal-message-container {
-}
-
-.display-message-container {
-    padding-left: 1.2vw;
-}
-
-.display-msg {
-    font-size: 2vh;
-    color: white;
-}
-
 .content-header {
     color: white;
     font-size: 3vh;
@@ -57,7 +45,7 @@ modal-message-container {
 .new-project-container {
     display: flex;
     flex-direction: row;
-    margin: 2vh 0 0 0;
+    margin: 3vh 0 0 0;
     align-items: baseline;
 }
 
@@ -83,6 +71,9 @@ modal-message-container {
 
 .validation {
     color: red;
+    margin-left: 11vw;
+    margin-top: 1.02vh;
+    margin-bottom: 0.25vh;
 }
 
 .validation-error {
@@ -99,17 +90,28 @@ modal-message-container {
     font-size: $fontSize;
 }
 
+.select-folder-container,
 .select-file-container {
     display: flex;
     flex-direction: row;
     margin: 0 0 0 0;
 }
 
+.empty-container,
+.folder-name-container,
 .file-name-container {
     display: flex;
     flex-direction: row;
-    margin: 1.5vh 0 0 20vh;
-    min-height: 4vh;
+    margin: 1.5vh 0 0 12vw;
+    min-height: 2vh;
+}
+
+.foldername,
+.filename {
+    font-size: 1.8vh;
+    color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .input {
@@ -139,12 +141,19 @@ modal-message-container {
     font-size: $fontSize;
 }
 
+.choose-folder-button,
 .choose-file-button {
     background-color: #444444;
 }
 
 .create-btn {
-    background-color: #2d8ceb;
+    background-color: #169887;
+}
+
+.disabled-create-btn {
+    cursor: not-allowed;
+    background-color: #444444 !important;
+    color: #777777 !important;
 }
 
 .cancel-btn {
@@ -164,25 +173,23 @@ modal-message-container {
     cursor: pointer;
 }
 
-.label-file {
-    padding-top: 1vh;
-    padding-right: 0.2vw;
+.label-name {
+    width: 9.5vw;
 }
 
-.config-file {
+.label-select-folder {
     padding-top: 0.5vh;
+    width: 9.5vw;
+}
+
+.label-select-file {
+    padding-top: 0.5vh;
+    width: 9.5vw;
 }
 
 .input-id {
     font-size: $fontSize;
     display: none;
-}
-
-.filename {
-    font-size: $fontSize;
-    color: white;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .overlay {
