@@ -147,7 +147,7 @@ $fontSize: 2vh;
 }
 
 .create-btn {
-    background-color: #169887;
+    background-color: #2d8ceb;
 }
 
 .disabled-create-btn {
@@ -175,6 +175,15 @@ $fontSize: 2vh;
 
 .label-name {
     width: 9.5vw;
+}
+
+.config-file {
+    padding-top: 0.5vh;
+}
+
+.label-file {
+    padding-top: 1vh;
+    padding-right: 0.2vw;
 }
 
 .label-select-folder {
@@ -233,6 +242,18 @@ $fontSize: 2vh;
 
 .tooltip:hover .tooltiptext {
     visibility: visible;
+}
+
+modal-message-container {
+}
+
+.display-message-container {
+    padding-left: 1.2vw;
+}
+
+.display-msg {
+    font-size: 2vh;
+    color: white;
 }
 
 // .file-input {

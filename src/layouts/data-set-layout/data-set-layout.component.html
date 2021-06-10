@@ -27,7 +27,7 @@
     <form [formGroup]="form">
         <div class="content-container">
             <div class="new-project-container">
-                <label class="label">{{ 'newProjectName' | translate }} </label>
+                <label class="label label-name">{{ 'newProjectName' | translate }} </label>
                 <input
                     #refProjectName
                     class="input-style"
@@ -38,8 +38,9 @@
                     (input)="onChange($event.target.value)"
                 />
             </div>
-
-            <ng-container *ngIf="form.get('projectName')?.touched">
+            <ng-container
+                *ngIf="form.get('projectName')?.touched && form.get('projectName')?.invalid; else emptycontainer"
+            >
                 <div class="validation">
                     <span *ngIf="form.get('projectName')?.getError('exist')">
                         <small class="error-msg"> {{ 'projectNameExist' | translate }} </small>
@@ -49,9 +50,22 @@
                     </span>
                 </div>
             </ng-container>
+            <ng-template #emptycontainer>
+                <div class="empty-container"></div>
+            </ng-template>
+            <br />
+            <div class="select-folder-container">
+                <label class="label label-select-folder">{{ 'projectFolder' | translate }}</label>
+                <button class="button-style choose-folder-button" type="button" (click)="selectProjectFolder()">
+                    {{ 'chooseFolder' | translate }}
+                </button>
+            </div>
+            <div class="folder-name-container">
+                <label class="foldername" #projectfoldername></label>
+            </div>
             <br />
             <div class="select-file-container">
-                <label class="label label-file">{{ 'labelListFile' | translate }} </label>
+                <label class="label label-select-file">{{ 'labelListFile' | translate }} </label>
                 <button class="button-style choose-file-button" type="button" (click)="importLabelFile()">
                     {{ 'chooseFile' | translate }}
                 </button>
@@ -61,7 +75,13 @@
             </div>
             <div class="horizontal-line"></div>
             <div class="model-button-container">
-                <button class="button-style create-btn" type="submit" (click)="onSubmit(true)">
+                <button
+                    class="button-style create-btn"
+                    type="submit"
+                    (click)="onSubmit(true)"
+                    [ngClass]="isCreateFormIncomplete() ? 'disabled-create-btn' : null"
+                    [disabled]="isCreateFormIncomplete()"
+                >
                     {{ 'createButton' | translate }}
                 </button>
             </div>
@@ -139,7 +159,7 @@
             <ng-container *ngIf="modalSpanMessage.trim()">
                 <div [ngClass]="spanClass">
                     <span>
-                        <small class="error-msg" [innerHTML]="modalSpanMessage"></small>
+                        <small class="error-msg">{{ modalSpanMessage | translate }}{{ modalImportProjectName }}</small>
                     </span>
                 </div>
             </ng-container>
