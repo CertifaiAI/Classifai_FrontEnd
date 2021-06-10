@@ -43,10 +43,10 @@
             >
                 <div class="validation">
                     <span *ngIf="form.get('projectName')?.getError('exist')">
-                        <small class="error-msg"> {{ 'projectNameExist' | translate }} </small>
+                        <small class="error-create-msg"> {{ 'projectNameExist' | translate }} </small>
                     </span>
                     <span *ngIf="form.get('projectName')?.getError('required')">
-                        <small class="error-msg"> {{ 'projectNameRequired' | translate }} </small>
+                        <small class="error-create-msg"> {{ 'projectNameRequired' | translate }} </small>
                     </span>
                 </div>
             </ng-container>
@@ -65,7 +65,11 @@
             </div>
             <br />
             <div class="select-file-container">
-                <label class="label label-select-file">{{ 'labelListFile' | translate }} </label>
+                <label class="label-upload">{{ 'labelListFile' | translate }} </label>
+                <div class="help-icon-new-project-container">
+                    <img class="help-icon" src="../../assets/icons/help.svg" />
+                    <span class="tooltiptext">{{ 'labelFileDest' | translate }}</span>
+                </div>
                 <button class="button-style choose-file-button" type="button" (click)="importLabelFile()">
                     {{ 'chooseFile' | translate }}
                 </button>
@@ -111,7 +115,7 @@
             </div>
 
             <ng-container *ngIf="renameForm.get('newProjectName')?.touched">
-                <div class="validation">
+                <div class="validation-rename">
                     <span *ngIf="renameForm.get('newProjectName')?.getError('exist')">
                         <small class="error-msg"> {{ 'projectNameExist' | translate }} </small>
                     </span>
@@ -170,10 +174,10 @@
             <div style="padding-bottom: 2vh"></div>
             <div class="horizontal-line"></div>
             <!-- <div class="model-button-container">
-                <button class="button-style create-btn" type="submit" (click)="toggleImportProjectModalDisplay(false)">
-                    {{ 'Close' }}
-                </button>
-            </div> -->
+          <button class="button-style create-btn" type="submit" (click)="toggleImportProjectModalDisplay(false)">
+              {{ 'Close' }}
+          </button>
+      </div> -->
         </div>
     </form>
 </modal>

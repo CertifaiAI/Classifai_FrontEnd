@@ -82,6 +82,13 @@ $fontSize: 2vh;
     margin-bottom: 0.25vh;
 }
 
+.validation-rename {
+    color: red;
+    margin-left: 7.5vw;
+    margin-top: 1.02vh;
+    margin-bottom: 0.25vh;
+}
+
 .validation-error {
     margin: 1px 1px 1px 1px;
     color: red;
@@ -95,6 +102,12 @@ $fontSize: 2vh;
 .error-msg {
     padding-top: 1vh;
     font-size: $fontSize;
+}
+
+.error-create-msg {
+    padding-top: 1vh;
+    font-size: $fontSize;
+    padding-left: 1vw;
 }
 
 .select-folder-container,
@@ -182,11 +195,19 @@ $fontSize: 2vh;
 
 .label-name {
     width: 9.5vw;
+    padding-top: 0.2vh;
+    padding-right: 1vw;
 }
 
 .help-icon-container {
     padding-right: 1vw;
     padding-left: 0.2vw;
+}
+
+.help-icon-new-project-container {
+    padding-right: 1vw;
+    padding-left: 0vw;
+    padding-top: 0.7vh;
 }
 
 .help-icon {
@@ -199,13 +220,20 @@ $fontSize: 2vh;
 }
 
 .label-select-folder {
-    padding-top: 0.5vh;
+    padding-top: 0.7vh;
+    padding-right: 1vw;
     width: 9.5vw;
 }
 
 .label-select-file {
     padding-top: 0.5vh;
     width: 9.5vw;
+}
+
+.label-upload {
+    color: white;
+    font-size: $fontSize;
+    padding-top: 1vh;
 }
 
 .input-id {
@@ -242,17 +270,38 @@ $fontSize: 2vh;
     color: #fff;
     text-align: left;
     border-radius: 6px;
-    padding: 0.5vh 0.5vw;
+    padding: 1vh 0.5vw;
 
     /* Position the tooltip */
     position: absolute;
     //z-index: 1;
     top: 60%;
-    left: 40%;
+    //left: 40%;
     margin-left: -60px;
 }
 
 .help-icon-container:hover .tooltiptext {
+    visibility: visible;
+}
+
+.help-icon-new-project-container .tooltiptext {
+    visibility: hidden;
+    width: 240px;
+    background-color: black;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 1vh 0.5vw;
+
+    /* Position the tooltip */
+    position: absolute;
+    //z-index: 1;
+    top: 66%;
+    //left: 40%;
+    margin-left: -60px;
+}
+
+.help-icon-new-project-container:hover .tooltiptext {
     visibility: visible;
 }
 
