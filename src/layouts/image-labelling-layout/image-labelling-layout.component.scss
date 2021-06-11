@@ -253,19 +253,17 @@
 
 .tooltip .tooltiptext {
     visibility: hidden;
-    width: 240px;
+    width: 11vw;
     background-color: black;
     color: #fff;
     text-align: left;
     border-radius: 6px;
     padding: 0 0.5vw;
-
-    /* Position the tooltip */
     position: absolute;
     z-index: 1;
     top: 100%;
-    //left: 50%;
-    //margin-left: -60px;
+    text-align: justify;
+    text-justify: inter-word;
 }
 
 .tooltip:hover .tooltiptext {
