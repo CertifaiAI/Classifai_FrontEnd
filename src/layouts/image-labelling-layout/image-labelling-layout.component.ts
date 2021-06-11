@@ -94,10 +94,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
     exportModalBodyStyle: ModalBodyStyle = {
-        minHeight: '19vh',
-        maxHeight: '19vh',
-        minWidth: '17vw',
-        maxWidth: '17vw',
+        minHeight: '15vh',
+        maxHeight: '15vh',
+        minWidth: '19.5vw',
+        maxWidth: '19.5vw',
         margin: '15vw 71vh',
         overflow: 'none',
     };

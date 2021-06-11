@@ -55,6 +55,12 @@ $fontSize: 2vh;
     margin-right: 1vw;
 }
 
+.label-config {
+    color: white;
+    font-size: $fontSize;
+    padding-top: 0.5vh;
+}
+
 .input-style {
     border-radius: 2vw;
     border: none;
@@ -76,6 +82,13 @@ $fontSize: 2vh;
     margin-bottom: 0.25vh;
 }
 
+.validation-rename {
+    color: red;
+    margin-left: 7.5vw;
+    margin-top: 1.02vh;
+    margin-bottom: 0.25vh;
+}
+
 .validation-error {
     margin: 1px 1px 1px 1px;
     color: red;
@@ -87,7 +100,14 @@ $fontSize: 2vh;
 }
 
 .error-msg {
+    padding-top: 1vh;
     font-size: $fontSize;
+}
+
+.error-create-msg {
+    padding-top: 1vh;
+    font-size: $fontSize;
+    padding-left: 1vw;
 }
 
 .select-folder-container,
@@ -147,7 +167,7 @@ $fontSize: 2vh;
 }
 
 .create-btn {
-    background-color: #169887;
+    background-color: #2d8ceb;
 }
 
 .disabled-create-btn {
@@ -175,16 +195,46 @@ $fontSize: 2vh;
 
 .label-name {
     width: 9.5vw;
+    padding-top: 0.2vh;
+    padding-right: 1vw;
+}
+
+.help-icon-container {
+    padding-right: 1vw;
+    padding-left: 0.2vw;
+}
+
+.new-project-help-container {
+    padding-right: 1vw;
+    padding-left: 0vw;
+    padding-top: 0.7vh;
+}
+
+.help-icon {
+    height: 3vh;
+}
+
+.label-file {
+    padding-top: 1vh;
+    padding-right: 0.2vw;
 }
 
 .label-select-folder {
-    padding-top: 0.5vh;
+    padding-top: 0.7vh;
+    padding-right: 1vw;
     width: 9.5vw;
 }
 
 .label-select-file {
     padding-top: 0.5vh;
     width: 9.5vw;
+}
+
+.label-upload {
+    color: white;
+    font-size: $fontSize;
+    padding-top: 1vh;
+    padding-right: 0.1vw;
 }
 
 .input-id {
@@ -214,25 +264,51 @@ $fontSize: 2vh;
     opacity: 0.3;
 }
 
-.tooltip .tooltiptext {
+.help-icon-container .tooltiptext {
     visibility: hidden;
-    width: 240px;
+    width: 10vw;
     background-color: black;
     color: #fff;
-    text-align: center;
+    text-align: left;
     border-radius: 6px;
-    padding: 5px 0;
-
-    /* Position the tooltip */
+    padding: 1vh 0.5vw;
     position: absolute;
-    z-index: 1;
-    top: 100%;
-    left: 50%;
+    top: 60%;
     margin-left: -60px;
+    text-align: justify;
+    text-justify: inter-word;
 }
 
-.tooltip:hover .tooltiptext {
+.help-icon-container:hover .tooltiptext {
     visibility: visible;
+}
+
+.new-project-help-container .tooltiptext {
+    visibility: hidden;
+    width: 13vw;
+    background-color: black;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 1vh 0.5vw;
+    position: absolute;
+    top: 66%;
+    margin-left: -60px;
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+.new-project-help-container:hover .tooltiptext {
+    visibility: visible;
+}
+
+.display-message-container {
+    padding-left: 1.2vw;
+}
+
+.display-msg {
+    font-size: 2vh;
+    color: white;
 }
 
 // .file-input {
