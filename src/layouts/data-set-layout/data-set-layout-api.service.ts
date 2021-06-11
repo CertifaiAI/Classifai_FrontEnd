@@ -138,4 +138,16 @@ export class DataSetLayoutService {
     importProjectFolderStatus() {
         return this.http.get<Folder>(`${this.hostPort}v2/folders`);
     }
+
+    openLogFile() {
+        return this.http.get<Message>(`${this.hostPort}v2/log`);
+    }
+
+    fileformatconverter() {
+        return this.http.get<Message>(`${this.hostPort}v2/fileformatconverter`);
+    }
+
+    fileconversionstatus() {
+        return this.http.get<Message>(`${this.hostPort}v2/fileconversionstatus`);
+    }
 }

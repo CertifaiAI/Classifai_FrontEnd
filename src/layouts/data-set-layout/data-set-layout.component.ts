@@ -50,7 +50,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     unsubscribe$: Subject<any> = new Subject();
     isLoading = false;
     isOverlayOn = false;
-    isImageUploading = false;
+    loadingText = '';
     isProjectLoading = false;
     imgLblMode: ImageLabellingMode = null;
     modalSpanMessage: string = '';
@@ -382,6 +382,60 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     //     }
     // };
 
+    openFilesFormatConverter = () => {
+        const fileconversionstatus$ = this._dataSetService.fileconversionstatus();
+        const fileformatconverter$ = this._dataSetService.fileformatconverter();
+        fileformatconverter$
+            .pipe(
+                first(),
+                map(({ message }) => message),
+            )
+            .subscribe((message) => {
+                let windowClosed = false;
+                interval(500)
+                    .pipe(
+                        switchMap(() => fileconversionstatus$),
+                        first((response) => {
+                            this.isOverlayOn = response.message === 0 ? true : false;
+                            this.loadingText = response.message === 0 ? 'Files Format Converter is Opened' : '';
+                            if (response.message === 1 || response.message === 4) {
+                                windowClosed = true;
+                            }
+                            return windowClosed;
+                        }),
+                    )
+                    .subscribe((response) => {
+                        this.showProjectList();
+                    });
+                // # opened
+                // {
+                //     "message": 0
+                // }
+
+                // # closed
+                // {
+                //     "message": 4
+                // }
+            });
+    };
+
+    openLogFile = () => {
+        const openLogFile$ = this._dataSetService.openLogFile();
+
+        openLogFile$.subscribe((message) => {
+            // # successful
+            // {
+            //     "message": 1
+            // }
+            // # failed
+            // {
+            //     "message": 0,
+            //     "error_code": 1,
+            //     "error_message": "Failed to open log file"
+            // }
+        });
+    };
+
     onStarred = ({ projectName, starred }: StarredProps) => {
         this._dataSetService
             .updateProjectStatus(projectName, starred, 'star')
@@ -508,7 +562,10 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                       /** @property {number} message value 4 means upload completed, value 1 means cancelled */
                       first(({ file_system_status }) => {
                           this.isOverlayOn = file_system_status === 1 || file_system_status === 2 ? true : false;
-                          this.isImageUploading = file_system_status === 2 ? true : false;
+                          this.loadingText =
+                              file_system_status === 2
+                                  ? 'Uploading the Images. Please Wait...'
+                                  : 'Selection Window is Opened';
                           const isValidResponse: boolean = file_system_status === 3;
                           return isValidResponse;
                       }),
@@ -538,6 +595,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 (error: Error) => {},
                 () => {
                     this.isProjectLoading = false;
+                    this.loadingText = '';
                     this.showProjectList();
                 },
             );

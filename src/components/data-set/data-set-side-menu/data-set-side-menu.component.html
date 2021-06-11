@@ -21,3 +21,14 @@
 </div>
 
 <div class="horizontal-line"></div>
+
+<div class="dataset-sidemenu-container menu-2">
+    <ng-container *ngFor="let menu of menuSchema2; index as i">
+        <div>
+            <div [attr.data-index]="i" class="current-project-btn" (click)="onClickButton(menu.id)">
+                <img class="project-icon" [src]="menu.src" [style]="menu.style" />
+                <label class="current-project-txt">{{ menu.name | translate }}</label>
+            </div>
+        </div>
+    </ng-container>
+</div>

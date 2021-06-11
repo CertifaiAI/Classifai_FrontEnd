@@ -51,7 +51,22 @@ export class DataSetSideMenuComponent implements OnInit {
             name: 'menuName.trash',
         },
     ];
+
+    menuSchema2: MenuSchema[] = [
+        {
+            src: '../../../assets/icons/workspaces.svg',
+            id: 'fileConverter',
+            name: 'Files Converter',
+        },
+        {
+            src: '../../../assets/icons/comment.svg',
+            id: 'logFile',
+            name: 'Classifai Log',
+        },
+    ];
     @Output() _onCreate: EventEmitter<boolean> = new EventEmitter();
+    @Output() _onFileConverter: EventEmitter<boolean> = new EventEmitter();
+    @Output() _onLogFile: EventEmitter<boolean> = new EventEmitter();
     @Output() _onImport = new EventEmitter();
 
     constructor() {}
@@ -63,6 +78,24 @@ export class DataSetSideMenuComponent implements OnInit {
     };
 
     onClickButton = (id: string): void => {
-        id === 'importProject' ? this._onImport.emit() : console.log('This feature is not available yet');
+        // id === 'importProject' ? this._onImport.emit() : console.log('This feature is not available yet');
+        switch (id) {
+            case 'importProject': {
+                this._onImport.emit();
+                break;
+            }
+            case 'fileConverter': {
+                this._onFileConverter.emit();
+                break;
+            }
+            case 'logFile': {
+                this._onLogFile.emit();
+                break;
+            }
+            default: {
+                console.log('This feature is not available yet');
+                break;
+            }
+        }
     };
 }

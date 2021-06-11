@@ -36,6 +36,7 @@ export class LoadingSpinnerInterceptor implements HttpInterceptor {
                             link[link.length - 1] !== 'importstatus' &&
                             link[link.length - 1] !== 'folders' &&
                             link[link.length - 1] !== 'labelfiles' &&
+                            link[link.length - 1] !== 'fileconversionstatus' &&
                             this._spinner.hideSpinner();
                     }
                 },

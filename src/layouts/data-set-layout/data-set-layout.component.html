@@ -1,11 +1,16 @@
 <div *ngIf="isOverlayOn" class="overlay">
     <p style="margin-top: 40vh; color: rgb(255, 255, 255, 0.9); text-align: center; font-size: 3vh">
-        {{ isImageUploading ? 'Uploading the Images. Please Wait...' : 'Selection Window is Opened' }}
+        {{ loadingText }}
     </p>
 </div>
 <page-header [_onChange]="onChangeSchema"></page-header>
 <div class="upper-container">
-    <data-set-side-menu (_onCreate)="toggleModalDisplay($event)" (_onImport)="importProject()"></data-set-side-menu>
+    <data-set-side-menu
+        (_onCreate)="toggleModalDisplay($event)"
+        (_onImport)="importProject()"
+        (_onFileConverter)="openFilesFormatConverter()"
+        (_onLogFile)="openLogFile()"
+    ></data-set-side-menu>
     <div>
         <data-set-header></data-set-header>
         <data-set-card
