@@ -88,15 +88,22 @@
                     </label>
                 </div>
                 <div class="adv-settings" (click)="showAdvSettings()">{{ 'advModal.title' | translate }}</div>
-                <button class="save-format-btn" (click)="onClickDownload('pascalVoc')">Pascal VOC</button><br />
-                <button class="save-format-btn" (click)="onClickDownload('yolo')">YOLO</button><br />
-                <button class="save-format-btn" (click)="onClickDownload('ocr')">Text OCR</button><br />
-                <button class="save-format-btn" (click)="onClickDownload('label')">Label</button><br />
+                <button class="save-format-btn" (click)="onClickDownload('pascalVoc')">Pascal VOC</button>
+                <br />
+                <button class="save-format-btn" (click)="onClickDownload('yolo')">YOLO</button>
+                <br />
+                <button class="save-format-btn" (click)="onClickDownload('ocr')">Text OCR</button>
+                <br />
+                <button class="save-format-btn" (click)="onClickDownload('label')">Label</button>
+                <br />
             </ng-container>
             <ng-container *ngIf="selectedMetaData?.polygons">
-                <button class="save-format-btn" (click)="onClickDownload('coco')">COCO</button><br />
-                <button class="save-format-btn" (click)="onClickDownload('json')">JSON</button><br />
-                <button class="save-format-btn" (click)="onClickDownload('label')">Label</button><br />
+                <button class="save-format-btn" (click)="onClickDownload('coco')">COCO</button>
+                <br />
+                <button class="save-format-btn" (click)="onClickDownload('json')">JSON</button>
+                <br />
+                <button class="save-format-btn" (click)="onClickDownload('label')">Label</button>
+                <br />
             </ng-container>
         </div>
     </div>
@@ -222,12 +229,20 @@
     </ng-container>
 </modal>
 
-<modal [id]="modalExportOptions" [modalBodyStyle]="exportModalBodyStyle" [showHeader]="false">
-    <button class="modal-button close-button float-right" (click)="closeExportProjectModal()">&#10006;</button>
-    <div class="modal-content-container">
-        <h1 class="modal-content-header">
-            {{ 'exportModal.exportOptions' | translate }}
-        </h1>
+<modal
+    [id]="modalExportOptions"
+    [modalBodyStyle]="exportModalBodyStyle"
+    [modalTitle]="'exportModal.exportOptions' | translate"
+    [scrollable]="false"
+>
+    <div class="export-content-container">
+        <!-- <div class="tooltip">
+            <div class="tooltiptitle">{{ 'configFileInfoTitle' | translate }}</div>
+            <span class="tooltiptext">
+                <p>{{ 'configFileInfoDest1' | translate }}</p>
+                <p>{{ 'configFileInfoDest2' | translate }}</p>
+            </span>
+        </div> -->
         <div class="modal-button-container">
             <button class="button-style confg-btn" (click)="exportProject('cfg')">
                 {{ 'exportModal.configFile' | translate }}
@@ -236,6 +251,14 @@
                 {{ 'exportModal.zipFile' | translate }}
                 <br /><span class="with-data">{{ 'exportModal.withData' | translate }}</span>
             </button>
+            <div class="help-icon-container">
+                <img class="help-icon" src="../../assets/icons/help.svg" />
+                <span class="tooltiptext">
+                    <p>{{ 'configFileInfoTitle' | translate }}:</p>
+                    <p>{{ 'configFileInfoDest1' | translate }}</p>
+                    <p>{{ 'configFileInfoDest2' | translate }}</p>
+                </span>
+            </div>
         </div>
     </div>
 </modal>
@@ -259,7 +282,7 @@
     [scrollable]="false"
 >
     <br />
-    <div class="model-content-container">
+    <div class="modal-content-container">
         <p *ngIf="modalSpanLocationPath.trim()">{{ 'location' | translate }}{{ modalSpanLocationPath }}</p>
         <div [ngClass]="spanClass">
             <p class="error-msg" [innerHTML]="modalSpanMessage"></p>
@@ -268,7 +291,7 @@
 </modal>
 
 <!-- <modal [id]="modalExportProject" [modalBodyStyle]="exportProjectBodyStyle" [scrollable]="false">
-    <div class="model-content-container">
+    <div class="modal-content-container">
         <div>
             <label class="label label-file">{{ 'Export Project' }} </label>
         </div>

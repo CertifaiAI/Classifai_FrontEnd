@@ -43,10 +43,10 @@
             >
                 <div class="validation">
                     <span *ngIf="form.get('projectName')?.getError('exist')">
-                        <small class="error-msg"> {{ 'projectNameExist' | translate }} </small>
+                        <small class="error-create-msg"> {{ 'projectNameExist' | translate }} </small>
                     </span>
                     <span *ngIf="form.get('projectName')?.getError('required')">
-                        <small class="error-msg"> {{ 'projectNameRequired' | translate }} </small>
+                        <small class="error-create-msg"> {{ 'projectNameRequired' | translate }} </small>
                     </span>
                 </div>
             </ng-container>
@@ -65,7 +65,14 @@
             </div>
             <br />
             <div class="select-file-container">
-                <label class="label label-select-file">{{ 'labelListFile' | translate }} </label>
+                <label class="label-upload">{{ 'labelListFile' | translate }} </label>
+                <div class="new-project-help-container">
+                    <img class="help-icon" src="../../assets/icons/help.svg" />
+                    <span class="tooltiptext">
+                        <p>{{ 'labelFileDest1' | translate }}</p>
+                        <p>{{ 'labelFileDest2' | translate }}</p>
+                    </span>
+                </div>
                 <button class="button-style choose-file-button" type="button" (click)="importLabelFile()">
                     {{ 'chooseFile' | translate }}
                 </button>
@@ -111,7 +118,7 @@
             </div>
 
             <ng-container *ngIf="renameForm.get('newProjectName')?.touched">
-                <div class="validation">
+                <div class="validation-rename">
                     <span *ngIf="renameForm.get('newProjectName')?.getError('exist')">
                         <small class="error-msg"> {{ 'projectNameExist' | translate }} </small>
                     </span>
@@ -141,7 +148,14 @@
     <form [formGroup]="form">
         <div class="content-container">
             <div class="select-file-container">
-                <label class="label label-file">{{ 'importJson' | translate }} </label>
+                <label class="label-config">{{ 'importJson' | translate }} </label>
+                <div class="help-icon-container">
+                    <img class="help-icon" src="../../assets/icons/help.svg" />
+                    <span class="tooltiptext">
+                        <p>{{ 'configFileInfoDest1' | translate }}</p>
+                        <p>{{ 'configFileInfoDest2' | translate }}</p>
+                    </span>
+                </div>
                 <label class="choose-file-btn">
                     {{ 'chooseFile' | translate }}
                     <button class="input-id" type="button" (click)="onSelectImportProjectJson()">
@@ -151,10 +165,10 @@
                 <label class="filename" #jsonImportProjectFilename></label>
             </div>
 
-            <div class="tooltip">
-                <div class="tooltiptitle">{{ 'configFileInfoTitle' | translate }}</div>
-                <span class="tooltiptext">{{ 'configFileInfoDest' | translate }}</span>
-            </div>
+            <!--            <div class="tooltip">-->
+            <!--                <div class="tooltiptitle">{{ 'configFileInfoTitle' | translate }}</div>-->
+            <!--                <span class="tooltiptext">{{ 'configFileInfoDest' | translate }}</span>-->
+            <!--            </div>-->
 
             <ng-container *ngIf="modalSpanMessage.trim()">
                 <div [ngClass]="spanClass">
@@ -163,15 +177,32 @@
                     </span>
                 </div>
             </ng-container>
-
+            <div style="padding-bottom: 2vh"></div>
             <div class="horizontal-line"></div>
             <!-- <div class="model-button-container">
-                <button class="button-style create-btn" type="submit" (click)="toggleImportProjectModalDisplay(false)">
-                    {{ 'Close' }}
-                </button>
-            </div> -->
+          <button class="button-style create-btn" type="submit" (click)="toggleImportProjectModalDisplay(false)">
+              {{ 'Close' }}
+          </button>
+      </div> -->
         </div>
     </form>
+</modal>
+
+<modal
+    [id]="modalIdRenameSuccess"
+    [modalBodyStyle]="renameSuccessBodyStyle"
+    [modalTitle]="'renameProject' | translate"
+    [scrollable]="false"
+>
+    <div class="modal-message-container">
+        <div class="display-message-container">
+            <p class="display-msg">
+                {{ projectName }} {{ 'renameMsg' | translate }}
+                <b class="validation-success">{{ 'success' | translate }}</b
+                >!
+            </p>
+        </div>
+    </div>
 </modal>
 
 <modal
@@ -180,10 +211,13 @@
     [modalTitle]="'deleteProject' | translate"
     [scrollable]="false"
 >
-    <br />
-    <div class="content-container">
-        <div class="validation-success">
-            <p class="error-msg" [innerHTML]="modalSpanMessage"></p>
+    <div class="modal-message-container">
+        <div class="display-message-container">
+            <p class="display-msg">
+                {{ projectName }} {{ 'deleteMsg' | translate }}
+                <b class="validation-success">{{ 'success' | translate }}</b
+                >!
+            </p>
         </div>
     </div>
 </modal>

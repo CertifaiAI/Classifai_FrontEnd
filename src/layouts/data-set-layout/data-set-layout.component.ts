@@ -52,6 +52,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     isOverlayOn = false;
     isImageUploading = false;
     isProjectLoading = false;
+    isDeleteSuccess = false;
+    projectName: string = '';
     imgLblMode: ImageLabellingMode = null;
     modalSpanMessage: string = '';
     modalImportProjectName: string = '';
@@ -62,6 +64,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
     readonly modalIdDeleteProject = 'modal-delete-project';
+    readonly modalIdRenameSuccess = 'modal-rename-success';
     createProjectModalBodyStyle: ModalBodyStyle = {
         minHeight: '45vh',
         minWidth: '31vw',
@@ -71,7 +74,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
     renameProjectModalBodyStyle: ModalBodyStyle = {
         minHeight: '23vh',
-        maxHeight: '23vh',
+        maxHeight: '25vh',
         minWidth: '31vw',
         maxWidth: '31vw',
         margin: '15vw 71vh',
@@ -86,8 +89,16 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         overflow: 'none',
     };
     deleteProjectBodyStyle: ModalBodyStyle = {
-        minHeight: '10vh',
-        maxHeight: '15vh',
+        minHeight: '11vh',
+        maxHeight: '11vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    renameSuccessBodyStyle: ModalBodyStyle = {
+        minHeight: '11vh',
+        maxHeight: '11vh',
         minWidth: '31vw',
         maxWidth: '31vw',
         margin: '15vw 71vh',
@@ -625,7 +636,10 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .subscribe((message) => {
                 if (message === 1) {
                     this._languageService._translate.get('renameSuccess').subscribe((translated) => {
-                        alert(oldProjectName + ' ' + translated);
+                        // alert(oldProjectName + ' ' + translated);
+                        this.projectName = oldProjectName;
+                        this.modalSpanMessage = translated;
+                        this._modalService.open(this.modalIdRenameSuccess);
                     });
                     this.showProjectList();
                     this.toggleRenameModalDisplay();
@@ -644,7 +658,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .subscribe((message) => {
                 if (message === 1) {
                     this._languageService._translate.get('deleteSuccess').subscribe((translated) => {
-                        this.modalSpanMessage = projectName + ' ' + translated;
+                        this.isDeleteSuccess = true;
+                        this.projectName = projectName;
                         this._modalService.open(this.modalIdDeleteProject);
                     });
                     this.showProjectList();
