@@ -66,9 +66,12 @@
             <br />
             <div class="select-file-container">
                 <label class="label-upload">{{ 'labelListFile' | translate }} </label>
-                <div class="help-icon-new-project-container">
+                <div class="new-project-help-container">
                     <img class="help-icon" src="../../assets/icons/help.svg" />
-                    <span class="tooltiptext">{{ 'labelFileDest' | translate }}</span>
+                    <span class="tooltiptext">
+                        <p>{{ 'labelFileDest1' | translate }}</p>
+                        <p>{{ 'labelFileDest2' | translate }}</p>
+                    </span>
                 </div>
                 <button class="button-style choose-file-button" type="button" (click)="importLabelFile()">
                     {{ 'chooseFile' | translate }}
@@ -148,7 +151,10 @@
                 <label class="label-config">{{ 'importJson' | translate }} </label>
                 <div class="help-icon-container">
                     <img class="help-icon" src="../../assets/icons/help.svg" />
-                    <span class="tooltiptext">{{ 'configFileInfoDest' | translate }}</span>
+                    <span class="tooltiptext">
+                        <p>{{ 'configFileInfoDest1' | translate }}</p>
+                        <p>{{ 'configFileInfoDest2' | translate }}</p>
+                    </span>
                 </div>
                 <label class="choose-file-btn">
                     {{ 'chooseFile' | translate }}

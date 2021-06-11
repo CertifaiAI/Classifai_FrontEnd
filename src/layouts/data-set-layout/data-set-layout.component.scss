@@ -204,7 +204,7 @@ $fontSize: 2vh;
     padding-left: 0.2vw;
 }
 
-.help-icon-new-project-container {
+.new-project-help-container {
     padding-right: 1vw;
     padding-left: 0vw;
     padding-top: 0.7vh;
@@ -266,47 +266,40 @@ $fontSize: 2vh;
 
 .help-icon-container .tooltiptext {
     visibility: hidden;
-    width: 240px;
+    width: 11vw;
     background-color: black;
     color: #fff;
     text-align: left;
     border-radius: 6px;
     padding: 1vh 0.5vw;
-
-    /* Position the tooltip */
     position: absolute;
-    //z-index: 1;
     top: 60%;
-    //left: 40%;
     margin-left: -60px;
+    text-align: justify;
+    text-justify: inter-word;
 }
 
 .help-icon-container:hover .tooltiptext {
     visibility: visible;
 }
 
-.help-icon-new-project-container .tooltiptext {
+.new-project-help-container .tooltiptext {
     visibility: hidden;
-    width: 240px;
+    width: 11vw;
     background-color: black;
     color: #fff;
     text-align: left;
     border-radius: 6px;
     padding: 1vh 0.5vw;
-
-    /* Position the tooltip */
     position: absolute;
-    //z-index: 1;
     top: 66%;
-    //left: 40%;
     margin-left: -60px;
+    text-align: justify;
+    text-justify: inter-word;
 }
 
-.help-icon-new-project-container:hover .tooltiptext {
+.new-project-help-container:hover .tooltiptext {
     visibility: visible;
-}
-
-modal-message-container {
 }
 
 .display-message-container {
