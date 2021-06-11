@@ -31,7 +31,6 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     @Input() _currentUrl: ImageLabelUrl = '';
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Output() _navigate: EventEmitter<any> = new EventEmitter();
-    @Output() _openInfo = new EventEmitter();
     @Output() _modalNoLabel = new EventEmitter();
     jsonSchema!: IconSchema;
     iconIndex!: number;
@@ -177,6 +176,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                             scroll: false,
                             clear: false,
                             save: true,
+                            keyInfo: false,
                         });
                         // this._imgLabelState.setState(null);
                     },
@@ -187,7 +187,16 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     alt: `KeyPoint`,
                     toggleable: false,
                     onClick: () => {
-                        this._openInfo.emit();
+                        this.resetSelectedAnnotate();
+                        this._imgLabelState.setState({
+                            draw: false,
+                            drag: false,
+                            fitCenter: false,
+                            scroll: false,
+                            clear: false,
+                            save: false,
+                            keyInfo: true,
+                        });
                     },
                 },
             ],
