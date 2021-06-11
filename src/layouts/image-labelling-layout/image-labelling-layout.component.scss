@@ -192,7 +192,7 @@
 .modal-button-container {
     display: flex;
     justify-content: center;
-    padding: 1vw;
+    padding: 1vw 1vw 1vw 2vw;
 }
 
 .modal-button-cancel {
@@ -217,14 +217,14 @@
     background-color: #2d8ceb;
     margin-right: 0.7vw;
     font-size: 2vh;
-    min-width: 8vw;
+    min-width: 7.5vw;
 }
 
 .confgdata-btn {
     padding: 1vh 0.5vw 1vh 0.5vw;
     background-color: #2d8ceb;
     font-size: 2vh;
-    min-width: 8vw;
+    min-width: 7.5vw;
 }
 
 .with-data {
@@ -237,36 +237,31 @@
     font-size: 1.5vh;
 }
 
-.tooltip {
-    position: relative;
-    display: inline-block;
-    //border-bottom: 1px dotted black;
-    font-size: 15px;
-    text-decoration: underline;
-    margin-top: 1vh;
-    padding-left: 0.8vw;
+.help-icon {
+    height: 3vh;
 }
 
-.tooltiptitle {
-    opacity: 0.3;
+.help-icon-container {
+    padding-right: 1vw;
+    padding-left: 0.4vw;
 }
 
-.tooltip .tooltiptext {
+.help-icon-container .tooltiptext {
     visibility: hidden;
-    width: 11vw;
+    width: 15vw;
     background-color: black;
     color: #fff;
     text-align: left;
     border-radius: 6px;
-    padding: 0 0.5vw;
+    padding: 1vh 0.5vw;
     position: absolute;
-    z-index: 1;
-    top: 100%;
+    top: 62%;
+    margin-left: -60px;
     text-align: justify;
     text-justify: inter-word;
 }
 
-.tooltip:hover .tooltiptext {
+.help-icon-container:hover .tooltiptext {
     visibility: visible;
 }
 

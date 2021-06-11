@@ -236,13 +236,13 @@
     [scrollable]="false"
 >
     <div class="export-content-container">
-        <div class="tooltip">
+        <!-- <div class="tooltip">
             <div class="tooltiptitle">{{ 'configFileInfoTitle' | translate }}</div>
             <span class="tooltiptext">
                 <p>{{ 'configFileInfoDest1' | translate }}</p>
                 <p>{{ 'configFileInfoDest2' | translate }}</p>
             </span>
-        </div>
+        </div> -->
         <div class="modal-button-container">
             <button class="button-style confg-btn" (click)="exportProject('cfg')">
                 {{ 'exportModal.configFile' | translate }}
@@ -251,6 +251,14 @@
                 {{ 'exportModal.zipFile' | translate }}
                 <br /><span class="with-data">{{ 'exportModal.withData' | translate }}</span>
             </button>
+            <div class="help-icon-container">
+                <img class="help-icon" src="../../assets/icons/help.svg" />
+                <span class="tooltiptext">
+                    <p>{{ 'configFileInfoTitle' | translate }}:</p>
+                    <p>{{ 'configFileInfoDest1' | translate }}</p>
+                    <p>{{ 'configFileInfoDest2' | translate }}</p>
+                </span>
+            </div>
         </div>
     </div>
 </modal>
