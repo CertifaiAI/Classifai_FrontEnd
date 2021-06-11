@@ -110,8 +110,8 @@ $fontSize: 2vh;
     padding-left: 1vw;
 }
 
-.select-folder-container,
-.select-file-container {
+.select-file-container,
+.select-folder-container {
     display: flex;
     flex-direction: row;
     margin: 0 0 0 0;
@@ -161,6 +161,17 @@ $fontSize: 2vh;
     font-size: $fontSize;
 }
 
+.button-file-style {
+    padding: 1vh 1.5vw 1vh 1.5vw;
+    border-radius: 1vh;
+    border: none;
+    outline: none;
+    color: white;
+    cursor: pointer;
+    font-size: $fontSize;
+    max-height: 4vh;
+}
+
 .choose-folder-button,
 .choose-file-button {
     background-color: #444444;
@@ -205,9 +216,9 @@ $fontSize: 2vh;
 }
 
 .new-project-help-container {
-    padding-right: 1vw;
-    padding-left: 0vw;
-    padding-top: 0.7vh;
+    width: 6.8vw;
+    padding-top: 2.5vh;
+    justify-items: left;
 }
 
 .help-icon {
@@ -225,16 +236,16 @@ $fontSize: 2vh;
     width: 9.5vw;
 }
 
+.label-select-label {
+    color: white;
+    font-size: $fontSize;
+    padding-top: 0.7vh;
+    width: 4.8vw;
+}
+
 .label-select-file {
     padding-top: 0.5vh;
     width: 9.5vw;
-}
-
-.label-upload {
-    color: white;
-    font-size: $fontSize;
-    padding-top: 1vh;
-    padding-right: 0.1vw;
 }
 
 .input-id {
@@ -273,7 +284,7 @@ $fontSize: 2vh;
     border-radius: 6px;
     padding: 1vh 0.5vw;
     position: absolute;
-    top: 60%;
+    top: 65%;
     margin-left: -60px;
     text-align: justify;
     text-justify: inter-word;
