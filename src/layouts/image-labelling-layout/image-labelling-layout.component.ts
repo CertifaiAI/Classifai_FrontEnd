@@ -261,7 +261,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     // subscription logic to check if clear is true then empty the current display image's metadata
                     this._imgLblActionService.action$
                         .pipe(takeUntil(this.unsubscribe$))
-                        .subscribe(({ clear, save }) => {
+                        .subscribe(({ clear, save, keyInfo }) => {
                             if (clear) {
                                 this.thumbnailList[0].bnd_box &&
                                     (this.thumbnailList[this.currentImageDisplayIndex].bnd_box = []);
@@ -278,6 +278,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                                     ? this.tabStatus[1].label_list.map((label) => ({ label, isChoosen: true }))
                                     : [];
                                 this.onDisplayModal('modal-save');
+                            }
+
+                            if (keyInfo) {
+                                this.onDisplayShortcutKeyInfo();
                             }
                         });
                     this.navigateByAction({ thumbnailAction: 1 });
