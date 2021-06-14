@@ -31,12 +31,15 @@ export type ExportResponse = {
 
 export type ImportResponse = {
     message: error_code;
-    error_message: errormessage;
+    file_system_status: number;
+    file_system_message: string;
+    project_name?: string;
 };
 
-export type MessageUuidList = {
+export type MessageUploadStatus = {
     message: message;
-    uuid_list: uuid[];
+    file_system_status: number;
+    file_system_message: string;
 };
 
 export type MessageBase64Img = {
@@ -54,6 +57,8 @@ export type MessageProjectProgress = {
 
 export type MessageReload = {
     message: message;
+    file_system_status: number;
+    file_system_message: string;
     uuid_add_list: uuid_add_list;
     uuid_delete_list: uuid_delete_list;
 };

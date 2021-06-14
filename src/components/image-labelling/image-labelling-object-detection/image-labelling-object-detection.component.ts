@@ -4,6 +4,7 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
+import { ChangeDetectorRef } from '@angular/core';
 import { AnnotateActionState, AnnotateSelectionService } from '../../../shared/services/annotate-selection.service';
 import { BoundingBoxCanvasService } from './bounding-box-canvas.service';
 import { cloneDeep } from 'lodash-es';
@@ -75,6 +76,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
 
     constructor(
+        private _ref: ChangeDetectorRef,
         private _boundingBoxCanvas: BoundingBoxCanvasService,
         private _imgLblStateService: ImageLabellingActionService,
         private _undoRedoService: UndoRedoService,
@@ -91,6 +93,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         this._imgLblStateService.action$
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe(({ clear, fitCenter, ...action }) => {
+                if (clear || fitCenter || action.drag || action.draw || action.save || action.keyInfo) {
+                    this.showDropdownLabelBox = false; // close dropdown label if user click clear
+                    this._ref.detectChanges();
+                }
                 this.boundingBoxState = { ...action, clear, fitCenter };
 
                 fitCenter && this.imgFitToCenter();
@@ -150,8 +156,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this.initializeCanvas('96%');
                     this.imgFitToCenter();
                 } else {
-                    this.initializeCanvas();
-                    this.imgFitToCenter();
+                    this.redrawImage(this._selectMetadata);
                 }
             }
         }
@@ -322,7 +327,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         }
     }
 
-    @HostListener('mousewheel', ['$event'])
+    @HostListener('wheel', ['$event'])
     @HostListener('DOMMouseScroll', ['$event'])
     mouseScroll(event: WheelEvent & WheelDelta) {
         try {
@@ -559,8 +564,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 !(event.relatedTarget as Element)?.className.includes('unclosedOut') &&
                 !(event.relatedTarget as Element)?.className.includes('canvasstyle')
             ) {
-                this.showDropdownLabelBox = false;
                 if (this._selectMetadata.bnd_box.filter((bb) => bb.label === '').length !== 0) {
+                    this.showDropdownLabelBox = false;
                     this._selectMetadata.bnd_box = this._selectMetadata.bnd_box.filter((bb) => bb.label !== '');
                     this._onChangeMetadata.emit(this._selectMetadata);
                     this.redrawImage(this._selectMetadata);
@@ -579,6 +584,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     loadImage(bit64STR: string) {
         try {
+            this.showDropdownLabelBox = false;
             this.image.src = bit64STR;
             // this.clearCanvas();
             this.image.onload = () => {

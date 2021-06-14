@@ -94,10 +94,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
     exportModalBodyStyle: ModalBodyStyle = {
-        minHeight: '19vh',
-        maxHeight: '19vh',
-        minWidth: '17vw',
-        maxWidth: '17vw',
+        minHeight: '15vh',
+        maxHeight: '15vh',
+        minWidth: '19.5vw',
+        maxWidth: '19.5vw',
         margin: '15vw 71vh',
         overflow: 'none',
     };
@@ -261,7 +261,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     // subscription logic to check if clear is true then empty the current display image's metadata
                     this._imgLblActionService.action$
                         .pipe(takeUntil(this.unsubscribe$))
-                        .subscribe(({ clear, save }) => {
+                        .subscribe(({ clear, save, keyInfo }) => {
                             if (clear) {
                                 this.thumbnailList[0].bnd_box &&
                                     (this.thumbnailList[this.currentImageDisplayIndex].bnd_box = []);
@@ -278,6 +278,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                                     ? this.tabStatus[1].label_list.map((label) => ({ label, isChoosen: true }))
                                     : [];
                                 this.onDisplayModal('modal-save');
+                            }
+
+                            if (keyInfo) {
+                                this.onDisplayShortcutKeyInfo();
                             }
                         });
                     this.navigateByAction({ thumbnailAction: 1 });
@@ -434,28 +438,28 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 ? interval(500).pipe(
                       mergeMap(() => reloadStatus$),
                       /** @property {number} message value 4 means upload completed, value 1 means cancelled */
-                      first(({ message }) => {
-                          const isValidResponse: boolean = message === 4 || message === 1;
+                      first(({ file_system_status }) => {
+                          const isValidResponse: boolean = file_system_status === 3 || file_system_status === 0;
                           return isValidResponse;
                       }),
-                      mergeMap(({ uuid_add_list, uuid_delete_list, message }) => {
+                      mergeMap((res) => {
                           /** @property {number} message if value 4 means client has received uploaded item(s) */
                           this.isLoading = true;
                           let listTemp: string[] = [];
                           this.thumbnailList.forEach((element) => {
                               listTemp.push(element.uuid);
                           });
-                          uuid_add_list.forEach((uuid) => {
+                          res.uuid_add_list.forEach((uuid) => {
                               listTemp.push(uuid);
                               this.totalUuid++;
                           });
-                          uuid_delete_list.forEach((uuid) => {
+                          res.uuid_delete_list.forEach((uuid) => {
                               listTemp = listTemp.filter((e) => e !== uuid);
                               this.totalUuid--;
                           });
                           this.sliceNum = 0;
                           const thumbnails =
-                              message === 4 && listTemp.length > 0
+                              res.file_system_status === 3 && listTemp.length > 0
                                   ? listTemp
                                         .slice(this.sliceNum, (this.sliceNum += 20))
                                         .map((uuid) => thumbnail$(projectName, uuid))

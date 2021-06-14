@@ -223,7 +223,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         this.canvasContext.clearRect(0, 0, width, height);
     }
 
-    @HostListener('mousewheel', ['$event'])
+    @HostListener('wheel', ['$event'])
     @HostListener('DOMMouseScroll', ['$event'])
     mouseScroll(event: WheelEvent & WheelDelta) {
         try {

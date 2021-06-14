@@ -9,6 +9,8 @@ import { uuid } from 'src/shared/types/message/message.model';
 type message = boolean | number;
 type progress = any;
 type label_list = string[];
+type window_status = boolean | number;
+type path = string;
 
 export type LabelList = {
     label_list: label_list;
@@ -17,10 +19,18 @@ export type LabelList = {
     uuid_list: uuid[];
 };
 
-export type Labels = {
-    label_list: label_list;
+export type Folder = {
     message: message;
-    label_file_path: string;
+    window_status: window_status;
+    window_message: string;
+    project_path: path;
+};
+
+export type Labels = {
+    message: message;
+    window_status: window_status;
+    window_message: string;
+    label_file_path: path;
 };
 
 export type ProjectStatus = {
