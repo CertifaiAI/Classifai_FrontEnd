@@ -16,6 +16,7 @@ const initialValue: ActionState = {
     clear: false,
     isActiveModal: false,
     save: false,
+    keyInfo: false,
 };
 
 @Injectable({
