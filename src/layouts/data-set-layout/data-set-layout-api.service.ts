@@ -19,6 +19,7 @@ import {
     MessageProjectProgress,
     MessageUploadStatus,
     ImportResponse,
+    FileConversionStatus,
 } from 'src/shared/types/message/message.model';
 
 @Injectable({ providedIn: 'any' })
@@ -144,10 +145,10 @@ export class DataSetLayoutService {
     }
 
     fileformatconverter() {
-        return this.http.get<Message>(`${this.hostPort}v2/fileformatconverter`);
+        return this.http.put<Message>(`${this.hostPort}v2/fileformatconverter`, {});
     }
 
     fileconversionstatus() {
-        return this.http.get<Message>(`${this.hostPort}v2/fileconversionstatus`);
+        return this.http.get<FileConversionStatus>(`${this.hostPort}v2/fileformatconverter`);
     }
 }

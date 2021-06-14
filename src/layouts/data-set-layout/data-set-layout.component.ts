@@ -407,9 +407,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     .pipe(
                         switchMap(() => fileconversionstatus$),
                         first((response) => {
-                            this.isOverlayOn = response.message === 0 ? true : false;
-                            this.loadingText = response.message === 0 ? 'Files Format Converter is Opened' : '';
-                            if (response.message === 1 || response.message === 4) {
+                            this.isOverlayOn = response.window_status === 0 ? true : false;
+                            this.loadingText = response.window_status === 0 ? 'Files Format Converter is Opened' : '';
+                            if (response.window_status === 1) {
                                 windowClosed = true;
                             }
                             return windowClosed;

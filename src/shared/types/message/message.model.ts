@@ -62,3 +62,9 @@ export type MessageReload = {
     uuid_add_list: uuid_add_list;
     uuid_delete_list: uuid_delete_list;
 };
+
+export type FileConversionStatus = {
+    message: message;
+    window_status: number;
+    window_message: string;
+};
