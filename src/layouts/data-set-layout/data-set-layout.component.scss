@@ -215,12 +215,6 @@ $fontSize: 2vh;
     padding-left: 0.2vw;
 }
 
-.new-project-help-container {
-    width: 6.8vw;
-    padding-top: 2.5vh;
-    justify-items: left;
-}
-
 .help-icon {
     height: 3vh;
 }
@@ -239,8 +233,9 @@ $fontSize: 2vh;
 .label-select-label {
     color: white;
     font-size: $fontSize;
-    padding-top: 0.7vh;
-    width: 4.8vw;
+    padding-top: 0vh;
+    height: 10vh;
+    width: 11.5vw;
 }
 
 .label-select-file {
@@ -284,7 +279,7 @@ $fontSize: 2vh;
     border-radius: 6px;
     padding: 1vh 0.5vw;
     position: absolute;
-    top: 65%;
+    top: 60%;
     margin-left: -60px;
     text-align: justify;
     text-justify: inter-word;
@@ -294,8 +289,7 @@ $fontSize: 2vh;
     visibility: visible;
 }
 
-.new-project-help-container .tooltiptext {
-    visibility: hidden;
+.labeltooltiptext {
     width: 13vw;
     background-color: black;
     color: #fff;
@@ -303,14 +297,11 @@ $fontSize: 2vh;
     border-radius: 6px;
     padding: 1vh 0.5vw;
     position: absolute;
-    top: 66%;
+    top: 62%;
+    left: 30%;
     margin-left: -60px;
     text-align: justify;
     text-justify: inter-word;
-}
-
-.new-project-help-container:hover .tooltiptext {
-    visibility: visible;
 }
 
 .display-message-container {

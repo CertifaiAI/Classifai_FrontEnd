@@ -60,6 +60,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     spanClass: string = '';
     labelPath: string = '';
     projectFolderPath: string = '';
+    showLabelTooltip: boolean = false;
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
