@@ -1,3 +1,31 @@
 <div>
+    <div #floatdiv class="floatdiv unclosedOut" [hidden]="!showDropdownLabelBox">
+        <form autocomplete="off" spellcheck="false" class="unclosedOut">
+            <input
+                #lbltypetxt
+                type="text"
+                class="lbltypetxt unclosedOut"
+                [(ngModel)]="labelSearch"
+                (ngModelChange)="labelTypeTextChange($event)"
+                [ngModelOptions]="{ standalone: true }"
+            />
+        </form>
+        <div #availablelbl class="availablelbl unclosedOut">
+            <ul class="lblList unclosedOut">
+                <li
+                    *ngFor="let label of labelList"
+                    class="lblElement unclosedOut"
+                    (click)="labelNameClicked(label.name)"
+                >
+                    <span class="lblName unclosedOut">{{ label.name }}</span>
+                    <span class="lblCount unclosedOut">{{ label.count }}</span>
+                </li>
+                <li *ngIf="labelList.length === 0" class="unclosedOut notExist">
+                    <div class="unclosedOut">{{ 'searchLabel.labelNotExist' | translate }}</div>
+                    <div class="unclosedOut">{{ 'searchLabel.enterToAdd' | translate }}</div>
+                </li>
+            </ul>
+        </div>
+    </div>
     <canvas #canvasdrawing class="canvasstyle" [ngStyle]="{ cursor: currentCursor() }"></canvas>
 </div>

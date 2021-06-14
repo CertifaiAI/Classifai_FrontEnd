@@ -4,7 +4,17 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { ActionState, Direction, Polygons, PolyMetadata, UndoState } from '../image-labelling.model';
+import {
+    ActionState,
+    ChangeAnnotationLabel,
+    CompleteMetadata,
+    Direction,
+    LabelInfo,
+    Polygons,
+    PolyMetadata,
+    TabsProps,
+    UndoState,
+} from '../image-labelling.model';
 import { AnnotateActionState, AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { cloneDeep } from 'lodash-es';
 import { CopyPasteService } from 'src/shared/services/copy-paste.service';
@@ -38,6 +48,9 @@ import {
 })
 export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, OnDestroy {
     @ViewChild('canvasdrawing') canvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('floatdiv') floatdiv!: ElementRef<HTMLDivElement>;
+    @ViewChild('lbltypetxt') lbltypetxt!: ElementRef<HTMLInputElement>;
+    @ViewChild('availablelbl') availablelbl!: ElementRef<HTMLDivElement>;
     private canvasContext!: CanvasRenderingContext2D;
     private image: HTMLImageElement = new Image();
     private isMouseWithinPoint: boolean = false;
@@ -49,9 +62,15 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     private zoom!: ZoomState;
     mouseCursor!: MouseCursorState;
     mousedown: boolean = false;
+    showDropdownLabelBox: boolean = false;
+    labelSearch: string = '';
+    labelList: LabelInfo[] = [];
+    allLabelList: LabelInfo[] = [];
     @Input() _selectMetadata!: PolyMetadata;
     @Input() _imgSrc: string = '';
+    @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Output() _onChangeMetadata: EventEmitter<PolyMetadata> = new EventEmitter();
+    @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
 
     constructor(
         private _segCanvasService: SegmentationCanvasService,
@@ -64,6 +83,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     ) {}
 
     ngOnInit(): void {
+        this.getLabelList();
         this._imgLblStateService.action$
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe(({ clear, fitCenter, ...action }) => {
@@ -102,6 +122,9 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        if (changes._selectMetadata?.previousValue && changes._selectMetadata?.currentValue) {
+            this.redrawImage(this._selectMetadata);
+        }
         if (changes._imgSrc?.currentValue) {
             this.initializeCanvas();
             this._undoRedoService.clearAllStages();
@@ -133,7 +156,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             this.imgFitToCenter();
             this.emitMetadata();
             this.changeMouseCursorState();
-            this._undoRedoService.appendStages({ meta: cloneDeep(this._selectMetadata), method: 'draw' });
+            // this._undoRedoService.appendStages({ meta: cloneDeep(this._selectMetadata), method: 'draw' });
         };
     }
 
@@ -184,6 +207,11 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     redrawImage({ img_x, img_y, img_w, img_h }: PolyMetadata) {
         this.clearcanvas();
         this.canvasContext.drawImage(this.image, img_x, img_y, img_w, img_h);
+        if (this._tabStatus[2].annotation?.length !== 0) {
+            this.getLabelList();
+            const annotationList = this._tabStatus[2].annotation ? this._tabStatus[2].annotation[0].polygons ?? [] : [];
+            this.sortingLabelList(this.labelList, annotationList);
+        }
         this._segCanvasService.drawAllPolygon(this._selectMetadata, this.canvasContext, this.annotateState.annotation);
     }
 
@@ -195,7 +223,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         this.canvasContext.clearRect(0, 0, width, height);
     }
 
-    @HostListener('mousewheel', ['$event'])
+    @HostListener('wheel', ['$event'])
     @HostListener('DOMMouseScroll', ['$event'])
     mouseScroll(event: WheelEvent & WheelDelta) {
         try {
@@ -252,6 +280,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                     this.canvas.nativeElement,
                     true,
                 );
+                this.positioningLabelListPopup(this._selectMetadata.polygons);
                 this._segCanvasService.validateXYDistance(this._selectMetadata);
                 this.redrawImage(this._selectMetadata);
                 this.emitMetadata();
@@ -279,7 +308,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                                 this.canvas.nativeElement,
                                 true,
                             );
-                            // this.annotateStateChange({ annotation });
+                            this.positioningLabelListPopup(this._selectMetadata.polygons);
+                            this.annotateStateChange({ annotation: this._selectMetadata.polygons.length - 1 });
                             // this._segCanvasService.setSelectedPolygon(annotation);
                             this._segCanvasService.validateXYDistance(this._selectMetadata);
                             // this.ClearallBoundingboxList(this.seg.Metadata[this.seg.getCurrentSelectedimgidx()].polygons);
@@ -293,6 +323,10 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                             //     stage: this.seg.Metadata[this.seg.getCurrentSelectedimgidx()],
                             //     method: 'draw',
                             // });
+                            this._undoRedoService.appendStages({
+                                meta: cloneDeep(this._selectMetadata),
+                                method: 'draw',
+                            });
                             this.redrawImage(this._selectMetadata);
                             this.emitMetadata();
                             break;
@@ -340,46 +374,46 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 direction && this.keyMoveBox(direction);
                 // this.canvasContext.canvas.focus();
             }
-            if (!this.isMouseWithinPoint) {
-                if (ctrlKey && (key === 'c' || key === 'C')) {
-                    // copy
-                    this.annotateState.annotation > -1 &&
-                        this._copyPasteService.copy(this._selectMetadata.polygons[this.annotateState.annotation]);
-                } else if (ctrlKey && (key === 'v' || key === 'V')) {
-                    // paste
-                    if (this._copyPasteService.isAvailable()) {
-                        this._selectMetadata.polygons.push(this._copyPasteService.paste() as Polygons);
-                        // this.rulesMakeChange(null, this._selectMetadata.bnd_box.length - 1, null, null, null),
-                        this.annotateStateChange({
-                            annotation: this._selectMetadata.polygons.length - 1,
-                        });
-                        this._segCanvasService.validateXYDistance(this._selectMetadata);
-                    }
-
-                    this._undoRedoService.appendStages({
-                        meta: cloneDeep(this._selectMetadata),
-                        method: 'draw',
+            // if (!this.isMouseWithinPoint) {
+            if (ctrlKey && (key === 'c' || key === 'C')) {
+                // copy
+                this.annotateState.annotation > -1 &&
+                    this._copyPasteService.copy(this._selectMetadata.polygons[this.annotateState.annotation]);
+            } else if (ctrlKey && (key === 'v' || key === 'V')) {
+                // paste
+                if (this._copyPasteService.isAvailable()) {
+                    this._selectMetadata.polygons.push(this._copyPasteService.paste() as Polygons);
+                    // this.rulesMakeChange(null, this._selectMetadata.bnd_box.length - 1, null, null, null),
+                    this.annotateStateChange({
+                        annotation: this._selectMetadata.polygons.length - 1,
                     });
+                    this._segCanvasService.validateXYDistance(this._selectMetadata);
+                }
+
+                this._undoRedoService.appendStages({
+                    meta: cloneDeep(this._selectMetadata),
+                    method: 'draw',
+                });
+                this.emitMetadata();
+                // this.canvas.nativeElement.focus();
+            } else if (ctrlKey && shiftKey && (key === 'z' || key === 'Z')) {
+                // redo
+                if (this._undoRedoService.isAllowRedo()) {
+                    const rtStages: UndoState = this._undoRedoService.redo();
+                    this._selectMetadata = cloneDeep(rtStages?.meta as PolyMetadata);
+                    this.redrawImage(this._selectMetadata);
                     this.emitMetadata();
-                    // this.canvas.nativeElement.focus();
-                } else if (ctrlKey && shiftKey && (key === 'z' || key === 'Z')) {
-                    // redo
-                    if (this._undoRedoService.isAllowRedo()) {
-                        const rtStages: UndoState = this._undoRedoService.redo();
-                        this._selectMetadata = cloneDeep(rtStages?.meta as PolyMetadata);
-                        this.redrawImage(this._selectMetadata);
-                        this.emitMetadata();
-                    }
-                } else if (ctrlKey && (key === 'z' || key === 'Z')) {
-                    // undo
-                    if (this._undoRedoService.isAllowUndo()) {
-                        const rtStages: UndoState = this._undoRedoService.undo();
-                        this._selectMetadata = cloneDeep(rtStages?.meta as PolyMetadata);
-                        this.redrawImage(this._selectMetadata);
-                        this.emitMetadata();
-                    }
+                }
+            } else if (ctrlKey && (key === 'z' || key === 'Z')) {
+                // undo
+                if (this._undoRedoService.isAllowUndo()) {
+                    const rtStages: UndoState = this._undoRedoService.undo();
+                    this._selectMetadata = cloneDeep(rtStages?.meta as PolyMetadata);
+                    this.redrawImage(this._selectMetadata);
+                    this.emitMetadata();
                 }
             }
+            // }
         } catch (err) {
             console.log('canvasKeyDownEvent', err);
         }
@@ -434,6 +468,12 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                     this.redrawImage(this._selectMetadata);
                 }
                 if (this.segState.draw) {
+                    this.getLabelList();
+                    const annotationList = this._tabStatus[2].annotation
+                        ? this._tabStatus[2].annotation[0].polygons ?? []
+                        : [];
+                    this.sortingLabelList(this.labelList, annotationList);
+                    this.showDropdownLabelBox = false;
                     // needed when mouse down then mouse move to get correct coordinate
                     const polyIndex = this._segCanvasService.mouseDownDraw(
                         event,
@@ -443,6 +483,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                         this.canvasContext,
                         this.ctrlKey,
                         this.altKey,
+                        this.labelList,
                     );
 
                     if (polyIndex > -1) {
@@ -618,6 +659,20 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 this._segCanvasService.setGlobalXY(event);
                 this.redrawImage(this._selectMetadata);
             }
+            if (
+                ((event.target as Element).className === 'canvasstyle' ||
+                    (event.target as Element).className.includes('unclosedOut')) &&
+                !(event.relatedTarget as Element)?.className.includes('unclosedOut') &&
+                !(event.relatedTarget as Element)?.className.includes('canvasstyle')
+            ) {
+                this.showDropdownLabelBox = false;
+                if (this._selectMetadata.polygons.filter((poly) => !poly.label).length !== 0) {
+                    this._selectMetadata.polygons = this._selectMetadata.polygons.filter((poly) => poly.label !== '');
+                    this._onChangeMetadata.emit(this._selectMetadata);
+                    this.redrawImage(this._selectMetadata);
+                    alert('Some bounding boxes will be deleted because they were not labelled.');
+                }
+            }
             this.isMouseWithinPoint = false;
         } catch (err) {
             console.log('mouseOut', err);
@@ -626,6 +681,78 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
 
     currentCursor() {
         return this._mouseCursorService.changeCursor(this.mouseCursor);
+    }
+
+    positioningLabelListPopup(polygons: Polygons[]) {
+        const offsetX =
+            polygons[this._selectMetadata.polygons.length - 1].coorPt[
+                this._selectMetadata.polygons[this._selectMetadata.polygons.length - 1].coorPt.length - 1
+            ].x;
+        const offsetY =
+            polygons[this._selectMetadata.polygons.length - 1].coorPt[
+                this._selectMetadata.polygons[this._selectMetadata.polygons.length - 1].coorPt.length - 1
+            ].y;
+        // Positioning the floating div at the bottom right corner of bounding box
+        let posFromTop = offsetY * (100 / document.documentElement.clientHeight) + 8.5;
+        let posFromLeft = offsetX * (100 / document.documentElement.clientWidth) + 2.5;
+        // Re-adjustment of floating div position if it is outside of the canvas
+        if (posFromTop < 9) {
+            posFromTop = 9;
+        }
+        if (posFromTop > 76) {
+            posFromTop = 76;
+        }
+        if (posFromLeft < 2.5) {
+            posFromLeft = 2.5;
+        }
+        if (posFromLeft > 66) {
+            posFromLeft = 66;
+        }
+        this.floatdiv.nativeElement.style.top = posFromTop.toString() + 'vh';
+        this.floatdiv.nativeElement.style.left = posFromLeft.toString() + 'vw';
+        this.showDropdownLabelBox = true;
+        this.labelSearch = '';
+        // this.invalidInput = false;
+        setTimeout(() => {
+            this.lbltypetxt.nativeElement.focus();
+        }, 100);
+    }
+
+    getLabelList() {
+        this.labelList = [];
+        this.allLabelList = [];
+        (this._tabStatus[1].label_list ?? []).forEach((name: string) => {
+            const labels = {
+                name,
+                count: 0,
+            };
+            this.labelList.push(labels);
+            this.allLabelList.push(labels);
+        });
+    }
+
+    sortingLabelList(labelList: LabelInfo[], annotationList: Polygons[]) {
+        labelList.forEach(({ name }, index) => {
+            this.labelList[index].count = annotationList.filter(({ label }) => label === name).length;
+            this.allLabelList[index].count = annotationList.filter(({ label }) => label === name).length;
+        });
+        this.labelList.sort((a, b) => (a.count < b.count ? 1 : b.count < a.count ? -1 : 0));
+        this.allLabelList.sort((a, b) => (a.count < b.count ? 1 : b.count < a.count ? -1 : 0));
+    }
+
+    labelNameClicked(label: string) {
+        this.showDropdownLabelBox = false;
+        this._onChangeAnnotationLabel.emit({ label, index: this.annotateState.annotation });
+        this._selectMetadata.polygons[this.annotateState.annotation].label = label;
+        this._undoRedoService.isStateChange(this._selectMetadata.polygons) &&
+            this._undoRedoService.appendStages({
+                meta: this._selectMetadata,
+                method: 'draw',
+            });
+    }
+
+    labelTypeTextChange(event: string) {
+        this.labelList = this.allLabelList.filter((label) => label.name.includes(event));
     }
 
     ngOnDestroy(): void {
