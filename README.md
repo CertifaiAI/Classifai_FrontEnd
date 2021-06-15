@@ -43,6 +43,10 @@ Please navigate to `src/environments/environment.prod.ts` and change the endpoin
 4) Click on 'build:analyze', located just below package.json
 6) After that a browser tab will be opened to display the whole project bundles
 
+## Convert to Web App
+1) Remove "target: 'electron-renderer'" in webpack.config.js
+2) Remove title bar in app.component.html and app.component.ts
+
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
