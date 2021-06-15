@@ -164,7 +164,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     initializeCanvas(width: string = '80%') {
         this.canvas.nativeElement.style.width = width;
-        this.canvas.nativeElement.style.height = '90%';
+        this.canvas.nativeElement.style.height = '87%';
         this.canvas.nativeElement.width = this.canvas.nativeElement.offsetWidth;
         this.canvas.nativeElement.height = this.canvas.nativeElement.offsetHeight;
         this.canvasContext = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
@@ -655,6 +655,16 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         }
         this._boundingBoxCanvas.drawAllBoxOn(this.labelList, this._selectMetadata.bnd_box, this.canvasContext);
         // this.canvas.nativeElement.focus();
+    }
+
+    @HostListener('window:resize', ['$event'])
+    onResize() {
+        console.log('resize');
+        // this.redrawImage(this._selectMetadata);
+        // this.resetZoom();
+        // this.clearCanvas();
+        this.initializeCanvas();
+        this.imgFitToCenter();
     }
 
     clearCanvas() {
