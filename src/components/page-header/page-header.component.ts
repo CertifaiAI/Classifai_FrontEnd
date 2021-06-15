@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 type HeaderLabelSchema = {
     name: string;
     url: string;
+    disable: boolean;
 };
 
 @Component({
@@ -29,14 +30,17 @@ export class PageHeaderComponent implements OnInit {
         {
             name: 'pageHeader.home',
             url: '/',
+            disable: false,
         },
         {
             name: 'pageHeader.datasetManagement',
             url: '/dataset',
+            disable: false,
         },
         {
             name: 'pageHeader.revision',
             url: '/',
+            disable: true,
         },
     ];
 
