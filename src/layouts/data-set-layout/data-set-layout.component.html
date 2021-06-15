@@ -70,17 +70,25 @@
             </div>
             <br />
             <div class="select-file-container">
-                <label class="label-upload">{{ 'labelListFile' | translate }} </label>
-                <div class="new-project-help-container">
-                    <img class="help-icon" src="../../assets/icons/help.svg" />
-                    <span class="tooltiptext">
-                        <p>{{ 'labelFileDest1' | translate }}</p>
-                        <p>{{ 'labelFileDest2' | translate }}</p>
-                    </span>
+                <label class="label-select-label">
+                    {{ 'labelListFile' | translate }}<br />
+                    {{ 'optional' | translate }}:
+                    <img
+                        class="help-icon"
+                        src="../../assets/icons/help.svg"
+                        (mouseover)="showLabelTooltip = true"
+                        (mouseout)="showLabelTooltip = false"
+                    />
+                </label>
+                <span class="labeltooltiptext" *ngIf="showLabelTooltip">
+                    <p>{{ 'labelFileDest1' | translate }}</p>
+                    <p>{{ 'labelFileDest2' | translate }}</p>
+                </span>
+                <div style="padding-top: 1vh">
+                    <button class="button-file-style choose-file-button" type="button" (click)="importLabelFile()">
+                        {{ 'chooseFile' | translate }}
+                    </button>
                 </div>
-                <button class="button-style choose-file-button" type="button" (click)="importLabelFile()">
-                    {{ 'chooseFile' | translate }}
-                </button>
             </div>
             <div class="file-name-container">
                 <label class="filename" #labeltextfilename></label>
@@ -169,12 +177,6 @@
                 </label>
                 <label class="filename" #jsonImportProjectFilename></label>
             </div>
-
-            <!--            <div class="tooltip">-->
-            <!--                <div class="tooltiptitle">{{ 'configFileInfoTitle' | translate }}</div>-->
-            <!--                <span class="tooltiptext">{{ 'configFileInfoDest' | translate }}</span>-->
-            <!--            </div>-->
-
             <ng-container *ngIf="modalSpanMessage.trim()">
                 <div [ngClass]="spanClass">
                     <span>
@@ -184,11 +186,6 @@
             </ng-container>
             <div style="padding-bottom: 2vh"></div>
             <div class="horizontal-line"></div>
-            <!-- <div class="model-button-container">
-          <button class="button-style create-btn" type="submit" (click)="toggleImportProjectModalDisplay(false)">
-              {{ 'Close' }}
-          </button>
-      </div> -->
         </div>
     </form>
 </modal>
