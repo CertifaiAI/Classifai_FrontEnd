@@ -12,7 +12,7 @@ jobs:
     name: Copy job
     runs-on: ubuntu-latest
     steps:
-      - name: Declaring output variable # Necessary to call PR's output
+      - name: Declaring output variable # Necessary to call PR's URL
         uses: kceb/pull-request-url-action@v1
         id: pr-url
 
