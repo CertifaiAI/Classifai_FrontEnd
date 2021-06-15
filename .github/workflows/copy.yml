@@ -12,17 +12,17 @@ jobs:
     name: Copy job
     runs-on: ubuntu-latest
     steps:
-      - name: Declare some variables
-        id: vars
-        shell: bash
-        run: | # Set output for branch name & short commit hash
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})" 
-          echo "##[set-output name=sha_short;]$(echo ${GITHUB_SHA} | cut -c1-7)"
+      - name: Declaring output variable # Necessary to call PR's output
+        uses: kceb/pull-request-url-action@v1
+        id: pr-url
+
+      - name: Echo PR's URL # PR associated with merged commit
+        run: echo "${{ steps.pr-url.outputs.url }}" 
 
       - name: Copy dist items into Repo Classifai
         uses: andstor/copycat-action@v3
         with:
-          commit_message: ':lipstick: Update files from Repo Classifai_FrontEnd, branch ${{ steps.vars.outputs.branch }} at commit ${{ steps.vars.outputs.sha_short }}' # Commit message at repo classifai
+          commit_message: ":lipstick: Compiled codes from ${{ steps.pr-url.outputs.url }}" # Commit message at repo classifai
           personal_token: ${{ secrets.PERSONAL_TOKEN }} # Personal token to solve permission issue
           src_path: dist/classifai/. # Source to be copied
           dst_path: classifai-core/src/main/resources/webroot/. # Destination to be pasted
