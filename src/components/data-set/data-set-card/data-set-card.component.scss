@@ -9,7 +9,7 @@ $hoverBackground: #393838;
 @mixin project-status($color) {
     color: whitesmoke;
     background-color: $color;
-    font-size: 1.5vh;
+    font-size: 60%;
     padding: 0.3vh 1.5vw 0.6vh 1vw;
 }
 
@@ -94,8 +94,8 @@ $hoverBackground: #393838;
     @include project-status(#258fc0);
 }
 
-.project-status-uploading {
-    @include project-status(#f5219d);
+.project-status-invalid {
+    @include project-status(#f5214f);
 }
 
 .card-icon-container {

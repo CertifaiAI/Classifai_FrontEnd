@@ -37,6 +37,7 @@
         "new": "New",
         "available": "Available",
         "opened": "Opened",
+        "invalidPath": "Invalid Path",
         "uploadFolder": "Upload Folder",
         "uploadPhotos": "Upload Photo(s)",
         "renameProject": "Rename Project",

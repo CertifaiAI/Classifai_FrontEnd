@@ -37,6 +37,7 @@
         "new": "最新",
         "available": "可开启",
         "opened": "开了",
+        "invalidPath": "无效路径",
         "uploadFolder": "上载文件夹",
         "uploadPhotos": "上载图像",
         "renameProject": "重新命名项目",
