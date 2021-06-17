@@ -8,7 +8,7 @@ export type CardFieldConfigs = {
     enabled: boolean;
     urlPath: string;
     hoverLabel?: string;
-    title: string;
+    title: string
     imgPath?: string;
     imgAlt?: string;
     logoPath: string;
