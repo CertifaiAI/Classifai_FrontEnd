@@ -16,6 +16,4 @@ export class UnsupportedImageModalComponent {
     @Input() _modalUnsupportedImage: string = '';
     @Input() _unsupportedImageBodyStyle!: ModalBodyStyle;
     @Input() _unsupportedImageList: string[] = [];
-
-    constructor() {}
 }
