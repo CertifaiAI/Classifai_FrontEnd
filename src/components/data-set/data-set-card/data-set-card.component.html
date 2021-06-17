@@ -28,20 +28,20 @@
                                         <label class="project-status-new">{{ 'datasetCard.new' | translate }}</label>
                                     </ng-container>
                                     <ng-container
-                                        *ngIf="!project.is_new && !project.is_loaded && project.total_uuid !== 0"
+                                        *ngIf="!project.is_new && !project.is_loaded && project.root_path_valid"
                                     >
                                         <label class="project-status-available">{{
                                             'datasetCard.available' | translate
                                         }}</label>
                                     </ng-container>
                                     <ng-container
-                                        *ngIf="!project.is_new && project.is_loaded && project.total_uuid !== 0"
+                                        *ngIf="!project.is_new && project.is_loaded && project.root_path_valid"
                                     >
                                         <label class="project-status-opened">{{
                                             'datasetCard.opened' | translate
                                         }}</label>
                                     </ng-container>
-                                    <ng-container *ngIf="project.total_uuid === 0">
+                                    <ng-container *ngIf="!project.root_path_valid">
                                         <label class="project-status-invalid">{{
                                             'datasetCard.invalidPath' | translate
                                         }}</label>
