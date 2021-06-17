@@ -4,6 +4,10 @@ on:
   push:
     branches: 
       - faris_codetest
+  
+  pull_request:
+    types: [synchronize, review_requested]
+      
       
 jobs:
   build:
@@ -33,4 +37,3 @@ jobs:
 
     - name: Build Project
       run: npm run build:normal
-      
