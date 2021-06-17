@@ -289,6 +289,28 @@
     </div>
 </modal>
 
+<modal
+    [id]="modalUnsupportedImage"
+    [modalBodyStyle]="unsupportedImageBodyStyle"
+    [modalTitle]="'Unsupported Image Format'"
+    [scrollable]="false"
+>
+    <div class="modal-content-container">
+        <!-- <div class="validation-error"> -->
+        <p class="error-msg">
+            This project contains {{ unsupportedImageList.length }} unsupported image format.
+            <a
+                href="https://github.com/CertifaiAI/CertifAI-Knowledge-Base/wiki/Image-Type-Unsupported-Walkaround"
+                target="_blank"
+            >
+                <img class="help-icon-sm" src="../../assets/icons/help.svg" />
+            </a>
+        </p>
+        <p class="error-msg">Please find the list of images in the downloaded TXT file.</p>
+        <!-- </div> -->
+    </div>
+</modal>
+
 <!-- <modal [id]="modalExportProject" [modalBodyStyle]="exportProjectBodyStyle" [scrollable]="false">
     <div class="modal-content-container">
         <div>

@@ -19,6 +19,7 @@ import { ModalBodyStyle } from 'src/components/modal/modal.model';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'src/components/spinner/spinner.service';
+import { UnsupportedImageService } from 'src/shared/services/unsupported-image.service';
 
 @Component({
     selector: 'data-set-layout',
@@ -61,11 +62,13 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     labelPath: string = '';
     projectFolderPath: string = '';
     showLabelTooltip: boolean = false;
+    unsupportedImageList: string[] = [];
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
     readonly modalIdDeleteProject = 'modal-delete-project';
     readonly modalIdRenameSuccess = 'modal-rename-success';
+    readonly modalUnsupportedImage = 'modal-unsupported-image';
     createProjectModalBodyStyle: ModalBodyStyle = {
         minHeight: '45vh',
         minWidth: '31vw',
@@ -105,6 +108,14 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         margin: '15vw 71vh',
         overflow: 'none',
     };
+    unsupportedImageBodyStyle: ModalBodyStyle = {
+        minHeight: '10vh',
+        maxHeight: '15vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
     @ViewChild('refProjectName') _refProjectName!: ElementRef<HTMLInputElement>;
     @ViewChild('projectfoldername') _projectFoldername!: ElementRef<HTMLLabelElement>;
     @ViewChild('labeltextfilename') _labelTextFilename!: ElementRef<HTMLLabelElement>;
@@ -120,6 +131,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         private _imgLblModeService: ImageLabellingModeService,
         private _languageService: LanguageService,
         private _modalService: ModalService,
+        private _unsupportedImageService: UnsupportedImageService,
     ) {
         this._imgLblModeService.imgLabelMode$
             .pipe(distinctUntilChanged())
@@ -518,7 +530,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 ? interval(500).pipe(
                       mergeMap(() => uploadStatus$),
                       /** @property {number} message value 4 means upload completed, value 1 means cancelled */
-                      first(({ file_system_status }) => {
+                      first(({ file_system_status, unsupported_image_list }) => {
+                          this.unsupportedImageList = unsupported_image_list;
                           this.isOverlayOn = file_system_status === 1 || file_system_status === 2 ? true : false;
                           this.isImageUploading = file_system_status === 2 ? true : false;
                           const isValidResponse: boolean = file_system_status === 3;
@@ -551,6 +564,12 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 () => {
                     this.isProjectLoading = false;
                     this.showProjectList();
+                    this.unsupportedImageList.length > 0 &&
+                        this._unsupportedImageService
+                            .downloadUnsupportedImageList(projectName, this.unsupportedImageList)
+                            .then((ret) => {
+                                this._modalService.open(this.modalUnsupportedImage);
+                            });
                 },
             );
 

@@ -219,6 +219,10 @@ $fontSize: 2vh;
     height: 3vh;
 }
 
+.help-icon-sm {
+    height: 2vh;
+}
+
 .label-file {
     padding-top: 1vh;
     padding-right: 0.2vw;
@@ -311,6 +315,15 @@ $fontSize: 2vh;
 .display-msg {
     font-size: 2vh;
     color: white;
+}
+
+.modal-content-container {
+    margin-left: 1.3vw;
+}
+
+.validation-error {
+    margin: 1px 1px 1px 1px;
+    color: red;
 }
 
 // .file-input {

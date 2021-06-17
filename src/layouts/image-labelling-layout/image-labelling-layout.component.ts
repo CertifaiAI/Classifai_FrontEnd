@@ -14,6 +14,7 @@ import { ImageLabellingActionService } from 'src/components/image-labelling/imag
 import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
 import { ImageLabellingLayoutService } from 'src/layouts/image-labelling-layout/image-labelling-layout.service';
 import { ImageLabellingModeService } from 'src/components/image-labelling/image-labelling-mode.service';
+import { UnsupportedImageService } from './../../shared/services/unsupported-image.service';
 import { LanguageService } from 'src/shared/services/language.service';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
@@ -80,6 +81,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     isLoading: boolean = false;
     showLoading: boolean = false;
     processingNum: number = 0;
+    unsupportedImageList: string[] = [];
     spanClass: string = '';
     modalSpanMessage: string = '';
     modalSpanLocationPath: string = '';
@@ -93,6 +95,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
+    readonly modalUnsupportedImage = 'modal-unsupported-image';
     exportModalBodyStyle: ModalBodyStyle = {
         minHeight: '15vh',
         maxHeight: '15vh',
@@ -131,6 +134,14 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         margin: '15vw 71vh',
         overflow: 'none',
     };
+    unsupportedImageBodyStyle: ModalBodyStyle = {
+        minHeight: '10vh',
+        maxHeight: '15vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
     saveType: ExportSaveType = {
         saveCurrentImage: true,
         saveBulk: false,
@@ -155,6 +166,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         public _languageService: LanguageService,
         private _spinnerService: SpinnerService,
         private _exportSaveFormatService: ExportSaveFormatService,
+        private _unsupportedImageService: UnsupportedImageService,
     ) {
         const langsArr: string[] = ['image-labelling-en', 'image-labelling-cn', 'image-labelling-ms'];
         this._languageService.initializeLanguage(`image-labelling`, langsArr);
@@ -438,7 +450,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 ? interval(500).pipe(
                       mergeMap(() => reloadStatus$),
                       /** @property {number} message value 4 means upload completed, value 1 means cancelled */
-                      first(({ file_system_status }) => {
+                      first(({ file_system_status, unsupported_image_list }) => {
+                          this.unsupportedImageList = unsupported_image_list;
                           const isValidResponse: boolean = file_system_status === 3 || file_system_status === 0;
                           return isValidResponse;
                       }),
@@ -496,6 +509,12 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     this.currentImageDisplayIndex = -1;
                     this.navigateByAction({ thumbnailAction: 1 });
                     this.isLoading = false;
+                    this.unsupportedImageList.length > 0 &&
+                        this._unsupportedImageService
+                            .downloadUnsupportedImageList(projectName, this.unsupportedImageList)
+                            .then((ret) => {
+                                this._modalService.open(this.modalUnsupportedImage);
+                            });
                 },
             );
 
