@@ -33,3 +33,4 @@ jobs:
 
     - name: Build Project
       run: npm run build:normal
+      
