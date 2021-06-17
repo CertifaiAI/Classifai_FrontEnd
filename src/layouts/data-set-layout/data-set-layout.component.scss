@@ -272,6 +272,7 @@ $fontSize: 2vh;
 .help-icon-container .tooltiptext {
     visibility: hidden;
     width: 10vw;
+    min-width: 200px;
     background-color: black;
     color: #fff;
     text-align: left;
@@ -296,7 +297,7 @@ $fontSize: 2vh;
     border-radius: 6px;
     padding: 1vh 0.5vw;
     position: absolute;
-    top: 62%;
+    top: 67%;
     left: 30%;
     margin-left: -60px;
     text-align: justify;
