@@ -219,29 +219,10 @@
     </div>
 </modal>
 
-<modal
-    [id]="modalUnsupportedImage"
-    [modalBodyStyle]="unsupportedImageBodyStyle"
-    [modalTitle]="'unsupportedImage' | translate"
-    [scrollable]="false"
->
-    <div class="modal-content-container">
-        <p class="error-msg">
-            {{ 'containsUnsupportedImage1' | translate }}
-            {{ unsupportedImageList.length }}
-            {{ 'containsUnsupportedImage2' | translate }}
-            <a
-                href="https://github.com/CertifaiAI/CertifAI-Knowledge-Base/wiki/Image-Type-Unsupported-Walkaround"
-                target="_blank"
-                rel="noopener"
-            >
-                <img class="help-icon-sm" src="../../assets/icons/help.svg" alt="help" />
-            </a>
-        </p>
-        <p class="error-msg">
-            {{ 'unsupportedImageList1' | translate }}<br />{{ 'unsupportedImageList2' | translate }}
-        </p>
-    </div>
-</modal>
+<unsupported-image-modal
+    [_modalUnsupportedImage]="modalUnsupportedImage"
+    [_unsupportedImageBodyStyle]="unsupportedImageBodyStyle"
+    [_unsupportedImageList]="unsupportedImageList"
+></unsupported-image-modal>
 
 <spinner [_loading]="isLoading"></spinner>
