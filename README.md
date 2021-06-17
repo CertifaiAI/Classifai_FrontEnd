@@ -1,14 +1,9 @@
 # Classifai_FrontEnd
 
-<p>
-  <p align="center">
-    <a href="https://sonarcloud.io/dashboard?id=CertifaiAI_Classifai_FrontEnd">
-        <img alt="Sonar Cloud" src="https://sonarcloud.io/images/project_badges/sonarcloud-white.svg">
-    </a>
-</p>
+
 
 <p>
-  <p align="center">
+  <p align="left">
     <a href="https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE">
         <img alt="License" src="https://img.shields.io/github/license/CertifaiAI/Classifai_FrontEnd">
     </a>
