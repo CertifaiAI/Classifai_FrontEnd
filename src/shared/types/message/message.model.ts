@@ -26,6 +26,14 @@ export type Message = {
 
 export type ExportResponse = {
     message: message;
+    error_code: error_code;
+    error_message: errormessage;
+};
+
+export type ExportStatus = {
+    message: message;
+    export_status: error_code;
+    export_status_message: errormessage;
     project_config_path: project_config_path;
 };
 
