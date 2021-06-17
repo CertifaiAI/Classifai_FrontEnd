@@ -4,16 +4,31 @@
             <img [src]="logoSrc" class="logo position-absolute" alt="logo" title="Classifai" />
         </div>
         <ng-container *ngFor="let label of headerLabels; let last = last"
-            ><a class="link" [routerLink]="label.url">
-                <div
-                    class="btn-container"
-                    [ngClass]="{ 'last-btn-container': last }"
-                    routerLinkActive="active-link"
-                    [routerLinkActiveOptions]="{ exact: true }"
+            ><div *ngIf="!label.disable">
+                <a class="link" [routerLink]="label.url">
+                    <div
+                        class="btn-container"
+                        [ngClass]="{ 'last-btn-container': last }"
+                        routerLinkActive="active-link"
+                        [routerLinkActiveOptions]="{ exact: true }"
+                    >
+                        <label class="label">{{ label.name | translate }}</label>
+                    </div></a
                 >
-                    <label class="label">{{ label.name | translate }}</label>
-                </div></a
-            >
+            </div>
+            <div *ngIf="label.disable">
+                <a class="link">
+                    <div
+                        class="btn-container"
+                        style="cursor: not-allowed"
+                        [ngClass]="{ 'last-btn-container': last }"
+                        routerLinkActive="active-link"
+                        [routerLinkActiveOptions]="{ exact: true }"
+                    >
+                        <label class="label" style="cursor: not-allowed">{{ label.name | translate }}</label>
+                    </div></a
+                >
+            </div>
         </ng-container>
     </div>
     <div class="container-flex-end">
