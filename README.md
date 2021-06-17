@@ -1,5 +1,25 @@
 # Classifai_FrontEnd
 
+<p>
+  <p align="center">
+    <a href="https://sonarcloud.io/dashboard?id=CertifaiAI_Classifai_FrontEnd">
+        <img alt="Sonar Cloud" src="https://sonarcloud.io/images/project_badges/sonarcloud-white.svg">
+    </a>
+</p>
+
+<p>
+  <p align="center">
+    <a href="https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE">
+        <img alt="License" src="https://img.shields.io/github/license/CertifaiAI/Classifai_FrontEnd">
+    </a>
+    <a href="https://sonarcloud.io/dashboard?id=CertifaiAI_Classifai_FrontEnd">
+        <img alt="Quality Gate" src="https://sonarcloud.io/api/project_badges/measure?project=CertifaiAI_Classifai_FrontEnd&metric=alert_status">
+    </a>
+    <a href="https://sonarcloud.io/dashboard?id=CertifaiAI_Classifai_FrontEnd">
+        <img alt="Bugs Count" src="https://sonarcloud.io/api/project_badges/measure?project=CertifaiAI_Classifai_FrontEnd&metric=bugs">
+    </a>
+ </p>
+
 Source code of Classifai with compiled front-end can be found [here](https://github.com/CertifaiAI/classifai).
 
 ## Component Design
