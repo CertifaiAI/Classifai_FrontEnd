@@ -32,16 +32,16 @@ export class PageHeaderComponent implements OnInit {
             url: '/',
             disable: false,
         },
-        {
-            name: 'pageHeader.datasetManagement',
-            url: '/dataset',
-            disable: false,
-        },
-        {
-            name: 'pageHeader.revision',
-            url: '/',
-            disable: true,
-        },
+        // {
+        //     name: 'pageHeader.datasetManagement',
+        //     url: '/dataset',
+        //     disable: false,
+        // },
+        // {
+        //     name: 'pageHeader.revision',
+        //     url: '/',
+        //     disable: true,
+        // },
     ];
 
     constructor(private _router: Router) {
