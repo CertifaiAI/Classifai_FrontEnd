@@ -1,7 +1,5 @@
 # Classifai_FrontEnd
 
-
-
 <p>
   <p align="left">
     <a href="https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE">
