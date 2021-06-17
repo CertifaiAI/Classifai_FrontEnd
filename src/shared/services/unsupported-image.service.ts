@@ -19,8 +19,7 @@ type UnsupportedImageTextFile = {
 })
 export class UnsupportedImageService {
     async downloadUnsupportedImageList(projectName: string, imageList: ImageList) {
-        let content = imageList.toString();
-        content = content.replace(',', '\n');
+        let content = imageList.join('\n');
         const filename = `${projectName}_unsupported_images.txt`;
         this.saveFile({ content, filename, type: 'text/plain;charset=utf-8' });
 
