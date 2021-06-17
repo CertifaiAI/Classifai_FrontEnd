@@ -61,5 +61,9 @@
     "configFileInfoDest1": "配置文件是 Classifai 生成的JSON文件。",
     "configFileInfoDest2": "该文件包含项目的元数据，可以使用导出项目功能进行检索。",
     "importSuccess": "导入项目成功。重命名为",
-    "importAborted": "导入项目报错。"
+    "importAborted": "导入项目报错。",
+    "unsupportedImage": "不支持的图像格式",
+    "containsUnsupportedImage1": "此项目包含",
+    "containsUnsupportedImage2": "种不受支持的图像格式。",
+    "unsupportedImageList": "请在下载的TXT文件中找到图像列表。"
 }

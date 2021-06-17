@@ -61,5 +61,9 @@
     "configFileInfoDest1": "Fail konfig ialah fail JSON yang dihasilkan oleh Classifai.",
     "configFileInfoDest2": "Fail ini mengandungi metadata projek dan ianya boleh digunakan untuk menghasilkan semula projek menggunakan fungsi eksport projek.",
     "importSuccess": "Import projek telah berjaya. Dinamakan semula sebagai ",
-    "importAborted": "Import projek dibatalkan."
+    "importAborted": "Import projek dibatalkan.",
+    "unsupportedImage": "Format Imej Tidak Disokong",
+    "containsUnsupportedImage1": "Projek ini mengandungi ",
+    "containsUnsupportedImage2": " imej yang tidak disokong.",
+    "unsupportedImageList": "Sila lihat senarai gambar dalam fail TXT yang telah dimuat turun."
 }
