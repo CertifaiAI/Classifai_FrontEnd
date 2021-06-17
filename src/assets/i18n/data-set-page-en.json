@@ -61,8 +61,9 @@
     "configFileInfoDest2": "The file contains metadata of a project and can be retrieved using export project function.",
     "importSuccess": "Import project success. Rename as ",
     "importAborted": "Import project aborted.",
-    "unsupportedImage": "Unsupported Image Format",
-    "containsUnsupportedImage1": "This project contains ",
-    "containsUnsupportedImage2": " unsupported image format.",
-    "unsupportedImageList": "Please find the list of images in the downloaded TXT file."
+    "unsupportedImage": "Unsupported Image Found!",
+    "containsUnsupportedImage1": "There are ",
+    "containsUnsupportedImage2": " unsupported images included in the project!",
+    "unsupportedImageList1": "The list of images is in the downloaded TXT file.",
+    "unsupportedImageList2": "Kindly convert them to jpg/png type and reimport them again."
 }
