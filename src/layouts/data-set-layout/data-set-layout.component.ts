@@ -19,7 +19,6 @@ import { ModalBodyStyle } from 'src/components/modal/modal.model';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'src/components/spinner/spinner.service';
-import { UnsupportedImageService } from 'src/shared/services/unsupported-image.service';
 
 @Component({
     selector: 'data-set-layout',
@@ -131,7 +130,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         private _imgLblModeService: ImageLabellingModeService,
         private _languageService: LanguageService,
         private _modalService: ModalService,
-        private _unsupportedImageService: UnsupportedImageService,
     ) {
         this._imgLblModeService.imgLabelMode$
             .pipe(distinctUntilChanged())
@@ -565,10 +563,10 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     this.isProjectLoading = false;
                     this.showProjectList();
                     this.unsupportedImageList.length > 0 &&
-                        this._unsupportedImageService
+                        this._dataSetService
                             .downloadUnsupportedImageList(projectName, this.unsupportedImageList)
-                            .then((ret) => {
-                                this._modalService.open(this.modalUnsupportedImage);
+                            .then((res) => {
+                                res && this._modalService.open(this.modalUnsupportedImage);
                             });
                 },
             );

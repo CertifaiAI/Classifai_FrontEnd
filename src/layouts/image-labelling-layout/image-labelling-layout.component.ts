@@ -14,7 +14,6 @@ import { ImageLabellingActionService } from 'src/components/image-labelling/imag
 import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
 import { ImageLabellingLayoutService } from 'src/layouts/image-labelling-layout/image-labelling-layout.service';
 import { ImageLabellingModeService } from 'src/components/image-labelling/image-labelling-mode.service';
-import { UnsupportedImageService } from './../../shared/services/unsupported-image.service';
 import { LanguageService } from 'src/shared/services/language.service';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
@@ -166,7 +165,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         public _languageService: LanguageService,
         private _spinnerService: SpinnerService,
         private _exportSaveFormatService: ExportSaveFormatService,
-        private _unsupportedImageService: UnsupportedImageService,
     ) {
         const langsArr: string[] = ['image-labelling-en', 'image-labelling-cn', 'image-labelling-ms'];
         this._languageService.initializeLanguage(`image-labelling`, langsArr);
@@ -510,10 +508,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     this.navigateByAction({ thumbnailAction: 1 });
                     this.isLoading = false;
                     this.unsupportedImageList.length > 0 &&
-                        this._unsupportedImageService
+                        this._dataSetService
                             .downloadUnsupportedImageList(projectName, this.unsupportedImageList)
-                            .then((ret) => {
-                                this._modalService.open(this.modalUnsupportedImage);
+                            .then((res) => {
+                                res && this._modalService.open(this.modalUnsupportedImage);
                             });
                 },
             );
