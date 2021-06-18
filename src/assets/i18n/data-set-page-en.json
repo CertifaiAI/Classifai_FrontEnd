@@ -45,7 +45,8 @@
         "created": "Created:",
         "totalPhoto": "Total Photo:",
         "noProject": "Wait a minute... there's no project",
-        "createNew": "Gear up and start creating new project!"
+        "createNew": "Gear up and start creating new project!",
+        "projectPath": "Project Path"
     },
     "deleteMsg": "deleted ",
     "renameMsg": "renamed ",

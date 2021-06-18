@@ -135,8 +135,23 @@ $hoverBackground: #393838;
     padding: 1vh 0 0 0;
 }
 
+.project-path-style {
+    margin-left: 1vw;
+    padding: 1vh 0 0 0;
+    width: 90%;
+    position: absolute;
+    bottom: 1vh;
+}
+
 .project-info {
     @include text-ellipsis(2vh, #dbdbda);
+}
+
+.project-path {
+    word-wrap: break-word;
+    font-size: 1.2vh;
+    color: #737475;
+    position: relative;
 }
 
 .tag-container {

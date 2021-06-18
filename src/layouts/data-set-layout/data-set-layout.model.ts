@@ -42,6 +42,7 @@ export type ProjectStatus = {
 
 export type Project = {
     project_name: string;
+    project_path: string;
     is_loaded: boolean;
     is_starred: boolean;
     is_new: boolean;

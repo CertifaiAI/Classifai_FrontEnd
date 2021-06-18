@@ -45,7 +45,8 @@
         "created": "已创建:",
         "totalPhoto": "图像总数:",
         "noProject": "没有项目",
-        "createNew": "开始新的项目吧！"
+        "createNew": "开始新的项目吧！",
+        "projectPath": "项目路径"
     },
     "deleteMsg": "删除 ",
     "success": "成功",
