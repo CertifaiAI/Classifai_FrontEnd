@@ -390,6 +390,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     ngAfterViewInit(): void {
         this.activePreview.src = this.totalFrameArr[0].frameURL;
+        this.canvasContext.drawImage(this.activePreview, 10, 10);
     }
 
     ngOnChanges(changes: SimpleChanges): void {

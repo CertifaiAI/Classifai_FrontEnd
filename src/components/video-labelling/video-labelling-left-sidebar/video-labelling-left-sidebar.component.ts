@@ -11,12 +11,6 @@ import { CompleteMetadata, ImageLabelUrl, ImgLabelProps, TabsProps } from '../..
     styleUrls: ['./video-labelling-left-sidebar.component.scss'],
 })
 export class VideoLabellingLeftSidebarComponent implements OnInit, OnChanges {
-    @Input() _onChange!: ImgLabelProps;
-    @Input() _currentUrl: ImageLabelUrl = '';
-    @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
-    @Output() _navigate: EventEmitter<any> = new EventEmitter();
-    @Output() _openInfo = new EventEmitter();
-
     labelList: string[] = [];
     jsonSchema!: IconSchema;
     iconIndex!: number;
@@ -28,27 +22,12 @@ export class VideoLabellingLeftSidebarComponent implements OnInit, OnChanges {
 
     ngOnInit() {
         this.bindImagePath();
-        this.updateLabelList();
     }
-
-    checkStateEqual = (currObj: object, prevObj: object): boolean => !isEqual(currObj, prevObj);
 
     ngOnChanges(changes: SimpleChanges): void {
         // console.log(changes);
         this.bindImagePath();
-        if (
-            changes._tabStatus &&
-            this.checkStateEqual(changes._tabStatus.currentValue, changes._tabStatus.previousValue)
-        ) {
-            const { currentValue }: { currentValue: TabsProps<CompleteMetadata>[] } = changes._tabStatus;
-            this._tabStatus = [...currentValue];
-            this.updateLabelList();
-        }
     }
-
-    updateLabelList = () => {
-        this.labelList = this._tabStatus[1].label_list ? this._tabStatus[1].label_list : [];
-    };
 
     bindImagePath = () => {
         this.jsonSchema = {
