@@ -48,6 +48,7 @@ export type MessageUploadStatus = {
     message: message;
     file_system_status: number;
     file_system_message: string;
+    unsupported_image_list: string[];
 };
 
 export type MessageBase64Img = {
@@ -69,4 +70,5 @@ export type MessageReload = {
     file_system_message: string;
     uuid_add_list: uuid_add_list;
     uuid_delete_list: uuid_delete_list;
+    unsupported_image_list: string[];
 };

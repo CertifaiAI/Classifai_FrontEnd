@@ -80,6 +80,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     isLoading: boolean = false;
     showLoading: boolean = false;
     processingNum: number = 0;
+    unsupportedImageList: string[] = [];
     spanClass: string = '';
     modalSpanMessage: string = '';
     modalSpanLocationPath: string = '';
@@ -93,6 +94,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
+    readonly modalUnsupportedImage = 'modal-unsupported-image';
     exportModalBodyStyle: ModalBodyStyle = {
         minHeight: '15vh',
         maxHeight: '15vh',
@@ -125,7 +127,15 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
     exportProjectBodyStyle: ModalBodyStyle = {
         minHeight: '10vh',
-        maxHeight: '15vh',
+        maxHeight: '20vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    unsupportedImageBodyStyle: ModalBodyStyle = {
+        minHeight: '18vh',
+        maxHeight: '30vh',
         minWidth: '31vw',
         maxWidth: '31vw',
         margin: '15vw 71vh',
@@ -468,7 +478,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 ? interval(500).pipe(
                       mergeMap(() => reloadStatus$),
                       /** @property {number} message value 4 means upload completed, value 1 means cancelled */
-                      first(({ file_system_status }) => {
+                      first(({ file_system_status, unsupported_image_list }) => {
+                          this.unsupportedImageList = unsupported_image_list;
                           const isValidResponse: boolean = file_system_status === 3 || file_system_status === 0;
                           return isValidResponse;
                       }),
@@ -526,6 +537,12 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     this.currentImageDisplayIndex = -1;
                     this.navigateByAction({ thumbnailAction: 1 });
                     this.isLoading = false;
+                    this.unsupportedImageList.length > 0 &&
+                        this._dataSetService
+                            .downloadUnsupportedImageList(projectName, this.unsupportedImageList)
+                            .then((res) => {
+                                res && this._modalService.open(this.modalUnsupportedImage);
+                            });
                 },
             );
 

@@ -1,4 +1,5 @@
 @use '../../shared/scss/ellipsis' as ellipsis;
+$fontSize: 2vh;
 
 .layout-container {
     user-select: none;
@@ -237,6 +238,11 @@
     font-size: 1.5vh;
 }
 
+.error-msg {
+    padding-top: 1vh;
+    font-size: $fontSize;
+}
+
 .help-icon {
     height: 3vh;
 }
@@ -255,7 +261,7 @@
     border-radius: 6px;
     padding: 1vh 0.5vw;
     position: absolute;
-    top: 62%;
+    top: 65%;
     margin-left: -60px;
     text-align: justify;
     text-justify: inter-word;
@@ -263,6 +269,10 @@
 
 .help-icon-container:hover .tooltiptext {
     visibility: visible;
+}
+
+.message {
+    font-size: 1vw;
 }
 
 .save-format-list {
