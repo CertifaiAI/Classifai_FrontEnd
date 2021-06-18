@@ -1,3 +1,4 @@
+import { UnsupportedImageModalModule } from '../components/unsupported-image-modal/unsupported-image-modal.module';
 /**
  * @license
  * Use of this source code is governed by Apache License 2.0 that can be
@@ -37,6 +38,7 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
         FormsModule,
         ReactiveFormsModule,
         ModalModule,
+        UnsupportedImageModalModule,
         SpinnerModule,
         ToastrModule,
         PageHeaderModule,
@@ -53,6 +55,7 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
         FileNamePipe,
         // SanitizeSvgPipe,
         ModalModule,
+        UnsupportedImageModalModule,
         SpinnerModule,
         ToastrModule,
         PageHeaderModule,

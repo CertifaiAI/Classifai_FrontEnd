@@ -20,13 +20,19 @@ import {
     MessageUploadStatus,
     ImportResponse,
 } from 'src/shared/types/message/message.model';
+import { UnsupportedImageService } from 'src/shared/services/unsupported-image.service';
 
 @Injectable({ providedIn: 'any' })
 export class DataSetLayoutService {
     private hostPort: string = environment.baseURL;
     private imageLabellingMode: ImageLabellingMode = null;
 
-    constructor(private http: HttpClient, private mode: ImageLabellingModeService, private router: Router) {
+    constructor(
+        private http: HttpClient,
+        private mode: ImageLabellingModeService,
+        private router: Router,
+        private _unsupportedImageService: UnsupportedImageService,
+    ) {
         // if has mode value, acquire the mode value
         // else return to lading page
         this.mode.imgLabelMode$
@@ -137,5 +143,9 @@ export class DataSetLayoutService {
 
     importProjectFolderStatus() {
         return this.http.get<Folder>(`${this.hostPort}v2/folders`);
+    }
+
+    downloadUnsupportedImageList(projectName: string, unsupportedImageList: string[]) {
+        return this._unsupportedImageService.downloadUnsupportedImageList(projectName, unsupportedImageList);
     }
 }

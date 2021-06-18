@@ -284,21 +284,11 @@
     </div>
 </modal>
 
-<!-- <modal [id]="modalExportProject" [modalBodyStyle]="exportProjectBodyStyle" [scrollable]="false">
-    <div class="modal-content-container">
-        <div>
-            <label class="label label-file">{{ 'Export Project' }} </label>
-        </div>
-
-        <div [ngClass]="spanClass">
-            <span>
-                <small class="error-msg" [innerHTML]="modalSpanMessage"></small>
-            </span>
-        </div>
-
-        <div class="horizontal-line"></div>
-    </div>
-</modal> -->
+<unsupported-image-modal
+    [_modalUnsupportedImage]="modalUnsupportedImage"
+    [_unsupportedImageBodyStyle]="unsupportedImageBodyStyle"
+    [_unsupportedImageList]="unsupportedImageList"
+></unsupported-image-modal>
 
 <spinner [_loading]="isLoading"></spinner>
 <toastr [_processingNum]="processingNum"></toastr>
