@@ -34,7 +34,7 @@ import {
     SelectedLabelProps,
     TabsProps,
 } from 'src/components/image-labelling/image-labelling.model';
-import { Message } from 'src/shared/types/message/message.model';
+import { ExportStatus, Message } from 'src/shared/types/message/message.model';
 import { ModalBodyStyle } from 'src/components/modal/modal.model';
 import { ProjectSchema } from '../data-set-layout/data-set-layout.model';
 
@@ -393,27 +393,57 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         exportType === 'cfgdata' && this.processingNum++;
         const projectName = this.selectedProjectName;
         const exportProject$ = this._imgLblApiService.exportProject(projectName, exportType);
-        exportProject$.pipe(first()).subscribe(({ message, project_config_path }) => {
-            exportType === 'cfgdata' && this.processingNum--;
-            if (message === 1) {
-                console.log(this._languageService._translate.get('exportSuccess').subscribe());
-                this._languageService._translate.get('exportSuccess').subscribe((translated) => {
-                    // alert(projectName + translated);
-                    this.toggleExportProjectModalMessage(true);
-                    this.modalSpanMessage = projectName + translated;
-                    this.modalSpanLocationPath = project_config_path;
-                    this.processIsSuccess(true);
-                });
-            } else {
-                this._languageService._translate.get('exportFailed').subscribe((translated) => {
-                    // alert(translated + projectName);
-                    this.toggleExportProjectModalMessage(true);
-                    this.modalSpanMessage = translated + projectName;
-                    this.processIsSuccess(false);
-                });
-            }
-        });
-        this.closeExportProjectModal();
+        const exportProjectStatus$ = this._imgLblApiService.exportProjectStatus();
+
+        const returnResponse = ({ message }: Message): Observable<ExportStatus> => {
+            return message === 1
+                ? interval(500).pipe(
+                      mergeMap(() => exportProjectStatus$),
+                      first(({ export_status }) => {
+                          this.isOverlayOn = export_status === 1 ? true : false;
+                          this.isLoading = export_status === 1 ? true : false;
+                          const isValidResponse: boolean =
+                              export_status === 0 || export_status === 2 || export_status === 3;
+                          return isValidResponse;
+                      }),
+                  )
+                : throwError((error: any) => {
+                      console.error(error);
+                      return error;
+                  });
+        };
+        this.subjectSubscription = this.subject$
+            .pipe(
+                first(),
+                mergeMap(() => exportProject$),
+                mergeMap((message) => returnResponse(message)),
+            )
+            .subscribe(
+                ({ export_status, project_config_path }) => {
+                    exportType === 'cfgdata' && this.processingNum--;
+                    if (export_status === 2) {
+                        this._languageService._translate.get('exportSuccess').subscribe((translated) => {
+                            this.toggleExportProjectModalMessage(true);
+                            this.modalSpanMessage = projectName + translated;
+                            this.modalSpanLocationPath = project_config_path;
+                            this.processIsSuccess(true);
+                        });
+                    } else {
+                        this._languageService._translate.get('exportFailed').subscribe((translated) => {
+                            this.toggleExportProjectModalMessage(true);
+                            this.modalSpanMessage = translated + projectName;
+                            this.processIsSuccess(false);
+                        });
+                    }
+                },
+                (error: Error) => {},
+                () => {
+                    this.closeExportProjectModal();
+                },
+            );
+
+        // make initial call
+        this.subject$.next();
     };
 
     toggleExportProjectModalMessage = (open: boolean): void => {
