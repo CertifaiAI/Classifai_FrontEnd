@@ -24,7 +24,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @Output() _onHide: EventEmitter<LabelledFrame> = new EventEmitter();
     @ViewChild('videoTimelineRef') _videoTimelineRef!: ElementRef<HTMLDivElement>;
     activeFrame = 0;
-    activePreview: string = '';
+    activePreview: HTMLImageElement = new Image();
     verticalScroll: boolean = false;
     isPlayingFrame: boolean = false;
     isPausingFrame: boolean = true;
@@ -383,8 +383,10 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     constructor() {}
 
-    ngOnInit() {
-        this.activePreview = this.totalFrameArr[0].frameURL;
+    ngOnInit() {}
+
+    ngAfterViewInit(): void {
+        this.activePreview.src = this.totalFrameArr[0].frameURL;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -409,8 +411,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 : this.activeFrame;
 
             this.activeFrame > this.totalFrameArr.length
-                ? (this.activePreview = '')
-                : (this.activePreview = this.totalFrameArr[this.activeFrame].frameURL);
+                ? (this.activePreview.src = '')
+                : (this.activePreview.src = this.totalFrameArr[this.activeFrame].frameURL);
         }
     };
 
@@ -427,8 +429,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     onClickVideoTImeline = (index: number) => {
         this.activeFrame = index;
         index > this.totalFrameArr.length
-            ? (this.activePreview = '')
-            : (this.activePreview = this.totalFrameArr[index].frameURL);
+            ? (this.activePreview.src = '')
+            : (this.activePreview.src = this.totalFrameArr[index].frameURL);
     };
 
     clickPlay = () => {
@@ -472,6 +474,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this.labelledFrame[idx].isShow = !this.labelledFrame[idx].isShow;
         this._onHide.emit(this.labelledFrame[idx]);
     };
+
+    initializeCanvas() {}
 
     @HostListener('window:keydown', ['$event'])
     onKeyDown(event: any) {
