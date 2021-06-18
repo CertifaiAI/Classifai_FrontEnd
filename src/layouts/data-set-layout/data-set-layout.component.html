@@ -75,16 +75,16 @@
                         (mouseout)="showLabelTooltip = false"
                     />
                 </label>
-                <span class="labeltooltiptext" *ngIf="showLabelTooltip">
-                    <p>{{ 'labelFileDest1' | translate }}</p>
-                    <p>{{ 'labelFileDest2' | translate }}</p>
-                </span>
                 <div style="padding-top: 1vh">
                     <button class="button-file-style choose-file-button" type="button" (click)="importLabelFile()">
                         {{ 'chooseFile' | translate }}
                     </button>
                 </div>
             </div>
+            <span class="labeltooltiptext" *ngIf="showLabelTooltip">
+                <p>{{ 'labelFileDest1' | translate }}</p>
+                <p>{{ 'labelFileDest2' | translate }}</p>
+            </span>
             <div class="file-name-container">
                 <label class="filename" #labeltextfilename></label>
             </div>

@@ -261,7 +261,7 @@ $fontSize: 2vh;
     border-radius: 6px;
     padding: 1vh 0.5vw;
     position: absolute;
-    top: 62%;
+    top: 65%;
     margin-left: -60px;
     text-align: justify;
     text-justify: inter-word;
@@ -269,6 +269,10 @@ $fontSize: 2vh;
 
 .help-icon-container:hover .tooltiptext {
     visibility: visible;
+}
+
+.message {
+    font-size: 1vw;
 }
 
 .save-format-list {
