@@ -23,6 +23,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     occupiedSpace = [];
     @Output() _onHide: EventEmitter<LabelledFrame> = new EventEmitter();
     @ViewChild('videoTimelineRef') _videoTimelineRef!: ElementRef<HTMLDivElement>;
+    @ViewChild('canvasdrawing') canvas!: ElementRef<HTMLCanvasElement>;
     activeFrame = 0;
     activePreview: HTMLImageElement = new Image();
     verticalScroll: boolean = false;
@@ -475,7 +476,13 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this._onHide.emit(this.labelledFrame[idx]);
     };
 
-    initializeCanvas() {}
+    initializeCanvas(width: string = '70%') {
+        this.canvas.nativeElement.style.width = '450vw';
+        this.canvas.nativeElement.style.height = '50%';
+        this.canvas.nativeElement.width = this.canvas.nativeElement.offsetWidth;
+        this.canvas.nativeElement.height = this.canvas.nativeElement.offsetHeight;
+        this.canvasContext = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+    }
 
     @HostListener('window:keydown', ['$event'])
     onKeyDown(event: any) {

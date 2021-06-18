@@ -127,3 +127,16 @@
     border-right: 2px black solid;
     padding-right: 1vh;
 }
+
+.canvasstyle {
+    left: 2.2vw;
+    right: auto;
+    top: 8vh;
+    overflow: scroll;
+    scrollbar-width: none;
+    margin: 0px;
+    padding: 0px;
+    outline: none;
+    border: none;
+    width: 100w;
+}

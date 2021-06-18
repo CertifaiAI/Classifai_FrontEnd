@@ -1,7 +1,9 @@
 <div class="videoTimelineContainer">
-    <div *ngIf="activePreview !== undefined" class="active-frame-container">
+    <!-- <div *ngIf="activePreview !== undefined" class="active-frame-container">
         <img class="activeFrame" src="{{ activePreview }}" />
-    </div>
+    </div> -->
+
+    <canvas #canvasdrawing class="canvasstyle"></canvas>
 
     <div class="info-container">
         <button type="button" [disabled]="isPlayingFrame" (click)="clickPlay()">Play</button>
