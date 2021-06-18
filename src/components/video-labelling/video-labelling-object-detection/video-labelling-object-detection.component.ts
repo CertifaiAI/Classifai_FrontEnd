@@ -1,4 +1,5 @@
 import {
+    AfterViewInit,
     Component,
     ElementRef,
     EventEmitter,
@@ -18,8 +19,9 @@ import { FrameArray, LabelledFrame } from '../video-labelling.modal';
     templateUrl: './video-labelling-object-detection.component.html',
     styleUrls: ['./video-labelling-object-detection.component.scss'],
 })
-export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges {
-    // occupiedSpace = [...Array(27)];
+export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges, AfterViewInit {
+    private canvasContext!: CanvasRenderingContext2D;
+
     occupiedSpace = [];
     @Output() _onHide: EventEmitter<LabelledFrame> = new EventEmitter();
     @ViewChild('videoTimelineRef') _videoTimelineRef!: ElementRef<HTMLDivElement>;
