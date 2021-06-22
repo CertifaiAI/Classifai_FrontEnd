@@ -275,9 +275,11 @@
 >
     <br />
     <div class="modal-content-container">
-        <p *ngIf="modalSpanLocationPath.trim()" class="message">
-            {{ 'location' | translate }}{{ modalSpanLocationPath }}
-        </p>
+        <div class="modal-message-container">
+            <p *ngIf="modalSpanLocationPath.trim()" class="message">
+                {{ 'location' | translate }}<br />{{ modalSpanLocationPath }}
+            </p>
+        </div>
         <div [ngClass]="spanClass">
             <p class="error-msg" [innerHTML]="modalSpanMessage"></p>
         </div>

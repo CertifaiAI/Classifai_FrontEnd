@@ -127,7 +127,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
     exportProjectBodyStyle: ModalBodyStyle = {
         minHeight: '10vh',
-        maxHeight: '20vh',
+        maxHeight: '30vh',
         minWidth: '31vw',
         maxWidth: '31vw',
         margin: '15vw 71vh',
