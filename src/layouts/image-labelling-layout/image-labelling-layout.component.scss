@@ -273,6 +273,15 @@ $fontSize: 2vh;
 
 .message {
     font-size: 1vw;
+    overflow-wrap: break-word;
+}
+
+.modal-message-container {
+    padding-right: 3.5vw;
+}
+
+.break {
+    overflow-wrap: break-word;
 }
 
 .save-format-list {
