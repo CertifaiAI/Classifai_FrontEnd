@@ -95,6 +95,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
     readonly modalUnsupportedImage = 'modal-unsupported-image';
+    readonly modalExportWarning = 'modalExportWarning';
     exportModalBodyStyle: ModalBodyStyle = {
         minHeight: '15vh',
         maxHeight: '15vh',
@@ -128,6 +129,14 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     exportProjectBodyStyle: ModalBodyStyle = {
         minHeight: '10vh',
         maxHeight: '30vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    exportWarningBodyStyle: ModalBodyStyle = {
+        minHeight: '10vh',
+        maxHeight: '20vh',
         minWidth: '31vw',
         maxWidth: '31vw',
         margin: '15vw 71vh',
@@ -795,7 +804,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             });
             this.saveType.saveBulk && this.processingNum--;
         } else {
-            console.log('NO LABEL');
+            this._modalService.open(this.modalExportWarning);
         }
     };
 
