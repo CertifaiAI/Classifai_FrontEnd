@@ -94,7 +94,7 @@ export class ImageLabellingApiService {
         );
     };
 
-    renameImage = (uuid: string, newImageName: string, projectName: string): Observable<MessageRenameImg> => {
+    renameImage = (uuid: uuid, newImageName: string, projectName: string): Observable<MessageRenameImg> => {
         return this.http.put<MessageRenameImg>(
             `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/imgsrc/rename`,
             {
