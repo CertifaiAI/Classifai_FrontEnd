@@ -14,6 +14,7 @@ import {
     PolyMetadata,
     Polygons,
 } from 'src/components/image-labelling/image-labelling.model';
+import { Console } from 'console';
 
 export type SaveFormat = 'pascalVoc' | 'yolo' | 'ocr' | 'label' | 'coco' | 'json';
 
@@ -57,13 +58,13 @@ export class ExportSaveFormatService {
         switch (saveFormat) {
             case 'pascalVoc':
                 if (!metadata) {
-                    return alert('There are no metadata.');
+                    return { message: 1, msg: 'There are no metadata.' };
                 }
                 if (!metadata?.bnd_box) {
-                    return alert('There are no bounding box.');
+                    return { message: 1, msg: 'There are no bounding box.' };
                 }
                 if (!labelList) {
-                    return alert('There are no label list.');
+                    return { message: 1, msg: 'There are no label list.' };
                 }
 
                 if (saveCurrentImage) {
@@ -81,16 +82,18 @@ export class ExportSaveFormatService {
                     const splitfilenameArr = filename.split('.');
                     const finalizedFilename = splitfilenameArr[0] + '.xml';
                     this.saveFile({ content, filename: finalizedFilename, type: 'text/xml;charset=utf-8' });
+                    return { message: 2 };
                 } else {
                     if (!projectFullMetadata) {
-                        return alert('There are no image list.');
+                        return { message: 1, msg: 'There are no image list.' };
                     }
                     const pascalVocList: { filename: string; content: string }[] = [];
-
+                    let isEmpty = true;
                     projectFullMetadata.forEach((metadata) => {
                         const bboxLabels = metadata.bnd_box ? metadata.bnd_box.map((x) => x.label) : [];
                         const found = bboxLabels.some((r) => labelList.indexOf(r) >= 0);
                         if (metadata.bnd_box && metadata.bnd_box.length > 0 && found) {
+                            isEmpty = false;
                             const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
                             const filename = this.getFileName(metadata.img_path);
                             const { img_path, img_depth, img_ori_w, img_ori_h } = metadata;
@@ -110,21 +113,25 @@ export class ExportSaveFormatService {
                             });
                         }
                     });
+                    if (isEmpty) {
+                        return { message: 0 };
+                    }
                     if (!pascalVocList) {
                         return alert('There are no labelling progress.');
                     }
                     await this.saveAsZip(pascalVocList, 'pascal_voc', projectName);
+                    return { message: 2 };
                 }
                 break;
             case 'yolo':
                 if (!metadata) {
-                    return alert('There are no metadata.');
+                    return { message: 1, msg: 'There are no metadata.' };
                 }
                 if (!metadata?.bnd_box) {
-                    return alert('There are no bounding box.');
+                    return { message: 1, msg: 'There are no bounding box.' };
                 }
                 if (!labelList) {
-                    return alert('There are no label list.');
+                    return { message: 1, msg: 'There are no label list.' };
                 }
 
                 if (saveCurrentImage) {
@@ -140,16 +147,19 @@ export class ExportSaveFormatService {
                     const splitfilenameArr = filename.split('.');
                     const finalizedFilename = `${splitfilenameArr[0]}.txt`;
                     this.saveFile({ content, filename: finalizedFilename, type: 'text/plain;charset=utf-8' });
+                    return { message: 2 };
                 } else {
                     if (!projectFullMetadata) {
-                        return alert('There are no image list.');
+                        return { message: 1, msg: 'There are no image list.' };
                     }
 
                     const yoloList: { filename: string; content: string }[] = [];
+                    let isEmpty = true;
                     projectFullMetadata.forEach((metadata) => {
                         const bboxLabels = metadata.bnd_box ? metadata.bnd_box.map((x) => x.label) : [];
                         const found = bboxLabels.some((r) => labelList.indexOf(r) >= 0);
                         if (metadata.bnd_box && metadata.bnd_box.length > 0 && found) {
+                            isEmpty = false;
                             const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
                             const filename = this.getFileName(metadata.img_path);
                             const { img_ori_w, img_ori_h } = metadata;
@@ -167,24 +177,28 @@ export class ExportSaveFormatService {
                             });
                         }
                     });
+                    if (isEmpty) {
+                        return { message: 0 };
+                    }
                     if (!yoloList) {
-                        return alert('There are no labelling progress.');
+                        return { message: 1, msg: 'There are no labelling progress.' };
                     }
                     await this.saveAsZip(yoloList, saveFormat, projectName);
+                    return { message: 2 };
                 }
                 break;
             case 'ocr':
                 if (!metadata) {
-                    return alert('There are no metadata.');
+                    return { message: 1, msg: 'There are no metadata.' };
                 }
                 if (!metadata?.bnd_box) {
-                    return alert('There are no bounding box.');
+                    return { message: 1, msg: 'There are no bounding box.' };
                 }
                 if (!projectFullMetadata) {
-                    return alert('There are no image list.');
+                    return { message: 1, msg: 'There are no image list.' };
                 }
                 if (!labelList) {
-                    return alert('There are no image list.');
+                    return { message: 1, msg: 'There are no image list.' };
                 }
 
                 let ocrText = '';
@@ -198,25 +212,25 @@ export class ExportSaveFormatService {
                     ocrText += `${content}`;
                 });
                 if (!ocrText) {
-                    return alert('There are no labelling progress.');
+                    return { message: 1, msg: 'There are no labelling progress.' };
                 }
                 this.saveFile({
                     content: ocrText,
                     filename: `${projectName}_text_ocr_labels.csv`,
                     type: 'text/csv;charset=utf-8',
                 });
-                break;
+                return { message: 2 };
             case 'label':
                 if (!labelList) {
-                    return alert('There are no label list.');
+                    return { message: 1, msg: 'There are no label list.' };
                 }
                 const filename = `${projectName}_label.txt`;
                 const content = this.generateLabelFormat(labelList);
                 this.saveFile({ content, filename, type: 'text/plain;charset=utf-8' });
-                break;
+                return { message: 2 };
             case 'coco':
                 if (!projectFullMetadata) {
-                    return alert('There are no image list.');
+                    return { message: 1, msg: 'There are no image list.' };
                 }
 
                 const verticesPolyMetadata = this.calPolyCoorOriginalImages(projectFullMetadata as PolyMetadata[]);
@@ -227,16 +241,16 @@ export class ExportSaveFormatService {
                     filename: verticesFilename,
                     type: 'text/json;charset=utf-8',
                 });
-                break;
+                return { message: 2 };
             case 'json':
                 if (!metadata) {
-                    return alert('There are no metadata.');
+                    return { message: 1, msg: 'There are no metadata.' };
                 }
                 if (!metadata?.polygons) {
-                    return alert('There are no polygon.');
+                    return { message: 1, msg: 'There are no polygon.' };
                 }
                 if (!projectFullMetadata) {
-                    return alert('There are no image list.');
+                    return { message: 1, msg: 'There are no image list.' };
                 }
                 const jsonPolyMetadata = this.calPolyCoorOriginalImages(projectFullMetadata as PolyMetadata[]);
                 const jsonContent = this.getJsonContent(jsonPolyMetadata);
@@ -246,7 +260,6 @@ export class ExportSaveFormatService {
                     filename: jsonFilename,
                     type: 'text/json;charset=utf-8',
                 });
-                break;
         }
     }
 

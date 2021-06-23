@@ -784,28 +784,31 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onClickDownload = async (saveFormat: SaveFormat) => {
         const labelList = this.labelChoosen.filter((e) => e.isChoosen === true).map((e) => e.label);
-        if (labelList.length > 0) {
-            this.saveType.saveBulk && this.processingNum++;
-            await this._exportSaveFormatService.exportSaveFormat({
-                ...this.saveType,
-                saveFormat,
-                metadata: this.selectedMetaData,
-                index: this.currentAnnotationIndex,
-                projectName: this.selectedProjectName,
-                ...((this.saveType.saveBulk ||
-                    saveFormat === 'ocr' ||
-                    saveFormat === 'json' ||
-                    saveFormat === 'coco') && {
-                    projectFullMetadata: this.thumbnailList,
-                }),
-                ...(saveFormat !== 'json' && {
-                    labelList,
-                }),
-            });
-            this.saveType.saveBulk && this.processingNum--;
-        } else {
-            this._modalService.open(this.modalExportWarning);
-        }
+        this.saveType.saveBulk && this.processingNum++;
+        const response = await this._exportSaveFormatService.exportSaveFormat({
+            ...this.saveType,
+            saveFormat,
+            metadata: this.selectedMetaData,
+            index: this.currentAnnotationIndex,
+            projectName: this.selectedProjectName,
+            ...((this.saveType.saveBulk || saveFormat === 'ocr' || saveFormat === 'json' || saveFormat === 'coco') && {
+                projectFullMetadata: this.thumbnailList,
+            }),
+            ...(saveFormat !== 'json' && {
+                labelList,
+            }),
+        });
+
+        /**
+         * Response Message:
+         * 0 - isEmpty
+         * 1 - Warning/Error
+         * 2 - Success/Done
+         */
+
+        console.log('SATTUS', response);
+        // this._modalService.open(this.modalExportWarning);
+        this.saveType.saveBulk && this.processingNum--;
     };
 
     onChangeLabel(value: string) {
