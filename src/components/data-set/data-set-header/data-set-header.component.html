@@ -1,6 +1,12 @@
 <div class="dataset-header-container">
     <label class="label">{{ 'datasetHeader.datasetManagement' | translate }}</label>
-
+    <div class="dataset-dropdown-container">
+        <label class="label">Sort By: </label>
+        <select class="dropdown" (change)="onOptionsSelected(mySelect.value)" #mySelect>
+            <option value="project_name">Proejct Name</option>
+            <option value="created_date">Created Date</option>
+        </select>
+    </div>
     <div class="dataset-icon-container">
         <!-- <ng-container *ngFor="let icon of jsonSchema.icons">
             <img class="dataset-icon" [src]="icon.imgPath" [title]="icon.hoverLabel" [alt]="icon.alt" />

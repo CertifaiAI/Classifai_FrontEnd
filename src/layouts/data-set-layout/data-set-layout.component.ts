@@ -8,7 +8,7 @@ import { BboxMetadata, ImageLabellingMode, PolyMetadata } from 'src/components/i
 import { cloneDeep } from 'lodash-es';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from './data-set-layout-api.service';
-import { DataSetProps, ProjectRename, ProjectSchema, StarredProps } from './data-set-layout.model';
+import { DataSetProps, Project, ProjectRename, ProjectSchema, StarredProps } from './data-set-layout.model';
 import { distinctUntilChanged, first, map, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -37,6 +37,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         isUploading: false,
         isFetching: false,
     };
+    sortedProject: Project[] = [];
     inputProjectName: string = '';
     newInputProjectName: string = '';
     selectedProjectName: string = '';
@@ -62,6 +63,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     projectFolderPath: string = '';
     showLabelTooltip: boolean = false;
     unsupportedImageList: string[] = [];
+    keyToSort: string = 'project_name';
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
@@ -150,6 +152,11 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.showProjectList();
     }
 
+    keyIsSelected = (value: string) => {
+        this.keyToSort = value;
+        this.showProjectList();
+    };
+
     showProjectList = (): void => {
         this.projectList.isFetching = true;
         this._dataSetService
@@ -158,8 +165,24 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .subscribe(({ content }) => {
                 if (content) {
                     const clonedProjectList = cloneDeep(content);
-                    // const sortedProject = clonedProjectList.sort((a, b) => (b.created_date > a.created_date ? 1 : -1));
-                    const formattedProjectList = clonedProjectList.map((project) => {
+                    switch (this.keyToSort) {
+                        case 'project_name':
+                            this.sortedProject = clonedProjectList.sort((a, b) =>
+                                b.project_name < a.project_name ? 1 : -1,
+                            );
+                            break;
+                        case 'created_date':
+                            this.sortedProject = clonedProjectList.sort((a, b) =>
+                                b.created_date > a.created_date ? 1 : -1,
+                            );
+                            break;
+                        default:
+                            this.sortedProject = clonedProjectList.sort((a, b) =>
+                                b.project_name < a.project_name ? 1 : -1,
+                            );
+                            break;
+                    }
+                    const formattedProjectList = this.sortedProject.map((project) => {
                         const newProjectList = (project = {
                             ...project,
                             created_date: this.formatDate(project.created_date),
