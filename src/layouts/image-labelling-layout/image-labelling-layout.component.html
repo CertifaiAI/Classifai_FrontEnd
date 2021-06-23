@@ -304,6 +304,7 @@
             [value]="newImageName"
             [placeholder]="'renameModal.typeNewName' | translate"
             (change)="onChangeImageName($event)"
+            (keydown.enter)="onChangeImageName($event); onSubmitRenameImage()"
         />
         <br /><br />
         <label class="validate-msg" *ngIf="renameImageErrorCode === 1">{{ 'renameModal.nameExist' | translate }}</label>
