@@ -72,3 +72,9 @@ export type MessageReload = {
     uuid_delete_list: uuid_delete_list;
     unsupported_image_list: string[];
 };
+
+export type MessageRenameImg = {
+    message: message;
+    error_code: error_code;
+    img_path: img_src;
+};

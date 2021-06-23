@@ -80,6 +80,13 @@
         "btnSave": "Simpan",
         "instructionText": "Togol ke kiri untuk melumpuhkan label"
     },
+    "renameModal": {
+        "renameImg": "Namakan Semula Imej",
+        "imageName": "Nama Imej",
+        "typeNewName": "Masukkan nama baru",
+        "nameExist": "Nama imej telah tersedia!",
+        "submit": "Hantar"
+    },
     "configFileInfoTitle": "Pilih Fail Eksport",
     "configFileInfoDest1": "Fail Konfig ialah fail konfigurasi yang mengandungi metadata sesuatu projek. Pilihan ini sesuai jika data sudah tersedia dalam sistem untuk diimport.",
     "configFileInfoDest2": "Fail Zip mengandungi Fail Konfig beserta dengan set data yang digunakan dalam projek. Semua komponen sesuatu projek disertakan untuk membolehkan penghasilan semula projek tersebut di dalam sistem yang berbeza.",

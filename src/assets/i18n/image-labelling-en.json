@@ -105,6 +105,13 @@
         "btnSave": "Save",
         "instructionText": "Toggle left to disable the label"
     },
+    "renameModal": {
+        "renameImg": "Rename Image",
+        "imageName": "Image Name",
+        "typeNewName": "Enter new name",
+        "nameExist": "Image name already exist!",
+        "submit": "Proceed"
+    },
     "configFileInfoTitle": "Choosing the Right Export",
     "configFileInfoDest1": "Config File is the configuration file contains of metadata of a project. It is suitable when the data is readily available in the system to be imported to.",
     "configFileInfoDest2": "Zip File contains the Config File with dataset used in a project. It compiles all the components of a project to be reproduced in a different system.",

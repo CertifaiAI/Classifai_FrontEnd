@@ -91,10 +91,15 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     totalUuid: number = 0;
     labelChoosen: LabelChoosen[] = [];
     tempLabelChoosen: LabelChoosen[] = [];
+    imgPathSplit: string[] = [];
+    newImageName: string = '';
+    selectedUuid: string = '';
+    renameImageErrorCode: number = 0;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
     readonly modalUnsupportedImage = 'modal-unsupported-image';
+    readonly modalRenameImage = 'modal-rename-image';
     exportModalBodyStyle: ModalBodyStyle = {
         minHeight: '15vh',
         maxHeight: '15vh',
@@ -138,6 +143,14 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         maxHeight: '30vh',
         minWidth: '31vw',
         maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    renameImageBodyStyle: ModalBodyStyle = {
+        minHeight: '18vh',
+        maxHeight: '30vh',
+        minWidth: '20vw',
+        maxWidth: '20vw',
         margin: '15vw 71vh',
         overflow: 'none',
     };
@@ -806,6 +819,36 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onLoadMoreThumbnails() {
         this.loadThumbnails();
+    }
+
+    onRenameImage(thumbnailInfo: CompleteMetadata) {
+        this.imgPathSplit = thumbnailInfo.img_path.split('\\');
+        const imageName = this.imgPathSplit.pop();
+        this.newImageName = imageName ? imageName : '';
+        this.selectedUuid = thumbnailInfo.uuid;
+        this.renameImageErrorCode = 0;
+        this._modalService.open(this.modalRenameImage);
+    }
+
+    onChangeImageName(event: HTMLElementEvent<HTMLInputElement>) {
+        this.newImageName = event.target.value;
+    }
+
+    onSubmitRenameImage() {
+        this._imgLblApiService
+            .renameImage(this.selectedUuid, this.newImageName, this.selectedProjectName)
+            .subscribe((res) => {
+                if (res.message === 1) {
+                    const index = this.thumbnailList.findIndex((t) => t.uuid === this.selectedUuid);
+                    this.thumbnailList[index].img_path = this.imgPathSplit.join('\\') + '\\' + this.newImageName;
+                    this.newImageName = '';
+                    this._modalService.close(this.modalRenameImage);
+                } else {
+                    if (res.error_code === 1) {
+                        this.renameImageErrorCode = res.error_code;
+                    }
+                }
+            });
     }
 
     showAdvSettings() {

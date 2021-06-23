@@ -16,6 +16,7 @@ import {
     MessageBase64Img,
     MessageProjectProgress,
     MessageReload,
+    MessageRenameImg,
     uuid,
 } from 'src/shared/types/message/message.model';
 import { Observable } from 'rxjs';
@@ -90,6 +91,16 @@ export class ImageLabellingApiService {
     reloadProjectStatus = (projectName: string): Observable<MessageReload> => {
         return this.http.get<MessageReload>(
             `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/reloadstatus`,
+        );
+    };
+
+    renameImage = (uuid: string, newImageName: string, projectName: string): Observable<MessageRenameImg> => {
+        return this.http.put<MessageRenameImg>(
+            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/imgsrc/rename`,
+            {
+                uuid,
+                new_fname: newImageName,
+            },
         );
     };
 }

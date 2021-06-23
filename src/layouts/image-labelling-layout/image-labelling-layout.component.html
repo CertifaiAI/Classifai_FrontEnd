@@ -37,6 +37,7 @@
         </ng-container>
 
         <image-labelling-project
+            [_onChange]="onChangeSchema"
             [_selectMetadata]="selectedMetaData"
             [_totalUuid]="totalUuid"
             [_thumbnailList]="thumbnailList"
@@ -48,6 +49,7 @@
             (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
             (_onDeleteAnnotation)="onDeleteAnnotation($event)"
             (_loadMoreThumbnails)="onLoadMoreThumbnails()"
+            (_onRenameImage)="onRenameImage($event)"
         ></image-labelling-project>
         <image-labelling-right-sidebar
             [_onChange]="onChangeSchema"
@@ -189,7 +191,9 @@
                 [placeholder]="'labellingArea.subRegionInfo' | translate"
                 (change)="onChangeInput($event, 'sub')"
             />
-            <button class="modal-button" (click)="onSubmitLabel()">{{ 'labellingArea.add' | translate }}</button>
+            <button class="modal-button" (click)="onSubmitLabel()">
+                {{ 'labellingArea.add' | translate }}
+            </button>
         </div>
         <ng-container *ngIf="subLabelValidateMsg">
             <div class="validate-msg">
@@ -283,6 +287,29 @@
         <div [ngClass]="spanClass">
             <p class="error-msg" [innerHTML]="modalSpanMessage"></p>
         </div>
+    </div>
+</modal>
+
+<modal
+    [id]="modalRenameImage"
+    [modalBodyStyle]="renameImageBodyStyle"
+    [modalTitle]="'renameModal.renameImg' | translate"
+    [scrollable]="false"
+>
+    <div class="modal-content-container">
+        <label class="font-label">{{ 'renameModal.imageName' | translate }}: </label>
+        <input
+            class="static-input"
+            type="text"
+            [value]="newImageName"
+            [placeholder]="'renameModal.typeNewName' | translate"
+            (change)="onChangeImageName($event)"
+        />
+        <br /><br />
+        <label class="validate-msg" *ngIf="renameImageErrorCode === 1">{{ 'renameModal.nameExist' | translate }}</label>
+        <button class="button-style renameimg-btn" (click)="onSubmitRenameImage()">
+            {{ 'renameModal.submit' | translate }}
+        </button>
     </div>
 </modal>
 
