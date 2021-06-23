@@ -1,15 +1,52 @@
 name: Copy to Repo Classifai Job
 on:
   push:
-    branches: main
+    branches: faris_workflow_main
 
-    paths:
-      # Triggered when only this path has code changes during push
-      - 'dist/classifai/**'
+  # paths:
+  #    # Triggered when only this path has code changes during push
+  #    - 'dist/classifai/**'
 
 jobs:
+  build:
+    name: Build Node.js
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get latest code
+      uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.PERSONAL_TOKEN }}
+
+    - name: Use Node.js 14 LTS
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Caching Dependencies
+      uses: actions/cache@v2
+      with:
+        # npm cache files are stored in `~/.npm` on Linux/macOS
+        path: ~/.npm
+        key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.OS }}-node-
+          ${{ runner.OS }}-
+      
+    - name: Install NPM Modules
+      run: npm install
+
+    - name: Build Project
+      run: npm run build:normal
+
+    - name: Auto-commit compiled codes
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: ":package: Compiled codes"
+        file_pattern: "dist/"
+
   copy:
     name: Copy job
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Declaring output variable # Necessary to call PR's URL
@@ -29,6 +66,6 @@ jobs:
           dst_owner: CertifaiAI # Destination owner's name
           dst_repo_name: classifai # Destination repo's name
           src_branch: main # Source repo's branch
-          dst_branch: faris_auto_pr # Destination repo's branch / It will create if branch not exist
+          dst_branch: faris_auto_pr_test # Destination repo's branch / It will create if branch not exist
           clean: true # Set to 'true' for emptying destination path prior pasting 
           
