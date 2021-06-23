@@ -65,7 +65,7 @@ jobs:
           dst_path: classifai-core/src/main/resources/webroot/. # Destination to be pasted
           dst_owner: CertifaiAI # Destination owner's name
           dst_repo_name: classifai # Destination repo's name
-          src_branch: main # Source repo's branch
+          src_branch: faris_workflow_main # Source repo's branch
           dst_branch: faris_auto_pr_test # Destination repo's branch / It will create if branch not exist
           clean: true # Set to 'true' for emptying destination path prior pasting 
           
