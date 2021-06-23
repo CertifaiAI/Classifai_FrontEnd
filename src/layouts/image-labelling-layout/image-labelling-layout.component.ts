@@ -93,6 +93,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     tempLabelChoosen: LabelChoosen[] = [];
     imgPathSplit: string[] = [];
     newImageName: string = '';
+    imageExt: string | undefined;
     selectedUuid: string = '';
     renameImageErrorCode: number = 0;
     readonly modalExportOptions = 'modal-export-options';
@@ -824,7 +825,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     onRenameImage(thumbnailInfo: CompleteMetadata) {
         this.imgPathSplit = thumbnailInfo.img_path.split('\\');
         const imageName = this.imgPathSplit.pop();
-        this.newImageName = imageName ? imageName : '';
+        this.newImageName = imageName ? imageName.split('.')[0] : '';
+        this.imageExt = imageName ? '.' + imageName.split('.').pop() : '';
         this.selectedUuid = thumbnailInfo.uuid;
         this.renameImageErrorCode = 0;
         this._modalService.open(this.modalRenameImage);
@@ -836,11 +838,12 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onSubmitRenameImage() {
         this._imgLblApiService
-            .renameImage(this.selectedUuid, this.newImageName, this.selectedProjectName)
+            .renameImage(this.selectedUuid, this.newImageName + this.imageExt, this.selectedProjectName)
             .subscribe((res) => {
                 if (res.message === 1) {
                     const index = this.thumbnailList.findIndex((t) => t.uuid === this.selectedUuid);
-                    this.thumbnailList[index].img_path = this.imgPathSplit.join('\\') + '\\' + this.newImageName;
+                    this.thumbnailList[index].img_path =
+                        this.imgPathSplit.join('\\') + '\\' + this.newImageName + this.imageExt;
                     this.newImageName = '';
                     this._modalService.close(this.modalRenameImage);
                 } else {
