@@ -17,7 +17,7 @@ import {
     MessageProjectProgress,
     MessageReload,
     MessageRenameImg,
-    uuid,
+    UUID,
 } from 'src/shared/types/message/message.model';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
@@ -34,7 +34,7 @@ export class ImageLabellingApiService {
             .subscribe((modeVal) => (modeVal ? (this.imageLabellingMode = modeVal) : this.router.navigate(['/'])));
     }
 
-    getBase64Thumbnail = (projectName: string, uuid: uuid): Observable<MessageBase64Img> => {
+    getBase64Thumbnail = (projectName: string, uuid: UUID): Observable<MessageBase64Img> => {
         return this.http.get<MessageBase64Img>(
             `${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/uuid/${uuid}/imgsrc`,
         );
@@ -48,7 +48,7 @@ export class ImageLabellingApiService {
 
     updateProjectProgress = (
         projectName: string,
-        uuid: uuid,
+        uuid: UUID,
         metadata: CompleteMetadata,
     ): Observable<MessageProjectProgress> => {
         return this.http.put<MessageProjectProgress>(
@@ -94,7 +94,7 @@ export class ImageLabellingApiService {
         );
     };
 
-    renameImage = (uuid: uuid, newImageName: string, projectName: string): Observable<MessageRenameImg> => {
+    renameImage = (uuid: UUID, newImageName: string, projectName: string): Observable<MessageRenameImg> => {
         return this.http.put<MessageRenameImg>(
             `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/imgsrc/rename`,
             {
