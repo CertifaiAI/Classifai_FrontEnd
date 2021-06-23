@@ -348,23 +348,23 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     onCheckBboxMetadata = () => {
         console.log('this', this.tabStatus);
         this.tabStatus.forEach(({ annotation }) => {
-            annotation
-                ? annotation?.forEach((metadata) => {
-                      console.log('MAT', metadata.bnd_box);
-                      metadata.bnd_box?.forEach((bbox, idx) => {
-                          if (bbox.x1 > bbox.x2) {
-                              const temp = bbox.x1;
-                              bbox.x1 = bbox.x2;
-                              bbox.x2 = temp;
-                          }
-                          if (bbox.y1 > bbox.y2) {
-                              const temp = bbox.y1;
-                              bbox.y1 = bbox.y2;
-                              bbox.y2 = temp;
-                          }
-                      });
-                  })
-                : null;
+            if (annotation) {
+                annotation?.forEach((metadata) => {
+                    console.log('MAT', metadata.bnd_box);
+                    metadata.bnd_box?.forEach((bbox, idx) => {
+                        if (bbox.x1 > bbox.x2) {
+                            const temp = bbox.x1;
+                            bbox.x1 = bbox.x2;
+                            bbox.x2 = temp;
+                        }
+                        if (bbox.y1 > bbox.y2) {
+                            const temp = bbox.y1;
+                            bbox.y1 = bbox.y2;
+                            bbox.y2 = temp;
+                        }
+                    });
+                });
+            }
         });
     };
 
