@@ -14,7 +14,6 @@ import {
     PolyMetadata,
     Polygons,
 } from 'src/components/image-labelling/image-labelling.model';
-import { Console } from 'console';
 
 export type SaveFormat = 'pascalVoc' | 'yolo' | 'ocr' | 'label' | 'coco' | 'json';
 
@@ -215,11 +214,15 @@ export class ExportSaveFormatService {
                     }
                     const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
                     const filename = this.getFileName(metadata.img_path);
-                    const content = this.generateOCRFormat({ bnd_box: calculatedBoxMetadata }, filename, fullLabelList);
-                    if (content === '') {
+                    const ocrContent = this.generateOCRFormat(
+                        { bnd_box: calculatedBoxMetadata },
+                        filename,
+                        fullLabelList,
+                    );
+                    if (ocrContent === '') {
                         counting++;
                     }
-                    ocrText += `${content}`;
+                    ocrText += `${ocrContent}`;
                 });
                 if (!ocrText || counting === projectFullMetadata.length) {
                     return { message: 0, msg: 'warning.noProgress' };
