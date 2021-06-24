@@ -291,6 +291,21 @@
 </modal>
 
 <modal
+    [id]="modalExportWarning"
+    [modalBodyStyle]="exportWarningBodyStyle"
+    [modalTitle]="'exportTitle' | translate"
+    [scrollable]="false"
+    [zIndex]="2"
+>
+    <br />
+    <div class="modal-content-container">
+        <div class="modal-message-container">
+            <p class="message">{{ warningMessage | translate }}</p>
+        </div>
+    </div>
+</modal>
+
+<modal
     [id]="modalRenameImage"
     [modalBodyStyle]="renameImageBodyStyle"
     [modalTitle]="'renameModal.renameImg' | translate"
