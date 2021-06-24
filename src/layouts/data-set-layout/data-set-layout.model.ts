@@ -4,7 +4,7 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { uuid } from 'src/shared/types/message/message.model';
+import { UUID } from 'src/shared/types/message/message.model';
 
 type message = boolean | number;
 type progress = any;
@@ -16,7 +16,7 @@ export type LabelList = {
     label_list: label_list;
     message: message;
     progress: progress;
-    uuid_list: uuid[];
+    uuid_list: UUID[];
 };
 
 export type Folder = {

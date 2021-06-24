@@ -97,11 +97,17 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     labelChoosen: LabelChoosen[] = [];
     tempLabelChoosen: LabelChoosen[] = [];
     warningMessage: string = '';
+    imgPathSplit: string[] = [];
+    newImageName: string = '';
+    imageExt: string | undefined;
+    selectedUuid: string = '';
+    renameImageErrorCode: number = 0;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
     readonly modalUnsupportedImage = 'modal-unsupported-image';
     readonly modalExportWarning = 'modalExportWarning';
+    readonly modalRenameImage = 'modal-rename-image';
     exportModalBodyStyle: ModalBodyStyle = {
         minHeight: '15vh',
         maxHeight: '15vh',
@@ -156,6 +162,14 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         margin: '15vw 71vh',
         overflow: 'none',
     };
+    renameImageBodyStyle: ModalBodyStyle = {
+        minHeight: '18vh',
+        maxHeight: '30vh',
+        minWidth: '20vw',
+        maxWidth: '20vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
     saveType: ExportSaveType = {
         saveCurrentImage: true,
         saveBulk: false,
@@ -167,6 +181,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
+    @ViewChild('renameInput') _renameInput!: ElementRef<HTMLInputElement>;
 
     constructor(
         public _router: Router,
@@ -360,8 +375,32 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         }
     };
 
+    onCheckBboxMetadata = () => {
+        console.log('this', this.tabStatus);
+        this.tabStatus.forEach(({ annotation }) => {
+            if (annotation) {
+                annotation?.forEach((metadata) => {
+                    console.log('MAT', metadata.bnd_box);
+                    metadata.bnd_box?.forEach((bbox, idx) => {
+                        if (bbox.x1 > bbox.x2) {
+                            const temp = bbox.x1;
+                            bbox.x1 = bbox.x2;
+                            bbox.x2 = temp;
+                        }
+                        if (bbox.y1 > bbox.y2) {
+                            const temp = bbox.y1;
+                            bbox.y1 = bbox.y2;
+                            bbox.y2 = temp;
+                        }
+                    });
+                });
+            }
+        });
+    };
+
     updateProjectProgress = (): void => {
         const projectName = this.selectedProjectName;
+        this.onCheckBboxMetadata();
         this._imgLblLayoutService.updateProjectProgress(this.tabStatus, projectName);
     };
 
@@ -836,6 +875,43 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.loadThumbnails();
     }
 
+    onRenameImage(thumbnailInfo: CompleteMetadata) {
+        this.imgPathSplit = thumbnailInfo.img_path.split('\\');
+        const imageName = this.imgPathSplit.pop();
+        this.newImageName = imageName ? imageName.split('.')[0] : '';
+        this.imageExt = imageName ? '.' + imageName.split('.').pop() : '';
+        this.selectedUuid = thumbnailInfo.uuid;
+        this.renameImageErrorCode = 0;
+        this._modalService.open(this.modalRenameImage);
+        this._renameInput.nativeElement.focus();
+    }
+
+    onChangeImageName(event: HTMLElementEvent<HTMLInputElement>) {
+        this.newImageName = event.target.value;
+    }
+
+    onSubmitRenameImage() {
+        if (this.newImageName === '') {
+            this.renameImageErrorCode = 2;
+            return;
+        }
+        this._imgLblApiService
+            .renameImage(this.selectedUuid, this.newImageName + this.imageExt, this.selectedProjectName)
+            .subscribe((res) => {
+                if (res.message === 1) {
+                    const index = this.thumbnailList.findIndex((t) => t.uuid === this.selectedUuid);
+                    this.thumbnailList[index].img_path =
+                        this.imgPathSplit.join('\\') + '\\' + this.newImageName + this.imageExt;
+                    this.newImageName = '';
+                    this._modalService.close(this.modalRenameImage);
+                } else {
+                    if (res.error_code === 1) {
+                        this.renameImageErrorCode = res.error_code;
+                    }
+                }
+            });
+    }
+
     showAdvSettings() {
         this.tempLabelChoosen = this.labelChoosen.map((x) => Object.assign({}, x));
         this.onDisplayModal('modal-adv');
@@ -844,6 +920,23 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     saveAdvSettings() {
         this.labelChoosen = this.tempLabelChoosen.map((x) => Object.assign({}, x));
         this.onCloseModal('modal-adv');
+    }
+
+    @HostListener('window:keydown', ['$event'])
+    keyStrokeEvent({ ctrlKey, shiftKey, key }: KeyboardEvent) {
+        if (key === 'F2') {
+            if (this.selectedMetaData) {
+                const thumbnailInfo = this.selectedMetaData;
+                this.imgPathSplit = thumbnailInfo.img_path.split('\\');
+                const imageName = this.imgPathSplit.pop();
+                this.newImageName = imageName ? imageName.split('.')[0] : '';
+                this.imageExt = imageName ? '.' + imageName.split('.').pop() : '';
+                this.selectedUuid = thumbnailInfo.uuid;
+                this.renameImageErrorCode = 0;
+                this._modalService.open(this.modalRenameImage);
+                this._renameInput.nativeElement.focus();
+            }
+        }
     }
 
     shortcutKeyInfo() {
@@ -872,6 +965,11 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 no: 5,
                 shortcutKey: `info.shortcut.5.key`,
                 functionality: `info.shortcut.5.functionality`,
+            },
+            {
+                no: 6,
+                shortcutKey: `info.shortcut.6.key`,
+                functionality: `info.shortcut.6.functionality`,
             },
         ];
     }

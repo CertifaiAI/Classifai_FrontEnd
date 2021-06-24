@@ -8,7 +8,7 @@ type error_code = number;
 type errormessage = string;
 type content = string[];
 type message = boolean | number;
-export type uuid = string;
+export type UUID = string;
 type img_src = string;
 type uuid_add_list = string[];
 type uuid_delete_list = string[];
@@ -71,4 +71,10 @@ export type MessageReload = {
     uuid_add_list: uuid_add_list;
     uuid_delete_list: uuid_delete_list;
     unsupported_image_list: string[];
+};
+
+export type MessageRenameImg = {
+    message: message;
+    error_code: error_code;
+    img_path: img_src;
 };
