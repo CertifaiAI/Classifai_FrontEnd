@@ -866,6 +866,23 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.onCloseModal('modal-adv');
     }
 
+    @HostListener('window:keydown', ['$event'])
+    keyStrokeEvent({ ctrlKey, shiftKey, key }: KeyboardEvent) {
+        if (key === 'F2') {
+            if (this.selectedMetaData) {
+                const thumbnailInfo = this.selectedMetaData;
+                this.imgPathSplit = thumbnailInfo.img_path.split('\\');
+                const imageName = this.imgPathSplit.pop();
+                this.newImageName = imageName ? imageName.split('.')[0] : '';
+                this.imageExt = imageName ? '.' + imageName.split('.').pop() : '';
+                this.selectedUuid = thumbnailInfo.uuid;
+                this.renameImageErrorCode = 0;
+                this._modalService.open(this.modalRenameImage);
+                this._renameInput.nativeElement.focus();
+            }
+        }
+    }
+
     shortcutKeyInfo() {
         return [
             {
@@ -892,6 +909,11 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 no: 5,
                 shortcutKey: `info.shortcut.5.key`,
                 functionality: `info.shortcut.5.functionality`,
+            },
+            {
+                no: 6,
+                shortcutKey: `info.shortcut.6.key`,
+                functionality: `info.shortcut.6.functionality`,
             },
         ];
     }
