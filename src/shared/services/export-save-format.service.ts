@@ -130,7 +130,6 @@ export class ExportSaveFormatService {
                     await this.saveAsZip(pascalVocList, 'pascal_voc', projectName);
                     return { message: 1, msg: 'success' };
                 }
-                break;
             case 'yolo':
                 if (!metadata) {
                     return { message: 0, msg: 'warning.noMetadata' };
@@ -194,7 +193,6 @@ export class ExportSaveFormatService {
                     await this.saveAsZip(yoloList, saveFormat, projectName);
                     return { message: 1, msg: 'success' };
                 }
-                break;
             case 'ocr':
                 if (!metadata) {
                     return { message: 0, msg: 'warning.noMetadata' };
