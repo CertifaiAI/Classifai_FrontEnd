@@ -22,6 +22,12 @@ export type ExportSaveType = {
     saveCurrentImage: boolean;
     saveBulk: boolean;
 };
+
+export type ProcessResponse = {
+    message: number;
+    msg: string;
+};
+
 type ExportSaveConfig = {
     projectName: string;
     saveFormat: SaveFormat;
@@ -29,6 +35,7 @@ type ExportSaveConfig = {
     projectFullMetadata?: CompleteMetadata[];
     index: number;
     labelList?: string[];
+    fullLabelList?: string[];
 };
 
 type SaveLabelFormat = {
@@ -52,19 +59,20 @@ export class ExportSaveFormatService {
         metadata,
         index,
         projectName,
+        fullLabelList,
         labelList,
         projectFullMetadata,
     }: ExportSaveType & ExportSaveConfig) {
         switch (saveFormat) {
             case 'pascalVoc':
                 if (!metadata) {
-                    return { message: 1, msg: 'There are no metadata.' };
+                    return { message: 0, msg: 'warning.noMetadata' };
                 }
                 if (!metadata?.bnd_box) {
-                    return { message: 1, msg: 'There are no bounding box.' };
+                    return { message: 0, msg: 'warning.noBoundingBox' };
                 }
                 if (!labelList) {
-                    return { message: 1, msg: 'There are no label list.' };
+                    return { message: 0, msg: 'warning.noLabelList' };
                 }
 
                 if (saveCurrentImage) {
@@ -82,10 +90,10 @@ export class ExportSaveFormatService {
                     const splitfilenameArr = filename.split('.');
                     const finalizedFilename = splitfilenameArr[0] + '.xml';
                     this.saveFile({ content, filename: finalizedFilename, type: 'text/xml;charset=utf-8' });
-                    return { message: 2 };
+                    return { message: 1, msg: 'success' };
                 } else {
                     if (!projectFullMetadata) {
-                        return { message: 1, msg: 'There are no image list.' };
+                        return { message: 0, msg: 'warning.noImageList' };
                     }
                     const pascalVocList: { filename: string; content: string }[] = [];
                     let isEmpty = true;
@@ -114,24 +122,24 @@ export class ExportSaveFormatService {
                         }
                     });
                     if (isEmpty) {
-                        return { message: 0 };
+                        return { message: 0, msg: 'warning.noLabelSelected' };
                     }
                     if (!pascalVocList) {
-                        return alert('There are no labelling progress.');
+                        return { message: 0, msg: 'warning.noProgress' };
                     }
                     await this.saveAsZip(pascalVocList, 'pascal_voc', projectName);
-                    return { message: 2 };
+                    return { message: 1, msg: 'success' };
                 }
                 break;
             case 'yolo':
                 if (!metadata) {
-                    return { message: 1, msg: 'There are no metadata.' };
+                    return { message: 0, msg: 'warning.noMetadata' };
                 }
                 if (!metadata?.bnd_box) {
-                    return { message: 1, msg: 'There are no bounding box.' };
+                    return { message: 0, msg: 'warning.noBoundingBox' };
                 }
                 if (!labelList) {
-                    return { message: 1, msg: 'There are no label list.' };
+                    return { message: 0, msg: 'warning.noLabelList' };
                 }
 
                 if (saveCurrentImage) {
@@ -147,10 +155,10 @@ export class ExportSaveFormatService {
                     const splitfilenameArr = filename.split('.');
                     const finalizedFilename = `${splitfilenameArr[0]}.txt`;
                     this.saveFile({ content, filename: finalizedFilename, type: 'text/plain;charset=utf-8' });
-                    return { message: 2 };
+                    return { message: 1, msg: 'success' };
                 } else {
                     if (!projectFullMetadata) {
-                        return { message: 1, msg: 'There are no image list.' };
+                        return { message: 0, msg: 'warning.noImageList' };
                     }
 
                     const yoloList: { filename: string; content: string }[] = [];
@@ -178,59 +186,66 @@ export class ExportSaveFormatService {
                         }
                     });
                     if (isEmpty) {
-                        return { message: 0 };
+                        return { message: 0, msg: 'warning.noLabelSelected' };
                     }
                     if (!yoloList) {
-                        return { message: 1, msg: 'There are no labelling progress.' };
+                        return { message: 0, msg: 'warning.noProgress' };
                     }
                     await this.saveAsZip(yoloList, saveFormat, projectName);
-                    return { message: 2 };
+                    return { message: 1, msg: 'success' };
                 }
                 break;
             case 'ocr':
                 if (!metadata) {
-                    return { message: 1, msg: 'There are no metadata.' };
+                    return { message: 0, msg: 'warning.noMetadata' };
                 }
                 if (!metadata?.bnd_box) {
-                    return { message: 1, msg: 'There are no bounding box.' };
+                    return { message: 0, msg: 'warning.noBoundingBox' };
                 }
                 if (!projectFullMetadata) {
-                    return { message: 1, msg: 'There are no image list.' };
+                    return { message: 0, msg: 'warning.noImageList' };
                 }
-                if (!labelList) {
-                    return { message: 1, msg: 'There are no image list.' };
+                if (!fullLabelList) {
+                    return { message: 0, msg: 'warning.noImageList' };
                 }
 
                 let ocrText = '';
+                let counting = 0;
                 projectFullMetadata.forEach((metadata, i) => {
                     if (i === 0) {
                         ocrText += 'filename,x1,y1,x2,y2,label\n';
                     }
                     const calculatedBoxMetadata = this.calBoxCoorOriginalImages(metadata as BboxMetadata);
                     const filename = this.getFileName(metadata.img_path);
-                    const content = this.generateOCRFormat({ bnd_box: calculatedBoxMetadata }, filename, labelList);
+                    const content = this.generateOCRFormat({ bnd_box: calculatedBoxMetadata }, filename, fullLabelList);
+                    if (content === '') {
+                        counting++;
+                    }
                     ocrText += `${content}`;
                 });
-                if (!ocrText) {
-                    return { message: 1, msg: 'There are no labelling progress.' };
+                if (!ocrText || counting === projectFullMetadata.length) {
+                    return { message: 0, msg: 'warning.noProgress' };
                 }
                 this.saveFile({
                     content: ocrText,
                     filename: `${projectName}_text_ocr_labels.csv`,
                     type: 'text/csv;charset=utf-8',
                 });
-                return { message: 2 };
+                return { message: 1, msg: 'success' };
             case 'label':
                 if (!labelList) {
-                    return { message: 1, msg: 'There are no label list.' };
+                    return { message: 0, msg: 'warning.noLabelList' };
                 }
                 const filename = `${projectName}_label.txt`;
                 const content = this.generateLabelFormat(labelList);
+                if (content === '') {
+                    return { message: 0, msg: 'warning.noLabelSelected' };
+                }
                 this.saveFile({ content, filename, type: 'text/plain;charset=utf-8' });
-                return { message: 2 };
+                return { message: 1, msg: 'success' };
             case 'coco':
                 if (!projectFullMetadata) {
-                    return { message: 1, msg: 'There are no image list.' };
+                    return { message: 0, msg: 'warning.noImageList' };
                 }
 
                 const verticesPolyMetadata = this.calPolyCoorOriginalImages(projectFullMetadata as PolyMetadata[]);
@@ -241,16 +256,16 @@ export class ExportSaveFormatService {
                     filename: verticesFilename,
                     type: 'text/json;charset=utf-8',
                 });
-                return { message: 2 };
+                return { message: 1, msg: 'success' };
             case 'json':
                 if (!metadata) {
-                    return { message: 1, msg: 'There are no metadata.' };
+                    return { message: 0, msg: 'warning.noMetadata' };
                 }
                 if (!metadata?.polygons) {
-                    return { message: 1, msg: 'There are no polygon.' };
+                    return { message: 0, msg: 'warning.noPolygon' };
                 }
                 if (!projectFullMetadata) {
-                    return { message: 1, msg: 'There are no image list.' };
+                    return { message: 0, msg: 'warning.noImageList' };
                 }
                 const jsonPolyMetadata = this.calPolyCoorOriginalImages(projectFullMetadata as PolyMetadata[]);
                 const jsonContent = this.getJsonContent(jsonPolyMetadata);
@@ -260,6 +275,7 @@ export class ExportSaveFormatService {
                     filename: jsonFilename,
                     type: 'text/json;charset=utf-8',
                 });
+                return { message: 1, msg: 'success' };
         }
     }
 
