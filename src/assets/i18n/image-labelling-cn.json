@@ -114,6 +114,7 @@
         "imageName": "图片名称",
         "typeNewName": "输入新名称",
         "nameExist": "图像名称已存在！",
+        "nameEmpty": "图片名称为必填项!",
         "submit": "提交"
     },
     "configFileInfoTitle": "选择正确的导出格式",

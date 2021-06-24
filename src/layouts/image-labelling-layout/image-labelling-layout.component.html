@@ -309,6 +309,7 @@
         />
         <br /><br />
         <label class="validate-msg" *ngIf="renameImageErrorCode === 1">{{ 'renameModal.nameExist' | translate }}</label>
+        <label class="validate-msg" *ngIf="renameImageErrorCode === 2">{{ 'renameModal.nameEmpty' | translate }}</label>
         <button class="button-style renameimg-btn" (click)="onSubmitRenameImage()">
             {{ 'renameModal.submit' | translate }}
         </button>

@@ -839,6 +839,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     }
 
     onSubmitRenameImage() {
+        if (this.newImageName === '') {
+            this.renameImageErrorCode = 2;
+            return;
+        }
         this._imgLblApiService
             .renameImage(this.selectedUuid, this.newImageName + this.imageExt, this.selectedProjectName)
             .subscribe((res) => {

@@ -114,6 +114,7 @@
         "imageName": "Nama Imej",
         "typeNewName": "Masukkan nama baru",
         "nameExist": "Nama imej telah tersedia!",
+        "nameEmpty": "Nama imej diperlukan!",
         "submit": "Hantar"
     },
     "configFileInfoTitle": "Pilih Fail Eksport",
