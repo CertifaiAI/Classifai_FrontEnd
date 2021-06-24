@@ -166,6 +166,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
+    @ViewChild('renameInput') _renameInput!: ElementRef<HTMLInputElement>;
 
     constructor(
         public _router: Router,
@@ -830,6 +831,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.selectedUuid = thumbnailInfo.uuid;
         this.renameImageErrorCode = 0;
         this._modalService.open(this.modalRenameImage);
+        this._renameInput.nativeElement.focus();
     }
 
     onChangeImageName(event: HTMLElementEvent<HTMLInputElement>) {
