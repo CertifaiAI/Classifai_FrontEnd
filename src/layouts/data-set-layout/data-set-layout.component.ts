@@ -176,6 +176,11 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                                 b.created_date > a.created_date ? 1 : -1,
                             );
                             break;
+                        case 'last_modified_date':
+                            this.sortedProject = clonedProjectList.sort((a, b) =>
+                                b.last_modified_date > a.last_modified_date ? 1 : -1,
+                            );
+                            break;
                         default:
                             this.sortedProject = clonedProjectList.sort((a, b) =>
                                 b.project_name < a.project_name ? 1 : -1,
@@ -186,6 +191,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         const newProjectList = (project = {
                             ...project,
                             created_date: this.formatDate(project.created_date),
+                            last_modified_date: this.formatDate(project.last_modified_date),
                         });
                         return newProjectList;
                     });

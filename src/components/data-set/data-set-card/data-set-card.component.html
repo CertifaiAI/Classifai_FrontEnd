@@ -99,6 +99,9 @@
                         <label [title]="project.created_date" [ngClass]="{ disabled: !project.root_path_valid }"
                             ><div class="card-title-txt">
                                 {{ 'datasetCard.created' | translate }} {{ project.created_date }}
+                            </div>
+                            <div class="card-title-txt">
+                                {{ 'datasetCard.modified' | translate }} {{ project.last_modified_date }}
                             </div></label
                         >
                     </div>
