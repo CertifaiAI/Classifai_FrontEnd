@@ -1,9 +1,9 @@
 <div class="dataset-header-container">
-    <label class="label">{{ 'datasetHeader.datasetManagement' | translate }}</label>
+    <label class="label" style="padding-right: 50vw">{{ 'datasetHeader.datasetManagement' | translate }}</label>
     <div class="dataset-dropdown-container">
         <label class="label">Sort By: </label>
         <select class="dropdown" (change)="onOptionsSelected(mySelect.value)" #mySelect>
-            <option value="project_name">Proejct Name</option>
+            <option value="project_name">Project Name</option>
             <option value="created_date">Created Date</option>
             <option value="last_modified_date">Last Modified Date</option>
         </select>

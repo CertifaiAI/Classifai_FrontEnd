@@ -12,15 +12,16 @@ $hoverBackground: #393838;
     // max-height: 4vh;
 }
 
-.dataset-dropdown-container {
-}
-
 .dropdown {
     background-color: rgb(53, 53, 53);
     border: black;
     color: white;
     font-size: 2vh;
     padding: 0.7vh 0.7vw;
+}
+
+option:hover {
+    background-color: yellow;
 }
 
 .label {

@@ -42,7 +42,6 @@ export class DataSetHeaderComponent implements OnInit {
     ngOnInit(): void {}
 
     onOptionsSelected(value: string) {
-        console.log('the selected value is ' + value);
         this.selectedKey.emit(value);
     }
 
