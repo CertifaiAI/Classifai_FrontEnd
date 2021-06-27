@@ -8,7 +8,7 @@ type error_code = number;
 type errormessage = string;
 type content = string[];
 type message = boolean | number;
-export type uuid = string;
+export type UUID = string;
 type img_src = string;
 type uuid_add_list = string[];
 type uuid_delete_list = string[];
@@ -26,6 +26,14 @@ export type Message = {
 
 export type ExportResponse = {
     message: message;
+    error_code: error_code;
+    error_message: errormessage;
+};
+
+export type ExportStatus = {
+    message: message;
+    export_status: error_code;
+    export_status_message: errormessage;
     project_config_path: project_config_path;
 };
 
@@ -40,6 +48,7 @@ export type MessageUploadStatus = {
     message: message;
     file_system_status: number;
     file_system_message: string;
+    unsupported_image_list: string[];
 };
 
 export type MessageBase64Img = {
@@ -61,4 +70,11 @@ export type MessageReload = {
     file_system_message: string;
     uuid_add_list: uuid_add_list;
     uuid_delete_list: uuid_delete_list;
+    unsupported_image_list: string[];
+};
+
+export type MessageRenameImg = {
+    message: message;
+    error_code: error_code;
+    img_path: img_src;
 };

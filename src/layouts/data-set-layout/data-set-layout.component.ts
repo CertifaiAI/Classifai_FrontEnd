@@ -61,11 +61,13 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     labelPath: string = '';
     projectFolderPath: string = '';
     showLabelTooltip: boolean = false;
+    unsupportedImageList: string[] = [];
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
     readonly modalIdDeleteProject = 'modal-delete-project';
     readonly modalIdRenameSuccess = 'modal-rename-success';
+    readonly modalUnsupportedImage = 'modal-unsupported-image';
     createProjectModalBodyStyle: ModalBodyStyle = {
         minHeight: '45vh',
         minWidth: '31vw',
@@ -100,6 +102,14 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     renameSuccessBodyStyle: ModalBodyStyle = {
         minHeight: '11vh',
         maxHeight: '11vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    unsupportedImageBodyStyle: ModalBodyStyle = {
+        minHeight: '18vh',
+        maxHeight: '30vh',
         minWidth: '31vw',
         maxWidth: '31vw',
         margin: '15vw 71vh',
@@ -518,7 +528,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 ? interval(500).pipe(
                       mergeMap(() => uploadStatus$),
                       /** @property {number} message value 4 means upload completed, value 1 means cancelled */
-                      first(({ file_system_status }) => {
+                      first(({ file_system_status, unsupported_image_list }) => {
+                          this.unsupportedImageList = unsupported_image_list;
                           this.isOverlayOn = file_system_status === 1 || file_system_status === 2 ? true : false;
                           this.isImageUploading = file_system_status === 2 ? true : false;
                           const isValidResponse: boolean = file_system_status === 3;
@@ -551,6 +562,12 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 () => {
                     this.isProjectLoading = false;
                     this.showProjectList();
+                    this.unsupportedImageList.length > 0 &&
+                        this._dataSetService
+                            .downloadUnsupportedImageList(projectName, this.unsupportedImageList)
+                            .then((res) => {
+                                res && this._modalService.open(this.modalUnsupportedImage);
+                            });
                 },
             );
 

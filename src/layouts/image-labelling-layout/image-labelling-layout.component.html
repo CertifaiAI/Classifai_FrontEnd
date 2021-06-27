@@ -37,6 +37,7 @@
         </ng-container>
 
         <image-labelling-project
+            [_onChange]="onChangeSchema"
             [_selectMetadata]="selectedMetaData"
             [_totalUuid]="totalUuid"
             [_thumbnailList]="thumbnailList"
@@ -48,6 +49,7 @@
             (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
             (_onDeleteAnnotation)="onDeleteAnnotation($event)"
             (_loadMoreThumbnails)="onLoadMoreThumbnails()"
+            (_onRenameImage)="onRenameImage($event)"
         ></image-labelling-project>
         <image-labelling-right-sidebar
             [_onChange]="onChangeSchema"
@@ -189,7 +191,9 @@
                 [placeholder]="'labellingArea.subRegionInfo' | translate"
                 (change)="onChangeInput($event, 'sub')"
             />
-            <button class="modal-button" (click)="onSubmitLabel()">{{ 'labellingArea.add' | translate }}</button>
+            <button class="modal-button" (click)="onSubmitLabel()">
+                {{ 'labellingArea.add' | translate }}
+            </button>
         </div>
         <ng-container *ngIf="subLabelValidateMsg">
             <div class="validate-msg">
@@ -235,13 +239,6 @@
     [scrollable]="false"
 >
     <div class="export-content-container">
-        <!-- <div class="tooltip">
-            <div class="tooltiptitle">{{ 'configFileInfoTitle' | translate }}</div>
-            <span class="tooltiptext">
-                <p>{{ 'configFileInfoDest1' | translate }}</p>
-                <p>{{ 'configFileInfoDest2' | translate }}</p>
-            </span>
-        </div> -->
         <div class="modal-button-container">
             <button class="button-style confg-btn" (click)="exportProject('cfg')">
                 {{ 'exportModal.configFile' | translate }}
@@ -282,28 +279,63 @@
 >
     <br />
     <div class="modal-content-container">
-        <p *ngIf="modalSpanLocationPath.trim()">{{ 'location' | translate }}{{ modalSpanLocationPath }}</p>
+        <div class="modal-message-container">
+            <p *ngIf="modalSpanLocationPath.trim()" class="message">
+                {{ 'location' | translate }}<br />{{ modalSpanLocationPath }}
+            </p>
+        </div>
         <div [ngClass]="spanClass">
             <p class="error-msg" [innerHTML]="modalSpanMessage"></p>
         </div>
     </div>
 </modal>
 
-<!-- <modal [id]="modalExportProject" [modalBodyStyle]="exportProjectBodyStyle" [scrollable]="false">
+<modal
+    [id]="modalExportWarning"
+    [modalBodyStyle]="exportWarningBodyStyle"
+    [modalTitle]="'exportTitle' | translate"
+    [scrollable]="false"
+    [zIndex]="2"
+>
+    <br />
     <div class="modal-content-container">
-        <div>
-            <label class="label label-file">{{ 'Export Project' }} </label>
+        <div class="modal-message-container">
+            <p class="message">{{ warningMessage | translate }}</p>
         </div>
-
-        <div [ngClass]="spanClass">
-            <span>
-                <small class="error-msg" [innerHTML]="modalSpanMessage"></small>
-            </span>
-        </div>
-
-        <div class="horizontal-line"></div>
     </div>
-</modal> -->
+</modal>
+
+<modal
+    [id]="modalRenameImage"
+    [modalBodyStyle]="renameImageBodyStyle"
+    [modalTitle]="'renameModal.renameImg' | translate"
+    [scrollable]="false"
+>
+    <div class="modal-content-container">
+        <label class="font-label">{{ 'renameModal.imageName' | translate }}: </label>
+        <input
+            class="static-input"
+            type="text"
+            [value]="newImageName"
+            [placeholder]="'renameModal.typeNewName' | translate"
+            (change)="onChangeImageName($event)"
+            (keydown.enter)="onChangeImageName($event); onSubmitRenameImage()"
+            #renameInput
+        />
+        <br /><br />
+        <label class="validate-msg" *ngIf="renameImageErrorCode === 1">{{ 'renameModal.nameExist' | translate }}</label>
+        <label class="validate-msg" *ngIf="renameImageErrorCode === 2">{{ 'renameModal.nameEmpty' | translate }}</label>
+        <button class="button-style renameimg-btn" (click)="onSubmitRenameImage()">
+            {{ 'renameModal.submit' | translate }}
+        </button>
+    </div>
+</modal>
+
+<unsupported-image-modal
+    [_modalUnsupportedImage]="modalUnsupportedImage"
+    [_unsupportedImageBodyStyle]="unsupportedImageBodyStyle"
+    [_unsupportedImageList]="unsupportedImageList"
+></unsupported-image-modal>
 
 <spinner [_loading]="isLoading"></spinner>
 <toastr [_processingNum]="processingNum"></toastr>

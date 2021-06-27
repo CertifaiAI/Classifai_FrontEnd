@@ -11,11 +11,13 @@ import { ImageLabellingModeService } from './image-labelling-mode.service';
 import { Injectable } from '@angular/core';
 import {
     ExportResponse,
+    ExportStatus,
     Message,
     MessageBase64Img,
     MessageProjectProgress,
     MessageReload,
-    uuid,
+    MessageRenameImg,
+    UUID,
 } from 'src/shared/types/message/message.model';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
@@ -32,7 +34,7 @@ export class ImageLabellingApiService {
             .subscribe((modeVal) => (modeVal ? (this.imageLabellingMode = modeVal) : this.router.navigate(['/'])));
     }
 
-    getBase64Thumbnail = (projectName: string, uuid: uuid): Observable<MessageBase64Img> => {
+    getBase64Thumbnail = (projectName: string, uuid: UUID): Observable<MessageBase64Img> => {
         return this.http.get<MessageBase64Img>(
             `${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/uuid/${uuid}/imgsrc`,
         );
@@ -46,7 +48,7 @@ export class ImageLabellingApiService {
 
     updateProjectProgress = (
         projectName: string,
-        uuid: uuid,
+        uuid: UUID,
         metadata: CompleteMetadata,
     ): Observable<MessageProjectProgress> => {
         return this.http.put<MessageProjectProgress>(
@@ -76,6 +78,10 @@ export class ImageLabellingApiService {
         );
     };
 
+    exportProjectStatus() {
+        return this.http.get<ExportStatus>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/exportstatus`);
+    }
+
     reloadProject = (projectName: string): Observable<Message> => {
         return this.http.put<Message>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/reload`, {
             newprojectid: projectName,
@@ -85,6 +91,16 @@ export class ImageLabellingApiService {
     reloadProjectStatus = (projectName: string): Observable<MessageReload> => {
         return this.http.get<MessageReload>(
             `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/reloadstatus`,
+        );
+    };
+
+    renameImage = (uuid: UUID, newImageName: string, projectName: string): Observable<MessageRenameImg> => {
+        return this.http.put<MessageRenameImg>(
+            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/imgsrc/rename`,
+            {
+                uuid,
+                new_fname: newImageName,
+            },
         );
     };
 }

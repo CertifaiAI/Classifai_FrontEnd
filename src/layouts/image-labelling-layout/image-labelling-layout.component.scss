@@ -1,4 +1,5 @@
 @use '../../shared/scss/ellipsis' as ellipsis;
+$fontSize: 2vh;
 
 .layout-container {
     user-select: none;
@@ -237,6 +238,11 @@
     font-size: 1.5vh;
 }
 
+.error-msg {
+    padding-top: 1vh;
+    font-size: $fontSize;
+}
+
 .help-icon {
     height: 3vh;
 }
@@ -255,7 +261,7 @@
     border-radius: 6px;
     padding: 1vh 0.5vw;
     position: absolute;
-    top: 62%;
+    top: 65%;
     margin-left: -60px;
     text-align: justify;
     text-justify: inter-word;
@@ -263,6 +269,19 @@
 
 .help-icon-container:hover .tooltiptext {
     visibility: visible;
+}
+
+.message {
+    font-size: 1vw;
+    overflow-wrap: break-word;
+}
+
+.modal-message-container {
+    padding-right: 3.5vw;
+}
+
+.break {
+    overflow-wrap: break-word;
 }
 
 .save-format-list {
@@ -561,4 +580,14 @@ tr th:nth-child(1) {
 
 .margin-bottom {
     margin-bottom: 0.5vh;
+}
+
+.renameimg-btn {
+    padding: 1vh 0.5vw 1vh 0.5vw;
+    background-color: #2d8ceb;
+    margin-top: 0.7vw;
+    margin-right: 0.7vw;
+    font-size: 2vh;
+    min-width: 7.5vw;
+    float: right;
 }

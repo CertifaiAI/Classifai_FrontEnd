@@ -4,7 +4,7 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { uuid } from 'src/shared/types/message/message.model';
+import { UUID } from 'src/shared/types/message/message.model';
 
 type message = boolean | number;
 type progress = any;
@@ -16,7 +16,7 @@ export type LabelList = {
     label_list: label_list;
     message: message;
     progress: progress;
-    uuid_list: uuid[];
+    uuid_list: UUID[];
 };
 
 export type Folder = {
@@ -42,11 +42,13 @@ export type ProjectStatus = {
 
 export type Project = {
     project_name: string;
+    project_path: string;
     is_loaded: boolean;
     is_starred: boolean;
     is_new: boolean;
     total_uuid: number;
     created_date: string;
+    root_path_valid: boolean;
 };
 
 export type ProjectSchema = {
