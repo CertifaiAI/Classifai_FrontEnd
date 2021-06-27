@@ -4,7 +4,7 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { uuid } from 'src/shared/types/message/message.model';
+import { UUID } from 'src/shared/types/message/message.model';
 import { WithOptional } from 'src/shared/types/with-optional/with-optional';
 
 export type LabelledFrame = {
@@ -28,7 +28,7 @@ type Metadata = {
     img_x: number;
     img_y: number;
     project_name: string;
-    uuid: uuid;
+    uuid: UUID;
 };
 
 export type BboxMetadata = Metadata & {
