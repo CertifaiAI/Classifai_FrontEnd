@@ -59,6 +59,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     @Output() _onDeleteAnnotation: EventEmitter<number> = new EventEmitter();
     @Output() _loadMoreThumbnails: EventEmitter<void> = new EventEmitter();
     @Output() _onRenameImage: EventEmitter<CompleteMetadata> = new EventEmitter();
+    @Output() _onDeleteImage: EventEmitter<CompleteMetadata> = new EventEmitter();
     action: number = -1;
     displayInputLabel: boolean = false;
     inputLabel: string = '';
@@ -303,6 +304,10 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
 
     renameImage(thumbnail: CompleteMetadata) {
         this._onRenameImage.emit(thumbnail);
+    }
+
+    deleteImage(thumbnail: CompleteMetadata) {
+        this._onDeleteImage.emit(thumbnail);
     }
 
     ngOnDestroy(): void {

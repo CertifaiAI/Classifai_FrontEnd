@@ -582,7 +582,8 @@ tr th:nth-child(1) {
     margin-bottom: 0.5vh;
 }
 
-.renameimg-btn {
+.renameimg-btn,
+.deleteimg-btn {
     padding: 1vh 0.5vw 1vh 0.5vw;
     background-color: #2d8ceb;
     margin-top: 0.7vw;
@@ -590,4 +591,9 @@ tr th:nth-child(1) {
     font-size: 2vh;
     min-width: 7.5vw;
     float: right;
+}
+
+.font-delete-img {
+    line-height: 4vh;
+    font-size: 1vw;
 }

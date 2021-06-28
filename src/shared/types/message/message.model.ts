@@ -12,6 +12,7 @@ export type UUID = string;
 type img_src = string;
 type uuid_add_list = string[];
 type uuid_delete_list = string[];
+type uuid_list = string[];
 type project_config_path = string;
 
 export type MessageContent<TContent = undefined> = {
@@ -77,4 +78,9 @@ export type MessageRenameImg = {
     message: message;
     error_code: error_code;
     img_path: img_src;
+};
+
+export type MessageDeleteImg = {
+    message: message;
+    uuid_list: uuid_list;
 };

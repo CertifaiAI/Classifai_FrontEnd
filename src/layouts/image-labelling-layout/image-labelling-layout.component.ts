@@ -97,17 +97,20 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     labelChoosen: LabelChoosen[] = [];
     tempLabelChoosen: LabelChoosen[] = [];
     warningMessage: string = '';
+    imgPath: string = '';
     imgPathSplit: string[] = [];
     newImageName: string = '';
     imageExt: string | undefined;
     selectedUuid: string = '';
     renameImageErrorCode: number = 0;
+    dontAskDelete: boolean = false;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
     readonly modalUnsupportedImage = 'modal-unsupported-image';
     readonly modalExportWarning = 'modalExportWarning';
     readonly modalRenameImage = 'modal-rename-image';
+    readonly modalDeleteImage = 'modal-delete-image';
     exportModalBodyStyle: ModalBodyStyle = {
         minHeight: '15vh',
         maxHeight: '15vh',
@@ -170,6 +173,14 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         margin: '15vw 71vh',
         overflow: 'none',
     };
+    deleteImageBodyStyle: ModalBodyStyle = {
+        minHeight: '18vh',
+        maxHeight: '30vh',
+        minWidth: '20vw',
+        maxWidth: '20vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
     saveType: ExportSaveType = {
         saveCurrentImage: true,
         saveBulk: false,
@@ -182,6 +193,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
     @ViewChild('renameInput') _renameInput!: ElementRef<HTMLInputElement>;
+    @ViewChild('deleteBtn') _deleteBtn!: ElementRef<HTMLButtonElement>;
 
     constructor(
         public _router: Router,
@@ -886,6 +898,17 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this._renameInput.nativeElement.focus();
     }
 
+    onDeleteImage(thumbnailInfo: CompleteMetadata) {
+        this.imgPath = thumbnailInfo.img_path;
+        this.selectedUuid = thumbnailInfo.uuid;
+        if (this.dontAskDelete === false) {
+            this._modalService.open(this.modalDeleteImage);
+            this._deleteBtn.nativeElement.focus();
+            return;
+        }
+        this.onSubmitDeleteImage();
+    }
+
     onChangeImageName(event: HTMLElementEvent<HTMLInputElement>) {
         this.newImageName = event.target.value;
     }
@@ -910,6 +933,39 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     }
                 }
             });
+    }
+
+    onSubmitDeleteImage() {
+        this._imgLblApiService
+            .deleteImage(this.selectedUuid, this.imgPath, this.selectedProjectName)
+            .subscribe((res) => {
+                if (res.message === 1) {
+                    this.thumbnailList = this.thumbnailList.filter((x) => res.uuid_list.includes(x.uuid));
+                    this.totalUuid = res.uuid_list.length;
+                    if (this.onChangeSchema.currentThumbnailIndex === this.totalUuid + 1) {
+                        this.onChangeSchema.currentThumbnailIndex--;
+                        this.currentImageDisplayIndex--;
+                        this.displayOtherImgAfterDelete();
+                    } else {
+                        this.displayOtherImgAfterDelete();
+                    }
+                    this.sliceNum--;
+                    if (this.thumbnailList.length < 15) {
+                        this.onLoadMoreThumbnails();
+                    }
+                    this._modalService.close(this.modalDeleteImage);
+                }
+            });
+    }
+
+    displayOtherImgAfterDelete() {
+        const filteredThumbMetadata = this.thumbnailList.find((_, i) => i === this.currentImageDisplayIndex);
+        const thumbnailIndex = this.thumbnailList.findIndex((_, i) => i === this.currentImageDisplayIndex);
+        thumbnailIndex + 3 === this.thumbnailList.length && this.loadThumbnails();
+        filteredThumbMetadata &&
+            thumbnailIndex !== -1 &&
+            !this.showLoading &&
+            this.displayImage({ ...filteredThumbMetadata, thumbnailIndex });
     }
 
     showAdvSettings() {

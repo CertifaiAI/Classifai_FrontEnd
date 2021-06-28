@@ -198,15 +198,6 @@
     background: #555;
 }
 
-.rename-img {
-    border-radius: 50%;
-    padding: 0.2vh;
-}
-
-.rename-img:hover {
-    background: #555;
-}
-
 .img {
     // border-radius: 1vh;
     max-height: 4.3vh;
@@ -410,4 +401,13 @@
 .thumbnail-actions {
     text-align: end;
     padding-right: 1vw;
+}
+
+.thumbnail-actions-icon {
+    border-radius: 50%;
+    padding: 0.2vh;
+}
+
+.thumbnail-actions-icon:hover {
+    background: #555;
 }
