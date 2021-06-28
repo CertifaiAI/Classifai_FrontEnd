@@ -16,7 +16,7 @@ export class FileNamePipe implements PipeTransform {
     transform(name: string): string {
         const newName = name
             ? // if browser detected OS that starts with Mac just trim in OS's path
-              window.navigator.platform.startsWith('Mac')
+              window.navigator.platform.startsWith('Mac') || window.navigator.platform.startsWith('Linux')
                 ? name.split('/').slice(-1)[0]
                 : name.split('\\').slice(-1)[0]
             : '';
