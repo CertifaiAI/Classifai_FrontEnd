@@ -224,7 +224,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             (_, i) => i === initializedDate.getMonth() || undefined,
         );
 
-        return actualMonth ? `${actualMonth}-${initializedDate.getDate()}-${initializedDate.getFullYear()}` : 'Error';
+        return actualMonth
+            ? `${actualMonth}-${initializedDate.getDate()}-${initializedDate.getFullYear()} ${initializedDate.toLocaleTimeString()}`
+            : 'Error';
     };
 
     createFormControls = (): void => {

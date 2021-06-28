@@ -128,6 +128,7 @@ $hoverBackground: #393838;
 
 .card-title-txt {
     @include text-ellipsis(1.3vh, #656667);
+    padding-bottom: 0.4vh;
 }
 
 .project-name-style {
