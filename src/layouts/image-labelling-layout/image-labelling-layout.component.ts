@@ -628,14 +628,14 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         }
         const thumbnailInfo = this.selectedMetaData;
         this._imgLblActionService.action$.pipe(first()).subscribe(({ draw }) => {
-            if (!draw && !repeat) {
+            if (!draw && !repeat && !this._modalService.isOpened()) {
                 switch (key) {
                     case 'ArrowLeft':
                         // Disable arrow key if any modal is opened
-                        !this._modalService.isOpened() && this.navigateByAction({ thumbnailAction: -1 });
+                        this.navigateByAction({ thumbnailAction: -1 });
                         break;
                     case 'ArrowRight':
-                        !this._modalService.isOpened() && this.navigateByAction({ thumbnailAction: 1 });
+                        this.navigateByAction({ thumbnailAction: 1 });
                         break;
                     case 'F2':
                         this.getImageNameFromPath(thumbnailInfo);
@@ -644,15 +644,16 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                         this._renameInput.nativeElement.focus();
                         break;
                     case 'Delete':
-                        if (this.currentAnnotationIndex === -1) {
-                            this.getImageNameFromPath(thumbnailInfo);
-                            if (this.dontAskDelete === false) {
-                                this._modalService.open(this.modalDeleteImage);
-                                this._deleteBtn.nativeElement.focus();
-                                return;
-                            }
-                            this.onSubmitDeleteImage();
+                        if (this.currentAnnotationIndex !== -1) {
+                            break;
                         }
+                        this.getImageNameFromPath(thumbnailInfo);
+                        if (!this.dontAskDelete) {
+                            this._modalService.open(this.modalDeleteImage);
+                            this._deleteBtn.nativeElement.focus();
+                            break;
+                        }
+                        this.onSubmitDeleteImage();
                         break;
                     default:
                         break;
