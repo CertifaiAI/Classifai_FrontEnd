@@ -4,7 +4,7 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 
 @Component({
     selector: 'data-set-header',
@@ -12,6 +12,8 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./data-set-header.component.scss'],
 })
 export class DataSetHeaderComponent implements OnInit {
+    @Output() selectedKey = new EventEmitter<string>();
+
     // optionLists: string[] = ['status', 'name', 'date', 'starred'];
     // jsonSchema!: IconSchema;
 
@@ -38,6 +40,10 @@ export class DataSetHeaderComponent implements OnInit {
     }
 
     ngOnInit(): void {}
+
+    onOptionsSelected(value: string) {
+        this.selectedKey.emit(value);
+    }
 
     // onSelect = (value: string) => {
     //     console.log(value);
