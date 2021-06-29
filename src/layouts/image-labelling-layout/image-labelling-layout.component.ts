@@ -924,41 +924,18 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     }
 
     onRenameImage(thumbnailInfo: CompleteMetadata) {
-        const platform = window.navigator.platform;
-        let separater = '';
-
-        if (platform.startsWith('Mac') || platform.startsWith('Linux')) {
-            separater = '/';
-        } else {
-            separater = '\\';
-        }
-
-        this.imgPathSplit = thumbnailInfo.img_path.split(separater);
-        const imageName = this.imgPathSplit.pop();
-        this.newImageName = imageName ? imageName.split('.')[0] : '';
-        this.imageExt = imageName ? '.' + imageName.split('.').pop() : '';
-
-        this.selectedUuid = thumbnailInfo.uuid;
+        this.getImageNameFromPath(thumbnailInfo);
         this.renameImageErrorCode = 0;
         this._modalService.open(this.modalRenameImage);
         this._renameInput.nativeElement.focus();
     }
 
     onDeleteImage(thumbnailInfo: CompleteMetadata) {
-        this.imgPath = thumbnailInfo.img_path;
-        let separater = '';
-        const platform = window.navigator.platform;
-        if (platform.startsWith('Mac') || platform.startsWith('Linux')) {
-            separater = '/';
-        } else {
-            separater = '\\';
+        if (this.currentAnnotationIndex !== -1) {
+            return;
         }
-        this.imgPathSplit = this.imgPath.split(separater);
-        const imageName = this.imgPathSplit.pop();
-        this.newImageName = imageName ? imageName.split('.')[0] : '';
-        this.imageExt = imageName ? '.' + imageName.split('.').pop() : '';
-        this.selectedUuid = thumbnailInfo.uuid;
-        if (this.dontAskDelete === false) {
+        this.getImageNameFromPath(thumbnailInfo);
+        if (!this.dontAskDelete) {
             this._modalService.open(this.modalDeleteImage);
             this._deleteBtn.nativeElement.focus();
             return;
