@@ -101,7 +101,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     newImageName: string = '';
     imageExt: string | undefined;
     selectedUuid: string = '';
-    renameImageErrorCode: number = 0;
+    renameImageErrorCode: number = -1;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
@@ -244,7 +244,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                             mergeMap(() => projLoadingStatus$),
                             first(({ message }) => message === 2),
                             mergeMap(({ uuid_list, label_list }) => {
-                                console.log(uuid_list.length);
                                 this.tabStatus[1].label_list = label_list;
                                 return uuid_list.length > 0
                                     ? uuid_list
@@ -376,11 +375,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     onCheckBboxMetadata = () => {
-        console.log('this', this.tabStatus);
         this.tabStatus.forEach(({ annotation }) => {
             if (annotation) {
                 annotation?.forEach((metadata) => {
-                    console.log('MAT', metadata.bnd_box);
                     metadata.bnd_box?.forEach((bbox, idx) => {
                         if (bbox.x1 > bbox.x2) {
                             const temp = bbox.x1;
@@ -427,7 +424,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     onToggleTab = ({ name, closed }: TabsProps): void => {
-        // console.log(name, closed);
         const isExactTabState: boolean = this.tabStatus.some(
             (tab) => tab.name.toLowerCase() === name.toLowerCase() && tab.closed === closed,
         );
@@ -560,7 +556,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                                         .map((uuid) => thumbnail$(projectName, uuid))
                                   : [];
 
-                          // console.log(thumbnails);
                           this.thumbnailList = [];
                           return thumbnails;
                       }),
@@ -605,7 +600,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     navigateByUrl = ({ url }: EventEmitter_Url): void => {
-        // console.log(url);
         url ? this._router.navigate([url]) : console.error(`No url received from child component`);
     };
 
@@ -685,7 +679,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     onProcessLabel = ({ selectedLabel, label_list, action }: SelectedLabelProps) => {
-        // console.log(selectedLabel, label_list, action);
         const newLabelList: string[] =
             selectedLabel && !action ? label_list.filter((label) => label !== selectedLabel) : label_list;
         const projectName: string = this.selectedProjectName;
@@ -762,7 +755,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 }
             }),
         );
-        // console.log(isDupSubLabel);
 
         if (!isDupSubLabel) {
             this.tabStatus = this._imgLblLayoutService.submitLabel(this.tabStatus, value, this.currentAnnotationIndex, {
@@ -891,7 +883,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.imageExt = imageName ? '.' + imageName.split('.').pop() : '';
 
         this.selectedUuid = thumbnailInfo.uuid;
-        this.renameImageErrorCode = 0;
+        this.renameImageErrorCode = -1;
         this._modalService.open(this.modalRenameImage);
         this._renameInput.nativeElement.focus();
     }
@@ -902,7 +894,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onSubmitRenameImage() {
         if (this.newImageName === '') {
-            this.renameImageErrorCode = 2;
+            this.renameImageErrorCode = 3;
             return;
         }
         this._imgLblApiService
@@ -924,7 +916,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     this.newImageName = '';
                     this._modalService.close(this.modalRenameImage);
                 } else {
-                    if (res.error_code === 1) {
+                    if (res.error_code !== 3) {
                         this.renameImageErrorCode = res.error_code;
                     }
                 }
@@ -951,7 +943,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 this.newImageName = imageName ? imageName.split('.')[0] : '';
                 this.imageExt = imageName ? '.' + imageName.split('.').pop() : '';
                 this.selectedUuid = thumbnailInfo.uuid;
-                this.renameImageErrorCode = 0;
+                this.renameImageErrorCode = -1;
                 this._modalService.open(this.modalRenameImage);
                 this._renameInput.nativeElement.focus();
             }
