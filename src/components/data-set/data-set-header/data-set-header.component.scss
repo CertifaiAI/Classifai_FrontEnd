@@ -30,6 +30,21 @@ $hoverBackground: #393838;
     max-height: inherit;
 }
 
+.dataset-dropdown-container {
+    display: flex;
+}
+
+.dropdown-title {
+    flex: 1 1 80vw;
+    background: none;
+    font-size: 2.5vh;
+    color: white;
+    white-space: nowrap;
+    padding-right: 0.5vw;
+    min-height: inherit;
+    max-height: inherit;
+}
+
 .dataset-icon-container {
     display: flex;
     justify-content: space-between;
