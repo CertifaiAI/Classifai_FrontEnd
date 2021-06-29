@@ -623,23 +623,64 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     @HostListener('window:keydown', ['$event'])
     keyDownEvent = ({ key, repeat }: KeyboardEvent): void => {
-        this._imgLblActionService.action$.pipe(first()).subscribe(({ draw }) => {
-            if (!draw && !repeat) {
-                switch (key) {
-                    case 'ArrowLeft':
-                        this.navigateByAction({ thumbnailAction: -1 });
-                        break;
-                    case 'ArrowRight':
-                        this.navigateByAction({ thumbnailAction: 1 });
-                        break;
-                    case 'Escape':
-                        this.onCloseModal();
-                        break;
-                    default:
-                        break;
+        if (this.selectedMetaData) {
+            const thumbnailInfo = this.selectedMetaData;
+            this._imgLblActionService.action$.pipe(first()).subscribe(({ draw }) => {
+                if (!draw && !repeat) {
+                    switch (key) {
+                        case 'ArrowLeft':
+                            // Disable arrow key if any modal is opened
+                            !this._modalService.isOpened() && this.navigateByAction({ thumbnailAction: -1 });
+                            break;
+                        case 'ArrowRight':
+                            !this._modalService.isOpened() && this.navigateByAction({ thumbnailAction: 1 });
+                            break;
+                        case 'F2':
+                            let separater = '';
+                            const platform = window.navigator.platform;
+                            if (platform.startsWith('Mac') || platform.startsWith('Linux')) {
+                                separater = '/';
+                            } else {
+                                separater = '\\';
+                            }
+                            this.imgPathSplit = thumbnailInfo.img_path.split(separater);
+                            const imageName = this.imgPathSplit.pop();
+                            this.newImageName = imageName ? imageName.split('.')[0] : '';
+                            this.imageExt = imageName ? '.' + imageName.split('.').pop() : '';
+                            this.selectedUuid = thumbnailInfo.uuid;
+                            this.renameImageErrorCode = 0;
+                            this._modalService.open(this.modalRenameImage);
+                            this._renameInput.nativeElement.focus();
+                            break;
+                        case 'Delete':
+                            if (this.currentAnnotationIndex === -1) {
+                                this.imgPath = thumbnailInfo.img_path;
+                                let separater = '';
+                                const platform = window.navigator.platform;
+                                if (platform.startsWith('Mac') || platform.startsWith('Linux')) {
+                                    separater = '/';
+                                } else {
+                                    separater = '\\';
+                                }
+                                this.imgPathSplit = this.imgPath.split(separater);
+                                const imageName = this.imgPathSplit.pop();
+                                this.newImageName = imageName ? imageName.split('.')[0] : '';
+                                this.imageExt = imageName ? '.' + imageName.split('.').pop() : '';
+                                this.selectedUuid = thumbnailInfo.uuid;
+                                if (this.dontAskDelete === false) {
+                                    this._modalService.open(this.modalDeleteImage);
+                                    this._deleteBtn.nativeElement.focus();
+                                    return;
+                                }
+                                this.onSubmitDeleteImage();
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 }
-            }
-        });
+            });
+        }
     };
 
     navigateByAction = ({ thumbnailAction }: EventEmitter_Action): void => {
@@ -910,6 +951,17 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onDeleteImage(thumbnailInfo: CompleteMetadata) {
         this.imgPath = thumbnailInfo.img_path;
+        let separater = '';
+        const platform = window.navigator.platform;
+        if (platform.startsWith('Mac') || platform.startsWith('Linux')) {
+            separater = '/';
+        } else {
+            separater = '\\';
+        }
+        this.imgPathSplit = this.imgPath.split(separater);
+        const imageName = this.imgPathSplit.pop();
+        this.newImageName = imageName ? imageName.split('.')[0] : '';
+        this.imageExt = imageName ? '.' + imageName.split('.').pop() : '';
         this.selectedUuid = thumbnailInfo.uuid;
         if (this.dontAskDelete === false) {
             this._modalService.open(this.modalDeleteImage);
@@ -995,23 +1047,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     saveAdvSettings() {
         this.labelChoosen = this.tempLabelChoosen.map((x) => Object.assign({}, x));
         this.onCloseModal('modal-adv');
-    }
-
-    @HostListener('window:keydown', ['$event'])
-    keyStrokeEvent({ ctrlKey, shiftKey, key }: KeyboardEvent) {
-        if (key === 'F2') {
-            if (this.selectedMetaData) {
-                const thumbnailInfo = this.selectedMetaData;
-                this.imgPathSplit = thumbnailInfo.img_path.split('\\');
-                const imageName = this.imgPathSplit.pop();
-                this.newImageName = imageName ? imageName.split('.')[0] : '';
-                this.imageExt = imageName ? '.' + imageName.split('.').pop() : '';
-                this.selectedUuid = thumbnailInfo.uuid;
-                this.renameImageErrorCode = 0;
-                this._modalService.open(this.modalRenameImage);
-                this._renameInput.nativeElement.focus();
-            }
-        }
     }
 
     shortcutKeyInfo() {

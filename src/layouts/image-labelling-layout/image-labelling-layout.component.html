@@ -335,17 +335,22 @@
 <modal
     [id]="modalDeleteImage"
     [modalBodyStyle]="deleteImageBodyStyle"
-    [modalTitle]="'Delete Image' | translate"
+    [modalTitle]="'deleteModal.deleteImg' | translate"
     [scrollable]="false"
 >
     <div class="modal-content-container">
-        <p class="font-delete-img">Are you sure you want to delete this image ?</p>
+        <p class="font-delete-img">{{ 'deleteModal.confirmation' | translate }} {{ newImageName }}{{ imageExt }} ?</p>
         <p class="font-delete-img">
-            <input type="checkbox" [checked]="dontAskDelete" (change)="dontAskDelete = !dontAskDelete" />
-            Don't ask me again
+            <input
+                type="checkbox"
+                [checked]="dontAskDelete"
+                (change)="dontAskDelete = !dontAskDelete"
+                class="checkbox"
+            />
+            {{ 'deleteModal.dontask' | translate }}
         </p>
         <button class="button-style deleteimg-btn" (click)="onSubmitDeleteImage()" #deleteBtn>
-            {{ 'Confirm' | translate }}
+            {{ 'deleteModal.confirm' | translate }}
         </button>
     </div>
 </modal>

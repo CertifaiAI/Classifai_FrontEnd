@@ -306,7 +306,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         this._onRenameImage.emit(thumbnail);
     }
 
-    deleteImage(thumbnail: CompleteMetadata) {
+    deleteImage(thumbnail: Omit<BboxMetadata & PolyMetadata, 'img_src'>, thumbnailIndex: number) {
+        this.onClick(thumbnail, thumbnailIndex);
         this._onDeleteImage.emit(thumbnail);
     }
 
