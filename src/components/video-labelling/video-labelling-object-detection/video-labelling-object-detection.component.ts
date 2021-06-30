@@ -362,6 +362,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     onScroll = ({ deltaY }: WheelEvent) => {
         if (this.verticalScroll) {
+            this.canvasContext.clearRect(0, 0, 450, 10);
+
             const scrollTo = this._videoTimelineRef.nativeElement.scrollLeft;
             scrollTo !== undefined &&
                 this._videoTimelineRef.nativeElement.scrollTo({
@@ -379,7 +381,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 ? (this.activePreview.src = '')
                 : (this.activePreview.src = this.totalFrameArr[this.activeFrame].frameURL);
 
-            this.canvasContext.drawImage(this.activePreview, 10, 10);
+            this.canvasContext.drawImage(this.activePreview, 450, 10);
         }
     };
 
@@ -399,7 +401,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             ? (this.activePreview.src = '')
             : (this.activePreview.src = this.totalFrameArr[index].frameURL);
 
-        this.canvasContext.drawImage(this.activePreview, 10, 10);
+        this.canvasContext.drawImage(this.activePreview, 450, 10);
     };
 
     clickPlay = () => {
