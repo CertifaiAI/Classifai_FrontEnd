@@ -38,164 +38,124 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     totalFrameArr: FrameArray[] = [
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            frameURL: '../../../assets/video_img/1.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/b9210967dbc8b5e411d36371f3bed975-full.jpg',
+            frameURL: '../../../assets/video_img/2.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/38637dc576add631cbc6e238b2944108-full.jpg',
+            frameURL: '../../../assets/video_img/3.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/e11763bf97ddbaca99e1a0aea9a5faed-full.jpg',
+            frameURL: '../../../assets/video_img/4.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/b9210967dbc8b5e411d36371f3bed975-full.jpg',
+            frameURL: '../../../assets/video_img/5.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/fd6a17196b7c19bf492fd7a644700c0c-full.jpg',
+            frameURL: '../../../assets/video_img/6.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/38637dc576add631cbc6e238b2944108-full.jpg',
+            frameURL: '../../../assets/video_img/7.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/76960c0367bda882ffa044b092e7bf62-full.jpg',
+            frameURL: '../../../assets/video_img/8.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/acfda8d971aee2bc4294666fb0027294-full.jpg',
+            frameURL: '../../../assets/video_img/9.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/9f3a00679779bb034efd50a4fad87674-full.jpg',
+            frameURL: '../../../assets/video_img/10.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            frameURL: '../../../assets/video_img/11.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/b9210967dbc8b5e411d36371f3bed975-full.jpg',
+            frameURL: '../../../assets/video_img/12.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/38637dc576add631cbc6e238b2944108-full.jpg',
+            frameURL: '../../../assets/video_img/13.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/e11763bf97ddbaca99e1a0aea9a5faed-full.jpg',
+            frameURL: '../../../assets/video_img/14.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/b9210967dbc8b5e411d36371f3bed975-full.jpg',
+            frameURL: '../../../assets/video_img/15.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/fd6a17196b7c19bf492fd7a644700c0c-full.jpg',
+            frameURL: '../../../assets/video_img/16.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/38637dc576add631cbc6e238b2944108-full.jpg',
+            frameURL: '../../../assets/video_img/17.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/76960c0367bda882ffa044b092e7bf62-full.jpg',
+            frameURL: '../../../assets/video_img/18.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/acfda8d971aee2bc4294666fb0027294-full.jpg',
+            frameURL: '../../../assets/video_img/19.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/9f3a00679779bb034efd50a4fad87674-full.jpg',
+            frameURL: '../../../assets/video_img/20.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            frameURL: '../../../assets/video_img/21.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/b9210967dbc8b5e411d36371f3bed975-full.jpg',
+            frameURL: '../../../assets/video_img/22.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/38637dc576add631cbc6e238b2944108-full.jpg',
+            frameURL: '../../../assets/video_img/23.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/e11763bf97ddbaca99e1a0aea9a5faed-full.jpg',
+            frameURL: '../../../assets/video_img/24.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/b9210967dbc8b5e411d36371f3bed975-full.jpg',
+            frameURL: '../../../assets/video_img/25.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/fd6a17196b7c19bf492fd7a644700c0c-full.jpg',
+            frameURL: '../../../assets/video_img/26.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            frameURL: '../../../assets/video_img/27.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            frameURL: '../../../assets/video_img/28.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            frameURL: '../../../assets/video_img/29.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            frameURL: '../../../assets/video_img/30.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            frameURL: '../../../assets/video_img/1.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            frameURL: '../../../assets/video_img/2.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            frameURL: '../../../assets/video_img/3.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            frameURL: '../../../assets/video_img/4.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            frameURL: '../../../assets/video_img/5.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            frameURL: '../../../assets/video_img/6.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            frameURL: '../../../assets/video_img/7.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            frameURL: '../../../assets/video_img/8.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            frameURL: '../../../assets/video_img/9.jpg',
         },
         {
-            frameURL:
-                'https://www.trulia.com/pictures/thumbs_5/zillowstatic/fp/3545aa32b30f54bfb79759dd5adabfb0-full.jpg',
+            frameURL: '../../../assets/video_img/10.jpg',
         },
     ];
 
