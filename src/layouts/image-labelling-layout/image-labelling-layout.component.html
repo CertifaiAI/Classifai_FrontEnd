@@ -50,6 +50,7 @@
             (_onDeleteAnnotation)="onDeleteAnnotation($event)"
             (_loadMoreThumbnails)="onLoadMoreThumbnails()"
             (_onRenameImage)="onRenameImage($event)"
+            (_onDeleteImage)="onDeleteImage($event)"
         ></image-labelling-project>
         <image-labelling-right-sidebar
             [_onChange]="onChangeSchema"
@@ -329,6 +330,29 @@
         <label class="validate-msg" *ngIf="renameImageErrorCode === 3">{{ 'renameModal.nameEmpty' | translate }}</label>
         <button class="button-style renameimg-btn" (click)="onSubmitRenameImage()">
             {{ 'renameModal.submit' | translate }}
+        </button>
+    </div>
+</modal>
+
+<modal
+    [id]="modalDeleteImage"
+    [modalBodyStyle]="deleteImageBodyStyle"
+    [modalTitle]="'deleteModal.deleteImg' | translate"
+    [scrollable]="false"
+>
+    <div class="modal-content-container">
+        <p class="font-delete-img">{{ 'deleteModal.confirmation' | translate }} {{ newImageName }}{{ imageExt }} ?</p>
+        <p class="font-delete-img">
+            <input
+                type="checkbox"
+                [checked]="dontAskDelete"
+                (change)="dontAskDelete = !dontAskDelete"
+                class="checkbox"
+            />
+            {{ 'deleteModal.dontask' | translate }}
+        </p>
+        <button class="button-style deleteimg-btn" (click)="onSubmitDeleteImage()" #deleteBtn>
+            {{ 'deleteModal.confirm' | translate }}
         </button>
     </div>
 </modal>
