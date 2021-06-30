@@ -24,6 +24,12 @@ export type Message = {
     message: message;
 };
 
+export type ProjectMessage = {
+    message: message;
+    error_code: error_code;
+    error_message: errormessage;
+};
+
 export type ExportResponse = {
     message: message;
     error_code: error_code;
