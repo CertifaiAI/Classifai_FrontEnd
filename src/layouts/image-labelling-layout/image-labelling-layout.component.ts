@@ -617,43 +617,46 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     @HostListener('window:keydown', ['$event'])
     keyDownEvent = ({ key, repeat }: KeyboardEvent): void => {
-        if (!this.selectedMetaData) {
+        if (!this.selectedMetaData || this._modalService.isOpened()) {
             return;
         }
         const thumbnailInfo = this.selectedMetaData;
-        this._imgLblActionService.action$.pipe(first()).subscribe(({ draw }) => {
-            if (!draw && !repeat && !this._modalService.isOpened()) {
-                switch (key) {
-                    case 'ArrowLeft':
-                        // Disable arrow key if any modal is opened
+        switch (key) {
+            case 'ArrowLeft':
+                this._imgLblActionService.action$.pipe(first()).subscribe(({ draw }) => {
+                    if (!draw && !repeat) {
                         this.navigateByAction({ thumbnailAction: -1 });
-                        break;
-                    case 'ArrowRight':
+                    }
+                });
+                break;
+            case 'ArrowRight':
+                this._imgLblActionService.action$.pipe(first()).subscribe(({ draw }) => {
+                    if (!draw && !repeat) {
                         this.navigateByAction({ thumbnailAction: 1 });
-                        break;
-                    case 'F2':
-                        this.getImageNameFromPath(thumbnailInfo);
-                        this.renameImageErrorCode = -1;
-                        this._modalService.open(this.modalRenameImage);
-                        this._renameInput.nativeElement.focus();
-                        break;
-                    case 'Delete':
-                        if (this.currentAnnotationIndex !== -1) {
-                            break;
-                        }
-                        this.getImageNameFromPath(thumbnailInfo);
-                        if (!this.dontAskDelete) {
-                            this._modalService.open(this.modalDeleteImage);
-                            this._deleteBtn.nativeElement.focus();
-                            break;
-                        }
-                        this.onSubmitDeleteImage();
-                        break;
-                    default:
-                        break;
+                    }
+                });
+                break;
+            case 'F2':
+                this.getImageNameFromPath(thumbnailInfo);
+                this.renameImageErrorCode = -1;
+                this._modalService.open(this.modalRenameImage);
+                this._renameInput.nativeElement.focus();
+                break;
+            case 'Delete':
+                if (this.currentAnnotationIndex !== -1) {
+                    break;
                 }
-            }
-        });
+                this.getImageNameFromPath(thumbnailInfo);
+                if (!this.dontAskDelete) {
+                    this._modalService.open(this.modalDeleteImage);
+                    this._deleteBtn.nativeElement.focus();
+                    break;
+                }
+                this.onSubmitDeleteImage();
+                break;
+            default:
+                break;
+        }
     };
 
     getImageNameFromPath(thumbnailInfo: CompleteMetadata) {
