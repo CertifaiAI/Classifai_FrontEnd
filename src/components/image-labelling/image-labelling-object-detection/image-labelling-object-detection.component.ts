@@ -233,13 +233,15 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('window:keydown', ['$event'])
     keyStrokeEvent({ ctrlKey, shiftKey, key }: KeyboardEvent) {
         try {
+            const platform = window.navigator.platform;
+            const modKey = platform.startsWith('Mac') ? key === 'Meta' : ctrlKey;
             const { isActiveModal } = this.boundingBoxState;
             if (!this.mousedown && !isActiveModal && !this.showDropdownLabelBox && this._selectMetadata) {
-                if (ctrlKey && (key === 'c' || key === 'C')) {
+                if (modKey && (key === 'c' || key === 'C')) {
                     // copy
                     this.annotateState.annotation > -1 &&
                         this._copyPasteService.copy(this._selectMetadata.bnd_box[this.annotateState.annotation]);
-                } else if (ctrlKey && (key === 'v' || key === 'V')) {
+                } else if (modKey && (key === 'v' || key === 'V')) {
                     // paste
                     if (this._copyPasteService.isAvailable()) {
                         // another copy function to make sense of copying the latest BB instead of the 1st copied BB
@@ -260,7 +262,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     });
                     this.emitMetadata();
                     // this.canvas.nativeElement.focus();
-                } else if (ctrlKey && shiftKey && (key === 'z' || key === 'Z')) {
+                } else if (modKey && shiftKey && (key === 'z' || key === 'Z')) {
                     // redo
                     if (this._undoRedoService.isAllowRedo()) {
                         const rtStages: UndoState = this._undoRedoService.redo();
@@ -269,7 +271,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this.getBBoxDistanceFromImage();
                         this.emitMetadata();
                     }
-                } else if (ctrlKey && (key === 'z' || key === 'Z')) {
+                } else if (modKey && (key === 'z' || key === 'Z')) {
                     // undo
                     if (this._undoRedoService.isAllowUndo()) {
                         const rtStages: UndoState = this._undoRedoService.undo();

@@ -295,7 +295,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     @HostListener('window:keydown', ['$event'])
     canvasKeyDownEvent({ ctrlKey, shiftKey, key }: KeyboardEvent) {
         try {
-            // this.ctrlKey = ctrlKey;
+            const platform = window.navigator.platform;
+            const modKey = platform.startsWith('Mac') ? key === 'Meta' : ctrlKey;
             if (this.validateEndDrawPolygon(this.segState, this.isMouseWithinPoint, this.canvasContext)) {
                 if (this._segCanvasService.isNewPolygon()) {
                     const { annotation } = this.annotateState;
@@ -375,11 +376,11 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 // this.canvasContext.canvas.focus();
             }
             // if (!this.isMouseWithinPoint) {
-            if (ctrlKey && (key === 'c' || key === 'C')) {
+            if (modKey && (key === 'c' || key === 'C')) {
                 // copy
                 this.annotateState.annotation > -1 &&
                     this._copyPasteService.copy(this._selectMetadata.polygons[this.annotateState.annotation]);
-            } else if (ctrlKey && (key === 'v' || key === 'V')) {
+            } else if (modKey && (key === 'v' || key === 'V')) {
                 // paste
                 if (this._copyPasteService.isAvailable()) {
                     this._selectMetadata.polygons.push(this._copyPasteService.paste() as Polygons);
@@ -396,7 +397,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 });
                 this.emitMetadata();
                 // this.canvas.nativeElement.focus();
-            } else if (ctrlKey && shiftKey && (key === 'z' || key === 'Z')) {
+            } else if (modKey && shiftKey && (key === 'z' || key === 'Z')) {
                 // redo
                 if (this._undoRedoService.isAllowRedo()) {
                     const rtStages: UndoState = this._undoRedoService.redo();
@@ -404,7 +405,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                     this.redrawImage(this._selectMetadata);
                     this.emitMetadata();
                 }
-            } else if (ctrlKey && (key === 'z' || key === 'Z')) {
+            } else if (modKey && (key === 'z' || key === 'Z')) {
                 // undo
                 if (this._undoRedoService.isAllowUndo()) {
                     const rtStages: UndoState = this._undoRedoService.undo();
