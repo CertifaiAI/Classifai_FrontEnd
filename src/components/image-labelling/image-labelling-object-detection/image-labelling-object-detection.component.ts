@@ -1,3 +1,4 @@
+import { ShortcutKeyService } from './../../../shared/services/shortcut-key.service';
 /**
  * @license
  * Use of this source code is governed by Apache License 2.0 that can be
@@ -84,6 +85,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         private _annotateSelectState: AnnotateSelectionService,
         private _zoomService: ZoomService,
         private _mouseCursorService: MousrCursorService,
+        private _shortcutKeyService: ShortcutKeyService,
     ) {}
 
     ngOnInit() {
@@ -231,89 +233,107 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     @HostListener('window:keydown', ['$event'])
-    keyStrokeEvent({ ctrlKey, shiftKey, key }: KeyboardEvent) {
+    keyStrokeEvent({ ctrlKey, metaKey, shiftKey, key }: KeyboardEvent) {
         try {
             const { isActiveModal } = this.boundingBoxState;
             if (!this.mousedown && !isActiveModal && !this.showDropdownLabelBox && this._selectMetadata) {
-                if (ctrlKey && (key === 'c' || key === 'C')) {
-                    // copy
-                    this.annotateState.annotation > -1 &&
-                        this._copyPasteService.copy(this._selectMetadata.bnd_box[this.annotateState.annotation]);
-                } else if (ctrlKey && (key === 'v' || key === 'V')) {
-                    // paste
-                    if (this._copyPasteService.isAvailable()) {
-                        // another copy function to make sense of copying the latest BB instead of the 1st copied BB
-                        this._copyPasteService.copy(this._selectMetadata.bnd_box[this.annotateState.annotation]);
-                        const pastedMetadata = this._copyPasteService.paste<Boundingbox>();
-                        pastedMetadata && this._selectMetadata.bnd_box.push(pastedMetadata);
-                        this.annotateSelectChange({
-                            annotation: this._selectMetadata.bnd_box.length - 1,
-                            isDlbClick: false,
-                        });
-                        this.getBBoxDistanceFromImage();
-                        this.redrawImage(this._selectMetadata);
-                    }
-
-                    this._undoRedoService.appendStages({
-                        meta: cloneDeep(this._selectMetadata),
-                        method: 'draw',
-                    });
-                    this.emitMetadata();
-                    // this.canvas.nativeElement.focus();
-                } else if (ctrlKey && shiftKey && (key === 'z' || key === 'Z')) {
-                    // redo
-                    if (this._undoRedoService.isAllowRedo()) {
-                        const rtStages: UndoState = this._undoRedoService.redo();
-                        this._selectMetadata = cloneDeep(rtStages?.meta as BboxMetadata);
-                        this.redrawImage(this._selectMetadata);
-                        this.getBBoxDistanceFromImage();
-                        this.emitMetadata();
-                    }
-                } else if (ctrlKey && (key === 'z' || key === 'Z')) {
-                    // undo
-                    if (this._undoRedoService.isAllowUndo()) {
-                        const rtStages: UndoState = this._undoRedoService.undo();
-                        this._selectMetadata = cloneDeep(rtStages?.meta as BboxMetadata);
-                        this.redrawImage(this._selectMetadata);
-                        this.getBBoxDistanceFromImage();
-                        this.emitMetadata();
-                    }
+                if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'copy')) {
+                    this.copyImage();
+                } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'paste')) {
+                    this.pasteImage();
+                } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'redo')) {
+                    this.redoAction();
+                } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'undo')) {
+                    this.undoAction();
                 } else if (
                     !isActiveModal &&
                     this.annotateState.annotation > -1 &&
                     (key === 'Delete' || key === 'Backspace')
                 ) {
-                    // delete single annotation
-                    this._boundingBoxCanvas.deleteSingleBox(
-                        this._selectMetadata.bnd_box,
-                        this.annotateState.annotation,
-                        (isDone) => {
-                            if (isDone) {
-                                this.annotateSelectChange({ annotation: -1, isDlbClick: false });
-                                this.redrawImage(this._selectMetadata);
-                                this._undoRedoService.appendStages({
-                                    meta: cloneDeep(this._selectMetadata),
-                                    method: 'draw',
-                                });
-                                this.emitMetadata();
-                            }
-                        },
-                    );
+                    this.deleteSelectedBbox();
                 } else {
-                    const direction =
-                        key === 'ArrowLeft'
-                            ? 'left'
-                            : key === 'ArrowRight'
-                            ? 'right'
-                            : key === 'ArrowUp'
-                            ? 'up'
-                            : key === 'ArrowDown' && 'down';
-                    direction && this.keyMoveBox(direction);
+                    this.moveBbox(key);
                 }
             }
         } catch (err) {
             console.log(err);
         }
+    }
+
+    copyImage() {
+        this.annotateState.annotation > -1 &&
+            this._copyPasteService.copy(this._selectMetadata.bnd_box[this.annotateState.annotation]);
+    }
+
+    pasteImage() {
+        if (this._copyPasteService.isAvailable()) {
+            // another copy function to make sense of copying the latest BB instead of the 1st copied BB
+            this._copyPasteService.copy(this._selectMetadata.bnd_box[this.annotateState.annotation]);
+            const pastedMetadata = this._copyPasteService.paste<Boundingbox>();
+            pastedMetadata && this._selectMetadata.bnd_box.push(pastedMetadata);
+            this.annotateSelectChange({
+                annotation: this._selectMetadata.bnd_box.length - 1,
+                isDlbClick: false,
+            });
+            this.getBBoxDistanceFromImage();
+            this.redrawImage(this._selectMetadata);
+        }
+
+        this._undoRedoService.appendStages({
+            meta: cloneDeep(this._selectMetadata),
+            method: 'draw',
+        });
+        this.emitMetadata();
+    }
+
+    redoAction() {
+        if (this._undoRedoService.isAllowRedo()) {
+            const rtStages: UndoState = this._undoRedoService.redo();
+            this._selectMetadata = cloneDeep(rtStages?.meta as BboxMetadata);
+            this.redrawImage(this._selectMetadata);
+            this.getBBoxDistanceFromImage();
+            this.emitMetadata();
+        }
+    }
+
+    undoAction() {
+        if (this._undoRedoService.isAllowUndo()) {
+            const rtStages: UndoState = this._undoRedoService.undo();
+            this._selectMetadata = cloneDeep(rtStages?.meta as BboxMetadata);
+            this.redrawImage(this._selectMetadata);
+            this.getBBoxDistanceFromImage();
+            this.emitMetadata();
+        }
+    }
+
+    deleteSelectedBbox() {
+        this._boundingBoxCanvas.deleteSingleBox(
+            this._selectMetadata.bnd_box,
+            this.annotateState.annotation,
+            (isDone) => {
+                if (isDone) {
+                    this.annotateSelectChange({ annotation: -1, isDlbClick: false });
+                    this.redrawImage(this._selectMetadata);
+                    this._undoRedoService.appendStages({
+                        meta: cloneDeep(this._selectMetadata),
+                        method: 'draw',
+                    });
+                    this.emitMetadata();
+                }
+            },
+        );
+    }
+
+    moveBbox(key: string) {
+        const direction =
+            key === 'ArrowLeft'
+                ? 'left'
+                : key === 'ArrowRight'
+                ? 'right'
+                : key === 'ArrowUp'
+                ? 'up'
+                : key === 'ArrowDown' && 'down';
+        direction && this.keyMoveBox(direction);
     }
 
     @HostListener('dblclick', ['$event'])

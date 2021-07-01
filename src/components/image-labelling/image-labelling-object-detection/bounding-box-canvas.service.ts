@@ -474,7 +474,7 @@ export class BoundingBoxCanvasService {
                 context.strokeStyle = 'white';
                 context.fillStyle = 'black';
                 context.font = 'bold 12px Arial';
-                if (box.label == '') {
+                if (box.label === '') {
                     context.strokeText('', box.x1 + 10, box.y1 + 15);
                     context.fillText('', box.x1 + 10, box.y1 + 15);
                 } else if (!labelList.find((x) => x.name === box.label)) {
