@@ -39,6 +39,7 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
+import { ShortcutKeyService } from 'src/shared/services/shortcut-key.service';
 
 @Component({
     selector: 'image-labelling-segmentation',
@@ -80,6 +81,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         private _annotateSelectState: AnnotateSelectionService,
         private _zoomService: ZoomService,
         private _mouseCursorService: MousrCursorService,
+        private _shortcutKeyService: ShortcutKeyService,
     ) {}
 
     ngOnInit(): void {
@@ -316,39 +318,19 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 this.movePolygon(key);
             }
 
-            if (this.checkKey(ctrlKey, metaKey, shiftKey, key, 'copy')) {
+            if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'copy')) {
                 this.copyPolygon();
-            } else if (this.checkKey(ctrlKey, metaKey, shiftKey, key, 'paste')) {
+            } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'paste')) {
                 this.pastePolygon();
-            } else if (this.checkKey(ctrlKey, metaKey, shiftKey, key, 'redo')) {
+            } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'redo')) {
                 this.redoAction();
-            } else if (this.checkKey(ctrlKey, metaKey, shiftKey, key, 'undo')) {
+            } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'undo')) {
                 this.undoAction();
             }
             // }
         } catch (err) {
             console.log('canvasKeyDownEvent', err);
         }
-    }
-
-    checkKey(ctrlKey: boolean, metaKey: boolean, shiftKey: boolean, key: string, keyCheck: string) {
-        let isCorrectKey = false;
-        const modKey = ctrlKey || metaKey;
-        switch (keyCheck) {
-            case 'copy':
-                isCorrectKey = modKey && (key === 'c' || key === 'C');
-                break;
-            case 'paste':
-                isCorrectKey = modKey && (key === 'v' || key === 'V');
-                break;
-            case 'redo':
-                isCorrectKey = modKey && shiftKey && (key === 'z' || key === 'Z');
-                break;
-            case 'undo':
-                isCorrectKey = modKey && (key === 'z' || key === 'Z');
-                break;
-        }
-        return isCorrectKey;
     }
 
     completingPolygon() {

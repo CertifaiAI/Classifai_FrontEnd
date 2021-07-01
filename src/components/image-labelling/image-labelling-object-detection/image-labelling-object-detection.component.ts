@@ -1,3 +1,4 @@
+import { ShortcutKeyService } from './../../../shared/services/shortcut-key.service';
 /**
  * @license
  * Use of this source code is governed by Apache License 2.0 that can be
@@ -84,6 +85,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         private _annotateSelectState: AnnotateSelectionService,
         private _zoomService: ZoomService,
         private _mouseCursorService: MousrCursorService,
+        private _shortcutKeyService: ShortcutKeyService,
     ) {}
 
     ngOnInit() {
@@ -235,13 +237,13 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         try {
             const { isActiveModal } = this.boundingBoxState;
             if (!this.mousedown && !isActiveModal && !this.showDropdownLabelBox && this._selectMetadata) {
-                if (this.checkKey(ctrlKey, metaKey, shiftKey, key, 'copy')) {
+                if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'copy')) {
                     this.copyImage();
-                } else if (this.checkKey(ctrlKey, metaKey, shiftKey, key, 'paste')) {
+                } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'paste')) {
                     this.pasteImage();
-                } else if (this.checkKey(ctrlKey, metaKey, shiftKey, key, 'redo')) {
+                } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'redo')) {
                     this.redoAction();
-                } else if (this.checkKey(ctrlKey, metaKey, shiftKey, key, 'undo')) {
+                } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'undo')) {
                     this.undoAction();
                 } else if (
                     !isActiveModal &&
@@ -256,26 +258,6 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         } catch (err) {
             console.log(err);
         }
-    }
-
-    checkKey(ctrlKey: boolean, metaKey: boolean, shiftKey: boolean, key: string, keyCheck: string) {
-        let isCorrectKey = false;
-        const modKey = ctrlKey || metaKey;
-        switch (keyCheck) {
-            case 'copy':
-                isCorrectKey = modKey && (key === 'c' || key === 'C');
-                break;
-            case 'paste':
-                isCorrectKey = modKey && (key === 'v' || key === 'V');
-                break;
-            case 'redo':
-                isCorrectKey = modKey && shiftKey && (key === 'z' || key === 'Z');
-                break;
-            case 'undo':
-                isCorrectKey = modKey && (key === 'z' || key === 'Z');
-                break;
-        }
-        return isCorrectKey;
     }
 
     copyImage() {
