@@ -4,8 +4,6 @@ import { Injectable } from '@angular/core';
     providedIn: 'root',
 })
 export class ShortcutKeyService {
-    constructor() {}
-
     checkKey(ctrlKey: boolean, metaKey: boolean, shiftKey: boolean, key: string, keyCheck: string) {
         let isCorrectKey = false;
         const modKey = ctrlKey || metaKey;
