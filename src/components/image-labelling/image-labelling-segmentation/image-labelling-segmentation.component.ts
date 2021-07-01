@@ -297,124 +297,131 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         try {
             if (this.validateEndDrawPolygon(this.segState, this.isMouseWithinPoint, this.canvasContext)) {
                 if (this._segCanvasService.isNewPolygon()) {
-                    const { annotation } = this.annotateState;
                     switch (key) {
                         case 'Enter':
-                            this._segCanvasService.drawNewPolygon(
-                                this._selectMetadata,
-                                this.image,
-                                this.canvasContext,
-                                this.canvas.nativeElement,
-                                true,
-                            );
-                            this.positioningLabelListPopup(this._selectMetadata.polygons);
-                            this.annotateStateChange({ annotation: this._selectMetadata.polygons.length - 1 });
-                            // this._segCanvasService.setSelectedPolygon(annotation);
-                            this._segCanvasService.validateXYDistance(this._selectMetadata);
-                            // this.ClearallBoundingboxList(this.seg.Metadata[this.seg.getCurrentSelectedimgidx()].polygons);
-                            // this.RefreshBoundingBoxList();
-
-                            // let selectedpoly: MetadataPoly = this.seg.Metadata[this.seg.getCurrentSelectedimgidx()];
-                            // this.ResetClippath(selectedpoly.img_x, selectedpoly.img_y, selectedpoly.img_w, selectedpoly.img_h);
-                            // this.appendQueue(this.seg.getCurrentSelectedimgidx());
-                            // this.appendCache(this.seg.Metadata[this.seg.getCurrentSelectedimgidx()]);
-                            // this.stages.SaveStages({
-                            //     stage: this.seg.Metadata[this.seg.getCurrentSelectedimgidx()],
-                            //     method: 'draw',
-                            // });
-                            this._undoRedoService.appendStages({
-                                meta: cloneDeep(this._selectMetadata),
-                                method: 'draw',
-                            });
-                            this.redrawImage(this._selectMetadata);
-                            this.emitMetadata();
+                            this.completingPolygon();
                             break;
                         case 'Escape':
-                            this._segCanvasService.resetDrawing(
-                                this._selectMetadata,
-                                this.image,
-                                this.canvasContext,
-                                this.canvas.nativeElement,
-                            );
-                            // this._segCanvasService.setSelectedPolygon(annotation);
+                            this.resetDrawingPolygon();
                             break;
                     }
                 } else {
                     switch (key) {
                         case 'Delete':
                         case 'Backspace':
-                            // delete single annotation
-                            this._segCanvasService.deleteSinglePolygon(
-                                this._selectMetadata,
-                                this.annotateState.annotation,
-                                (isDone) => {
-                                    if (isDone) {
-                                        this.annotateStateChange();
-                                        this.redrawImage(this._selectMetadata);
-                                        this._undoRedoService.appendStages({
-                                            meta: cloneDeep(this._selectMetadata),
-                                            method: 'draw',
-                                        });
-                                        this.emitMetadata();
-                                    }
-                                },
-                            );
+                            this.deletePolygon();
                             break;
                     }
                 }
-                const direction =
-                    key === 'ArrowLeft'
-                        ? 'left'
-                        : key === 'ArrowRight'
-                        ? 'right'
-                        : key === 'ArrowUp'
-                        ? 'up'
-                        : key === 'ArrowDown' && 'down';
-                direction && this.keyMoveBox(direction);
+                this.movePolygon(key);
                 // this.canvasContext.canvas.focus();
             }
             // if (!this.isMouseWithinPoint) {
             if ((ctrlKey || metaKey) && (key === 'c' || key === 'C')) {
-                // copy
-                this.annotateState.annotation > -1 &&
-                    this._copyPasteService.copy(this._selectMetadata.polygons[this.annotateState.annotation]);
+                this.copyPolygon();
             } else if ((ctrlKey || metaKey) && (key === 'v' || key === 'V')) {
-                // paste
-                if (this._copyPasteService.isAvailable()) {
-                    this._selectMetadata.polygons.push(this._copyPasteService.paste() as Polygons);
-                    // this.rulesMakeChange(null, this._selectMetadata.bnd_box.length - 1, null, null, null),
-                    this.annotateStateChange({
-                        annotation: this._selectMetadata.polygons.length - 1,
-                    });
-                    this._segCanvasService.validateXYDistance(this._selectMetadata);
-                }
+                this.pastePolygon();
+            } else if ((ctrlKey || metaKey) && shiftKey && (key === 'z' || key === 'Z')) {
+                this.redoAction();
+            } else if ((ctrlKey || metaKey) && (key === 'z' || key === 'Z')) {
+                this.undoAction();
+            }
+            // }
+        } catch (err) {
+            console.log('canvasKeyDownEvent', err);
+        }
+    }
 
+    completingPolygon() {
+        this._segCanvasService.drawNewPolygon(
+            this._selectMetadata,
+            this.image,
+            this.canvasContext,
+            this.canvas.nativeElement,
+            true,
+        );
+        this.positioningLabelListPopup(this._selectMetadata.polygons);
+        this.annotateStateChange({ annotation: this._selectMetadata.polygons.length - 1 });
+        this._segCanvasService.validateXYDistance(this._selectMetadata);
+        this._undoRedoService.appendStages({
+            meta: cloneDeep(this._selectMetadata),
+            method: 'draw',
+        });
+        this.redrawImage(this._selectMetadata);
+        this.emitMetadata();
+    }
+
+    resetDrawingPolygon() {
+        this._segCanvasService.resetDrawing(
+            this._selectMetadata,
+            this.image,
+            this.canvasContext,
+            this.canvas.nativeElement,
+        );
+    }
+
+    deletePolygon() {
+        this._segCanvasService.deleteSinglePolygon(this._selectMetadata, this.annotateState.annotation, (isDone) => {
+            if (isDone) {
+                this.annotateStateChange();
+                this.redrawImage(this._selectMetadata);
                 this._undoRedoService.appendStages({
                     meta: cloneDeep(this._selectMetadata),
                     method: 'draw',
                 });
                 this.emitMetadata();
-                // this.canvas.nativeElement.focus();
-            } else if ((ctrlKey || metaKey) && shiftKey && (key === 'z' || key === 'Z')) {
-                // redo
-                if (this._undoRedoService.isAllowRedo()) {
-                    const rtStages: UndoState = this._undoRedoService.redo();
-                    this._selectMetadata = cloneDeep(rtStages?.meta as PolyMetadata);
-                    this.redrawImage(this._selectMetadata);
-                    this.emitMetadata();
-                }
-            } else if ((ctrlKey || metaKey) && (key === 'z' || key === 'Z')) {
-                // undo
-                if (this._undoRedoService.isAllowUndo()) {
-                    const rtStages: UndoState = this._undoRedoService.undo();
-                    this._selectMetadata = cloneDeep(rtStages?.meta as PolyMetadata);
-                    this.redrawImage(this._selectMetadata);
-                    this.emitMetadata();
-                }
             }
-            // }
-        } catch (err) {
-            console.log('canvasKeyDownEvent', err);
+        });
+    }
+
+    movePolygon(key: string) {
+        const direction =
+            key === 'ArrowLeft'
+                ? 'left'
+                : key === 'ArrowRight'
+                ? 'right'
+                : key === 'ArrowUp'
+                ? 'up'
+                : key === 'ArrowDown' && 'down';
+        direction && this.keyMoveBox(direction);
+    }
+
+    copyPolygon() {
+        this.annotateState.annotation > -1 &&
+            this._copyPasteService.copy(this._selectMetadata.polygons[this.annotateState.annotation]);
+    }
+
+    pastePolygon() {
+        if (this._copyPasteService.isAvailable()) {
+            this._selectMetadata.polygons.push(this._copyPasteService.paste() as Polygons);
+            this.annotateStateChange({
+                annotation: this._selectMetadata.polygons.length - 1,
+            });
+            this._segCanvasService.validateXYDistance(this._selectMetadata);
+        }
+
+        this._undoRedoService.appendStages({
+            meta: cloneDeep(this._selectMetadata),
+            method: 'draw',
+        });
+        this.emitMetadata();
+    }
+
+    redoAction() {
+        if (this._undoRedoService.isAllowRedo()) {
+            const rtStages: UndoState = this._undoRedoService.redo();
+            this._selectMetadata = cloneDeep(rtStages?.meta as PolyMetadata);
+            this.redrawImage(this._selectMetadata);
+            this.emitMetadata();
+        }
+    }
+
+    undoAction() {
+        if (this._undoRedoService.isAllowUndo()) {
+            const rtStages: UndoState = this._undoRedoService.undo();
+            this._selectMetadata = cloneDeep(rtStages?.meta as PolyMetadata);
+            this.redrawImage(this._selectMetadata);
+            this.emitMetadata();
         }
     }
 
