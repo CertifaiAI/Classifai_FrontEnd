@@ -316,14 +316,15 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 this.movePolygon(key);
                 // this.canvasContext.canvas.focus();
             }
+            const modKey = ctrlKey || metaKey;
             // if (!this.isMouseWithinPoint) {
-            if ((ctrlKey || metaKey) && (key === 'c' || key === 'C')) {
+            if (modKey && (key === 'c' || key === 'C')) {
                 this.copyPolygon();
-            } else if ((ctrlKey || metaKey) && (key === 'v' || key === 'V')) {
+            } else if (modKey && (key === 'v' || key === 'V')) {
                 this.pastePolygon();
-            } else if ((ctrlKey || metaKey) && shiftKey && (key === 'z' || key === 'Z')) {
+            } else if (modKey && shiftKey && (key === 'z' || key === 'Z')) {
                 this.redoAction();
-            } else if ((ctrlKey || metaKey) && (key === 'z' || key === 'Z')) {
+            } else if (modKey && (key === 'z' || key === 'Z')) {
                 this.undoAction();
             }
             // }

@@ -234,14 +234,15 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     keyStrokeEvent({ ctrlKey, metaKey, shiftKey, key }: KeyboardEvent) {
         try {
             const { isActiveModal } = this.boundingBoxState;
+            const modKey = ctrlKey || metaKey;
             if (!this.mousedown && !isActiveModal && !this.showDropdownLabelBox && this._selectMetadata) {
-                if ((ctrlKey || metaKey) && (key === 'c' || key === 'C')) {
+                if (modKey && (key === 'c' || key === 'C')) {
                     this.copyImage();
-                } else if ((ctrlKey || metaKey) && (key === 'v' || key === 'V')) {
+                } else if (modKey && (key === 'v' || key === 'V')) {
                     this.pasteImage();
-                } else if ((ctrlKey || metaKey) && shiftKey && (key === 'z' || key === 'Z')) {
+                } else if (modKey && shiftKey && (key === 'z' || key === 'Z')) {
                     this.redoAction();
-                } else if ((ctrlKey || metaKey) && (key === 'z' || key === 'Z')) {
+                } else if (modKey && (key === 'z' || key === 'Z')) {
                     this.undoAction();
                 } else if (
                     !isActiveModal &&
