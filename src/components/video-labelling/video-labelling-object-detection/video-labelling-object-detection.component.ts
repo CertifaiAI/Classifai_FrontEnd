@@ -396,6 +396,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     };
 
     onClickVideoTImeline = (index: number) => {
+        this.clearCanvas();
         this.activeFrame = index;
         index > this.totalFrameArr.length
             ? (this.activePreview.src = '')
@@ -425,7 +426,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this.isPlayingFrame = false;
                         isLooping = false;
                         this.pauseFrameIndex = index;
-                        console.log('PAUSING', index);
+                        console.log('Pausing...', index);
                     }
                 }
             });
@@ -452,6 +453,10 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this.canvas.nativeElement.width = this.canvas.nativeElement.offsetWidth;
         this.canvas.nativeElement.height = this.canvas.nativeElement.offsetHeight;
         this.canvasContext = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+    }
+
+    clearCanvas() {
+        this.canvasContext.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
     }
 
     @HostListener('window:keydown', ['$event'])
