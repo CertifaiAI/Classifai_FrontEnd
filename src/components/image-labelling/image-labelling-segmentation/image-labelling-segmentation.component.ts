@@ -315,20 +315,40 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 }
                 this.movePolygon(key);
             }
-            const modKey = ctrlKey || metaKey;
-            if (modKey && (key === 'c' || key === 'C')) {
+
+            if (this.checkKey(ctrlKey, metaKey, shiftKey, key, 'copy')) {
                 this.copyPolygon();
-            } else if (modKey && (key === 'v' || key === 'V')) {
+            } else if (this.checkKey(ctrlKey, metaKey, shiftKey, key, 'paste')) {
                 this.pastePolygon();
-            } else if (modKey && shiftKey && (key === 'z' || key === 'Z')) {
+            } else if (this.checkKey(ctrlKey, metaKey, shiftKey, key, 'redo')) {
                 this.redoAction();
-            } else if (modKey && (key === 'z' || key === 'Z')) {
+            } else if (this.checkKey(ctrlKey, metaKey, shiftKey, key, 'undo')) {
                 this.undoAction();
             }
             // }
         } catch (err) {
             console.log('canvasKeyDownEvent', err);
         }
+    }
+
+    checkKey(ctrlKey: boolean, metaKey: boolean, shiftKey: boolean, key: string, keyCheck: string) {
+        let isCorrectKey = false;
+        const modKey = ctrlKey || metaKey;
+        switch (keyCheck) {
+            case 'copy':
+                isCorrectKey = modKey && (key === 'c' || key === 'C');
+                break;
+            case 'paste':
+                isCorrectKey = modKey && (key === 'v' || key === 'V');
+                break;
+            case 'redo':
+                isCorrectKey = modKey && shiftKey && (key === 'z' || key === 'Z');
+                break;
+            case 'undo':
+                isCorrectKey = modKey && (key === 'z' || key === 'Z');
+                break;
+        }
+        return isCorrectKey;
     }
 
     completingPolygon() {

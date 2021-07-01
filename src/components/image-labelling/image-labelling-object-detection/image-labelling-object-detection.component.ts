@@ -234,15 +234,14 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     keyStrokeEvent({ ctrlKey, metaKey, shiftKey, key }: KeyboardEvent) {
         try {
             const { isActiveModal } = this.boundingBoxState;
-            const modKey = ctrlKey || metaKey;
             if (!this.mousedown && !isActiveModal && !this.showDropdownLabelBox && this._selectMetadata) {
-                if (modKey && (key === 'c' || key === 'C')) {
+                if (this.checkKey(ctrlKey, metaKey, shiftKey, key, 'copy')) {
                     this.copyImage();
-                } else if (modKey && (key === 'v' || key === 'V')) {
+                } else if (this.checkKey(ctrlKey, metaKey, shiftKey, key, 'paste')) {
                     this.pasteImage();
-                } else if (modKey && shiftKey && (key === 'z' || key === 'Z')) {
+                } else if (this.checkKey(ctrlKey, metaKey, shiftKey, key, 'redo')) {
                     this.redoAction();
-                } else if (modKey && (key === 'z' || key === 'Z')) {
+                } else if (this.checkKey(ctrlKey, metaKey, shiftKey, key, 'undo')) {
                     this.undoAction();
                 } else if (
                     !isActiveModal &&
@@ -257,6 +256,26 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         } catch (err) {
             console.log(err);
         }
+    }
+
+    checkKey(ctrlKey: boolean, metaKey: boolean, shiftKey: boolean, key: string, keyCheck: string) {
+        let isCorrectKey = false;
+        const modKey = ctrlKey || metaKey;
+        switch (keyCheck) {
+            case 'copy':
+                isCorrectKey = modKey && (key === 'c' || key === 'C');
+                break;
+            case 'paste':
+                isCorrectKey = modKey && (key === 'v' || key === 'V');
+                break;
+            case 'redo':
+                isCorrectKey = modKey && shiftKey && (key === 'z' || key === 'Z');
+                break;
+            case 'undo':
+                isCorrectKey = modKey && (key === 'z' || key === 'Z');
+                break;
+        }
+        return isCorrectKey;
     }
 
     copyImage() {
