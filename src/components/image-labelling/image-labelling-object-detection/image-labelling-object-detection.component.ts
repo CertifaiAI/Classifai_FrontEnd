@@ -231,17 +231,18 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     @HostListener('window:keydown', ['$event'])
-    keyStrokeEvent({ ctrlKey, shiftKey, key }: KeyboardEvent) {
+    keyStrokeEvent({ ctrlKey, shiftKey, key, metaKey }: KeyboardEvent) {
         try {
-            const platform = window.navigator.platform;
-            const modKey = platform.startsWith('Mac') ? key === 'Meta' : ctrlKey;
+            // const platform = window.navigator.platform;
+            // const modKey = platform.startsWith('Mac') ? key === 'Meta' : ctrlKey;
+            console.log(ctrlKey, metaKey, key);
             const { isActiveModal } = this.boundingBoxState;
             if (!this.mousedown && !isActiveModal && !this.showDropdownLabelBox && this._selectMetadata) {
-                if (modKey && (key === 'c' || key === 'C')) {
+                if (metaKey && (key === 'c' || key === 'C')) {
                     // copy
                     this.annotateState.annotation > -1 &&
                         this._copyPasteService.copy(this._selectMetadata.bnd_box[this.annotateState.annotation]);
-                } else if (modKey && (key === 'v' || key === 'V')) {
+                } else if (metaKey && (key === 'v' || key === 'V')) {
                     // paste
                     if (this._copyPasteService.isAvailable()) {
                         // another copy function to make sense of copying the latest BB instead of the 1st copied BB
@@ -262,7 +263,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     });
                     this.emitMetadata();
                     // this.canvas.nativeElement.focus();
-                } else if (modKey && shiftKey && (key === 'z' || key === 'Z')) {
+                } else if (metaKey && shiftKey && (key === 'z' || key === 'Z')) {
                     // redo
                     if (this._undoRedoService.isAllowRedo()) {
                         const rtStages: UndoState = this._undoRedoService.redo();
@@ -271,7 +272,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this.getBBoxDistanceFromImage();
                         this.emitMetadata();
                     }
-                } else if (modKey && (key === 'z' || key === 'Z')) {
+                } else if (metaKey && (key === 'z' || key === 'Z')) {
                     // undo
                     if (this._undoRedoService.isAllowUndo()) {
                         const rtStages: UndoState = this._undoRedoService.undo();
