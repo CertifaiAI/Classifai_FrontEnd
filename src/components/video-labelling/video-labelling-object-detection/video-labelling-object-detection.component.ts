@@ -351,7 +351,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     ngAfterViewInit(): void {
         this.initializeCanvas();
         this.activePreview.src = this.totalFrameArr[0].frameURL;
-        this.canvasContext.drawImage(this.activePreview, 10, 10);
+        this.canvasContext.drawImage(this.activePreview, 450, 10);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -425,7 +425,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this.isPlayingFrame = false;
                         isLooping = false;
                         this.pauseFrameIndex = index;
-                        console.log('PAUSING', index);
+                        console.log('Pausing', index);
                     }
                 }
             });
@@ -447,7 +447,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     };
 
     initializeCanvas(width: string = '70%') {
-        this.canvas.nativeElement.style.width = '700vw';
+        this.canvas.nativeElement.style.width = '90vw';
         this.canvas.nativeElement.style.height = '70%';
         this.canvas.nativeElement.width = this.canvas.nativeElement.offsetWidth;
         this.canvas.nativeElement.height = this.canvas.nativeElement.offsetHeight;
