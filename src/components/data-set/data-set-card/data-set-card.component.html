@@ -96,13 +96,15 @@
                         </div>
                     </div>
                     <div class="card-title-style">
-                        <label [title]="project.created_timestamp" [ngClass]="{ disabled: !project.root_path_valid }"
+                        <label
+                            [title]="project.created_timestamp | date: 'medium'"
+                            [ngClass]="{ disabled: !project.root_path_valid }"
                             ><div class="card-title-txt">
                                 {{ 'datasetCard.created' | translate }} {{ project.created_date }}
                             </div>
                         </label>
                         <label
-                            [title]="project.last_modified_timestamp"
+                            [title]="project.last_modified_timestamp | date: 'medium'"
                             [ngClass]="{ disabled: !project.root_path_valid }"
                             ><div class="card-title-txt">
                                 {{ 'datasetCard.modified' | translate }} {{ project.last_modified_date }}

@@ -177,6 +177,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         return newProjectList;
                     });
 
+                    console.log(formattedProjectList);
+
                     switch (this.keyToSort) {
                         case 'project_name':
                             this.sortedProject = formattedProjectList.sort((a, b) =>
@@ -233,10 +235,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
 
     formatTimestamp = (date: string): Date => {
         const initializedDate: Date = new Date(date);
-        // const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        // const actualMonth: string | undefined = monthNames.find(
-        //     (_, i) => i === initializedDate.getMonth() || undefined,
-        // );
         return initializedDate;
     };
 
