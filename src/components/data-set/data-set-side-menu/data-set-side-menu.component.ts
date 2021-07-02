@@ -46,11 +46,11 @@ export class DataSetSideMenuComponent implements OnInit {
             id: 'recent',
             name: 'menuName.recent',
         },
-        {
-            src: '../../../assets/icons/trash.svg',
-            id: 'trash',
-            name: 'menuName.trash',
-        },
+        // {
+        //     src: '../../../assets/icons/trash.svg',
+        //     id: 'trash',
+        //     name: 'menuName.trash',
+        // },
     ];
     @Output() _onCreate: EventEmitter<boolean> = new EventEmitter();
     @Output() _onFilter: EventEmitter<string> = new EventEmitter();
