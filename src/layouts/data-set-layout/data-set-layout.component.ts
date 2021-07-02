@@ -182,19 +182,10 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                             this.sortedProject = formattedProjectList.filter((proj) => proj.is_starred);
                             break;
                         case 'recent':
-                            if (this.sortedProject.length > 10) {
-                                this.sortedProject = formattedProjectList
-                                    .sort((a, b) => (b.last_modified_timestamp > a.last_modified_timestamp ? 1 : -1))
-                                    .slice(0, 10);
-                            } else {
-                                this.sortedProject = formattedProjectList.sort((a, b) =>
-                                    b.last_modified_timestamp > a.last_modified_timestamp ? 1 : -1,
-                                );
-                                this.sortedProject = this.sortedProject.slice(
-                                    0,
-                                    Math.ceil(0.8 * this.sortedProject.length),
-                                );
-                            }
+                            this.sortedProject = formattedProjectList.sort((a, b) =>
+                                b.last_modified_timestamp > a.last_modified_timestamp ? 1 : -1,
+                            );
+                            this.sortedProject = this.sortedProject.slice(0, 6);
                             break;
                         default:
                             this.sortedProject = formattedProjectList;
