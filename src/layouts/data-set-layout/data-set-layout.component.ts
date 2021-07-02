@@ -10,11 +10,11 @@ import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } fro
 import { DataSetLayoutService } from './data-set-layout-api.service';
 import { DataSetProps, Project, ProjectRename, ProjectSchema, StarredProps } from './data-set-layout.model';
 import { distinctUntilChanged, first, map, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
-import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
+import { interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ImageLabellingModeService } from './../../components/image-labelling/image-labelling-mode.service';
 import { LanguageService } from 'src/shared/services/language.service';
-import { Message, MessageUploadStatus } from 'src/shared/types/message/message.model';
+import { MessageUploadStatus, ProjectMessage } from 'src/shared/types/message/message.model';
 import { ModalBodyStyle } from 'src/components/modal/modal.model';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
@@ -503,7 +503,11 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         const uploadStatus$ = this._dataSetService.localUploadStatus(projectName);
         let numberOfReq: number = 0;
 
-        const returnResponse = ({ message }: Message): Observable<MessageUploadStatus> => {
+        const returnResponse = ({
+            message,
+            error_code,
+            error_message,
+        }: ProjectMessage): Observable<MessageUploadStatus> => {
             return message === 1
                 ? interval(500).pipe(
                       mergeMap(() => uploadStatus$),
@@ -516,11 +520,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                           return isValidResponse;
                       }),
                   )
-                : throwError((error: any) => {
-                      console.error(error);
-                      this.projectList = { ...this.projectList, isUploading: false };
-                      return error;
-                  });
+                : throwError(new Error(`ERROR ${error_code}: ${error_message}`));
         };
         this.projectList = { ...this.projectList, isUploading: true };
         this.subjectSubscription = this.subject$
@@ -538,7 +538,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     numberOfReq = res ? --numberOfReq : numberOfReq;
                     numberOfReq < 1 && (this.projectList = { ...this.projectList, isUploading: false });
                 },
-                (error: Error) => {},
+                (error: Error) => {
+                    console.log(error);
+                },
                 () => {
                     this.isProjectLoading = false;
                     this.showProjectList();

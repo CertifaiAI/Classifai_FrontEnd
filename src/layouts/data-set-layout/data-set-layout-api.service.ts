@@ -19,6 +19,7 @@ import {
     MessageProjectProgress,
     MessageUploadStatus,
     ImportResponse,
+    ProjectMessage,
 } from 'src/shared/types/message/message.model';
 import { UnsupportedImageService } from 'src/shared/services/unsupported-image.service';
 
@@ -45,18 +46,25 @@ export class DataSetLayoutService {
         // .pipe(catchError(this.handleError));
     };
 
-    createNewProject = (projectName: string, labelPath: string, projectFolderPath: string): Observable<Message> => {
+    createNewProject = (
+        projectName: string,
+        labelPath: string,
+        projectFolderPath: string,
+    ): Observable<ProjectMessage> => {
         const annotationType = this.imageLabellingMode === 'bndbox' ? 'boundingbox' : 'segmentation';
-        return this.http.put<Message>(`${this.hostPort}v2/projects`, {
+        return this.http.put<ProjectMessage>(`${this.hostPort}v2/projects`, {
             project_name: projectName,
             annotation_type: annotationType,
+            status: 'raw',
             project_path: projectFolderPath,
             label_file_path: labelPath,
         });
     };
 
-    importProject = (): Observable<ImportResponse> => {
-        return this.http.put<ImportResponse>(`${this.hostPort}v2/newproject`, {});
+    importProject = (): Observable<ProjectMessage> => {
+        return this.http.put<ProjectMessage>(`${this.hostPort}v2/projects`, {
+            status: 'config',
+        });
     };
 
     renameProject = (oldProjectName: string, newProjectName: string): Observable<Message> => {
