@@ -194,24 +194,18 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     if (this.enableSort) {
                         switch (this.keyToSort) {
                             case 'project_name':
-                                this.sortedProject = this.sortedProject.sort((a, b) =>
-                                    b.project_name < a.project_name ? 1 : -1,
-                                );
+                                this.sortedProject.sort((a, b) => (b.project_name < a.project_name ? 1 : -1));
                                 break;
                             case 'created_date':
-                                this.sortedProject = this.sortedProject.sort((a, b) =>
-                                    b.created_timestamp > a.created_timestamp ? 1 : -1,
-                                );
+                                this.sortedProject.sort((a, b) => (b.created_timestamp > a.created_timestamp ? 1 : -1));
                                 break;
                             case 'last_modified_date':
-                                this.sortedProject = this.sortedProject.sort((a, b) =>
+                                this.sortedProject.sort((a, b) =>
                                     b.last_modified_timestamp > a.last_modified_timestamp ? 1 : -1,
                                 );
                                 break;
                             default:
-                                this.sortedProject = this.sortedProject.sort((a, b) =>
-                                    b.project_name < a.project_name ? 1 : -1,
-                                );
+                                this.sortedProject.sort((a, b) => (b.project_name < a.project_name ? 1 : -1));
                                 break;
                         }
                     }
