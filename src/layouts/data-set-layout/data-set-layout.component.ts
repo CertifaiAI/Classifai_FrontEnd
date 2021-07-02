@@ -165,29 +165,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .subscribe(({ content }) => {
                 if (content) {
                     const clonedProjectList = cloneDeep(content);
-                    switch (this.keyToSort) {
-                        case 'project_name':
-                            this.sortedProject = clonedProjectList.sort((a, b) =>
-                                b.project_name < a.project_name ? 1 : -1,
-                            );
-                            break;
-                        case 'created_date':
-                            this.sortedProject = clonedProjectList.sort((a, b) =>
-                                b.created_date > a.created_date ? 1 : -1,
-                            );
-                            break;
-                        case 'last_modified_date':
-                            this.sortedProject = clonedProjectList.sort((a, b) =>
-                                b.last_modified_date > a.last_modified_date ? 1 : -1,
-                            );
-                            break;
-                        default:
-                            this.sortedProject = clonedProjectList.sort((a, b) =>
-                                b.project_name < a.project_name ? 1 : -1,
-                            );
-                            break;
-                    }
-                    const formattedProjectList = this.sortedProject.map((project) => {
+
+                    const formattedProjectList = clonedProjectList.map((project) => {
                         const newProjectList = (project = {
                             ...project,
                             created_timestamp: this.formatTimestamp(project.created_date),
@@ -197,6 +176,32 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         });
                         return newProjectList;
                     });
+
+                    console.log(formattedProjectList);
+
+                    switch (this.keyToSort) {
+                        case 'project_name':
+                            this.sortedProject = formattedProjectList.sort((a, b) =>
+                                b.project_name < a.project_name ? 1 : -1,
+                            );
+                            break;
+                        case 'created_date':
+                            this.sortedProject = formattedProjectList.sort((a, b) =>
+                                b.created_date > a.created_date ? 1 : -1,
+                            );
+                            break;
+                        case 'last_modified_date':
+                            this.sortedProject = formattedProjectList.sort((a, b) =>
+                                b.last_modified_date > a.last_modified_date ? 1 : -1,
+                            );
+                            break;
+                        default:
+                            this.sortedProject = formattedProjectList.sort((a, b) =>
+                                b.project_name < a.project_name ? 1 : -1,
+                            );
+                            break;
+                    }
+
                     // console.log(formattedProjectList);
                     /**
                      * !! IMPORTANT
@@ -208,7 +213,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                      */
                     this.projectList = {
                         ...this.projectList,
-                        projects: formattedProjectList,
+                        projects: this.sortedProject,
                         isFetching: false,
                     };
                 }
@@ -228,15 +233,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         return actualMonth ? `${actualMonth}-${initializedDate.getDate()}-${initializedDate.getFullYear()}` : 'Error';
     };
 
-    formatTimestamp = (date: string): string => {
+    formatTimestamp = (date: string): Date => {
         const initializedDate: Date = new Date(date);
-        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const actualMonth: string | undefined = monthNames.find(
-            (_, i) => i === initializedDate.getMonth() || undefined,
-        );
-        return actualMonth
-            ? `${actualMonth}-${initializedDate.getDate()}-${initializedDate.getFullYear()} ${initializedDate.toLocaleTimeString()}`
-            : 'Error';
+        return initializedDate;
     };
 
     createFormControls = (): void => {
