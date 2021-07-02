@@ -1,5 +1,6 @@
 $normalBackground: #525353;
 $hoveredBackground: #393838;
+$activeBackground: #313131;
 
 .dataset-sidemenu-container {
     display: flex;
@@ -70,8 +71,12 @@ $hoveredBackground: #393838;
     max-height: 5vh;
     flex: 1 1 100%;
     &:hover {
-        background-color: $normalBackground;
+        background-color: $hoveredBackground;
     }
+}
+
+.active {
+    background-color: $activeBackground;
 }
 
 .project-icon {
