@@ -113,9 +113,17 @@
         "renameImg": "Namakan Semula Imej",
         "imageName": "Nama Imej",
         "typeNewName": "Masukkan nama baru",
+        "fail": "Gagal menamakan semula!",
+        "illegal": "Nama imej mengandungi karakter yang tidak sah!",
         "nameExist": "Nama imej telah tersedia!",
         "nameEmpty": "Nama imej diperlukan!",
         "submit": "Hantar"
+    },
+    "deleteModal": {
+        "deleteImg": "Padam Imej",
+        "confirmation": "Adakah anda pasti untuk memadam imej",
+        "dontask": "Jangan tanya pengesahan lagi",
+        "confirm": "Teruskan"
     },
     "configFileInfoTitle": "Pilih Fail Eksport",
     "configFileInfoDest1": "Fail Konfig ialah fail konfigurasi yang mengandungi metadata sesuatu projek. Pilihan ini sesuai jika data sudah tersedia dalam sistem untuk diimport.",

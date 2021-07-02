@@ -113,9 +113,17 @@
         "renameImg": "Rename Image",
         "imageName": "Image Name",
         "typeNewName": "Enter new name",
+        "fail": "Rename failed!",
+        "illegal": "Image name contains illegal characters!",
         "nameExist": "Image name already exist!",
         "nameEmpty": "Image name is required!",
         "submit": "Proceed"
+    },
+    "deleteModal": {
+        "deleteImg": "Delete Image",
+        "confirmation": "Are you sure you want to delete",
+        "dontask": "Don't ask me again",
+        "confirm": "Confirm"
     },
     "configFileInfoTitle": "Choosing the Right Export",
     "configFileInfoDest1": "Config File is the configuration file contains of metadata of a project. It is suitable when the data is readily available in the system to be imported to.",

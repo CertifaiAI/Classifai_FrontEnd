@@ -6,7 +6,7 @@
 
 import { distinctUntilChanged } from 'rxjs/operators';
 import { environment } from 'src/environments/environment.prod';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ImageLabellingModeService } from './image-labelling-mode.service';
 import { Injectable } from '@angular/core';
 import {
@@ -14,6 +14,7 @@ import {
     ExportStatus,
     Message,
     MessageBase64Img,
+    MessageDeleteImg,
     MessageProjectProgress,
     MessageReload,
     MessageRenameImg,
@@ -101,6 +102,22 @@ export class ImageLabellingApiService {
                 uuid,
                 new_fname: newImageName,
             },
+        );
+    };
+
+    deleteImage = (uuid: UUID, imgPath: string, projectName: string): Observable<MessageDeleteImg> => {
+        const options = {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json',
+            }),
+            body: {
+                uuid_list: [uuid],
+                img_path_list: [imgPath],
+            },
+        };
+        return this.http.delete<MessageDeleteImg>(
+            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/uuids`,
+            options,
         );
     };
 }

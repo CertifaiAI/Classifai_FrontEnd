@@ -48,6 +48,9 @@ export type Project = {
     is_new: boolean;
     total_uuid: number;
     created_date: string;
+    last_modified_date: string;
+    created_timestamp: string;
+    last_modified_timestamp: string;
     root_path_valid: boolean;
 };
 

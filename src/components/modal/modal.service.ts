@@ -10,6 +10,7 @@ import { ModalComponent } from './modal.component';
 @Injectable({ providedIn: 'root' })
 export class ModalService {
     private modals: ModalComponent[] = [];
+    public openedModalsId: string[] = [];
 
     add = (modal: ModalComponent) => {
         // add modal to array of active modals
@@ -25,7 +26,7 @@ export class ModalService {
     open = (inputId: string) => {
         // open modal specified by id
         const modal = this.modals.find(({ id }) => id === inputId);
-        // console.log(modal);
+        modal && this.openedModalsId.push(modal.id);
         modal?.open();
     };
 
@@ -35,5 +36,10 @@ export class ModalService {
         const modal = this.modals.find(({ id }) => id === inputId);
         // console.log(modal);
         modal?.close();
+    };
+
+    // Check is there any modal currently opened
+    isOpened = () => {
+        return this.openedModalsId.length > 0 ? true : false;
     };
 }

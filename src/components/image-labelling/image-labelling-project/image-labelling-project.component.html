@@ -36,11 +36,20 @@
                                 <img
                                     src="../../../assets/icons/last_modify.svg"
                                     alt="edit"
-                                    height="35%"
-                                    width="35%"
-                                    class="rename-img"
+                                    height="20vh"
+                                    width="20vw"
+                                    class="thumbnail-actions-icon"
                                     (click)="renameImage(thumbnail)"
                                     [title]="'renameModal.renameImg' | translate"
+                                />
+                                <img
+                                    src="../../../assets/icons/trash.svg"
+                                    alt="edit"
+                                    height="20vh"
+                                    width="20vw"
+                                    class="thumbnail-actions-icon"
+                                    (click)="deleteImage(thumbnail, i)"
+                                    [title]="'Delete Image' | translate"
                                 />
                             </div>
                             <div>
