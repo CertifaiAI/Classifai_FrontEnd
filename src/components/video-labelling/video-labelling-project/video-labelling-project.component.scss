@@ -1,0 +1,24 @@
+@use '../../../shared/scss/variables' as color;
+@use '../../../shared/scss/scrollbar' as scrollbar;
+@use '../../../shared/scss/ellipsis' as ellipsis;
+@use '../../../shared/scss/indicator' as indicator;
+
+@mixin tab-after() {
+    position: absolute;
+    content: '';
+    top: 4vh;
+    min-width: 100vw;
+    max-width: 100vw;
+    min-height: 93vh;
+    max-height: 93vh;
+    background: #383535;
+    z-index: -1;
+}
+
+.tab {
+    position: sticky;
+    overflow: hidden;
+    &::before {
+        @include tab-after();
+    }
+}
