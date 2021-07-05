@@ -8,13 +8,13 @@ import { BboxMetadata, ImageLabellingMode, PolyMetadata } from 'src/components/i
 import { cloneDeep } from 'lodash-es';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from './data-set-layout-api.service';
-import { DataSetProps, ProjectRename, ProjectSchema, StarredProps } from './data-set-layout.model';
+import { DataSetProps, Project, ProjectRename, ProjectSchema, StarredProps } from './data-set-layout.model';
 import { distinctUntilChanged, first, map, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
-import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
+import { interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ImageLabellingModeService } from './../../components/image-labelling/image-labelling-mode.service';
 import { LanguageService } from 'src/shared/services/language.service';
-import { Message, MessageUploadStatus } from 'src/shared/types/message/message.model';
+import { MessageUploadStatus, ProjectMessage } from 'src/shared/types/message/message.model';
 import { ModalBodyStyle } from 'src/components/modal/modal.model';
 import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
@@ -37,6 +37,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         isUploading: false,
         isFetching: false,
     };
+    sortedProject: Project[] = [];
     inputProjectName: string = '';
     newInputProjectName: string = '';
     selectedProjectName: string = '';
@@ -61,11 +62,14 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     labelPath: string = '';
     projectFolderPath: string = '';
     showLabelTooltip: boolean = false;
+    unsupportedImageList: string[] = [];
+    keyToSort: string = 'project_name';
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
     readonly modalIdDeleteProject = 'modal-delete-project';
     readonly modalIdRenameSuccess = 'modal-rename-success';
+    readonly modalUnsupportedImage = 'modal-unsupported-image';
     createProjectModalBodyStyle: ModalBodyStyle = {
         minHeight: '45vh',
         minWidth: '31vw',
@@ -100,6 +104,14 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     renameSuccessBodyStyle: ModalBodyStyle = {
         minHeight: '11vh',
         maxHeight: '11vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    unsupportedImageBodyStyle: ModalBodyStyle = {
+        minHeight: '18vh',
+        maxHeight: '30vh',
         minWidth: '31vw',
         maxWidth: '31vw',
         margin: '15vw 71vh',
@@ -140,6 +152,11 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.showProjectList();
     }
 
+    keyIsSelected = (value: string) => {
+        this.keyToSort = value;
+        this.showProjectList();
+    };
+
     showProjectList = (): void => {
         this.projectList.isFetching = true;
         this._dataSetService
@@ -148,14 +165,43 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .subscribe(({ content }) => {
                 if (content) {
                     const clonedProjectList = cloneDeep(content);
-                    // const sortedProject = clonedProjectList.sort((a, b) => (b.created_date > a.created_date ? 1 : -1));
+
                     const formattedProjectList = clonedProjectList.map((project) => {
                         const newProjectList = (project = {
                             ...project,
+                            created_timestamp: this.formatTimestamp(project.created_date),
+                            last_modified_timestamp: this.formatTimestamp(project.last_modified_date),
                             created_date: this.formatDate(project.created_date),
+                            last_modified_date: this.formatDate(project.last_modified_date),
                         });
                         return newProjectList;
                     });
+
+                    console.log(formattedProjectList);
+
+                    switch (this.keyToSort) {
+                        case 'project_name':
+                            this.sortedProject = formattedProjectList.sort((a, b) =>
+                                b.project_name < a.project_name ? 1 : -1,
+                            );
+                            break;
+                        case 'created_date':
+                            this.sortedProject = formattedProjectList.sort((a, b) =>
+                                b.created_date > a.created_date ? 1 : -1,
+                            );
+                            break;
+                        case 'last_modified_date':
+                            this.sortedProject = formattedProjectList.sort((a, b) =>
+                                b.last_modified_date > a.last_modified_date ? 1 : -1,
+                            );
+                            break;
+                        default:
+                            this.sortedProject = formattedProjectList.sort((a, b) =>
+                                b.project_name < a.project_name ? 1 : -1,
+                            );
+                            break;
+                    }
+
                     // console.log(formattedProjectList);
                     /**
                      * !! IMPORTANT
@@ -167,7 +213,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                      */
                     this.projectList = {
                         ...this.projectList,
-                        projects: formattedProjectList,
+                        projects: this.sortedProject,
                         isFetching: false,
                     };
                 }
@@ -184,8 +230,12 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         const actualMonth: string | undefined = monthNames.find(
             (_, i) => i === initializedDate.getMonth() || undefined,
         );
-
         return actualMonth ? `${actualMonth}-${initializedDate.getDate()}-${initializedDate.getFullYear()}` : 'Error';
+    };
+
+    formatTimestamp = (date: string): Date => {
+        const initializedDate: Date = new Date(date);
+        return initializedDate;
     };
 
     createFormControls = (): void => {
@@ -297,35 +347,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     importProject = (): void => {
-        // console.log('IMPORT PROEJCT CLICKED');
         this.toggleImportProjectModalDisplay(true);
-        // const importStatus$ = this._dataSetService.importStatus();
-        // const importProject$ = this._dataSetService.importProject();
-        // importProject$
-        //     .pipe(
-        //         first(),
-        //         map(({ error_code }) => error_code),
-        //     )
-        //     .subscribe((message) => {
-        //         let refreshProjectList = false;
-        //         interval(500)
-        //             .pipe(
-        //                 switchMap(() => importStatus$),
-        //                 first((response) => {
-        //                     console.log("RESPONSE IMPORT PROJECT MESSAGE", response)
-        //                     this.modalSpanMessage = response.error_message
-        //                     this.isOverlayOn = response.error_code === 0 ? true : false;
-        //                     if (response.error_code === 1 || response.error_code === 4) {
-        //                         refreshProjectList = true;
-        //                     }
-
-        //                     return refreshProjectList;
-        //                 }),
-        //             )
-        //             .subscribe((response) => {
-        //                 this.getProjectList();
-        //             });
-        //     });
     };
 
     // onFileChange = ({ target: { files } }: HTMLElementEvent<HTMLInputElement>): void => {
@@ -446,39 +468,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         }
     };
 
-    onOpenImportProject = (isNewProject: boolean, projectName?: string): void => {
-        console.log('BUTTON IMPORT CLICKED');
-        // this.form.markAllAsTouched();
-
-        // if (!isNewProject) {
-        //     projectName ? this.startProject(projectName) : null;
-        //     // if (this.form.get('selectExistProject')?.value) {
-        //     //     // this.startProject(this.form.get('selectExistProject')?.value);
-        //     //     this.selectedProjectName = this.form.get('selectExistProject')?.value;
-        //     // } else {
-        //     //     this.form.get('selectExistProject')?.setErrors({ required: true });
-        //     // }
-        // } else {
-        //     if (this.inputProjectName) {
-        //         const checkExistProject = this.projectList.projects
-        //             ? this.projectList.projects.find((project) =>
-        //                   project ? project.project_name === this.inputProjectName : null,
-        //               )
-        //             : null;
-        //         checkExistProject
-        //             ? (this.form.get('projectName')?.setErrors({ exist: true }),
-        //               this._refProjectName.nativeElement.focus())
-        //             : (this.createProject(this.inputProjectName),
-        //               (this.selectedProjectName = this.form.get('projectName')?.value),
-        //               (this.labelTextUpload = []),
-        //               (this._labelTextFilename.nativeElement.innerHTML = ''));
-        //     } else {
-        //         this.form.get('projectName')?.setErrors({ required: true });
-        //         this._refProjectName.nativeElement.focus();
-        //     }
-        // }
-    };
-
     onSubmitRename() {
         this.renameForm.markAllAsTouched();
         if (this.newInputProjectName) {
@@ -513,23 +502,24 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         const uploadStatus$ = this._dataSetService.localUploadStatus(projectName);
         let numberOfReq: number = 0;
 
-        const returnResponse = ({ message }: Message): Observable<MessageUploadStatus> => {
+        const returnResponse = ({
+            message,
+            error_code,
+            error_message,
+        }: ProjectMessage): Observable<MessageUploadStatus> => {
             return message === 1
                 ? interval(500).pipe(
                       mergeMap(() => uploadStatus$),
                       /** @property {number} message value 4 means upload completed, value 1 means cancelled */
-                      first(({ file_system_status }) => {
+                      first(({ file_system_status, unsupported_image_list }) => {
+                          this.unsupportedImageList = unsupported_image_list;
                           this.isOverlayOn = file_system_status === 1 || file_system_status === 2 ? true : false;
                           this.isImageUploading = file_system_status === 2 ? true : false;
                           const isValidResponse: boolean = file_system_status === 3;
                           return isValidResponse;
                       }),
                   )
-                : throwError((error: any) => {
-                      console.error(error);
-                      this.projectList = { ...this.projectList, isUploading: false };
-                      return error;
-                  });
+                : throwError(new Error(`ERROR ${error_code}: ${error_message}`));
         };
         this.projectList = { ...this.projectList, isUploading: true };
         this.subjectSubscription = this.subject$
@@ -547,10 +537,18 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     numberOfReq = res ? --numberOfReq : numberOfReq;
                     numberOfReq < 1 && (this.projectList = { ...this.projectList, isUploading: false });
                 },
-                (error: Error) => {},
+                (error: Error) => {
+                    console.log(error);
+                },
                 () => {
                     this.isProjectLoading = false;
                     this.showProjectList();
+                    this.unsupportedImageList.length > 0 &&
+                        this._dataSetService
+                            .downloadUnsupportedImageList(projectName, this.unsupportedImageList)
+                            .then((res) => {
+                                res && this._modalService.open(this.modalUnsupportedImage);
+                            });
                 },
             );
 

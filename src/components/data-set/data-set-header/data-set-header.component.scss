@@ -12,12 +12,35 @@ $hoverBackground: #393838;
     // max-height: 4vh;
 }
 
+.dropdown {
+    background-color: rgb(53, 53, 53);
+    border: black;
+    color: white;
+    font-size: 2vh;
+    padding: 0.7vh 0.7vw;
+}
+
 .label {
-    flex: 1 1 80%;
+    flex: 1 1 80vw;
     background: none;
     font-size: 2.5vh;
     color: white;
     white-space: nowrap;
+    min-height: inherit;
+    max-height: inherit;
+}
+
+.dataset-dropdown-container {
+    display: flex;
+}
+
+.dropdown-title {
+    flex: 1 1 80vw;
+    background: none;
+    font-size: 2.5vh;
+    color: white;
+    white-space: nowrap;
+    padding-right: 0.5vw;
     min-height: inherit;
     max-height: inherit;
 }

@@ -7,7 +7,12 @@
 import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from '../data-set-layout/data-set-layout-api.service';
-import { ExportSaveFormatService, ExportSaveType, SaveFormat } from 'src/shared/services/export-save-format.service';
+import {
+    ExportSaveFormatService,
+    ExportSaveType,
+    SaveFormat,
+    ProcessResponse,
+} from 'src/shared/services/export-save-format.service';
 import { first, mergeMap, takeUntil } from 'rxjs/operators';
 import { HTMLElementEvent } from 'src/shared/types/field/field.model';
 import { ImageLabellingActionService } from 'src/components/image-labelling/image-labelling-action.service';
@@ -34,7 +39,7 @@ import {
     SelectedLabelProps,
     TabsProps,
 } from 'src/components/image-labelling/image-labelling.model';
-import { Message } from 'src/shared/types/message/message.model';
+import { ExportStatus, Message } from 'src/shared/types/message/message.model';
 import { ModalBodyStyle } from 'src/components/modal/modal.model';
 import { ProjectSchema } from '../data-set-layout/data-set-layout.model';
 
@@ -80,6 +85,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     isLoading: boolean = false;
     showLoading: boolean = false;
     processingNum: number = 0;
+    unsupportedImageList: string[] = [];
     spanClass: string = '';
     modalSpanMessage: string = '';
     modalSpanLocationPath: string = '';
@@ -90,9 +96,21 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     totalUuid: number = 0;
     labelChoosen: LabelChoosen[] = [];
     tempLabelChoosen: LabelChoosen[] = [];
+    warningMessage: string = '';
+    imgPath: string = '';
+    imgPathSplit: string[] = [];
+    newImageName: string = '';
+    imageExt: string | undefined;
+    selectedUuid: string = '';
+    renameImageErrorCode: number = -1;
+    dontAskDelete: boolean = false;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
+    readonly modalUnsupportedImage = 'modal-unsupported-image';
+    readonly modalExportWarning = 'modalExportWarning';
+    readonly modalRenameImage = 'modal-rename-image';
+    readonly modalDeleteImage = 'modal-delete-image';
     exportModalBodyStyle: ModalBodyStyle = {
         minHeight: '15vh',
         maxHeight: '15vh',
@@ -125,9 +143,41 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
     exportProjectBodyStyle: ModalBodyStyle = {
         minHeight: '10vh',
-        maxHeight: '15vh',
+        maxHeight: '30vh',
         minWidth: '31vw',
         maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    exportWarningBodyStyle: ModalBodyStyle = {
+        minHeight: '10vh',
+        maxHeight: '20vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    unsupportedImageBodyStyle: ModalBodyStyle = {
+        minHeight: '18vh',
+        maxHeight: '30vh',
+        minWidth: '31vw',
+        maxWidth: '31vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    renameImageBodyStyle: ModalBodyStyle = {
+        minHeight: '18vh',
+        maxHeight: '30vh',
+        minWidth: '20vw',
+        maxWidth: '20vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    deleteImageBodyStyle: ModalBodyStyle = {
+        minHeight: '18vh',
+        maxHeight: '30vh',
+        minWidth: '20vw',
+        maxWidth: '20vw',
         margin: '15vw 71vh',
         overflow: 'none',
     };
@@ -142,6 +192,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     @ViewChild('subLabelSelect') _subLabelSelect!: ElementRef<{ value: string }>;
+    @ViewChild('renameInput') _renameInput!: ElementRef<HTMLInputElement>;
+    @ViewChild('deleteBtn') _deleteBtn!: ElementRef<HTMLButtonElement>;
 
     constructor(
         public _router: Router,
@@ -204,7 +256,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                             mergeMap(() => projLoadingStatus$),
                             first(({ message }) => message === 2),
                             mergeMap(({ uuid_list, label_list }) => {
-                                console.log(uuid_list.length);
                                 this.tabStatus[1].label_list = label_list;
                                 return uuid_list.length > 0
                                     ? uuid_list
@@ -335,8 +386,30 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         }
     };
 
+    onCheckBboxMetadata = () => {
+        this.tabStatus.forEach(({ annotation }) => {
+            if (annotation) {
+                annotation?.forEach((metadata) => {
+                    metadata.bnd_box?.forEach((bbox, idx) => {
+                        if (bbox.x1 > bbox.x2) {
+                            const temp = bbox.x1;
+                            bbox.x1 = bbox.x2;
+                            bbox.x2 = temp;
+                        }
+                        if (bbox.y1 > bbox.y2) {
+                            const temp = bbox.y1;
+                            bbox.y1 = bbox.y2;
+                            bbox.y2 = temp;
+                        }
+                    });
+                });
+            }
+        });
+    };
+
     updateProjectProgress = (): void => {
         const projectName = this.selectedProjectName;
+        this.onCheckBboxMetadata();
         this._imgLblLayoutService.updateProjectProgress(this.tabStatus, projectName);
     };
 
@@ -363,7 +436,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     onToggleTab = ({ name, closed }: TabsProps): void => {
-        // console.log(name, closed);
         const isExactTabState: boolean = this.tabStatus.some(
             (tab) => tab.name.toLowerCase() === name.toLowerCase() && tab.closed === closed,
         );
@@ -383,27 +455,57 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         exportType === 'cfgdata' && this.processingNum++;
         const projectName = this.selectedProjectName;
         const exportProject$ = this._imgLblApiService.exportProject(projectName, exportType);
-        exportProject$.pipe(first()).subscribe(({ message, project_config_path }) => {
-            exportType === 'cfgdata' && this.processingNum--;
-            if (message === 1) {
-                console.log(this._languageService._translate.get('exportSuccess').subscribe());
-                this._languageService._translate.get('exportSuccess').subscribe((translated) => {
-                    // alert(projectName + translated);
-                    this.toggleExportProjectModalMessage(true);
-                    this.modalSpanMessage = projectName + translated;
-                    this.modalSpanLocationPath = project_config_path;
-                    this.processIsSuccess(true);
-                });
-            } else {
-                this._languageService._translate.get('exportFailed').subscribe((translated) => {
-                    // alert(translated + projectName);
-                    this.toggleExportProjectModalMessage(true);
-                    this.modalSpanMessage = translated + projectName;
-                    this.processIsSuccess(false);
-                });
-            }
-        });
-        this.closeExportProjectModal();
+        const exportProjectStatus$ = this._imgLblApiService.exportProjectStatus();
+
+        const returnResponse = ({ message }: Message): Observable<ExportStatus> => {
+            return message === 1
+                ? interval(500).pipe(
+                      mergeMap(() => exportProjectStatus$),
+                      first(({ export_status }) => {
+                          this.isOverlayOn = export_status === 1 ? true : false;
+                          this.isLoading = export_status === 1 ? true : false;
+                          const isValidResponse: boolean =
+                              export_status === 0 || export_status === 2 || export_status === 3;
+                          return isValidResponse;
+                      }),
+                  )
+                : throwError((error: any) => {
+                      console.error(error);
+                      return error;
+                  });
+        };
+        this.subjectSubscription = this.subject$
+            .pipe(
+                first(),
+                mergeMap(() => exportProject$),
+                mergeMap((message) => returnResponse(message)),
+            )
+            .subscribe(
+                ({ export_status, project_config_path }) => {
+                    exportType === 'cfgdata' && this.processingNum--;
+                    if (export_status === 2) {
+                        this._languageService._translate.get('exportSuccess').subscribe((translated) => {
+                            this.toggleExportProjectModalMessage(true);
+                            this.modalSpanMessage = projectName + translated;
+                            this.modalSpanLocationPath = project_config_path;
+                            this.processIsSuccess(true);
+                        });
+                    } else {
+                        this._languageService._translate.get('exportFailed').subscribe((translated) => {
+                            this.toggleExportProjectModalMessage(true);
+                            this.modalSpanMessage = translated + projectName;
+                            this.processIsSuccess(false);
+                        });
+                    }
+                },
+                (error: Error) => {},
+                () => {
+                    this.closeExportProjectModal();
+                },
+            );
+
+        // make initial call
+        this.subject$.next();
     };
 
     toggleExportProjectModalMessage = (open: boolean): void => {
@@ -438,7 +540,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 ? interval(500).pipe(
                       mergeMap(() => reloadStatus$),
                       /** @property {number} message value 4 means upload completed, value 1 means cancelled */
-                      first(({ file_system_status }) => {
+                      first(({ file_system_status, unsupported_image_list }) => {
+                          this.unsupportedImageList = unsupported_image_list;
                           const isValidResponse: boolean = file_system_status === 3 || file_system_status === 0;
                           return isValidResponse;
                       }),
@@ -465,7 +568,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                                         .map((uuid) => thumbnail$(projectName, uuid))
                                   : [];
 
-                          // console.log(thumbnails);
                           this.thumbnailList = [];
                           return thumbnails;
                       }),
@@ -496,6 +598,12 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     this.currentImageDisplayIndex = -1;
                     this.navigateByAction({ thumbnailAction: 1 });
                     this.isLoading = false;
+                    this.unsupportedImageList.length > 0 &&
+                        this._dataSetService
+                            .downloadUnsupportedImageList(projectName, this.unsupportedImageList)
+                            .then((res) => {
+                                res && this._modalService.open(this.modalUnsupportedImage);
+                            });
                 },
             );
 
@@ -504,30 +612,68 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     navigateByUrl = ({ url }: EventEmitter_Url): void => {
-        // console.log(url);
         url ? this._router.navigate([url]) : console.error(`No url received from child component`);
     };
 
     @HostListener('window:keydown', ['$event'])
     keyDownEvent = ({ key, repeat }: KeyboardEvent): void => {
-        this._imgLblActionService.action$.pipe(first()).subscribe(({ draw }) => {
-            if (!draw && !repeat) {
-                switch (key) {
-                    case 'ArrowLeft':
+        if (!this.selectedMetaData || this._modalService.isOpened()) {
+            return;
+        }
+        const thumbnailInfo = this.selectedMetaData;
+        switch (key) {
+            case 'ArrowLeft':
+                this._imgLblActionService.action$.pipe(first()).subscribe(({ draw }) => {
+                    if (!draw && !repeat) {
                         this.navigateByAction({ thumbnailAction: -1 });
-                        break;
-                    case 'ArrowRight':
+                    }
+                });
+                break;
+            case 'ArrowRight':
+                this._imgLblActionService.action$.pipe(first()).subscribe(({ draw }) => {
+                    if (!draw && !repeat) {
                         this.navigateByAction({ thumbnailAction: 1 });
-                        break;
-                    case 'Escape':
-                        this.onCloseModal();
-                        break;
-                    default:
-                        break;
+                    }
+                });
+                break;
+            case 'F2':
+                this.getImageNameFromPath(thumbnailInfo);
+                this.renameImageErrorCode = -1;
+                this._modalService.open(this.modalRenameImage);
+                this._renameInput.nativeElement.focus();
+                break;
+            case 'Delete':
+                if (this.currentAnnotationIndex !== -1) {
+                    break;
                 }
-            }
-        });
+                this.getImageNameFromPath(thumbnailInfo);
+                if (!this.dontAskDelete) {
+                    this._modalService.open(this.modalDeleteImage);
+                    this._deleteBtn.nativeElement.focus();
+                    break;
+                }
+                this.onSubmitDeleteImage();
+                break;
+            default:
+                break;
+        }
     };
+
+    getImageNameFromPath(thumbnailInfo: CompleteMetadata) {
+        this.imgPath = thumbnailInfo.img_path;
+        let separater = '';
+        const platform = window.navigator.platform;
+        if (platform.startsWith('Mac') || platform.startsWith('Linux')) {
+            separater = '/';
+        } else {
+            separater = '\\';
+        }
+        this.imgPathSplit = this.imgPath.split(separater);
+        const imageName = this.imgPathSplit.pop();
+        this.newImageName = imageName ? imageName.split('.')[0] : '';
+        this.imageExt = imageName ? '.' + imageName.split('.').pop() : '';
+        this.selectedUuid = thumbnailInfo.uuid;
+    }
 
     navigateByAction = ({ thumbnailAction }: EventEmitter_Action): void => {
         if (thumbnailAction) {
@@ -584,7 +730,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     };
 
     onProcessLabel = ({ selectedLabel, label_list, action }: SelectedLabelProps) => {
-        // console.log(selectedLabel, label_list, action);
         const newLabelList: string[] =
             selectedLabel && !action ? label_list.filter((label) => label !== selectedLabel) : label_list;
         const projectName: string = this.selectedProjectName;
@@ -661,7 +806,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 }
             }),
         );
-        // console.log(isDupSubLabel);
 
         if (!isDupSubLabel) {
             this.tabStatus = this._imgLblLayoutService.submitLabel(this.tabStatus, value, this.currentAnnotationIndex, {
@@ -728,13 +872,15 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onClickDownload = async (saveFormat: SaveFormat) => {
         const labelList = this.labelChoosen.filter((e) => e.isChoosen === true).map((e) => e.label);
+        const fullLabelList = this.labelChoosen.map((e) => e.label);
         this.saveType.saveBulk && this.processingNum++;
-        await this._exportSaveFormatService.exportSaveFormat({
+        const response: ProcessResponse = await this._exportSaveFormatService.exportSaveFormat({
             ...this.saveType,
             saveFormat,
             metadata: this.selectedMetaData,
             index: this.currentAnnotationIndex,
             projectName: this.selectedProjectName,
+            fullLabelList,
             ...((this.saveType.saveBulk || saveFormat === 'ocr' || saveFormat === 'json' || saveFormat === 'coco') && {
                 projectFullMetadata: this.thumbnailList,
             }),
@@ -742,6 +888,17 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 labelList,
             }),
         });
+
+        /**
+         * Response Message:
+         * 0 - isEmpty/Warning
+         * 1 - Success/Done
+         */
+
+        if (response.message === 0) {
+            this.warningMessage = response.msg;
+            this._modalService.open(this.modalExportWarning);
+        }
         this.saveType.saveBulk && this.processingNum--;
     };
 
@@ -759,6 +916,94 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onLoadMoreThumbnails() {
         this.loadThumbnails();
+    }
+
+    onRenameImage(thumbnailInfo: CompleteMetadata) {
+        this.getImageNameFromPath(thumbnailInfo);
+        this.renameImageErrorCode = -1;
+        this._modalService.open(this.modalRenameImage);
+        this._renameInput.nativeElement.focus();
+    }
+
+    onDeleteImage(thumbnailInfo: CompleteMetadata) {
+        if (this.currentAnnotationIndex !== -1) {
+            return;
+        }
+        this.getImageNameFromPath(thumbnailInfo);
+        if (!this.dontAskDelete) {
+            this._modalService.open(this.modalDeleteImage);
+            this._deleteBtn.nativeElement.focus();
+            return;
+        }
+        this.onSubmitDeleteImage();
+    }
+
+    onChangeImageName(event: HTMLElementEvent<HTMLInputElement>) {
+        this.newImageName = event.target.value;
+    }
+
+    onSubmitRenameImage() {
+        if (this.newImageName === '') {
+            this.renameImageErrorCode = 3;
+            return;
+        }
+        this._imgLblApiService
+            .renameImage(this.selectedUuid, this.newImageName + this.imageExt, this.selectedProjectName)
+            .subscribe((res) => {
+                if (res.message === 1) {
+                    const index = this.thumbnailList.findIndex((t) => t.uuid === this.selectedUuid);
+                    let separater = '';
+                    const platform = window.navigator.platform;
+                    if (platform.startsWith('Mac') || platform.startsWith('Linux')) {
+                        separater = '/';
+                    } else {
+                        separater = '\\';
+                    }
+
+                    this.thumbnailList[index].img_path =
+                        this.imgPathSplit.join(separater) + separater + this.newImageName + this.imageExt;
+
+                    this.newImageName = '';
+                    this._modalService.close(this.modalRenameImage);
+                } else {
+                    if (res.error_code !== 3) {
+                        this.renameImageErrorCode = res.error_code;
+                    }
+                }
+            });
+    }
+
+    onSubmitDeleteImage() {
+        this._imgLblApiService
+            .deleteImage(this.selectedUuid, this.imgPath, this.selectedProjectName)
+            .subscribe((res) => {
+                if (res.message === 1) {
+                    this.thumbnailList = this.thumbnailList.filter((x) => res.uuid_list.includes(x.uuid));
+                    this.totalUuid = res.uuid_list.length;
+                    if (this.onChangeSchema.currentThumbnailIndex === this.totalUuid + 1) {
+                        this.onChangeSchema.currentThumbnailIndex--;
+                        this.currentImageDisplayIndex--;
+                        this.displayOtherImgAfterDelete();
+                    } else {
+                        this.displayOtherImgAfterDelete();
+                    }
+                    this.sliceNum--;
+                    if (this.thumbnailList.length < 15) {
+                        this.onLoadMoreThumbnails();
+                    }
+                    this._modalService.close(this.modalDeleteImage);
+                }
+            });
+    }
+
+    displayOtherImgAfterDelete() {
+        const filteredThumbMetadata = this.thumbnailList.find((_, i) => i === this.currentImageDisplayIndex);
+        const thumbnailIndex = this.thumbnailList.findIndex((_, i) => i === this.currentImageDisplayIndex);
+        thumbnailIndex + 3 === this.thumbnailList.length && this.loadThumbnails();
+        filteredThumbMetadata &&
+            thumbnailIndex !== -1 &&
+            !this.showLoading &&
+            this.displayImage({ ...filteredThumbMetadata, thumbnailIndex });
     }
 
     showAdvSettings() {
@@ -797,6 +1042,21 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 no: 5,
                 shortcutKey: `info.shortcut.5.key`,
                 functionality: `info.shortcut.5.functionality`,
+            },
+            {
+                no: 6,
+                shortcutKey: `info.shortcut.6.key`,
+                functionality: `info.shortcut.6.functionality`,
+            },
+            {
+                no: 7,
+                shortcutKey: `info.shortcut.7.key`,
+                functionality: `info.shortcut.7.functionality`,
+            },
+            {
+                no: 8,
+                shortcutKey: `info.shortcut.8.key`,
+                functionality: `info.shortcut.8.functionality`,
             },
         ];
     }

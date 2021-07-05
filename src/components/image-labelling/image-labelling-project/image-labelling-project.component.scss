@@ -194,6 +194,10 @@
     }
 }
 
+.img-selected {
+    background: #555;
+}
+
 .img {
     // border-radius: 1vh;
     max-height: 4.3vh;
@@ -392,4 +396,19 @@
 
 .choose-tab {
     margin-top: 42vh;
+}
+
+.thumbnail-actions {
+    text-align: end;
+    padding-right: 1vw;
+    width: 10vw;
+}
+
+.thumbnail-actions-icon {
+    border-radius: 50%;
+    padding: 0.2vh;
+}
+
+.thumbnail-actions-icon:hover {
+    background: #555;
 }

@@ -7,7 +7,7 @@
 <div class="upper-container">
     <data-set-side-menu (_onCreate)="toggleModalDisplay($event)" (_onImport)="importProject()"></data-set-side-menu>
     <div>
-        <data-set-header></data-set-header>
+        <data-set-header (selectedKey)="keyIsSelected($event)"></data-set-header>
         <data-set-card
             [_jsonSchema]="projectList"
             (_onClick)="onSubmit(false, $event)"
@@ -75,16 +75,16 @@
                         (mouseout)="showLabelTooltip = false"
                     />
                 </label>
-                <span class="labeltooltiptext" *ngIf="showLabelTooltip">
-                    <p>{{ 'labelFileDest1' | translate }}</p>
-                    <p>{{ 'labelFileDest2' | translate }}</p>
-                </span>
                 <div style="padding-top: 1vh">
                     <button class="button-file-style choose-file-button" type="button" (click)="importLabelFile()">
                         {{ 'chooseFile' | translate }}
                     </button>
                 </div>
             </div>
+            <span class="labeltooltiptext" *ngIf="showLabelTooltip">
+                <p>{{ 'labelFileDest1' | translate }}</p>
+                <p>{{ 'labelFileDest2' | translate }}</p>
+            </span>
             <div class="file-name-container">
                 <label class="filename" #labeltextfilename></label>
             </div>
@@ -218,5 +218,11 @@
         </div>
     </div>
 </modal>
+
+<unsupported-image-modal
+    [_modalUnsupportedImage]="modalUnsupportedImage"
+    [_unsupportedImageBodyStyle]="unsupportedImageBodyStyle"
+    [_unsupportedImageList]="unsupportedImageList"
+></unsupported-image-modal>
 
 <spinner [_loading]="isLoading"></spinner>

@@ -26,8 +26,10 @@ function createWindow() {
     });
 
     mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 1280,
+        height: 720,
+        minWidth: 1280,
+        minHeight: 720,
         frame: false,
         webPreferences: {
             nodeIntegration: true,

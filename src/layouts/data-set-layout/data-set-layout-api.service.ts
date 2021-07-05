@@ -19,14 +19,21 @@ import {
     MessageProjectProgress,
     MessageUploadStatus,
     ImportResponse,
+    ProjectMessage,
 } from 'src/shared/types/message/message.model';
+import { UnsupportedImageService } from 'src/shared/services/unsupported-image.service';
 
 @Injectable({ providedIn: 'any' })
 export class DataSetLayoutService {
     private hostPort: string = environment.baseURL;
     private imageLabellingMode: ImageLabellingMode = null;
 
-    constructor(private http: HttpClient, private mode: ImageLabellingModeService, private router: Router) {
+    constructor(
+        private http: HttpClient,
+        private mode: ImageLabellingModeService,
+        private router: Router,
+        private _unsupportedImageService: UnsupportedImageService,
+    ) {
         // if has mode value, acquire the mode value
         // else return to lading page
         this.mode.imgLabelMode$
@@ -39,18 +46,25 @@ export class DataSetLayoutService {
         // .pipe(catchError(this.handleError));
     };
 
-    createNewProject = (projectName: string, labelPath: string, projectFolderPath: string): Observable<Message> => {
+    createNewProject = (
+        projectName: string,
+        labelPath: string,
+        projectFolderPath: string,
+    ): Observable<ProjectMessage> => {
         const annotationType = this.imageLabellingMode === 'bndbox' ? 'boundingbox' : 'segmentation';
-        return this.http.put<Message>(`${this.hostPort}v2/projects`, {
+        return this.http.put<ProjectMessage>(`${this.hostPort}v2/projects`, {
             project_name: projectName,
             annotation_type: annotationType,
+            status: 'raw',
             project_path: projectFolderPath,
             label_file_path: labelPath,
         });
     };
 
-    importProject = (): Observable<ImportResponse> => {
-        return this.http.put<ImportResponse>(`${this.hostPort}v2/newproject`, {});
+    importProject = (): Observable<ProjectMessage> => {
+        return this.http.put<ProjectMessage>(`${this.hostPort}v2/projects`, {
+            status: 'config',
+        });
     };
 
     renameProject = (oldProjectName: string, newProjectName: string): Observable<Message> => {
@@ -137,5 +151,9 @@ export class DataSetLayoutService {
 
     importProjectFolderStatus() {
         return this.http.get<Folder>(`${this.hostPort}v2/folders`);
+    }
+
+    downloadUnsupportedImageList(projectName: string, unsupportedImageList: string[]) {
+        return this._unsupportedImageService.downloadUnsupportedImageList(projectName, unsupportedImageList);
     }
 }

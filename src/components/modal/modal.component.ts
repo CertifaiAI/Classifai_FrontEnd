@@ -73,6 +73,7 @@ export class ModalComponent implements OnInit, OnDestroy {
     close(): void {
         this.element.style.display = 'none';
         document.body.classList.remove('modal-open');
+        this._modalService.openedModalsId = this._modalService.openedModalsId.filter((idx) => idx !== this.id);
         // this._el.nativeElement.children[0].style.background = null;
     }
 

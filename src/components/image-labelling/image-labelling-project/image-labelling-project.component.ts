@@ -29,6 +29,7 @@ import {
     ChangeAnnotationLabel,
     CompleteMetadata,
     EventEmitter_ThumbnailDetails,
+    ImgLabelProps,
     Polygons,
     PolyMetadata,
     SelectedLabelProps,
@@ -44,6 +45,7 @@ import { UndoRedoService } from 'src/shared/services/undo-redo.service';
     // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDestroy {
+    @Input() _onChange!: ImgLabelProps;
     @Input() _totalUuid: number = 0;
     @Input() _selectMetadata!: BboxMetadata & PolyMetadata;
     @ViewChild('thumbnailList') thumbnailList!: ElementRef<HTMLDivElement>;
@@ -56,6 +58,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
     @Output() _onDeleteAnnotation: EventEmitter<number> = new EventEmitter();
     @Output() _loadMoreThumbnails: EventEmitter<void> = new EventEmitter();
+    @Output() _onRenameImage: EventEmitter<CompleteMetadata> = new EventEmitter();
+    @Output() _onDeleteImage: EventEmitter<CompleteMetadata> = new EventEmitter();
     action: number = -1;
     displayInputLabel: boolean = false;
     inputLabel: string = '';
@@ -296,6 +300,15 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
             this.tempMax = this.max;
             this._loadMoreThumbnails.emit();
         }
+    }
+
+    renameImage(thumbnail: CompleteMetadata) {
+        this._onRenameImage.emit(thumbnail);
+    }
+
+    deleteImage(thumbnail: Omit<BboxMetadata & PolyMetadata, 'img_src'>, thumbnailIndex: number) {
+        this.onClick(thumbnail, thumbnailIndex);
+        this._onDeleteImage.emit(thumbnail);
     }
 
     ngOnDestroy(): void {

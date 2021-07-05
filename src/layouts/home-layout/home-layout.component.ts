@@ -38,9 +38,10 @@ export class HomeLayoutComponent implements OnInit {
                 imgAlt: 'Bounding Box',
             },
             {
-                enabled: true,
+                enabled: false,
                 title: 'imageOpt.polygons',
                 urlPath: 'segmentation',
+                hoverLabel: 'comingSoon',
                 imgPath: 'assets/landing-page/Classifai_Thumbnail_Band_Segmentation.jpg',
                 imgAlt: 'Segmentation',
             },
@@ -71,13 +72,15 @@ export class HomeLayoutComponent implements OnInit {
         this._modalService.open(id);
     };
 
-    onCloseModal = (id: string, path?: CardChoiceImgLblUrlPath) => {
-        if (path) {
-            const chosenMode: ImageLabellingMode = path === 'boundingbox' ? 'bndbox' : 'seg';
-            this._imgLblMode.setState(chosenMode);
-            this._router.navigate([this.navigateUrl]);
+    onCloseModal = (id: string, enabled: boolean, path?: CardChoiceImgLblUrlPath) => {
+        if (enabled) {
+            if (path) {
+                const chosenMode: ImageLabellingMode = path === 'boundingbox' ? 'bndbox' : 'seg';
+                this._imgLblMode.setState(chosenMode);
+                this._router.navigate([this.navigateUrl]);
+            }
+            this._modalService.close(id);
         }
-        this._modalService.close(id);
     };
 
     mouseEventCapture(event: MouseEvent, index: number): void {
@@ -86,11 +89,11 @@ export class HomeLayoutComponent implements OnInit {
         this.hoverIndex = index;
     }
 
-    hoverStyling = (index: number, isHover: boolean): Partial<CSSStyleDeclaration> => {
+    hoverStyling = (index: number, isHover: boolean, enabled: boolean): Partial<CSSStyleDeclaration> => {
         return index === this.hoverIndex && isHover
             ? {
                   opacity: '1.0',
-                  cursor: 'pointer',
+                  cursor: enabled ? 'pointer' : 'not-allowed',
                   // minWidth: '16vw',
                   // maxWidth: '16vw',
               }
