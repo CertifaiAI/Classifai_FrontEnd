@@ -15,6 +15,41 @@
     z-index: -1;
 }
 
+.utility-right-project-container {
+    height: 100%;
+    min-width: 16.3vw;
+    max-width: 16.3vw;
+    background: #383535;
+    border: 0.0325vw solid rgb(255, 255, 255, 0.25);
+    border-top: none;
+    // border: none;
+    z-index: 1000;
+    align-items: stretch;
+    &::after {
+        position: absolute;
+        content: '';
+        top: 0;
+        min-width: 8.5vw;
+        max-width: 8.5vw;
+        min-height: 4vh;
+        max-height: 4vh;
+        background: #383535;
+        z-index: -1;
+        font-size: 1.5vh;
+        line-height: 3vh;
+        color: white;
+        padding: 0.5vh 0 0 2vw;
+    }
+}
+
+.closed {
+    display: none;
+}
+
+.flex-fill-remaining {
+    flex: 1 1 auto;
+}
+
 .tab {
     position: sticky;
     overflow: hidden;
