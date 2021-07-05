@@ -8,6 +8,7 @@
             <option value="last_modified_date">Last Modified Date</option>
         </select>
     </div>
+    <div *ngIf="!_enableSort" style="height: 3.5vh"></div>
     <div class="dataset-icon-container">
         <!-- <ng-container *ngFor="let icon of jsonSchema.icons">
             <img class="dataset-icon" [src]="icon.imgPath" [title]="icon.hoverLabel" [alt]="icon.alt" />
