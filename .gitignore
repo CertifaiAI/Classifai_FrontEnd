@@ -45,9 +45,5 @@ testem.log
 .DS_Store
 Thumbs.db
 
-<<<<<<< HEAD
-# Demo Data
-=======
 # DemoData
->>>>>>> main
 video_img

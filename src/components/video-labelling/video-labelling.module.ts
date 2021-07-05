@@ -11,6 +11,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { VideoLabellingLeftSidebarComponent } from './video-labelling-left-sidebar/video-labelling-left-sidebar.component';
 import { VideoLabellingRightSidebarComponent } from './video-labelling-right-sidebar/video-labelling-right-sidebar.component';
 import { VideoLabellingObjectDetectionComponent } from './video-labelling-object-detection/video-labelling-object-detection.component';
+import { VideoLabellingProjectComponent } from './video-labelling-project/video-labelling-project.component';
 
 @NgModule({
     imports: [CommonModule, SharedModule, TranslateModule],
@@ -18,11 +19,13 @@ import { VideoLabellingObjectDetectionComponent } from './video-labelling-object
         VideoLabellingLeftSidebarComponent,
         VideoLabellingRightSidebarComponent,
         VideoLabellingObjectDetectionComponent,
+        VideoLabellingProjectComponent,
     ],
     exports: [
         VideoLabellingLeftSidebarComponent,
         VideoLabellingRightSidebarComponent,
         VideoLabellingObjectDetectionComponent,
+        VideoLabellingProjectComponent,
     ],
 })
 export class VideoLabellingModule {}
