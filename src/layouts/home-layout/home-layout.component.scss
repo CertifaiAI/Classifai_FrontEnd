@@ -8,24 +8,8 @@
     font-size: 2.4vh;
 }
 
-.modal-button {
-    @include button-style();
-}
-
-.float-right {
-    float: right;
-}
-
 .label-hidden {
     visibility: hidden;
-}
-
-.modal-header-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    @include button-style();
 }
 
 .modal-body-container {

@@ -6,7 +6,6 @@
     position: absolute;
     background: #525353;
     border: 0.0625vw solid rgb(255, 255, 255, 0.25);
-    // border: none;
     min-height: 2.3vh;
     max-height: 2.3vh;
     min-width: 100vw;
@@ -44,20 +43,6 @@
     display: flex;
     @include footer-texts(130%);
     @include ellipsis.ellipsis-styling();
-}
-
-.border-right {
-    border-right: 1rem white;
-}
-
-.utility-icon-container {
-    min-height: 5vh;
-    max-height: 5vh;
-    align-items: baseline;
-}
-
-.utility-icon-light {
-    @include icon.icon-styling(context-menu, absolute, 1.5vh, 0);
 }
 
 .footer-path-label {

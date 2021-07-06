@@ -13,8 +13,6 @@
 -------------------------------*/
 
 .modal {
-    /* modal container fixed across whole screen */
-    // position: fixed;
     position: absolute;
     top: 0;
     right: 0;
@@ -23,8 +21,6 @@
     overflow: hidden;
     display: flex;
     justify-content: center;
-    /* z-index must be higher than .jw-modal-background */
-    // z-index: 1001;
 }
 
 /* enables scrolling for tall modals */
@@ -34,12 +30,6 @@
     padding: 1.5vw;
     background: #262a2e;
     color: #fff;
-    // display: flex;
-    // flex-direction: column;
-    /* margin exposes part of the modal background */
-
-    // margin: 5rem 25rem 15rem 25rem;
-
     position: absolute;
     z-index: 2000;
 }

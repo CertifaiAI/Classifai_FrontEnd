@@ -10,12 +10,10 @@
         </ng-container>
 
         <ng-template #otherMenu>
-            <!-- <div class="current-project-container"> -->
             <div [attr.data-index]="i" class="current-project-btn" (click)="onClickButton(menu.id)">
                 <img class="project-icon" [src]="menu.src" [style]="menu.style" />
                 <label class="current-project-txt">{{ menu.name | translate }}</label>
             </div>
-            <!-- </div> -->
         </ng-template>
     </ng-container>
 </div>

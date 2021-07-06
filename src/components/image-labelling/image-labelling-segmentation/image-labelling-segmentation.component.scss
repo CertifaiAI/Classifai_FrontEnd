@@ -27,7 +27,6 @@
     outline: none;
     border-radius: 0.2vh;
     border-top: 0.1vh dotted snow;
-    // text-align: center;
     overflow: auto;
     scrollbar-width: none;
     &::-webkit-scrollbar {
@@ -81,12 +80,4 @@
     border-bottom: none;
     padding: 0;
     text-indent: 0.4vw;
-}
-
-.invalidInput {
-    border: 0.2vw solid red;
-}
-
-.validInput {
-    border: 0.2vw solid grey;
 }

@@ -9,7 +9,6 @@
     justify-content: space-between;
     z-index: 1000;
     position: relative;
-    /* position: absolute; */
 }
 
 .container-flex-start {
@@ -64,16 +63,9 @@
     max-height: 3.4vh;
 }
 
-.img-container:hover .img-description {
-    visibility: visible;
-    opacity: 1;
-}
-
 .btn-container {
     min-height: 4.36vh;
     max-height: 4.36vh;
-    // min-width: 9vw;
-    // max-width: 12vw;
     font-size: 2vh;
     background: #525353;
     border-left: 0.0625vw solid rgb(255, 255, 255, 0.25);

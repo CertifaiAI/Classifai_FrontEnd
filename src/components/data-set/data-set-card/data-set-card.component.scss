@@ -154,34 +154,6 @@ $hoverBackground: #393838;
     position: relative;
 }
 
-.tag-container {
-    display: flex;
-    flex-direction: row;
-    border-radius: 10vw;
-    background: #363636;
-    width: 4.5vw;
-    padding: 0.2vw 0.3vh;
-    cursor: pointer;
-    outline: none;
-    border: none;
-    margin: 0.8vh 0 0 1vw;
-}
-
-.tag-img {
-    min-height: 2vh;
-    max-height: 2vh;
-    min-width: 1vw;
-    max-width: 1vw;
-    margin-left: 0.35vw;
-}
-
-.tag-txt {
-    font-size: 1.2vh;
-    color: white;
-    padding: 0.2vh 0 0 0.3vw;
-    cursor: pointer;
-}
-
 //#########################
 //    Start - Modal PopUp
 //#########################

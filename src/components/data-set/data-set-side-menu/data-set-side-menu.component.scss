@@ -9,7 +9,6 @@ $hoveredBackground: #393838;
 }
 
 .new-project-container {
-    // margin-top: 5vh;
     margin-bottom: 5vh;
     margin-left: 2vw;
 }
@@ -35,10 +34,6 @@ $hoveredBackground: #393838;
 }
 
 .add-icon {
-    // max-width: 2vw;
-    // min-width: 2vw;
-    // min-height: 4vh;
-    // max-height: 4vh;
     min-height: inherit;
     max-height: inherit;
 }
@@ -58,11 +53,9 @@ $hoveredBackground: #393838;
     color: white;
     cursor: pointer;
     display: flex;
-    // justify-content: space-evenly;
     align-items: center;
     border-radius: 5vh;
     padding: 1vh 1vw 1vh 1vw;
-    // margin: 0 0 3vh 3vw;
     margin-left: 2vw;
     min-width: 10vw;
     max-width: 10vw;
@@ -75,19 +68,10 @@ $hoveredBackground: #393838;
 }
 
 .project-icon {
-    // min-width: 2vw;
-    // max-width: 2vw;
     min-height: 4vh;
     max-height: 4vh;
     flex: 1 1 10%;
 }
-
-// .current-project-container {
-//     padding-left: 3vw;
-//     display: flex;
-//     padding-top: 11vh;
-//     flex-direction: column;
-// }
 
 .current-project-txt {
     border: none;

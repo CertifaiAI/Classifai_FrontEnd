@@ -1,7 +1,6 @@
 <div class="header-container">
     <div class="container-flex-start">
         <ng-container *ngIf="_onChange.thumbnailName; else defaultName">
-            <!-- <div class="indicator"></div> -->
             <div [ngClass]="_onChange.hasAnnotation ? 'indicator' : 'no-indicator'"></div>
             <label class="imageTitle">{{ _onChange.thumbnailName | fileNameSlice }}</label>
         </ng-container>
@@ -54,9 +53,6 @@
                     (click)="logo.onClick()"
                 />
             </div>
-            <!-- <ng-container *ngIf="i === 1">
-                <hr class="horizontal-line" />
-            </ng-container> -->
         </ng-container>
     </div>
 </div>

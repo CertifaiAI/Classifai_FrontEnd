@@ -5,7 +5,6 @@
     right: 0;
     bottom: 0;
     left: 0;
-    // background-color: #000;
     opacity: 0.85;
     z-index: 10000;
     cursor: progress;
@@ -20,14 +19,9 @@
 .mesh-loader .circle {
     width: 1.6276041666666667vw;
     height: 3.315649867374005vh;
-    // width: 25px;
-    // height: 25px;
-    // width: 1.563rem;
-    // height: 1.563rem;
     position: absolute;
     background: #2d8ceb;
     border-radius: 50%;
-    // margin: -12.5px;
     margin: -0.8138020833333334vw;
     -webkit-animation: mesh 3s ease-in-out infinite;
     animation: mesh 3s ease-in-out infinite -1.5s;

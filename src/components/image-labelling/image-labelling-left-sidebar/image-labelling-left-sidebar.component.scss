@@ -10,7 +10,6 @@
     max-height: 95.4vh;
     background: #525353;
     border: 0.0625vw solid rgb(255, 255, 255, 0.25);
-    // border: none;
     z-index: 1000;
 }
 
@@ -31,9 +30,3 @@
 .plain-icon {
     @include icon.icon-styling(auto);
 }
-
-// .utility-icon-dark-theme:focus,
-// .utility-icon-dark-theme:active,
-// .utility-icon-dark-theme-active {
-//     background: rgb(59 59 59);
-// }
