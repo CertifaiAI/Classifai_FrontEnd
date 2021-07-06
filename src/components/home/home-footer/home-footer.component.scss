@@ -1,13 +1,13 @@
-.footer-container {
-    background: #262a2e;
-    //height: 5vh;
+.copyright-container {
+    position: absolute;
+    bottom: 1vh;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .copyright-text {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: snow;
+    opacity: 0.5;
     text-align: center;
-    font-size: 10px;
+    color: white;
+    font-size: 1vh;
 }
