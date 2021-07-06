@@ -4,7 +4,7 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { IconSchema } from 'src/shared/types/icon/icon.model';
 import { ImgLabelProps } from '../image-labelling/image-labelling.model';
 import { Router } from '@angular/router';
@@ -21,7 +21,7 @@ type HeaderLabelSchema = {
     styleUrls: ['./page-header.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PageHeaderComponent implements OnInit {
+export class PageHeaderComponent {
     @Input() _onChange!: ImgLabelProps;
     // @Output() _navigate: EventEmitter<UrlProps> = new EventEmitter();
     logoSrc: string = `../../../assets/icons/classifai_logo_white.svg`;
@@ -81,6 +81,4 @@ export class PageHeaderComponent implements OnInit {
                       ],
         };
     };
-
-    ngOnInit(): void {}
 }
