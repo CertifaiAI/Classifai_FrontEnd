@@ -7,8 +7,13 @@
 import { HomeLayoutComponent } from 'src/layouts/home-layout/home-layout.component';
 import { NgModule } from '@angular/core';
 import { PageNotFoundComponent } from '../page-not-found/page-not-found.component';
-import { RouterModule, Routes } from '@angular/router';
+import { LoadChildren, RouterModule, Routes } from '@angular/router';
 import { ServerErrorComponent } from '../server-error/server-error.component';
+
+const imgLabellingLayout: LoadChildren = () =>
+    import('../../layouts/image-labelling-layout/image-labelling-layout.module').then(
+        ({ ImageLabellingLayoutModule }) => ImageLabellingLayoutModule,
+    );
 
 const routes: Routes = [
     { path: '', component: HomeLayoutComponent },
@@ -21,17 +26,11 @@ const routes: Routes = [
     },
     {
         path: 'imglabel/bndbox',
-        loadChildren: () =>
-            import('../../layouts/image-labelling-layout/image-labelling-layout.module').then(
-                ({ ImageLabellingLayoutModule }) => ImageLabellingLayoutModule,
-            ),
+        loadChildren: imgLabellingLayout,
     },
     {
         path: 'imglabel/seg',
-        loadChildren: () =>
-            import('../../layouts/image-labelling-layout/image-labelling-layout.module').then(
-                ({ ImageLabellingLayoutModule }) => ImageLabellingLayoutModule,
-            ),
+        loadChildren: imgLabellingLayout,
     },
     { path: '500', component: ServerErrorComponent },
     { path: '**', component: PageNotFoundComponent },
