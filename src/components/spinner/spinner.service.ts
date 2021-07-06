@@ -12,7 +12,6 @@ import { Injectable } from '@angular/core';
 })
 export class SpinnerService {
     private toggleSpinnerSubject = new BehaviorSubject<boolean>(false);
-    constructor() {}
 
     returnAsObservable(): Observable<boolean> {
         return this.toggleSpinnerSubject.asObservable();
