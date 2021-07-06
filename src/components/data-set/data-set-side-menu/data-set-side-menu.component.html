@@ -3,7 +3,7 @@
         <ng-container *ngIf="i === 0; else otherMenu">
             <div [attr.data-index]="i" class="new-project-container">
                 <div class="new-project-btn" (click)="displayModal()">
-                    <img class="add-icon" [src]="menu.src" />
+                    <img class="add-icon" [src]="menu.src" alt="add project" />
                     <label class="new-project-txt">{{ menu.name | translate }}</label>
                 </div>
             </div>
@@ -11,7 +11,7 @@
 
         <ng-template #otherMenu>
             <div [attr.data-index]="i" class="current-project-btn" (click)="onClickButton(menu.id)">
-                <img class="project-icon" [src]="menu.src" [style]="menu.style" />
+                <img class="project-icon" [src]="menu.src" [style]="menu.style" alt="project icon" />
                 <label class="current-project-txt">{{ menu.name | translate }}</label>
             </div>
         </ng-template>
