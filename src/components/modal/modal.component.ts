@@ -42,8 +42,6 @@ export class ModalComponent implements OnInit, OnDestroy {
         //     target.className === 'modal' && this.close(),
         // );
 
-        // this._el.nativeElement.children[0].style.background = 'black';
-
         // console.log(this);
         // add self (this modal instance) to the modal service so it's accessible from controllers
         this._modalService.add(this);
@@ -57,10 +55,9 @@ export class ModalComponent implements OnInit, OnDestroy {
     }
 
     applyStyling = () => {
-        const className = `${!this.modalBodyStyle && 'modal-body-height modal-body-width modal-body-margin'} ${
+        return `${!this.modalBodyStyle && 'modal-body-height modal-body-width modal-body-margin'} ${
             this.scrollable && 'scroll'
         }`;
-        return className;
     };
 
     // open modal
@@ -74,7 +71,6 @@ export class ModalComponent implements OnInit, OnDestroy {
         this.element.style.display = 'none';
         document.body.classList.remove('modal-open');
         this._modalService.openedModalsId = this._modalService.openedModalsId.filter((idx) => idx !== this.id);
-        // this._el.nativeElement.children[0].style.background = null;
     }
 
     @HostListener('window:keydown', ['$event'])
