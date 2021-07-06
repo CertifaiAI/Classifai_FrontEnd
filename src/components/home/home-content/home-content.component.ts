@@ -5,14 +5,14 @@
  */
 
 import { CardFieldSchema } from '../../../layouts/home-layout/home-layout.model';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
     selector: 'home-content',
     templateUrl: './home-content.component.html',
     styleUrls: ['./home-content.component.scss'],
 })
-export class HomeContentComponent implements OnInit {
+export class HomeContentComponent {
     @Output() _navigate: EventEmitter<string> = new EventEmitter();
     languageArr: (string | RegExpMatchArray)[] = [];
     jsonSchema: CardFieldSchema;
@@ -62,8 +62,6 @@ export class HomeContentComponent implements OnInit {
             ],
         };
     }
-
-    ngOnInit(): void {}
 
     onThumbnailClick(url: string): void {
         this._navigate.emit(url);

@@ -5,22 +5,18 @@
  */
 
 import { CardFieldSchema } from '../../../layouts/home-layout/home-layout.model';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
     selector: 'home-card',
     templateUrl: './home-card.component.html',
     styleUrls: ['./home-card.component.scss'],
 })
-export class HomeCardComponent implements OnInit {
+export class HomeCardComponent {
     @Input() _jsonSchema!: CardFieldSchema;
     @Output() _onThumbnailClick: EventEmitter<string> = new EventEmitter();
     hover!: boolean;
     hoverIndex!: number;
-
-    constructor() {}
-
-    ngOnInit() {}
 
     mouseEventCapture(event: MouseEvent, index: number): void {
         const { type } = event;

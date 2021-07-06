@@ -4,7 +4,7 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { Component, ElementRef, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, ElementRef, QueryList, ViewChildren } from '@angular/core';
 import { LanguageService } from 'src/shared/services/language.service';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -13,7 +13,7 @@ import { TranslateService } from '@ngx-translate/core';
     templateUrl: './home-header.component.html',
     styleUrls: ['./home-header.component.scss'],
 })
-export class HomeHeaderComponent implements OnInit {
+export class HomeHeaderComponent {
     languageArr: (string | null)[] = [];
     // headerImage: string = `../../assets/landing-page/Classifai_PoweredBy_Horizontal_light.png`;
     headerImage: string = `../../assets/landing-page/Classifai_Community_Logo.png`;
@@ -26,16 +26,17 @@ export class HomeHeaderComponent implements OnInit {
         this.languageArr = this._languageService.filterLanguageList(langsArr, 'landing-page');
     }
 
-    ngOnInit() {}
-
     setLanguage(language: string) {
         try {
-            language
-                ? (this._languageService.setLanguageState(language), this._translate.use(language))
-                : this._languageService.setLanguageState('en');
+            language ? this.useLanguageTranslation(language) : this._languageService.setLanguageState('en');
         } catch (err) {
             console.log('setLanguage(language: string) ----> ', err.name + ': ', err.message);
         }
+    }
+
+    useLanguageTranslation(language: string) {
+        this._languageService.setLanguageState(language);
+        this._translate.use(language);
     }
 
     showLangOpts() {
