@@ -20,7 +20,6 @@ export class ModalService {
     remove = (inputId: string) => {
         // remove modal from array of active modals
         this.modals = this.modals.filter(({ id }) => id !== inputId);
-        // this.modals = this.modals = [];
     };
 
     open = (inputId: string) => {
@@ -32,9 +31,7 @@ export class ModalService {
 
     close = (inputId: string) => {
         // close modal specified by id
-        // console.log(this.modals);
         const modal = this.modals.find(({ id }) => id === inputId);
-        // console.log(modal);
         modal?.close();
     };
 
