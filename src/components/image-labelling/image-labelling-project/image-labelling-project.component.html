@@ -27,7 +27,7 @@
                             (click)="onClick(thumbnail, i)"
                         >
                             <div class="img-skeleton">
-                                <img imgLazyLoad class="img" [src]="thumbnail.img_thumbnail" />
+                                <img imgLazyLoad class="img" [src]="thumbnail.img_thumbnail" alt="thumbnail" />
                             </div>
                             <div class="img-name">
                                 <label class="img-path">{{ thumbnail.img_path | fileNameSlice }}</label>

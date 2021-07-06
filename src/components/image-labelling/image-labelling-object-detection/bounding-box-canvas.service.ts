@@ -30,7 +30,6 @@ export class BoundingBoxCanvasService {
     private tmpbox!: Boundingbox | null;
     private currentSelectedBndBox: number = -1;
     private util: Utils = new Utils();
-    constructor() {}
 
     public getDiffXY({ offsetX, offsetY }: MouseEvent): DiffXY {
         try {
@@ -134,23 +133,30 @@ export class BoundingBoxCanvasService {
             switch (direction) {
                 case 'up':
                     this.moveBoxWithinPointPath(img_x, img_y, img_w, img_h, 0, -3, bBox) &&
-                        ((bBox.y1 -= 3), (bBox.y2 -= 3));
+                        this.moveBbox(0, 0, -3, -3, bBox);
                     break;
                 case 'down':
                     this.moveBoxWithinPointPath(img_x, img_y, img_w, img_h, 0, 3, bBox) &&
-                        ((bBox.y1 += 3), (bBox.y2 += 3));
+                        this.moveBbox(0, 0, 3, 3, bBox);
                     break;
                 case 'left':
                     this.moveBoxWithinPointPath(img_x, img_y, img_w, img_h, -3, 0, bBox) &&
-                        ((bBox.x1 -= 3), (bBox.x2 -= 3));
+                        this.moveBbox(-3, -3, 0, 0, bBox);
                     break;
                 case 'right':
                     this.moveBoxWithinPointPath(img_x, img_y, img_w, img_h, 3, 0, bBox) &&
-                        ((bBox.x1 += 3), (bBox.x2 += 3));
+                        this.moveBbox(3, 3, 0, 0, bBox);
                     break;
             }
             callback(true);
         } catch (err) {}
+    }
+
+    moveBbox(x1: number, x2: number, y1: number, y2: number, bBox: Boundingbox) {
+        bBox.x1 += x1;
+        bBox.x2 += x2;
+        bBox.y1 += y1;
+        bBox.y2 += y2;
     }
 
     public moveBoxWithinPointPath(
@@ -163,14 +169,12 @@ export class BoundingBoxCanvasService {
         box: Boundingbox,
     ): boolean {
         try {
-            const result =
-                box.x1 + addX < imgX ||
+            return box.x1 + addX < imgX ||
                 box.x2 + addX > imgX + imgW ||
                 box.y1 + addY < imgY ||
                 box.y2 + addY > imgY + imgH
-                    ? false
-                    : true;
-            return result;
+                ? false
+                : true;
         } catch (err) {
             console.log(
                 'ObjectDetection isWithinPointPath(imgx:number, imgy:number, imgw:number, imgh:number, addx:number, addy:number, box:Boundingbox):Boolean',
@@ -327,7 +331,6 @@ export class BoundingBoxCanvasService {
     ) {
         try {
             for (const box of boxes) {
-                // console.log(box);
                 const newW: number = (box.x2 - box.x1) * scalefactor;
                 const newH: number = (box.y2 - box.y1) * scalefactor;
                 const X1: number = box.distancetoImg.x * scalefactor + imgX;
@@ -374,11 +377,6 @@ export class BoundingBoxCanvasService {
             this.getCurrentClickBox(mouseX, mouseY, bBox);
             this.setCurrentX1Y1(mouseX, mouseY);
             this.setCurrentX2Y2(mouseX, mouseY);
-            const currentClickResult =
-                this.currentClickedBox.box !== -1
-                    ? (this.currentSelectedBndBox = this.currentClickedBox.box)
-                    : (this.currentSelectedBndBox = -1);
-
             return this.currentClickedBox.box;
         } catch (err) {
             console.log(
@@ -439,12 +437,8 @@ export class BoundingBoxCanvasService {
             if (boundingBoxes.length > 0) {
                 for (const [i, boundingBox] of boundingBoxes.entries()) {
                     i === this.currentClickedBox.box || i === this.currentSelectedBndBox
-                        ? ((boundingBox.color = `rgba(0,255,0,1.0)`),
-                          (boundingBox.lineWidth = 2),
-                          this.drawEachBoxOn(labelList, boundingBox, context, true))
-                        : ((boundingBox.color = `rgba(255,255,0,0.8)`),
-                          (boundingBox.lineWidth = 1),
-                          this.drawEachBoxOn(labelList, boundingBox, context, false));
+                        ? this.setEachBbox(true, labelList, boundingBox, context)
+                        : this.setEachBbox(false, labelList, boundingBox, context);
                 }
             }
             if (this.currentClickedBox.box === -1 && this.currentSelectedBndBox === -1) {
@@ -458,6 +452,23 @@ export class BoundingBoxCanvasService {
             }
         } catch (err) {
             console.log('redraw(boundbox) ----> ', err.name + ': ', err.message);
+        }
+    }
+
+    private setEachBbox(
+        selected: boolean,
+        labelList: LabelInfo[],
+        boundingBox: Boundingbox,
+        context: CanvasRenderingContext2D | null,
+    ) {
+        if (selected) {
+            boundingBox.color = `rgba(0,255,0,1.0)`;
+            boundingBox.lineWidth = 2;
+            this.drawEachBoxOn(labelList, boundingBox, context, true);
+        } else {
+            boundingBox.color = `rgba(255,255,0,0.8)`;
+            boundingBox.lineWidth = 1;
+            this.drawEachBoxOn(labelList, boundingBox, context, false);
         }
     }
 
@@ -491,13 +502,13 @@ export class BoundingBoxCanvasService {
                 context.stroke();
                 context.fillStyle = box.color;
                 if (isSelected) {
-                    context.beginPath(),
-                        context.fillRect(
-                            box.x1 - this.anchrSize,
-                            box.y1 - this.anchrSize,
-                            2 * this.anchrSize,
-                            2 * this.anchrSize,
-                        );
+                    context.beginPath();
+                    context.fillRect(
+                        box.x1 - this.anchrSize,
+                        box.y1 - this.anchrSize,
+                        2 * this.anchrSize,
+                        2 * this.anchrSize,
+                    );
                     context.fillRect(
                         box.x1 - this.anchrSize,
                         yCenter - this.anchrSize,
@@ -624,34 +635,9 @@ export class BoundingBoxCanvasService {
             for (let i = 0; i < box.length; ++i) {
                 const xCenter: number = box[i].x1 + (box[i].x2 - box[i].x1) / 2;
                 const yCenter: number = box[i].y1 + (box[i].y2 - box[i].y1) / 2;
-                if (box[i].x1 - this.lineOffset < mouseX && mouseX < box[i].x1 + this.lineOffset) {
-                    if (box[i].y1 - this.lineOffset < mouseY && mouseY < box[i].y1 + this.lineOffset) {
-                        return { box: i, pos: 'tl' };
-                    } else if (box[i].y2 - this.lineOffset < mouseY && mouseY < box[i].y2 + this.lineOffset) {
-                        return { box: i, pos: 'bl' };
-                    } else if (yCenter - this.lineOffset < mouseY && mouseY < yCenter + this.lineOffset) {
-                        return { box: i, pos: 'l' };
-                    }
-                } else if (box[i].x2 - this.lineOffset < mouseX && mouseX < box[i].x2 + this.lineOffset) {
-                    if (box[i].y1 - this.lineOffset < mouseY && mouseY < box[i].y1 + this.lineOffset) {
-                        return { box: i, pos: 'tr' };
-                    } else if (box[i].y2 - this.lineOffset < mouseY && mouseY < box[i].y2 + this.lineOffset) {
-                        return { box: i, pos: 'br' };
-                    } else if (yCenter - this.lineOffset < mouseY && mouseY < yCenter + this.lineOffset) {
-                        return { box: i, pos: 'r' };
-                    }
-                } else if (xCenter - this.lineOffset < mouseX && mouseX < xCenter + this.lineOffset) {
-                    if (box[i].y1 - this.lineOffset < mouseY && mouseY < box[i].y1 + this.lineOffset) {
-                        return { box: i, pos: 't' };
-                    } else if (box[i].y2 - this.lineOffset < mouseY && mouseY < box[i].y2 + this.lineOffset) {
-                        return { box: i, pos: 'b' };
-                    } else if (box[i].y1 - this.lineOffset < mouseY && mouseY < box[i].y2 + this.lineOffset) {
-                        return { box: i, pos: 'i' };
-                    }
-                } else if (box[i].x1 - this.lineOffset < mouseX && mouseX < box[i].x2 + this.lineOffset) {
-                    if (box[i].y1 - this.lineOffset < mouseY && mouseY < box[i].y2 + this.lineOffset) {
-                        return { box: i, pos: 'i' };
-                    }
+                const pos = this.getPosition(mouseX, mouseY, box, xCenter, yCenter, i);
+                if (pos !== '') {
+                    return { box: i, pos };
                 }
             }
             return { box: -1, pos: 'o' };
@@ -663,5 +649,85 @@ export class BoundingBoxCanvasService {
             );
             return { box: -1, pos: 'o' };
         }
+    }
+
+    private getPosition(
+        mouseX: number,
+        mouseY: number,
+        box: Boundingbox[],
+        xCenter: number,
+        yCenter: number,
+        i: number,
+    ) {
+        let pos = '';
+        const xPos = this.getXPos(mouseX, box, xCenter, i);
+        switch (xPos) {
+            case 'l':
+                pos = this.getYLPos(mouseY, box, yCenter, i);
+                break;
+            case 'r':
+                pos = this.getYRPos(mouseY, box, yCenter, i);
+                break;
+            case 'm':
+                pos = this.getYMPos(mouseY, box, yCenter, i);
+                break;
+            case 'i':
+                if (box[i].y1 - this.lineOffset < mouseY && mouseY < box[i].y2 + this.lineOffset) {
+                    pos = 'i';
+                }
+                break;
+        }
+        return pos;
+    }
+
+    private getXPos(mouseX: number, box: Boundingbox[], xCenter: number, i: number) {
+        if (box[i].x1 - this.lineOffset < mouseX && mouseX < box[i].x1 + this.lineOffset) {
+            return 'l';
+        } else if (box[i].x2 - this.lineOffset < mouseX && mouseX < box[i].x2 + this.lineOffset) {
+            return 'r';
+        } else if (xCenter - this.lineOffset < mouseX && mouseX < xCenter + this.lineOffset) {
+            return 'm';
+        } else if (box[i].x1 - this.lineOffset < mouseX && mouseX < box[i].x2 + this.lineOffset) {
+            return 'i';
+        } else {
+            return 'o';
+        }
+    }
+
+    private getYLPos(mouseY: number, box: Boundingbox[], yCenter: number, i: number) {
+        let pos = '';
+        if (box[i].y1 - this.lineOffset < mouseY && mouseY < box[i].y1 + this.lineOffset) {
+            pos = 'tl';
+        } else if (box[i].y2 - this.lineOffset < mouseY && mouseY < box[i].y2 + this.lineOffset) {
+            pos = 'bl';
+        } else if (yCenter - this.lineOffset < mouseY && mouseY < yCenter + this.lineOffset) {
+            pos = 'l';
+        }
+        return pos;
+    }
+
+    private getYRPos(mouseY: number, box: Boundingbox[], yCenter: number, i: number) {
+        let pos = '';
+
+        if (box[i].y1 - this.lineOffset < mouseY && mouseY < box[i].y1 + this.lineOffset) {
+            pos = 'tr';
+        } else if (box[i].y2 - this.lineOffset < mouseY && mouseY < box[i].y2 + this.lineOffset) {
+            pos = 'br';
+        } else if (yCenter - this.lineOffset < mouseY && mouseY < yCenter + this.lineOffset) {
+            pos = 'r';
+        }
+        return pos;
+    }
+
+    private getYMPos(mouseY: number, box: Boundingbox[], yCenter: number, i: number) {
+        let pos = '';
+        if (box[i].y1 - this.lineOffset < mouseY && mouseY < box[i].y1 + this.lineOffset) {
+            pos = 't';
+        } else if (box[i].y2 - this.lineOffset < mouseY && mouseY < box[i].y2 + this.lineOffset) {
+            pos = 'b';
+        } else if (box[i].y1 - this.lineOffset < mouseY && mouseY < box[i].y2 + this.lineOffset) {
+            pos = 'i';
+        }
+        return pos;
     }
 }

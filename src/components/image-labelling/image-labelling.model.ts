@@ -159,7 +159,6 @@ export type Method = 'zoom' | 'draw' | 'pan';
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
 
-// export type ThumbnailMetadataProps = BboxMetadata;
 export type UndoState = { meta: BboxMetadata | PolyMetadata | null; method: Method } | null;
 
 export type Globalloc = { scale: number; offset: { x: number; y: number } };

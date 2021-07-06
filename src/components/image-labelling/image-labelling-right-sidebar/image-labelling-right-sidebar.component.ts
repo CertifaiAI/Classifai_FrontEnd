@@ -31,8 +31,6 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
 
     jsonSchema!: IconSchema;
 
-    constructor() {}
-
     ngOnInit(): void {
         this.bindImagePath();
     }
@@ -71,7 +69,9 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     imgPath: `../../../assets/icons/statistic.svg`,
                     hoverLabel: `rightSideBar.statistic`,
                     alt: `Statistic`,
-                    onClick: () => {},
+                    onClick: () => {
+                        console.log('This feature is not available yet');
+                    },
                 },
                 {
                     imgPath: `../../../assets/icons/export.svg`,

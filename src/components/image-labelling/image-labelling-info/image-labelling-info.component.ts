@@ -30,7 +30,6 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
     @Output() _onClick: EventEmitter<ThumbnailInfoProps> = new EventEmitter();
     jsonSchema!: IconSchema;
     isTabStillOpen: boolean = true;
-    constructor() {}
 
     ngOnInit(): void {
         this.bindImagePath();
@@ -82,7 +81,6 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
     };
 
     emitParentEvent = ({ url, thumbnailAction }: ThumbnailInfoProps): void => {
-        // console.log(url, thumbnailAction);
         this._onClick.emit({ url, thumbnailAction });
     };
 

@@ -178,7 +178,6 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                             save: true,
                             keyInfo: false,
                         });
-                        // this._imgLabelState.setState(null);
                     },
                 },
                 {
@@ -206,7 +205,6 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     checkStateEqual = (currObj: object, prevObj: object): boolean => !isEqual(currObj, prevObj);
 
     ngOnChanges(changes: SimpleChanges): void {
-        // console.log(changes);
         this.bindImagePath();
         if (
             changes._tabStatus &&

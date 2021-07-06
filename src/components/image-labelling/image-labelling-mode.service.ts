@@ -18,8 +18,6 @@ export class ImageLabellingModeService {
 
     public imgLabelMode$ = this.imgLabellingModeSubject.asObservable();
 
-    constructor() {}
-
     // pass null value to reset state
     public setState = (inComingMode: ImageLabellingMode) => {
         inComingMode

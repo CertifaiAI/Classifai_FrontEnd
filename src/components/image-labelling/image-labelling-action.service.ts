@@ -27,8 +27,6 @@ export class ImageLabellingActionService {
 
     public action$ = this.actionSubject.asObservable();
 
-    constructor() {}
-
     // pass null value to reset state
     public setState = (inComingState: Partial<ActionState> | null): void => {
         inComingState

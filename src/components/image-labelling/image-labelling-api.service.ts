@@ -30,9 +30,13 @@ export class ImageLabellingApiService {
     public imageLabellingMode: ImageLabellingMode = null;
 
     constructor(private http: HttpClient, private mode: ImageLabellingModeService, private router: Router) {
-        this.mode.imgLabelMode$
-            .pipe(distinctUntilChanged())
-            .subscribe((modeVal) => (modeVal ? (this.imageLabellingMode = modeVal) : this.router.navigate(['/'])));
+        this.mode.imgLabelMode$.pipe(distinctUntilChanged()).subscribe((modeVal) => {
+            if (modeVal) {
+                this.imageLabellingMode = modeVal;
+            } else {
+                this.router.navigate(['/']);
+            }
+        });
     }
 
     getBase64Thumbnail = (projectName: string, uuid: UUID): Observable<MessageBase64Img> => {
@@ -64,9 +68,9 @@ export class ImageLabellingApiService {
         metadata: CompleteMetadata | CompleteMetadata[],
     ): metadata is CompleteMetadata | CompleteMetadata[] {
         if (Array.isArray(metadata)) {
-            return (metadata as CompleteMetadata[])[0].bnd_box !== undefined;
+            return metadata[0].bnd_box !== undefined;
         } else {
-            return (metadata as CompleteMetadata).bnd_box !== undefined;
+            return metadata.bnd_box !== undefined;
         }
     }
 

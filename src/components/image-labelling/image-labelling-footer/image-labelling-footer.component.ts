@@ -4,7 +4,7 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { IconSchema } from 'src/shared/types/icon/icon.model';
 import { ImageProps } from '../image-labelling.model';
 
@@ -14,17 +14,12 @@ import { ImageProps } from '../image-labelling.model';
     styleUrls: ['./image-labelling-footer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ImageLabellingFooterComponent implements OnInit, OnChanges {
+export class ImageLabellingFooterComponent implements OnChanges {
     @Input() _thumbnailInfo!: ImageProps;
     @Input() _imgSrc: string = '';
     thumbnailSize: string = '';
     thumbnailType: string = '';
     jsonSchema!: IconSchema;
-    constructor() {}
-
-    ngOnInit(): void {
-        // this.thumbnailType = this._thumbnailInfo ? atob(this._thumbnailInfo.img_src) : '';
-    }
 
     copyMessage(path: string) {
         const el = document.createElement('textarea');
@@ -53,7 +48,6 @@ export class ImageLabellingFooterComponent implements OnInit, OnChanges {
     };
 
     ngOnChanges(changes: SimpleChanges): void {
-        // console.log(changes);
         if (changes._thumbnailInfo && changes._imgSrc) {
             const { currentValue }: { currentValue: ImageProps } = changes._thumbnailInfo;
             const { currentValue: imgSrcVal }: { currentValue: string } = changes._imgSrc;
