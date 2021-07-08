@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { TabsProps } from '../video-labelling.modal';
 
 @Component({
     selector: 'video-labelling-project',
@@ -6,7 +7,26 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./video-labelling-project.component.scss'],
 })
 export class VideoLabellingProjectComponent implements OnInit {
+    @Input() _tabStatus: TabsProps[] = [];
+    @Output() _onClose = new EventEmitter();
+
     constructor() {}
 
     ngOnInit() {}
+
+    onClose = (tab: TabsProps): void => {
+        this._onClose.emit(tab);
+    };
+
+    checkCloseToggle = (tab: TabsProps): string | null => {
+        let classes = '';
+
+        if (!((tab.name === 'project' && this._tabStatus[1].closed) || tab.name === 'annotation')) {
+            classes = 'flex-content';
+        }
+        if (tab.closed) {
+            classes += ' closed';
+        }
+        return classes;
+    };
 }

@@ -5,6 +5,7 @@
  */
 
 import { Component, OnInit } from '@angular/core';
+import { TabsProps } from 'src/components/video-labelling/video-labelling.modal';
 
 @Component({
     selector: 'app-video-labelling-layout',
@@ -12,7 +13,26 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./video-labelling-layout.component.scss'],
 })
 export class VideoLabellingLayoutComponent implements OnInit {
+    tabStatus: TabsProps[] = [
+        {
+            name: 'project',
+            closed: false,
+        },
+        {
+            name: 'annotation',
+            closed: false,
+        },
+    ];
+
     constructor() {}
 
     ngOnInit() {}
+
+    onToggleTab = (tab: TabsProps) => {
+        this.tabStatus.forEach((element) => {
+            if (element.name === tab.name) {
+                element.closed = !element.closed;
+            }
+        });
+    };
 }

@@ -1,3 +1,59 @@
-<div class="utility-right-project-container tab flex-fill-remaining closed">
-    <img src="../../../assets/video_img/1.jpg" />
+<div class="tab-container">
+    <div *ngFor="let tab of _tabStatus">
+        <ng-container *ngIf="tab.name === 'project'">
+            <div class="utility-right-project-container tab flex-fill-remaining" [ngClass]="checkCloseToggle(tab)">
+                <label class="tab-name">label</label>
+                <div class="flex-tab-icons">
+                    <span class="tab-close-thumbnailless">
+                        <div class="div-close" (click)="onClose(tab)">&#10006;</div>
+                    </span>
+                </div>
+                <div class="utility-inner-container tab-height scroll">
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                    <p>LABEL</p>
+                </div>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="tab.name === 'annotation'">
+            <div class="utility-right-project-container tab flex-fill-remaining" [ngClass]="checkCloseToggle(tab)">
+                <label class="tab-name">name</label>
+                <div class="flex-tab-icons">
+                    <span class="tab-close-thumbnailless">
+                        <div class="div-close" (click)="onClose(tab)">&#10006;</div>
+                    </span>
+                </div>
+                <div class="utility-inner-container tab-height scroll">
+                    <img src="../../../assets/video_img/2.jpg" style="height: 20vh" />
+                </div>
+            </div>
+        </ng-container>
+    </div>
 </div>

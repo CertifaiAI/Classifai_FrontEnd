@@ -60,6 +60,11 @@ type SubLabel = {
     label: string;
 };
 
+export type TabsProps = {
+    name: string;
+    closed: boolean;
+};
+
 export type ActionState = {
     scroll: boolean;
     drag: boolean;

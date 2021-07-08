@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { IconSchema } from 'src/shared/types/icon/icon.model';
 
 @Component({
@@ -10,6 +10,10 @@ export class VideoLabellingRightSidebarComponent implements OnInit {
     jsonSchema: IconSchema;
     iconIndex!: number;
 
+    @Output() _onClick = new EventEmitter();
+
+    isFolderTabOpen: boolean = false;
+
     constructor() {
         this.jsonSchema = {
             logos: [
@@ -17,10 +21,7 @@ export class VideoLabellingRightSidebarComponent implements OnInit {
                     imgPath: `../../../assets/icons/folder.svg`,
                     hoverLabel: `rightSideBar.folderOrFiles`,
                     alt: `Folder`,
-                    // inputType: 'file',
-                    // accept: 'image/x-png,image/jpeg',
-                    // onUpload: () => this._onClick.emit(),
-                    onClick: () => null,
+                    onClick: () => this._onClick.emit({ name: 'project', closed: false }),
                 },
                 {
                     imgPath: `../../../assets/icons/tag.svg`,
@@ -32,7 +33,7 @@ export class VideoLabellingRightSidebarComponent implements OnInit {
                     imgPath: `../../../assets/icons/bounding_box.svg`,
                     hoverLabel: `rightSideBar.annotation`,
                     alt: `Annotation`,
-                    onClick: () => null,
+                    onClick: () => this._onClick.emit({ name: 'annotation', closed: false }),
                 },
                 {
                     imgPath: `../../../assets/icons/statistic.svg`,
