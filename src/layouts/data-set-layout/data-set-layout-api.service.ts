@@ -36,9 +36,13 @@ export class DataSetLayoutService {
     ) {
         // if has mode value, acquire the mode value
         // else return to lading page
-        this.mode.imgLabelMode$
-            .pipe(distinctUntilChanged())
-            .subscribe((modeVal) => (modeVal ? (this.imageLabellingMode = modeVal) : this.router.navigate(['/'])));
+        this.mode.imgLabelMode$.pipe(distinctUntilChanged()).subscribe((modeVal) => {
+            if (modeVal) {
+                this.imageLabellingMode = modeVal;
+            } else {
+                this.router.navigate(['/']);
+            }
+        });
     }
 
     getProjectList = (): Observable<MessageContent<Project[]>> => {

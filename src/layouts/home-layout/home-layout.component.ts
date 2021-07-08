@@ -5,7 +5,7 @@
  */
 
 import { CardChoiceImgLblUrlPath, CardChoiceSchema } from './home-layout.model';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ImageLabellingModeService } from './../../components/image-labelling/image-labelling-mode.service';
 import { ModalBodyStyle } from 'src/components/modal/modal.model';
 import { ModalService } from 'src/components/modal/modal.service';
@@ -18,7 +18,7 @@ import { LanguageService } from 'src/shared/services/language.service';
     templateUrl: './home-layout.component.html',
     styleUrls: ['./home-layout.component.scss'],
 })
-export class HomeLayoutComponent implements OnInit {
+export class HomeLayoutComponent {
     navigateUrl = '';
     modalBodyStyle: ModalBodyStyle = {
         minHeight: '37vh',
@@ -60,8 +60,6 @@ export class HomeLayoutComponent implements OnInit {
         const langsArr: string[] = ['landing-page-en', 'landing-page-cn', 'landing-page-ms'];
         this._languageService.initializeLanguage(`landing-page`, langsArr);
     }
-
-    ngOnInit() {}
 
     navigate(url: string): void {
         this.navigateUrl = url;

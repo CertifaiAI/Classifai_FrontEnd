@@ -544,6 +544,12 @@ th {
     border-top: none !important;
 }
 
+/* cellpadding */
+th,
+td {
+    padding: 1.5vh;
+}
+
 tr td:nth-child(2) {
     color: rgb(190, 190, 190);
 }
