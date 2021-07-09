@@ -14,17 +14,10 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from 'src/shared/shared.module';
 import { TranslateModule } from '@ngx-translate/core';
-import { HomeFooterComponent } from 'src/components/home/home-footer/home-footer.component';
 
 @NgModule({
     imports: [CommonModule, SharedModule, TranslateModule, ModalModule, RouterModule],
-    declarations: [
-        HomeLayoutComponent,
-        HomeHeaderComponent,
-        HomeCardComponent,
-        HomeContentComponent,
-        HomeFooterComponent,
-    ],
+    declarations: [HomeLayoutComponent, HomeHeaderComponent, HomeCardComponent, HomeContentComponent],
     // providers: [TranslateService],
 })
 export class HomeLayoutModule {}
