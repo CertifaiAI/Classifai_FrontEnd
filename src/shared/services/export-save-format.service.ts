@@ -162,32 +162,7 @@ export class ExportSaveFormatService {
             if (!projectFullMetadata) {
                 return { message: 0, msg: 'warning.noImageList' };
             }
-            const pascalVocList: { filename: string; content: string }[] = [];
-            let isEmpty = true;
-            projectFullMetadata.forEach((meta) => {
-                const bboxLabels = meta.bnd_box ? meta.bnd_box.map((x) => x.label) : [];
-                const found = bboxLabels.some((r) => labelList.indexOf(r) >= 0);
-                if (meta.bnd_box && meta.bnd_box.length > 0 && found) {
-                    isEmpty = false;
-                    const calculatedBoxMetadata = this.calBoxCoorOriginalImages(meta as BboxMetadata);
-                    const filename = this.getFileName(meta.img_path);
-                    const { img_path, img_depth, img_ori_w, img_ori_h } = meta;
-                    const pascalVocData = {
-                        img_path,
-                        img_depth,
-                        img_ori_w,
-                        img_ori_h,
-                        bnd_box: calculatedBoxMetadata,
-                    };
-                    const content = this.generatePascalVocFormat(pascalVocData, labelList);
-                    const splitfilenameArr = filename.split('.');
-                    const finalizedFilename = `${splitfilenameArr[0]}.xml`;
-                    pascalVocList.push({
-                        filename: finalizedFilename,
-                        content,
-                    });
-                }
-            });
+            const { pascalVocList, isEmpty } = this.pushPascalVOCToList(projectFullMetadata, labelList);
             if (isEmpty) {
                 return { message: 0, msg: 'warning.noLabelSelected' };
             }
@@ -197,6 +172,37 @@ export class ExportSaveFormatService {
             await this.saveAsZip(pascalVocList, 'pascal_voc', projectName);
             return { message: 1, msg: 'success' };
         }
+    }
+
+    private pushPascalVOCToList(projectFullMetadata: CompleteMetadata[], labelList: string[]) {
+        const pascalVocList: { filename: string; content: string }[] = [];
+        let isEmpty = true;
+        projectFullMetadata.forEach((meta) => {
+            const bboxLabels = meta.bnd_box ? meta.bnd_box.map((x) => x.label) : [];
+            const found = bboxLabels.some((r) => labelList.indexOf(r) >= 0);
+            if (meta.bnd_box && meta.bnd_box.length > 0 && found) {
+                isEmpty = false;
+                const calculatedBoxMetadata = this.calBoxCoorOriginalImages(meta as BboxMetadata);
+                const filename = this.getFileName(meta.img_path);
+                const { img_path, img_depth, img_ori_w, img_ori_h } = meta;
+                const pascalVocData = {
+                    img_path,
+                    img_depth,
+                    img_ori_w,
+                    img_ori_h,
+                    bnd_box: calculatedBoxMetadata,
+                };
+                const content = this.generatePascalVocFormat(pascalVocData, labelList);
+                const splitfilenameArr = filename.split('.');
+                const finalizedFilename = `${splitfilenameArr[0]}.xml`;
+                pascalVocList.push({
+                    filename: finalizedFilename,
+                    content,
+                });
+            }
+        });
+
+        return { pascalVocList, isEmpty };
     }
 
     private async exportYolo(
@@ -235,31 +241,7 @@ export class ExportSaveFormatService {
             if (!projectFullMetadata) {
                 return { message: 0, msg: 'warning.noImageList' };
             }
-
-            const yoloList: { filename: string; content: string }[] = [];
-            let isEmpty = true;
-            projectFullMetadata.forEach((meta) => {
-                const bboxLabels = meta.bnd_box ? meta.bnd_box.map((x) => x.label) : [];
-                const found = bboxLabels.some((r) => labelList.indexOf(r) >= 0);
-                if (meta.bnd_box && meta.bnd_box.length > 0 && found) {
-                    isEmpty = false;
-                    const calculatedBoxMetadata = this.calBoxCoorOriginalImages(meta as BboxMetadata);
-                    const filename = this.getFileName(meta.img_path);
-                    const { img_ori_w, img_ori_h } = meta;
-                    const yoloData = {
-                        img_ori_w,
-                        img_ori_h,
-                        bnd_box: calculatedBoxMetadata,
-                    };
-                    const content = this.generateYoloFormat({ ...yoloData }, labelList);
-                    const splitfilenameArr = filename.split('.');
-                    const finalizedFilename = `${splitfilenameArr[0]}.txt`;
-                    yoloList.push({
-                        filename: finalizedFilename,
-                        content,
-                    });
-                }
-            });
+            const { yoloList, isEmpty } = this.pushYoloToList(projectFullMetadata, labelList);
             if (isEmpty) {
                 return { message: 0, msg: 'warning.noLabelSelected' };
             }
@@ -269,6 +251,35 @@ export class ExportSaveFormatService {
             await this.saveAsZip(yoloList, saveFormat, projectName);
             return { message: 1, msg: 'success' };
         }
+    }
+
+    private pushYoloToList(projectFullMetadata: CompleteMetadata[], labelList: string[]) {
+        const yoloList: { filename: string; content: string }[] = [];
+        let isEmpty = true;
+        projectFullMetadata.forEach((meta) => {
+            const bboxLabels = meta.bnd_box ? meta.bnd_box.map((x) => x.label) : [];
+            const found = bboxLabels.some((r) => labelList.indexOf(r) >= 0);
+            if (meta.bnd_box && meta.bnd_box.length > 0 && found) {
+                isEmpty = false;
+                const calculatedBoxMetadata = this.calBoxCoorOriginalImages(meta as BboxMetadata);
+                const filename = this.getFileName(meta.img_path);
+                const { img_ori_w, img_ori_h } = meta;
+                const yoloData = {
+                    img_ori_w,
+                    img_ori_h,
+                    bnd_box: calculatedBoxMetadata,
+                };
+                const content = this.generateYoloFormat({ ...yoloData }, labelList);
+                const splitfilenameArr = filename.split('.');
+                const finalizedFilename = `${splitfilenameArr[0]}.txt`;
+                yoloList.push({
+                    filename: finalizedFilename,
+                    content,
+                });
+            }
+        });
+
+        return { yoloList, isEmpty };
     }
 
     private exportOCR(

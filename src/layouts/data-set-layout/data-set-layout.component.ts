@@ -20,6 +20,20 @@ import { ModalService } from 'src/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'src/components/spinner/spinner.service';
 
+type FormattedProject = {
+    created_timestamp: Date;
+    last_modified_timestamp: Date;
+    created_date: string;
+    last_modified_date: string;
+    project_name: string;
+    project_path: string;
+    is_loaded: boolean;
+    is_starred: boolean;
+    is_new: boolean;
+    total_uuid: number;
+    root_path_valid: boolean;
+};
+
 @Component({
     selector: 'data-set-layout',
     templateUrl: './data-set-layout.component.html',
@@ -180,7 +194,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     handleProjectList(content: Project[], projectType: string) {
         const clonedProjectList = cloneDeep(content);
 
-        const formattedProjectList = clonedProjectList.map((project) => {
+        const formattedProjectList: FormattedProject[] = clonedProjectList.map((project) => {
             return {
                 ...project,
                 created_timestamp: this.formatTimestamp(project.created_date),
@@ -190,35 +204,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             };
         });
 
-        switch (projectType) {
-            case 'starred':
-                this.sortedProject = formattedProjectList.filter((proj) => proj.is_starred);
-                break;
-            case 'recent':
-                this.sortedProject = this.sortProjectByModifiedTimestamp(formattedProjectList);
-                this.sortedProject = this.sortedProject.slice(0, 6);
-                break;
-            default:
-                this.sortedProject = formattedProjectList;
-                break;
-        }
-
-        if (this.enableSort) {
-            switch (this.keyToSort) {
-                case 'project_name':
-                    this.sortedProject.sort((a, b) => (b.project_name < a.project_name ? 1 : -1));
-                    break;
-                case 'created_date':
-                    this.sortedProject.sort((a, b) => (b.created_timestamp > a.created_timestamp ? 1 : -1));
-                    break;
-                case 'last_modified_date':
-                    this.sortedProject.sort((a, b) => (b.last_modified_timestamp > a.last_modified_timestamp ? 1 : -1));
-                    break;
-                default:
-                    this.sortedProject.sort((a, b) => (b.project_name < a.project_name ? 1 : -1));
-                    break;
-            }
-        }
+        this.projectTypeFilter(projectType, formattedProjectList);
+        this.projectSort();
 
         /**
          * !! IMPORTANT
@@ -235,21 +222,41 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         };
     }
 
-    private sortProjectByModifiedTimestamp(
-        formattedProjectList: {
-            created_timestamp: Date;
-            last_modified_timestamp: Date;
-            created_date: string;
-            last_modified_date: string;
-            project_name: string;
-            project_path: string;
-            is_loaded: boolean;
-            is_starred: boolean;
-            is_new: boolean;
-            total_uuid: number;
-            root_path_valid: boolean;
-        }[],
-    ) {
+    private projectTypeFilter(projectType: string, formattedProjectList: FormattedProject[]) {
+        switch (projectType) {
+            case 'starred':
+                this.sortedProject = formattedProjectList.filter((proj) => proj.is_starred);
+                break;
+            case 'recent':
+                this.sortedProject = this.sortProjectByModifiedTimestamp(formattedProjectList);
+                this.sortedProject = this.sortedProject.slice(0, 6);
+                break;
+            default:
+                this.sortedProject = formattedProjectList;
+                break;
+        }
+    }
+
+    private projectSort() {
+        if (this.enableSort) {
+            switch (this.keyToSort) {
+                case 'project_name':
+                    this.sortedProject.sort((a, b) => (b.project_name < a.project_name ? 1 : -1));
+                    break;
+                case 'created_date':
+                    this.sortedProject.sort((a, b) => (b.created_timestamp > a.created_timestamp ? 1 : -1));
+                    break;
+                case 'last_modified_date':
+                    this.sortedProject.sort((a, b) => (b.last_modified_timestamp > a.last_modified_timestamp ? 1 : -1));
+                    break;
+                default:
+                    this.sortedProject.sort((a, b) => (b.project_name < a.project_name ? 1 : -1));
+                    break;
+            }
+        }
+    }
+
+    private sortProjectByModifiedTimestamp(formattedProjectList: FormattedProject[]) {
         return formattedProjectList.sort((a, b) => (b.last_modified_timestamp > a.last_modified_timestamp ? 1 : -1));
     }
 
