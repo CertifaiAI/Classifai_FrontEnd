@@ -15,8 +15,7 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class HomeHeaderComponent implements OnInit {
     languageArr: (string | null)[] = [];
-    // headerImage: string = `../../assets/landing-page/Classifai_PoweredBy_Horizontal_light.png`;
-    headerImage: string = `../../assets/landing-page/Classifai_Community_Logo.png`;
+    headerImage: string = `../../assets/landing-page/AICS_v2_Output-06_dark.png`;
     @ViewChildren('languages') languages!: QueryList<ElementRef>;
 
     constructor(public _translate: TranslateService, private _languageService: LanguageService) {
