@@ -5,20 +5,6 @@ $fontSize: 2vh;
     margin-top: 5vh;
 }
 
-.model {
-    position: fixed; /* Stay in place */
-    z-index: 1000; /*Sit on top*/
-    padding-top: 10vh; /* Location of the box */
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: transparent;
-    scrollbar-width: none;
-    position: fixed;
-    background: rgba(0, 0, 0, 0.7);
-}
-
 .new-project-container {
     display: flex;
     flex-direction: row;
@@ -164,11 +150,6 @@ $fontSize: 2vh;
     color: #777777 !important;
 }
 
-.cancel-btn {
-    background-color: #444444;
-    margin-right: 0.7vw;
-}
-
 .choose-file-btn {
     font-size: $fontSize;
     text-decoration: none;
@@ -196,11 +177,6 @@ $fontSize: 2vh;
     height: 3vh;
 }
 
-.label-file {
-    padding-top: 1vh;
-    padding-right: 0.2vw;
-}
-
 .label-select-folder {
     padding-top: 0.7vh;
     padding-right: 1vw;
@@ -212,11 +188,6 @@ $fontSize: 2vh;
     font-size: $fontSize;
     padding-top: 0vh;
     width: 11.5vw;
-}
-
-.label-select-file {
-    padding-top: 0.5vh;
-    width: 9.5vw;
 }
 
 .input-id {
@@ -231,19 +202,6 @@ $fontSize: 2vh;
     width: 99.9vw;
     height: 99.7vh;
     cursor: not-allowed;
-}
-
-.tooltip {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black;
-    font-size: 15px;
-    text-decoration: underline;
-    margin-top: 1vh;
-}
-
-.tooltiptitle {
-    opacity: 0.3;
 }
 
 .help-icon-container .tooltiptext {
@@ -288,8 +246,4 @@ $fontSize: 2vh;
 .display-msg {
     font-size: 2vh;
     color: white;
-}
-
-.modal-content-container {
-    margin-left: 1.3vw;
 }

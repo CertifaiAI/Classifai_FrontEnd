@@ -27,8 +27,7 @@
 }
 
 .logo,
-.utility-icon-light,
-.utility-icon-dark {
+.utility-icon-light {
     min-width: 1.6vw;
     max-width: 1.6vw;
     min-height: inherit;
@@ -36,17 +35,12 @@
     padding: 0.32vw;
 }
 
-.utility-icon-light,
-.utility-icon-dark {
+.utility-icon-light {
     cursor: pointer;
 }
 
 .utility-icon-light:active {
     background: rgb(105, 105, 105);
-}
-
-.utility-icon-dark:active {
-    background: darkgray;
 }
 
 .img {

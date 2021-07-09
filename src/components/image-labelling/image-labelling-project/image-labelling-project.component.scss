@@ -95,12 +95,6 @@
     padding-bottom: 1vh;
 }
 
-.tab-close-thumbnail {
-    @include tab-close-styling();
-    margin-left: 3vw;
-    justify-content: center;
-}
-
 .tab-close-thumbnailless {
     @include tab-close-styling();
     flex: 1 0 60%;

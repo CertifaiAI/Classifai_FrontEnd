@@ -166,35 +166,14 @@ $fontSize: 2vh;
     background: rgba(0, 0, 0, 0.8);
 }
 
-.modal-content {
-    background-color: #525353;
-    margin: auto;
-    padding: 1vw;
-    max-width: 20vw;
-    min-width: 20vw;
-    border-radius: 1vw;
-    margin-top: 15vh;
-}
-
 .modal-content-container {
     margin-left: 1.3vw;
-}
-
-.modal-content-header {
-    text-align: center;
-    color: white;
-    font-size: 3vh;
 }
 
 .modal-button-container {
     display: flex;
     justify-content: center;
     padding: 1vw 1vw 1vw 2vw;
-}
-
-.modal-button-cancel {
-    display: flex;
-    justify-content: flex-end;
 }
 
 .export-content-container {
@@ -225,12 +204,6 @@ $fontSize: 2vh;
 }
 
 .with-data {
-    font-size: 1.5vh;
-}
-
-.cancel-btn {
-    padding: 1vh 1vw;
-    background-color: #444444;
     font-size: 1.5vh;
 }
 
@@ -274,10 +247,6 @@ $fontSize: 2vh;
 
 .modal-message-container {
     padding-right: 3.5vw;
-}
-
-.break {
-    overflow-wrap: break-word;
 }
 
 .save-format-list {
@@ -574,10 +543,6 @@ tr th:nth-child(1) {
     color: white;
     font-size: 2vh;
     margin-right: 1vw;
-}
-
-.label-file {
-    padding-top: 0.5vh;
 }
 
 .margin-bottom {
