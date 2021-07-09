@@ -64,6 +64,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     showLabelTooltip: boolean = false;
     unsupportedImageList: string[] = [];
     keyToSort: string = 'project_name';
+    projectType: string = 'myproject';
+    enableSort: boolean = true;
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
@@ -154,10 +156,10 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
 
     keyIsSelected = (value: string) => {
         this.keyToSort = value;
-        this.showProjectList();
+        this.showProjectList(this.projectType);
     };
 
-    showProjectList = (): void => {
+    showProjectList = (projectType: string = 'myproject'): void => {
         this.projectList.isFetching = true;
         this._dataSetService
             .getProjectList()
@@ -165,7 +167,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .subscribe(
                 ({ content }) => {
                     if (content) {
-                        this.handleProjectList(content);
+                        this.handleProjectList(content, projectType);
                     }
                 },
                 (error: Error) => {
@@ -175,7 +177,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             );
     };
 
-    handleProjectList(content: Project[]) {
+    handleProjectList(content: Project[], projectType: string) {
         const clonedProjectList = cloneDeep(content);
 
         const formattedProjectList = clonedProjectList.map((project) => {
@@ -188,29 +190,34 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             };
         });
 
-        console.log(formattedProjectList);
-
-        switch (this.keyToSort) {
-            case 'project_name':
-                this.sortedProject = [...formattedProjectList].sort((a, b) =>
-                    b.project_name < a.project_name ? 1 : -1,
-                );
+        switch (projectType) {
+            case 'starred':
+                this.sortedProject = formattedProjectList.filter((proj) => proj.is_starred);
                 break;
-            case 'created_date':
-                this.sortedProject = [...formattedProjectList].sort((a, b) =>
-                    b.created_date > a.created_date ? 1 : -1,
-                );
-                break;
-            case 'last_modified_date':
-                this.sortedProject = [...formattedProjectList].sort((a, b) =>
-                    b.last_modified_date > a.last_modified_date ? 1 : -1,
-                );
+            case 'recent':
+                this.sortedProject = this.sortProjectByModifiedTimestamp(formattedProjectList);
+                this.sortedProject = this.sortedProject.slice(0, 6);
                 break;
             default:
-                this.sortedProject = [...formattedProjectList].sort((a, b) =>
-                    b.project_name < a.project_name ? 1 : -1,
-                );
+                this.sortedProject = formattedProjectList;
                 break;
+        }
+
+        if (this.enableSort) {
+            switch (this.keyToSort) {
+                case 'project_name':
+                    this.sortedProject.sort((a, b) => (b.project_name < a.project_name ? 1 : -1));
+                    break;
+                case 'created_date':
+                    this.sortedProject.sort((a, b) => (b.created_timestamp > a.created_timestamp ? 1 : -1));
+                    break;
+                case 'last_modified_date':
+                    this.sortedProject.sort((a, b) => (b.last_modified_timestamp > a.last_modified_timestamp ? 1 : -1));
+                    break;
+                default:
+                    this.sortedProject.sort((a, b) => (b.project_name < a.project_name ? 1 : -1));
+                    break;
+            }
         }
 
         /**
@@ -227,6 +234,30 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             isFetching: false,
         };
     }
+
+    private sortProjectByModifiedTimestamp(
+        formattedProjectList: {
+            created_timestamp: Date;
+            last_modified_timestamp: Date;
+            created_date: string;
+            last_modified_date: string;
+            project_name: string;
+            project_path: string;
+            is_loaded: boolean;
+            is_starred: boolean;
+            is_new: boolean;
+            total_uuid: number;
+            root_path_valid: boolean;
+        }[],
+    ) {
+        return formattedProjectList.sort((a, b) => (b.last_modified_timestamp > a.last_modified_timestamp ? 1 : -1));
+    }
+
+    filterProjects = (id: string) => {
+        this.projectType = id;
+        this.enableSort = id === 'recent' ? false : true;
+        this.showProjectList(id);
+    };
 
     formatDate = (date: string): string => {
         const initializedDate: Date = new Date(date);
@@ -332,7 +363,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         } else {
                             this.processIsSuccess(true);
                         }
-                        this.showProjectList();
+                        this.showProjectList(this.projectType);
                     });
             });
     };
@@ -482,7 +513,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 },
                 () => {
                     this.isProjectLoading = false;
-                    this.showProjectList();
+                    this.showProjectList(this.projectType);
                     this.unsupportedImageList.length > 0 &&
                         this._dataSetService
                             .downloadUnsupportedImageList(projectName, this.unsupportedImageList)
@@ -525,7 +556,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         }),
                     )
                     .subscribe((response) => {
-                        this.showProjectList();
+                        this.showProjectList(this.projectType);
                     });
             });
     }
@@ -559,7 +590,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         }),
                     )
                     .subscribe((response) => {
-                        this.showProjectList();
+                        this.showProjectList(this.projectType);
                     });
             });
     }
@@ -579,7 +610,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         this.modalSpanMessage = translated;
                         this._modalService.open(this.modalIdRenameSuccess);
                     });
-                    this.showProjectList();
+                    this.showProjectList(this.projectType);
                     this.toggleRenameModalDisplay();
                 }
             });
@@ -600,7 +631,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         this.projectName = projectName;
                         this._modalService.open(this.modalIdDeleteProject);
                     });
-                    this.showProjectList();
+                    this.showProjectList(this.projectType);
                 }
             });
     };

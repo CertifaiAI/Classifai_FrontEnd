@@ -10,7 +10,12 @@
         </ng-container>
 
         <ng-template #otherMenu>
-            <div [attr.data-index]="i" class="current-project-btn" (click)="onClickButton(menu.id)">
+            <div
+                [attr.data-index]="i"
+                class="current-project-btn"
+                [class.active]="menu.id === selectedId"
+                (click)="onClickButton(menu.id)"
+            >
                 <img class="project-icon" [src]="menu.src" [style]="menu.style" alt="project icon" />
                 <label class="current-project-txt">{{ menu.name | translate }}</label>
             </div>

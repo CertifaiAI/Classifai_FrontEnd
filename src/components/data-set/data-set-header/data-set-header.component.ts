@@ -4,7 +4,7 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
     selector: 'data-set-header',
@@ -13,8 +13,11 @@ import { Component, EventEmitter, Output } from '@angular/core';
 })
 export class DataSetHeaderComponent {
     @Output() selectedKey = new EventEmitter<string>();
+    @Input() _enableSort: boolean = true;
+    selectedOpt: string = 'project_name';
 
     onOptionsSelected(value: string) {
+        this.selectedOpt = value;
         this.selectedKey.emit(value);
     }
 }
