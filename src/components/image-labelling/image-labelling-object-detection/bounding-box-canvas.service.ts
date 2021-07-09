@@ -436,9 +436,12 @@ export class BoundingBoxCanvasService {
         try {
             if (boundingBoxes.length > 0) {
                 for (const [i, boundingBox] of boundingBoxes.entries()) {
-                    i === this.currentClickedBox.box || i === this.currentSelectedBndBox
-                        ? this.setEachBbox(true, labelList, boundingBox, context)
-                        : this.setEachBbox(false, labelList, boundingBox, context);
+                    this.setEachBbox(
+                        i === this.currentClickedBox.box || i === this.currentSelectedBndBox ? true : false,
+                        labelList,
+                        boundingBox,
+                        context,
+                    );
                 }
             }
             if (this.currentClickedBox.box === -1 && this.currentSelectedBndBox === -1) {
@@ -461,15 +464,9 @@ export class BoundingBoxCanvasService {
         boundingBox: Boundingbox,
         context: CanvasRenderingContext2D | null,
     ) {
-        if (selected) {
-            boundingBox.color = `rgba(0,255,0,1.0)`;
-            boundingBox.lineWidth = 2;
-            this.drawEachBoxOn(labelList, boundingBox, context, true);
-        } else {
-            boundingBox.color = `rgba(255,255,0,0.8)`;
-            boundingBox.lineWidth = 1;
-            this.drawEachBoxOn(labelList, boundingBox, context, false);
-        }
+        boundingBox.color = selected ? `rgba(0,255,0,1.0)` : `rgba(255,255,0,0.8)`;
+        boundingBox.lineWidth = selected ? 2 : 1;
+        this.drawEachBoxOn(labelList, boundingBox, context, selected ? true : false);
     }
 
     private drawEachBoxOn(
