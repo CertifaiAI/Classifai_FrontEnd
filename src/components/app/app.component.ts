@@ -13,7 +13,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AppComponent implements OnInit {
     favIcon: HTMLLinkElement = document.querySelector('#favIcon') as HTMLLinkElement;
-    lightIcon: string = `../assets/classifai_dark.ico`;
+    lightIcon: string = `../assets/cs-icon.ico`;
 
     constructor() {
         this.favIcon.href = this.lightIcon;
