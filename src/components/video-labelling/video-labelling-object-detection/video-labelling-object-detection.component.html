@@ -1,13 +1,29 @@
 <div class="videoTimelineContainer">
-    <!-- <div *ngIf="activePreview !== undefined" class="active-frame-container">
-        <img class="activeFrame" src="{{ activePreview }}" />
-    </div> -->
-
-    <canvas #canvasdrawing class="canvasstyle"></canvas>
-
-    <div class="info-container">
-        <button type="button" [disabled]="isPlayingFrame" (click)="clickPlay()">Play</button>
-        <button type="button" [disabled]="isPausingFrame" (click)="clickPause()">Pause</button>
+    <div class="canvas-container">
+        <canvas #canvasdrawing class="canvasstyle"></canvas>
+    </div>
+    <div class="control-layout">
+        <div class="control-container">
+            <div class="time-container">
+                <label class="time-label">00:00:00</label>
+            </div>
+            <div class="control-icon-container">
+                <img
+                    *ngIf="!isPlayingFrame"
+                    class="control-icon"
+                    src="../../../assets/icons/Play.svg"
+                    alt="Play"
+                    (click)="clickPlay()"
+                />
+                <img
+                    *ngIf="isPlayingFrame"
+                    class="control-icon"
+                    src="../../../assets/icons/Pause.svg"
+                    alt="Pause"
+                    (click)="clickPause()"
+                />
+            </div>
+        </div>
     </div>
     <div class="videoTimeline" id="videoTimeline" (wheel)="onScroll($event)" #videoTimelineRef>
         <table class="table">

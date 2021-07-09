@@ -17,7 +17,11 @@
     padding-top: 2px;
     padding-right: 60px;
     //padding-bottom: 50px;
-    padding-left: 45px;
+    padding-left: 2.2vw;
+}
+
+.canvas-container {
+    height: 54vh;
 }
 
 .active-frame-container {
@@ -109,15 +113,43 @@
     width: 28px;
 }
 
-.info-container {
+.control-layout {
     background-color: (color.$greyColor);
-    height: 30px;
+}
+
+.control-container {
+    padding: 0.7vh 1vw 0 0.5vw;
+    background-color: (color.$greyColor);
+    border-bottom: 1px solid black;
+    height: 5vh;
+    width: 9.6vw;
+    display: flex;
+}
+
+.control-icon-container {
+    //border: 3px solid black;
+    padding: 0 0.4vw 0;
+    // width: 1vw;
+}
+
+.control-icon {
+    padding-top: 0.5vh;
+    height: 70%;
+}
+
+.time-container {
+    //border: 3px solid green;
+    padding-right: 1vw;
+}
+
+.time-label {
+    font-size: 1.7vw;
+    color: #768dff;
 }
 
 .label-display {
-    width: 80px;
+    width: 7.5vw;
     color: white;
-
     text-align: left;
 }
 
