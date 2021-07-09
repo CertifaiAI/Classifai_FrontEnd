@@ -18,6 +18,7 @@ type MenuSchema = {
     styleUrls: ['./data-set-side-menu.component.scss'],
 })
 export class DataSetSideMenuComponent implements OnInit {
+    selectedId: string = 'myproject';
     menuSchema: MenuSchema[] = [
         {
             src: '../../../assets/icons/add.svg',
@@ -32,7 +33,7 @@ export class DataSetSideMenuComponent implements OnInit {
         },
         {
             src: '../../../assets/icons/project.svg',
-            id: 'myProject',
+            id: 'myproject',
             name: 'menuName.myProject',
         },
         {
@@ -45,13 +46,14 @@ export class DataSetSideMenuComponent implements OnInit {
             id: 'recent',
             name: 'menuName.recent',
         },
-        {
-            src: '../../../assets/icons/trash.svg',
-            id: 'trash',
-            name: 'menuName.trash',
-        },
+        // {
+        //     src: '../../../assets/icons/trash.svg',
+        //     id: 'trash',
+        //     name: 'menuName.trash',
+        // },
     ];
     @Output() _onCreate: EventEmitter<boolean> = new EventEmitter();
+    @Output() _onFilter: EventEmitter<string> = new EventEmitter();
     @Output() _onImport = new EventEmitter();
 
     constructor() {}
@@ -63,6 +65,18 @@ export class DataSetSideMenuComponent implements OnInit {
     };
 
     onClickButton = (id: string): void => {
-        id === 'importProject' ? this._onImport.emit() : console.log('This feature is not available yet');
+        id !== 'importProject' && (this.selectedId = id);
+        switch (id) {
+            case 'importProject':
+                this._onImport.emit();
+                break;
+            case 'myproject':
+            case 'starred':
+            case 'recent':
+                this._onFilter.emit(id);
+                break;
+            default:
+                console.log('This feature is not available yet');
+        }
     };
 }
