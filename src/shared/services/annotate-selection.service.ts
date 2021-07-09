@@ -24,8 +24,6 @@ export class AnnotateSelectionService {
     private labelStateSubject = new BehaviorSubject<AnnotateActionState>(initialState);
     public labelStaging$ = this.labelStateSubject.asObservable();
 
-    constructor() {}
-
     /**
      * @function seState handles update state in service
      * @param newState if no value, setState will reset state to initialState

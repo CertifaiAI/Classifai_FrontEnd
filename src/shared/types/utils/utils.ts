@@ -6,8 +6,6 @@
 
 import { Boundingbox } from 'src/components/image-labelling/image-labelling.model';
 export class Utils {
-    constructor() {}
-
     public stringifyObject(content: object) {
         try {
             return JSON.stringify(content);
@@ -70,9 +68,8 @@ export class Utils {
             const temStr: string = this.deepCloneVariable(strs);
             const temReplaceStr = temStr.split('\\').join('/');
             const tempArr = temReplaceStr.split('/');
-            const tempFileName = tempArr[tempArr.length - 1];
 
-            return tempFileName;
+            return tempArr[tempArr.length - 1];
         } catch (err) {
             console.log('GetFilename(strs) ----> ', err.name + ': ', err.message);
             return '';
@@ -85,9 +82,8 @@ export class Utils {
             const temreplacestr = temstr.st.split('\\').join('/');
             const temparr = temreplacestr.split('/');
             temparr.pop();
-            const returnstr = temparr.join('/');
 
-            return returnstr;
+            return temparr.join('/');
         } catch (err) {
             console.log('GetFoldername(strs) ----> ', err.name + ': ', err.message);
             return '';
@@ -119,7 +115,7 @@ export class ImglblCopyPaste {
 
     public copy(boundData: Boundingbox) {
         try {
-            if (boundData != undefined) {
+            if (boundData !== undefined) {
                 this.memo = this.utility.deepCloneObject(boundData);
             }
         } catch (err) {

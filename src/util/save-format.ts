@@ -49,13 +49,9 @@ export class YoloFormat {
     }
 }
 
-export class CocoFormat {
-    constructor() {}
-}
+export class CocoFormat {}
 
-export class JsonFormat {
-    constructor() {}
-}
+export class JsonFormat {}
 
 export class PascalvocFormat {
     private utility: Utils = new Utils();
@@ -168,6 +164,4 @@ export class LabelFormat {
     }
 }
 
-export class CsvFormat {
-    constructor() {}
-}
+export class CsvFormat {}

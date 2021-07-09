@@ -30,8 +30,6 @@ export class ZoomService {
     private zoomSubject = new BehaviorSubject<ZoomState>(initialState);
     public zoom$ = this.zoomSubject.asObservable();
 
-    constructor() {}
-
     setState = (newZoomState: Partial<ZoomState>): void => {
         newZoomState
             ? this.zoomSubject.next({ ...initialState, ...newZoomState })

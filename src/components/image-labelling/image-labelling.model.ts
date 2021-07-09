@@ -91,7 +91,7 @@ type IAxis = {
     y: number;
 };
 
-type SubLabel = {
+export type SubLabel = {
     region: string;
     label: string;
 };

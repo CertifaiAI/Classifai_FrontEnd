@@ -11,9 +11,10 @@ import {
     Boundingbox,
     Method,
     Polygons,
-    PolyMetadata,
     UndoState,
 } from 'src/components/image-labelling/image-labelling.model';
+
+type NotateType = Boundingbox[] | Polygons[] | null;
 
 @Injectable({
     providedIn: 'any',
@@ -26,8 +27,6 @@ export class UndoRedoService {
     private allowUndo: boolean = false;
     private allowRedo: boolean = false;
     private utility: Utils = new Utils();
-
-    constructor() {}
 
     public getCurrentArray() {
         return {
@@ -45,11 +44,14 @@ export class UndoRedoService {
             this.allowRedo = false;
             this.currentArr.length === 0
                 ? this.currentArr.push(this.utility.deepCloneVariable(stages))
-                : (this.undoArr.length === this.maxStageSize ? this.undoArr.splice(0, 1) : {},
-                  this.undoArr.push(this.removeLastArray(this.currentArr)),
-                  this.currentArr.push(this.utility.deepCloneVariable(stages)),
-                  (this.allowUndo = true));
+                : this.currentArrExist(stages);
         }
+    }
+    currentArrExist(stages: UndoState) {
+        this.undoArr.length === this.maxStageSize && this.undoArr.splice(0, 1);
+        this.undoArr.push(this.removeLastArray(this.currentArr));
+        this.currentArr.push(this.utility.deepCloneVariable(stages));
+        this.allowUndo = true;
     }
 
     public clearAllStages(): void {
@@ -66,7 +68,7 @@ export class UndoRedoService {
             this.redoArr.push(this.removeLastArray(this.currentArr));
             const tmpStages: UndoState = this.removeLastArray(this.undoArr);
             this.currentArr.push(tmpStages);
-            this.undoArr.length === 0 ? (this.allowUndo = false) : (this.allowUndo = true);
+            this.allowUndo = this.undoArr.length === 0 ? false : true;
             return tmpStages;
         }
         return null;
@@ -78,9 +80,9 @@ export class UndoRedoService {
             this.undoArr.push(this.removeLastArray(this.currentArr));
             tmpStages = this.removeLastArray(this.redoArr);
             this.currentArr.push(tmpStages);
-            this.redoArr.length === 0 ? (this.allowRedo = false) : (this.allowRedo = true);
+            this.allowRedo = this.redoArr.length === 0 ? false : true;
         }
-        this.undoArr.length > 0 ? (this.allowUndo = true) : (this.allowUndo = false);
+        this.allowUndo = this.undoArr.length > 0 ? true : false;
 
         return tmpStages;
     }
@@ -88,13 +90,15 @@ export class UndoRedoService {
     public clearRedundantStages() {
         // TODO:Solve bugs here
         /** Daniel: Unable to shortcut code logic due to the Type embedded into 'currentArr.meta' prop */
-        if (this.currentArr[0]?.meta && 'polygons' in this.currentArr[0].meta) {
-        } else {
+        if (!(this.currentArr[0]?.meta && 'polygons' in this.currentArr[0].meta)) {
             if (this.undoArr.length > 0) {
                 const last2Stages: boolean = this.isStateChange(
                     (this.undoArr[this.undoArr.length - 1]?.meta as BboxMetadata).bnd_box,
                 );
-                last2Stages ? (this.currentArr.pop(), this.currentArr.push(this.removeLastArray(this.undoArr))) : {};
+                if (last2Stages) {
+                    this.currentArr.pop();
+                    this.currentArr.push(this.removeLastArray(this.undoArr));
+                }
             }
         }
     }
@@ -118,7 +122,7 @@ export class UndoRedoService {
         stages && (this.currentArr[0] = this.utility.deepCloneVariable(stages));
     }
 
-    public isStateChange(notate: Boundingbox[] | Polygons[] | null) {
+    public isStateChange(notate: NotateType) {
         if (!notate) {
             return false;
         }
@@ -132,12 +136,14 @@ export class UndoRedoService {
         /** Daniel: Unable to shortcut code logic due to the Type embedded into 'currentArr.meta' prop */
         if (this.currentArr[0]?.meta && 'polygons' in this.currentArr[0]?.meta) {
             const polybox: Polygons[] = notate as Polygons[];
-            const comparePolyBoxes: Polygons[] = (this.currentArr[0]?.meta as PolyMetadata).polygons;
+            const comparePolyBoxes: Polygons[] = (this.currentArr[0]?.meta).polygons;
             if (polybox.length !== comparePolyBoxes.length) {
                 return true;
             } else {
                 for (const [i, { label }] of comparePolyBoxes.entries()) {
-                    label !== polybox[i].label ? true : null;
+                    if (label !== polybox[i].label) {
+                        return true;
+                    }
                 }
             }
         } else {
@@ -163,7 +169,7 @@ export class UndoRedoService {
                 return true;
             } else {
                 const polygons: Polygons[] = notate as Polygons[];
-                const comparePolygons: Polygons[] = (this.currentArr[0]?.meta as PolyMetadata).polygons;
+                const comparePolygons: Polygons[] = (this.currentArr[0]?.meta).polygons;
                 if (polygons.length !== comparePolygons.length) {
                     return true;
                 } else {

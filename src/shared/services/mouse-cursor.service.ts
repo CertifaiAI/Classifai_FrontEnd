@@ -47,8 +47,6 @@ export class MousrCursorService {
     private mouseCursorSubject = new BehaviorSubject<MouseCursorState>(initialState);
     public mouseCursor$ = this.mouseCursorSubject.asObservable();
 
-    constructor() {}
-
     setState = (newCursorState?: Partial<MouseCursorState>): void => {
         newCursorState
             ? this.mouseCursorSubject.next({ ...initialState, ...newCursorState })

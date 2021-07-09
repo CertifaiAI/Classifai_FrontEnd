@@ -14,7 +14,6 @@ import { Utils } from '../types/utils/utils';
 export class CopyPasteService {
     private MEMO: CompleteMetadata | null = null;
     private utility: Utils = new Utils();
-    constructor() {}
 
     public copy<T>(currMeta: T) {
         this.MEMO = this.utility.deepCloneVariable(currMeta);
@@ -43,14 +42,14 @@ export class CopyPasteService {
     private polygonPaste(): Polygons {
         const rtMEMO: Polygons = this.utility.deepCloneObject(this.MEMO);
         // tslint:disable-next-line: prefer-const
-        let { coorPt: coorPtList, id } = rtMEMO;
+        let { coorPt: coorPtList } = rtMEMO;
         for (const coorPt of coorPtList) {
             coorPt.x += 8;
             coorPt.y += 8;
             coorPt.distancetoImg.x = 0;
             coorPt.distancetoImg.y = 0;
         }
-        id = this.utility.generateUniquesID();
+        rtMEMO.id = this.utility.generateUniquesID();
         return rtMEMO;
     }
 

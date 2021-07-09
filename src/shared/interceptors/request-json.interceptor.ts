@@ -4,15 +4,6 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-// import { Injectable } from '@angular/core';
-// import { Observable } from 'rxjs';
-// import {
-//   HttpEvent,
-//   HttpHandler,
-//   HttpInterceptor,
-//   HttpRequest,
-// } from '@angular/common/http';
-
 // @Injectable({ providedIn: 'any' })
 // export class JsonRequestInterceptor implements HttpInterceptor {
 //   intercept(
