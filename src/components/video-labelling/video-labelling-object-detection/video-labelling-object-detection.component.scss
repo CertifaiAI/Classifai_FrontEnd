@@ -161,6 +161,7 @@
 }
 
 .canvasstyle {
+    position: fixed;
     left: 2.2vw;
     right: auto;
     top: 8vh;
@@ -170,5 +171,5 @@
     padding: 0px;
     outline: none;
     border: none;
-    width: 100w;
+    border: 3px white solid;
 }

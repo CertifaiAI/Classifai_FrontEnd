@@ -11,7 +11,9 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { timer } from 'rxjs';
+import { Subject, timer } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { VideoLabellingActionService } from '../video-labelling-action.service';
 import { FrameArray, LabelledFrame } from '../video-labelling.modal';
 
 @Component({
@@ -20,22 +22,6 @@ import { FrameArray, LabelledFrame } from '../video-labelling.modal';
     styleUrls: ['./video-labelling-object-detection.component.scss'],
 })
 export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges, AfterViewInit {
-    private canvasContext!: CanvasRenderingContext2D;
-
-    occupiedSpace = [];
-    @Output() _onHide: EventEmitter<LabelledFrame> = new EventEmitter();
-    @ViewChild('videoTimelineRef') _videoTimelineRef!: ElementRef<HTMLDivElement>;
-    @ViewChild('canvasdrawing') canvas!: ElementRef<HTMLCanvasElement>;
-    activeFrame = 0;
-    activePreview: HTMLImageElement = new Image();
-    verticalScroll: boolean = false;
-    isPlayingFrame: boolean = false;
-    isPausingFrame: boolean = true;
-    pauseFrameIndex: number = 0;
-
-    showDetailsIcon: string = `../../../assets/icons/eye_show.svg`;
-    hideDetailsIcon: string = `../../../assets/icons/eye_hide.svg`;
-
     totalFrameArr: FrameArray[] = [
         {
             frameURL: '../../../assets/video_img/1.jpg',
@@ -158,8 +144,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             frameURL: '../../../assets/video_img/10.jpg',
         },
     ];
-
-    @Input() _totalFrame = this.totalFrameArr.length;
 
     labelledFrame: LabelledFrame[] = [
         {
@@ -344,25 +328,57 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         },
     ];
 
-    constructor() {}
+    @Input() _totalFrame = this.totalFrameArr.length;
+    @Output() _onHide: EventEmitter<LabelledFrame> = new EventEmitter();
+    @ViewChild('videoTimelineRef') _videoTimelineRef!: ElementRef<HTMLDivElement>;
+    @ViewChild('canvasdrawing') canvas!: ElementRef<HTMLCanvasElement>;
+    private canvasContext!: CanvasRenderingContext2D;
+    private unsubscribe$: Subject<any> = new Subject();
+    occupiedSpace = [];
+    activeFrame = 0;
+    activePreview: HTMLImageElement = new Image();
+    verticalScroll: boolean = false;
+    isPlayingFrame: boolean = false;
+    isPausingFrame: boolean = true;
+    pauseFrameIndex: number = 0;
 
-    ngOnInit() {}
+    showDetailsIcon: string = `../../../assets/icons/eye_show.svg`;
+    hideDetailsIcon: string = `../../../assets/icons/eye_hide.svg`;
+
+    locA: { x: number; y: number } | undefined;
+    locB: { x: number; y: number } | undefined;
+
+    constructor(private _videoLblStateService: VideoLabellingActionService) {}
+
+    ngOnInit() {
+        this._videoLblStateService.action$
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe(({ clear, fitCenter, ...action }) => {
+                if (clear) {
+                    this.onEraseBoundingBox();
+                }
+            });
+    }
 
     ngAfterViewInit(): void {
         this.initializeCanvas();
         this.activePreview.src = this.totalFrameArr[0].frameURL;
-        this.canvasContext.drawImage(this.activePreview, 450, 10);
+        this.canvasContext.drawImage(this.activePreview, 0, 0);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes._totalFrame.currentValue) {
             this.totalFrameArr = [...Array(changes._totalFrame.currentValue as number)];
         }
+
+        if (this.canvas) {
+            console.log('CALLED');
+        }
     }
 
     onScroll = ({ deltaY }: WheelEvent) => {
         if (this.verticalScroll) {
-            this.canvasContext.clearRect(0, 0, 450, 10);
+            this.clearCanvas();
 
             const scrollTo = this._videoTimelineRef.nativeElement.scrollLeft;
             scrollTo !== undefined &&
@@ -381,7 +397,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 ? (this.activePreview.src = '')
                 : (this.activePreview.src = this.totalFrameArr[this.activeFrame].frameURL);
 
-            this.canvasContext.drawImage(this.activePreview, 450, 10);
+            this.canvasContext.drawImage(this.activePreview, 0, 0);
         }
     };
 
@@ -401,8 +417,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         index > this.totalFrameArr.length
             ? (this.activePreview.src = '')
             : (this.activePreview.src = this.totalFrameArr[index].frameURL);
-
-        this.canvasContext.drawImage(this.activePreview, 450, 10);
+        this.canvasContext.drawImage(this.activePreview, 0, 0);
     };
 
     clickPlay = () => {
@@ -447,16 +462,30 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this._onHide.emit(this.labelledFrame[idx]);
     };
 
-    initializeCanvas(width: string = '70%') {
-        this.canvas.nativeElement.style.width = '90vw';
-        this.canvas.nativeElement.style.height = '70%';
+    initializeCanvas(width: string = '95%') {
+        this.canvas.nativeElement.style.width = width;
+        this.canvas.nativeElement.style.height = '45%';
         this.canvas.nativeElement.width = this.canvas.nativeElement.offsetWidth;
         this.canvas.nativeElement.height = this.canvas.nativeElement.offsetHeight;
         this.canvasContext = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
     }
 
+    onEraseBoundingBox() {
+        this.clearCanvas();
+        this.canvasContext.beginPath();
+        this.canvasContext.drawImage(this.activePreview, 0, 0);
+    }
+
     clearCanvas() {
         this.canvasContext.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
+    }
+
+    getMousePos(evt: any) {
+        const rect = this.canvasContext.canvas.getBoundingClientRect();
+        return {
+            x: evt.clientX - rect.left,
+            y: evt.clientY - rect.top,
+        };
     }
 
     @HostListener('window:keydown', ['$event'])
@@ -473,5 +502,26 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('window:keyup', ['$event'])
     onReleaseKey() {
         this.verticalScroll = false;
+    }
+
+    @HostListener('mousedown', ['$event'])
+    mouseDown(event: MouseEvent) {
+        // const points = this.canvasContext.canvas.getBoundingClientRect();
+        // console.log(points);
+        // console.log(event);
+        this.locA = this.getMousePos(event);
+    }
+
+    @HostListener('mouseup', ['$event'])
+    mouseUp(event: MouseEvent) {
+        // const points = this.canvasContext.canvas.getBoundingClientRect();
+        // console.log(points);
+        // console.log(event);
+        this.locB = this.getMousePos(event);
+        this.canvasContext.fillStyle = '#000000';
+        this.canvasContext.rect(this.locA!.x, this.locA!.y, this.locB!.x - this.locA!.x, this.locB!.y - this.locA!.y);
+        this.canvasContext.strokeStyle = 'rgba(0,255,0,1.0)';
+        this.canvasContext.lineWidth = 2;
+        this.canvasContext.stroke();
     }
 }

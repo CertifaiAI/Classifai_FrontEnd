@@ -62,7 +62,10 @@ export class VideoLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     hoverLabel: `leftSideBar.eraser`,
                     alt: `Eraser`,
                     toggleable: false,
-                    onClick: () => null,
+                    onClick: () => {
+                        this.resetSelectedAnnotate();
+                        this._videoLabelState.setState({ draw: false, drag: false, clear: true });
+                    },
                 },
                 {
                     imgPath: `../../../assets/icons/fit_center.svg`,
