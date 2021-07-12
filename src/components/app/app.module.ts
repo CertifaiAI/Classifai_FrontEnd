@@ -14,11 +14,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { LanguageService } from 'src/shared/services/language.service';
 import { NgModule } from '@angular/core';
 import { PageNotFoundComponent } from '../page-not-found/page-not-found.component';
-import { ServerErrorComponent } from '../server-error/server-error.component';
 import { SharedModule } from 'src/shared/shared.module';
 
 @NgModule({
-    declarations: [AppComponent, ServerErrorComponent, PageNotFoundComponent],
+    declarations: [AppComponent, PageNotFoundComponent],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,

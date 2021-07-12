@@ -8,7 +8,6 @@ import { HomeLayoutComponent } from 'src/layouts/home-layout/home-layout.compone
 import { NgModule } from '@angular/core';
 import { PageNotFoundComponent } from '../page-not-found/page-not-found.component';
 import { LoadChildren, RouterModule, Routes } from '@angular/router';
-import { ServerErrorComponent } from '../server-error/server-error.component';
 
 const imgLabellingLayout: LoadChildren = () =>
     import('../../layouts/image-labelling-layout/image-labelling-layout.module').then(
@@ -32,7 +31,6 @@ const routes: Routes = [
         path: 'imglabel/seg',
         loadChildren: imgLabellingLayout,
     },
-    { path: '500', component: ServerErrorComponent },
     { path: '**', component: PageNotFoundComponent },
 ];
 
