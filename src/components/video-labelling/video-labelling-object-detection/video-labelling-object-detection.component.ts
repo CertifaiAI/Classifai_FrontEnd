@@ -420,6 +420,22 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this.canvasContext.drawImage(this.activePreview, 0, 0);
     };
 
+    // clickPlay = () => {
+    //     this.isPlayingFrame = true;
+    //     this.isPausingFrame = false;
+    //     let isLooping: boolean = true;
+    //     let timeOut: number = 0;
+
+    //     for (let index = this.activeFrame; index < this.totalFrameArr.length; index++) {
+    //         timer(300 * timeOut).subscribe((x) => {
+    //             this.clearCanvas();
+    //             this.activePreview.src = this.totalFrameArr[index].frameURL;
+    //             this.canvasContext.drawImage(this.activePreview, 0, 0);
+    //         });
+    //         timeOut++;
+    //     }
+    // }
+
     clickPlay = () => {
         this.isPlayingFrame = true;
         this.isPausingFrame = false;
@@ -477,6 +493,14 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     clearCanvas() {
+        this.canvasContext.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
+    }
+
+    testDraw() {
+        this.canvasContext.drawImage(this.activePreview, 0, 0);
+    }
+
+    testClear() {
         this.canvasContext.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
     }
 
