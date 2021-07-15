@@ -27,7 +27,7 @@ export class VideoLabellingRightSidebarComponent implements OnInit {
                     imgPath: `../../../assets/icons/tag.svg`,
                     hoverLabel: `rightSideBar.label`,
                     alt: `Label`,
-                    onClick: () => null,
+                    onClick: () => this._onClick.emit({ name: 'label', closed: false }),
                 },
                 {
                     imgPath: `../../../assets/icons/bounding_box.svg`,

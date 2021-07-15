@@ -29,6 +29,35 @@
                 </div>
             </div>
         </ng-container>
+        <ng-container *ngIf="tab.name === 'label'">
+            <div class="utility-right-project-container tab flex-fill-remaining" [ngClass]="checkCloseToggle(tab)">
+                <label class="tab-name">label</label>
+                <div class="flex-tab-icons">
+                    <span class="tab-close-thumbnailless">
+                        <div class="div-close" (click)="onClose(tab)">&#10006;</div>
+                    </span>
+                </div>
+                <div class="utility-inner-container tab-height scroll">
+                    <div class="flex-item">
+                        <p>label</p>
+                        <p>label</p>
+                        <p>label</p>
+                        <p>label</p>
+                        <p>label</p>
+                        <p>label</p>
+                        <p>label</p>
+                        <p>label</p>
+                        <p>label</p>
+                        <p>label</p>
+                        <p>label</p>
+                        <p>label</p>
+                        <p>label</p>
+                        <p>label</p>
+                        <p>label</p>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
         <ng-container *ngIf="tab.name === 'annotation'">
             <div class="utility-right-project-container tab flex-fill-remaining" [ngClass]="checkCloseToggle(tab)">
                 <label class="tab-name">annotation</label>

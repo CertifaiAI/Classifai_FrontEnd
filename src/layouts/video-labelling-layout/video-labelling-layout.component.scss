@@ -1,4 +1,5 @@
 @use '../../shared/scss/ellipsis' as ellipsis;
+$fontSize: 2vh;
 
 .layout-container {
     user-select: none;
@@ -9,4 +10,594 @@
     justify-content: space-between;
     min-width: 97.8vw;
     max-width: 97.8vw;
+}
+
+/*
+#########################
+******** Modal **********
+#########################
+*/
+
+@mixin container-flex-width($width) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-width: $width;
+    max-width: $width;
+}
+
+@mixin static-width-height($height: '') {
+    @if $height {
+        min-height: $height;
+        max-height: $height;
+        min-width: 10vw;
+        max-width: 10vw;
+        line-height: 3vh;
+        font-size: 0.9vw;
+    } @else {
+        min-height: 3vh;
+        max-height: 3vh;
+        min-width: 10vw;
+        max-width: 10vw;
+        line-height: 3vh;
+        font-size: 2vh;
+    }
+}
+
+@mixin button-style() {
+    line-height: 1vh;
+    font-size: 1vw;
+    padding: 0.5vw;
+    background: #262a2e;
+    color: azure;
+}
+
+.modal-button {
+    @include button-style();
+}
+
+.close-button {
+    border: none;
+    cursor: pointer;
+}
+
+.float-right {
+    float: right;
+}
+
+.font-title {
+    font-size: 1.7vw;
+}
+
+.font-label {
+    line-height: 4vh;
+    font-size: 1vw;
+    @include ellipsis.ellipsis-styling();
+}
+
+.main-label-container {
+    @include container-flex-width(35vw);
+}
+
+.sub-label-container {
+    @include container-flex-width(40vw);
+}
+
+.sub-label-flex-container {
+    display: flex;
+    align-items: center;
+    flex: 1 1 100%;
+    min-width: 0;
+}
+
+.static-select {
+    @include static-width-height(4vh);
+    appearance: none;
+    border-radius: 5vh;
+    margin: 0rem;
+    -moz-text-align-last: center;
+    text-align-last: center;
+    background: #262a2e;
+    color: white;
+    box-shadow: inset -0.5vw 6.25vw 1vw 0 rgba(0, 0, 0, 0.2), inset -0.5vw -0.5vw 1vw 0 rgba(255, 255, 255, 0.4);
+
+    &:hover {
+        box-shadow: inset -0.375vw -0.375vw 0.625vw 0 rgba(0, 0, 0, 0.2),
+            inset 0.375vw 0.375vw 0.625vw 0 rgba(255, 255, 255, 0.5);
+    }
+
+    &:active {
+        box-shadow: inset 0.375vw 0.375vw 0.625vw 0 rgba(0, 0, 0, 0.2),
+            inset -0.375vw -0.375vw 0.625vw 0 rgba(255, 255, 255, 0.5);
+    }
+}
+
+.static-input {
+    @include static-width-height(4vh);
+    border-radius: 2vw;
+    border: none;
+    outline: none;
+    background-color: #363636;
+    color: white;
+    padding: 0 1vw 0 1vw;
+}
+
+.hr-line {
+    // height: 0.5vh;
+    // color: black;
+    // background: #8c8b8b;
+    margin: 5vh 0 5vh 0;
+}
+
+.sub-label-padding {
+    padding: 0 0 2vh 0;
+}
+
+.validate-msg {
+    color: red;
+    font-size: 1vw;
+}
+
+.flex-first {
+    flex: 1 1 35%;
+}
+
+.flex-second {
+    flex: 1 1 55%;
+}
+
+.flex-third {
+    flex: 0 0 5%;
+}
+
+.flex-fourth {
+    @include button-style();
+    flex: 0 0 5%;
+}
+
+.modal {
+    position: fixed; /* Stay in place */
+    z-index: 1000; /*Sit on top*/
+    padding-top: 10vh; /* Location of the box */
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: transparent;
+    scrollbar-width: none;
+    position: fixed;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.modal-content {
+    background-color: #525353;
+    margin: auto;
+    padding: 1vw;
+    max-width: 20vw;
+    min-width: 20vw;
+    border-radius: 1vw;
+    margin-top: 15vh;
+}
+
+.modal-content-container {
+    margin-left: 1.3vw;
+}
+
+.modal-content-header {
+    text-align: center;
+    color: white;
+    font-size: 3vh;
+}
+
+.modal-button-container {
+    display: flex;
+    justify-content: center;
+    padding: 1vw 1vw 1vw 2vw;
+}
+
+.modal-button-cancel {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.export-content-container {
+    margin-left: 0.5vw;
+}
+
+.button-style {
+    border-radius: 1vh;
+    border: none;
+    outline: none;
+    color: white;
+    cursor: pointer;
+}
+
+.confg-btn {
+    padding: 1vh 0.5vw 1vh 0.5vw;
+    background-color: #2d8ceb;
+    margin-right: 0.7vw;
+    font-size: 2vh;
+    min-width: 7.5vw;
+}
+
+.confgdata-btn {
+    padding: 1vh 0.5vw 1vh 0.5vw;
+    background-color: #2d8ceb;
+    font-size: 2vh;
+    min-width: 7.5vw;
+}
+
+.with-data {
+    font-size: 1.5vh;
+}
+
+.cancel-btn {
+    padding: 1vh 1vw;
+    background-color: #444444;
+    font-size: 1.5vh;
+}
+
+.error-msg {
+    padding-top: 1vh;
+    font-size: $fontSize;
+}
+
+.help-icon {
+    height: 3vh;
+}
+
+.help-icon-container {
+    padding-right: 1vw;
+    padding-left: 0.4vw;
+}
+
+.help-icon-container .tooltiptext {
+    visibility: hidden;
+    width: 15vw;
+    background-color: black;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 1vh 0.5vw;
+    position: absolute;
+    top: 65%;
+    margin-left: -60px;
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+.help-icon-container:hover .tooltiptext {
+    visibility: visible;
+}
+
+.message {
+    font-size: 1vw;
+    overflow-wrap: break-word;
+}
+
+.modal-message-container {
+    padding-right: 3.5vw;
+}
+
+.break {
+    overflow-wrap: break-word;
+}
+
+.save-format-list {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+.save-format-content {
+    margin: auto;
+    padding: 10px;
+}
+
+.switch-container {
+    font-size: small;
+    align-content: center;
+    text-align: center;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 4em;
+    height: 1.8em;
+    margin-left: auto;
+    margin-right: auto;
+
+    input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .checkBox:checked + .slider {
+        // background: url(../../assets/dark-planingwood.png) no-repeat center;
+        background: black;
+        background-size: 100% 100%;
+        background-position: center;
+    }
+
+    .checkBox:checked + .slider:before {
+        -webkit-transform: translateX(2.2em);
+        -ms-transform: translateX(2.2em);
+        transform: translateX(2.2em);
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: 0.8s;
+        transition: 0.8s;
+
+        &::before {
+            position: absolute;
+            content: '';
+            height: 1.6em;
+            width: 1.6em;
+            left: 0.14em;
+            bottom: 0.15em;
+            background-color: snow;
+            -webkit-transition: 0.8s;
+            transition: 0.8s;
+        }
+    }
+
+    .round {
+        border-radius: 1.2em;
+
+        &::before {
+            border-radius: 50%;
+        }
+    }
+
+    p {
+        padding-top: 8px;
+        margin-top: 0.5em;
+        outline: none;
+    }
+}
+
+.switch-2 {
+    position: relative;
+    display: inline-block;
+    width: 2.5em;
+    height: 1.2em;
+    margin-left: auto;
+    margin-right: auto;
+
+    input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .checkBox:checked + .slider {
+        background: black;
+        background-size: 100% 100%;
+        background-position: center;
+    }
+
+    .checkBox:checked + .slider:before {
+        -webkit-transform: translateX(1.5em);
+        -ms-transform: translateX(1.5em);
+        transform: translateX(1.5em);
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: 0.5s;
+        transition: 0.5s;
+
+        &::before {
+            position: absolute;
+            content: '';
+            height: 1.2em;
+            width: 1.2em;
+            left: 0.14em;
+            background-color: snow;
+            -webkit-transition: 0.5s;
+            transition: 0.5s;
+        }
+    }
+
+    .round {
+        border-radius: 1.2em;
+
+        &::before {
+            border-radius: 50%;
+        }
+    }
+
+    p {
+        padding-top: 8px;
+        margin-top: 0.5em;
+        outline: none;
+    }
+}
+
+.no-margin-left {
+    margin-left: 0;
+}
+
+.space-verticle {
+    background-color: transparent;
+    outline: none;
+    border: none;
+    margin-left: 1.5em;
+    margin-right: 1.5em;
+}
+
+.save-format-btn {
+    width: 90%;
+    height: 6em;
+    margin-top: 2%;
+    margin-bottom: 2%;
+    margin-left: 4.5%;
+    // background: url(../../assets/dark-planingwood.png) no-repeat center;
+    background: black;
+    background-size: 100% 100%;
+    background-position: center;
+    font-size: medium;
+    outline: none;
+    border: none;
+    color: snow;
+    overflow: hidden;
+    border-radius: 5px;
+
+    &:hover {
+        text-shadow: 0px 0px 30px #888888;
+        box-shadow: 5px 5px 10px #888888, -5px -5px 10px #888888;
+        cursor: pointer;
+    }
+
+    &:active:hover {
+        border: 3px dashed green;
+    }
+}
+
+.adv-settings {
+    padding: 1vh;
+    margin: 1vh 1.5vw;
+    color: #ccc;
+    font-size: 0.6vw;
+    cursor: pointer;
+    width: fit-content;
+    background: #30353a;
+    border-radius: 0.5vh;
+    float: right;
+}
+
+.adv-settings:hover {
+    background: #373d42;
+}
+
+.modal-adv-container {
+    margin: 1vh 1vw;
+}
+
+.modal-adv-instruction {
+    color: white;
+    opacity: 0.5;
+}
+
+.modal-adv-label {
+    font-size: 1.5vh;
+    margin-left: 2vw;
+    white-space: nowrap;
+    width: 9vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+}
+
+.modal-adv-btn {
+    float: right;
+    padding: 0.5vh 1vw 0.5vh 1vw;
+    background-color: #2d8ceb;
+    font-size: 1.5vh;
+    min-width: 3vw;
+}
+
+.shortcut-key-info-header {
+    font-size: 1.2vw;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 2vh;
+}
+
+.table-box {
+    width: 100%;
+    height: 90%;
+    overflow-y: auto;
+}
+
+table {
+    width: 100%;
+}
+
+table,
+th,
+td {
+    border-collapse: collapse;
+    text-align: center;
+    color: #fff;
+}
+
+th {
+    top: 0;
+    background: rgb(38, 42, 46);
+    color: #fff;
+    border-top: none !important;
+}
+
+tr td:nth-child(2) {
+    color: rgb(190, 190, 190);
+}
+
+tr th:nth-child(1) {
+    width: 60px;
+    text-align: center;
+    background: rgb(38, 42, 46);
+}
+
+.validation-error {
+    margin: 1px 1px 1px 1px;
+    color: red;
+}
+
+.validation-success {
+    margin: 1px 1px 1px 1px;
+    color: green;
+}
+
+.label {
+    color: white;
+    font-size: 2vh;
+    margin-right: 1vw;
+}
+
+.label-file {
+    padding-top: 0.5vh;
+}
+
+.margin-bottom {
+    margin-bottom: 0.5vh;
+}
+
+.renameimg-btn,
+.deleteimg-btn {
+    padding: 1vh 0.5vw 1vh 0.5vw;
+    background-color: #2d8ceb;
+    margin-top: 0.7vw;
+    margin-right: 0.7vw;
+    font-size: 2vh;
+    min-width: 7.5vw;
+    float: right;
+}
+
+.font-delete-img {
+    line-height: 4vh;
+    font-size: 1vw;
+}
+
+.checkbox {
+    height: 1.5vh;
+    width: 1.5vw;
 }

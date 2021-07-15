@@ -20,8 +20,13 @@ export class VideoLabellingProjectComponent implements OnInit {
 
     checkCloseToggle = (tab: TabsProps): string | null => {
         let classes = '';
-
-        if (!((tab.name === 'project' && this._tabStatus[1].closed) || tab.name === 'annotation')) {
+        if (
+            !(
+                (tab.name === 'label' && this._tabStatus[2].closed) ||
+                (tab.name === 'project' && this._tabStatus[1].closed && this._tabStatus[2].closed) ||
+                tab.name === 'annotation'
+            )
+        ) {
             classes = 'flex-content';
         }
         if (tab.closed) {

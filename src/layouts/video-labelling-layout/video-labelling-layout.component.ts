@@ -16,11 +16,15 @@ export class VideoLabellingLayoutComponent implements OnInit {
     tabStatus: TabsProps[] = [
         {
             name: 'project',
-            closed: true,
+            closed: false,
+        },
+        {
+            name: 'label',
+            closed: false,
         },
         {
             name: 'annotation',
-            closed: true,
+            closed: false,
         },
     ];
 
