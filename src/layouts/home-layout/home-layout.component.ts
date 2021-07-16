@@ -7,7 +7,7 @@
 import { CardChoiceImgLblUrlPath, CardChoiceSchema } from '../../shared/types/home-layout/home-layout.model';
 import { Component } from '@angular/core';
 import { ModalBodyStyle } from 'shared/types/modal/modal.model';
-import { ModalService } from 'components/modal/modal.service';
+import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { LanguageService } from 'shared/services/language.service';
 import { ImageLabellingModeService } from 'components/image-labelling/image-labelling-mode.service';

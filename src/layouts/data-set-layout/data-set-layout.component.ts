@@ -15,9 +15,9 @@ import { ImageLabellingModeService } from 'components/image-labelling/image-labe
 import { LanguageService } from 'shared/services/language.service';
 import { MessageUploadStatus, ProjectMessage } from 'shared/types/message/message.model';
 import { ModalBodyStyle } from 'shared/types/modal/modal.model';
-import { ModalService } from 'components/modal/modal.service';
+import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
-import { SpinnerService } from 'components/spinner/spinner.service';
+import { SpinnerService } from 'shared/components/spinner/spinner.service';
 import { BboxMetadata, PolyMetadata, ImageLabellingMode } from 'shared/types/image-labelling/image-labelling.model';
 
 type FormattedProject = {

@@ -20,9 +20,9 @@ import { ImageLabellingApiService } from 'components/image-labelling/image-label
 import { ImageLabellingLayoutService } from 'layouts/image-labelling-layout/image-labelling-layout.service';
 import { ImageLabellingModeService } from 'components/image-labelling/image-labelling-mode.service';
 import { LanguageService } from 'shared/services/language.service';
-import { ModalService } from 'components/modal/modal.service';
+import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
-import { SpinnerService } from 'components/spinner/spinner.service';
+import { SpinnerService } from 'shared/components/spinner/spinner.service';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { ExportStatus, Message } from 'shared/types/message/message.model';
 import { ModalBodyStyle } from 'shared/types/modal/modal.model';

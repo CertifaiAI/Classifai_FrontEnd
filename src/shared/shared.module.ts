@@ -10,17 +10,17 @@ import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { ToastrModule } from 'components/toastr/toastr.module';
+import { ToastrModule } from 'shared/components/toastr/toastr.module';
 import { CacheBustingInterceptor } from './interceptors/cache-busting.interceptor';
 import { FileNamePipe } from './pipe/file-name.pipe';
 import { FormatLanguagePipe } from './pipe/format-language.pipe';
 import { LanguageService } from './services/language.service';
 import { LazyLoadImgDirective } from './directives/lazy-image.directive';
 import { LoadingSpinnerInterceptor } from './interceptors/loading-spinner.interceptor';
-import { ModalModule } from 'components/modal/modal.module';
-import { PageHeaderModule } from 'components/page-header/page-header.module';
-import { SpinnerModule } from 'components/spinner/spinner.module';
-import { UnsupportedImageModalModule } from 'components/unsupported-image-modal/unsupported-image-modal.module';
+import { ModalModule } from 'shared/components/modal/modal.module';
+import { PageHeaderModule } from 'shared/components/page-header/page-header.module';
+import { SpinnerModule } from 'shared/components/spinner/spinner.module';
+import { UnsupportedImageModalModule } from 'shared/components/unsupported-image-modal/unsupported-image-modal.module';
 
 // AoT requires an exported function for factories
 export const httpLoaderFactory = (httpClient: HttpClient) => {

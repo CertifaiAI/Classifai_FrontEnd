@@ -11,8 +11,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { ImageLabellingModule } from 'components/image-labelling/image-labelling.module';
-import { ModalModule } from 'components/modal/modal.module';
-import { PageHeaderModule } from 'components/page-header/page-header.module';
+import { ModalModule } from 'shared/components/modal/modal.module';
+import { PageHeaderModule } from 'shared/components/page-header/page-header.module';
 import { SharedModule } from 'shared/shared.module';
 
 @NgModule({

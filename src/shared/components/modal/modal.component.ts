@@ -5,7 +5,7 @@
  */
 
 import { Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { ModalBodyStyle } from '../../shared/types/modal/modal.model';
+import { ModalBodyStyle } from '../../types/modal/modal.model';
 import { ModalService } from './modal.service';
 
 @Component({
