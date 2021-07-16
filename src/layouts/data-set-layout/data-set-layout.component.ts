@@ -4,21 +4,21 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { BboxMetadata, ImageLabellingMode, PolyMetadata } from 'src/components/image-labelling/image-labelling.model';
 import { cloneDeep } from 'lodash-es';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from './data-set-layout-api.service';
-import { DataSetProps, Project, ProjectRename, ProjectSchema, StarredProps } from './data-set-layout.model';
+import { DataSetProps, Project, ProjectRename, ProjectSchema, StarredProps } from '../../shared/types/dataset-layout/data-set-layout.model';
 import { distinctUntilChanged, first, map, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
 import { interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ImageLabellingModeService } from './../../components/image-labelling/image-labelling-mode.service';
-import { LanguageService } from 'src/shared/services/language.service';
-import { MessageUploadStatus, ProjectMessage } from 'src/shared/types/message/message.model';
-import { ModalBodyStyle } from 'src/components/modal/modal.model';
-import { ModalService } from 'src/components/modal/modal.service';
+import { ImageLabellingModeService } from 'components/image-labelling/image-labelling-mode.service';
+import { LanguageService } from 'shared/services/language.service';
+import { MessageUploadStatus, ProjectMessage } from 'shared/types/message/message.model';
+import { ModalBodyStyle } from 'shared/types/modal/modal.model';
+import { ModalService } from 'components/modal/modal.service';
 import { Router } from '@angular/router';
-import { SpinnerService } from 'src/components/spinner/spinner.service';
+import { SpinnerService } from 'components/spinner/spinner.service';
+import { BboxMetadata, PolyMetadata, ImageLabellingMode } from 'shared/types/image-labelling/image-labelling.model';
 
 type FormattedProject = {
     created_timestamp: Date;

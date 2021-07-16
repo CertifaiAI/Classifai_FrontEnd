@@ -4,8 +4,7 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { IconSchema } from 'src/shared/types/icon/icon.model';
-import { ImgLabelProps, TabsProps } from '../image-labelling.model';
+
 import {
     Component,
     EventEmitter,
@@ -16,6 +15,8 @@ import {
     OnChanges,
     ChangeDetectionStrategy,
 } from '@angular/core';
+import { ImgLabelProps, TabsProps } from 'shared/types/image-labelling/image-labelling.model';
+import { IconSchema } from 'shared/types/icon/icon.model';
 
 @Component({
     selector: 'image-labelling-right-sidebar',
@@ -39,7 +40,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
         this.jsonSchema = {
             logos: [
                 {
-                    imgPath: `../../../assets/icons/folder.svg`,
+                    imgPath: `assets/icons/folder.svg`,
                     hoverLabel: `rightSideBar.folderOrFiles`,
                     alt: `Folder`,
                     // inputType: 'file',
@@ -50,7 +51,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     },
                 },
                 {
-                    imgPath: `../../../assets/icons/tag.svg`,
+                    imgPath: `assets/icons/tag.svg`,
                     hoverLabel: `rightSideBar.label`,
                     alt: `Label`,
                     onClick: () => {
@@ -58,7 +59,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     },
                 },
                 {
-                    imgPath: `../../../assets/icons/bounding_box.svg`,
+                    imgPath: `assets/icons/bounding_box.svg`,
                     hoverLabel: `rightSideBar.annotation`,
                     alt: `Annotation`,
                     onClick: () => {
@@ -66,7 +67,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     },
                 },
                 {
-                    imgPath: `../../../assets/icons/statistic.svg`,
+                    imgPath: `assets/icons/statistic.svg`,
                     hoverLabel: `rightSideBar.statistic`,
                     alt: `Statistic`,
                     onClick: () => {
@@ -74,7 +75,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     },
                 },
                 {
-                    imgPath: `../../../assets/icons/export.svg`,
+                    imgPath: `assets/icons/export.svg`,
                     hoverLabel: `rightSideBar.export`,
                     alt: `Export`,
                     style: 'padding: 1.5vh 0.5vw;',
@@ -83,7 +84,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     },
                 },
                 {
-                    imgPath: `../../../assets/icons/reload.svg`,
+                    imgPath: `assets/icons/reload.svg`,
                     hoverLabel: `rightSideBar.reload`,
                     alt: `Reload`,
                     style: 'padding: 1.5vh 0.5vw;',

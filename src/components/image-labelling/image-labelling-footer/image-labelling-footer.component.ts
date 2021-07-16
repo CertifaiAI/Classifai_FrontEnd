@@ -5,8 +5,8 @@
  */
 
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { IconSchema } from 'src/shared/types/icon/icon.model';
-import { ImageProps } from '../image-labelling.model';
+import { ImageProps } from 'shared/types/image-labelling/image-labelling.model';
+import { IconSchema } from 'shared/types/icon/icon.model';
 
 @Component({
     selector: 'image-labelling-footer',

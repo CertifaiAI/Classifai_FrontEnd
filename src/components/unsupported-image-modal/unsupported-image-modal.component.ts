@@ -5,7 +5,7 @@
  */
 
 import { Component, Input } from '@angular/core';
-import { ModalBodyStyle } from '../modal/modal.model';
+import { ModalBodyStyle } from 'shared/types/modal/modal.model';
 
 @Component({
     selector: 'unsupported-image-modal',

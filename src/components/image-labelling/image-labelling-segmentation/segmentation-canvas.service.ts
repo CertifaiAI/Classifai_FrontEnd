@@ -1,23 +1,24 @@
-import { LabelInfo } from './../image-labelling.model';
 /**
  * @license
  * Use of this source code is governed by Apache License 2.0 that can be
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { cloneDeep } from 'lodash-es';
 import { Injectable } from '@angular/core';
-import { Utils } from '../../../shared/types/utils/utils';
+import { cloneDeep } from 'lodash-es';
 import {
     Coordinate,
     DiffXY,
     Direction,
     FitScreenCalc,
+    LabelInfo,
     Method,
     Polygons,
     PolyMetadata,
     xyCoordinate,
-} from '../image-labelling.model';
+} from 'shared/types/image-labelling/image-labelling.model';
+import { Utils } from 'util/utils';
+
 
 type ClickPoint = {
     polygonIndex: number;

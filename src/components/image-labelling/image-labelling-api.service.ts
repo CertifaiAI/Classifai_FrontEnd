@@ -4,11 +4,13 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { distinctUntilChanged } from 'rxjs/operators';
-import { environment } from 'src/environments/environment.prod';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ImageLabellingModeService } from './image-labelling-mode.service';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
+import { environment } from 'environments/environment.prod';
+import { CompleteMetadata, ImageLabellingMode } from 'shared/types/image-labelling/image-labelling.model';
 import {
     ExportResponse,
     ExportStatus,
@@ -19,10 +21,8 @@ import {
     MessageReload,
     MessageRenameImg,
     UUID,
-} from 'src/shared/types/message/message.model';
-import { Observable } from 'rxjs';
-import { Router } from '@angular/router';
-import { CompleteMetadata, ImageLabellingMode } from 'src/components/image-labelling/image-labelling.model';
+} from 'shared/types/message/message.model';
+import { ImageLabellingModeService } from './image-labelling-mode.service';
 
 @Injectable({ providedIn: 'any' })
 export class ImageLabellingApiService {

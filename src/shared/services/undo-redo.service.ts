@@ -5,14 +5,8 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Utils } from '../types/utils/utils';
-import {
-    BboxMetadata,
-    Boundingbox,
-    Method,
-    Polygons,
-    UndoState,
-} from 'src/components/image-labelling/image-labelling.model';
+import { Boundingbox, Polygons, UndoState, BboxMetadata, Method } from 'shared/types/image-labelling/image-labelling.model';
+import { Utils } from 'util/utils';
 
 type NotateType = Boundingbox[] | Polygons[] | null;
 

@@ -4,7 +4,6 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import {
     Component,
     ElementRef,
@@ -18,25 +17,27 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { HTMLElementEvent } from 'src/shared/types/field/field.model';
-import { ImageLabellingActionService } from '../image-labelling-action.service';
 import { cloneDeep, isEqual } from 'lodash-es';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import {
-    BboxMetadata,
-    Boundingbox,
-    ChangeAnnotationLabel,
-    CompleteMetadata,
-    EventEmitter_ThumbnailDetails,
     ImgLabelProps,
-    Polygons,
+    BboxMetadata,
     PolyMetadata,
-    SelectedLabelProps,
+    CompleteMetadata,
     TabsProps,
-} from '../image-labelling.model';
-import { LanguageService } from 'src/shared/services/language.service';
-import { UndoRedoService } from 'src/shared/services/undo-redo.service';
+    EventEmitter_ThumbnailDetails,
+    SelectedLabelProps,
+    ChangeAnnotationLabel,
+    Boundingbox,
+    Polygons,
+} from 'shared/types/image-labelling/image-labelling.model';
+import { AnnotateSelectionService } from 'shared/services/annotate-selection.service';
+import { LanguageService } from 'shared/services/language.service';
+import { UndoRedoService } from 'shared/services/undo-redo.service';
+import { HTMLElementEvent } from 'shared/types/field/field.model';
+import { ImageLabellingActionService } from '../image-labelling-action.service';
+
 
 @Component({
     selector: 'image-labelling-project',

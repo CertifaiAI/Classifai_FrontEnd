@@ -5,16 +5,16 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { HomeCardComponent } from 'src/components/home/home-card/home-card.component';
-import { HomeContentComponent } from 'src/components/home/home-content/home-content.component';
-import { HomeHeaderComponent } from 'src/components/home/home-header/home-header.component';
+import { HomeCardComponent } from 'components/home/home-card/home-card.component';
+import { HomeContentComponent } from 'components/home/home-content/home-content.component';
+import { HomeHeaderComponent } from 'components/home/home-header/home-header.component';
 import { HomeLayoutComponent } from './home-layout.component';
-import { ModalModule } from 'src/components/modal/modal.module';
+import { ModalModule } from 'components/modal/modal.module';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { SharedModule } from 'src/shared/shared.module';
+import { SharedModule } from 'shared/shared.module';
 import { TranslateModule } from '@ngx-translate/core';
-import { HomeFooterComponent } from 'src/components/home/home-footer/home-footer.component';
+import { HomeFooterComponent } from 'components/home/home-footer/home-footer.component';
 
 @NgModule({
     imports: [CommonModule, SharedModule, TranslateModule, ModalModule, RouterModule],

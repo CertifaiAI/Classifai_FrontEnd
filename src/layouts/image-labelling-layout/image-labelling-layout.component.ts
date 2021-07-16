@@ -4,44 +4,44 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
+import { AnnotateSelectionService } from 'shared/services/annotate-selection.service';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { DataSetLayoutService } from '../data-set-layout/data-set-layout-api.service';
+import { DataSetLayoutService } from 'layouts/data-set-layout/data-set-layout-api.service';
 import {
     ExportSaveFormatService,
     ExportSaveType,
     SaveFormat,
     ProcessResponse,
-} from 'src/shared/services/export-save-format.service';
+} from 'shared/services/export-save-format.service';
 import { first, mergeMap, takeUntil } from 'rxjs/operators';
-import { HTMLElementEvent } from 'src/shared/types/field/field.model';
-import { ImageLabellingActionService } from 'src/components/image-labelling/image-labelling-action.service';
-import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
-import { ImageLabellingLayoutService } from 'src/layouts/image-labelling-layout/image-labelling-layout.service';
-import { ImageLabellingModeService } from 'src/components/image-labelling/image-labelling-mode.service';
-import { LanguageService } from 'src/shared/services/language.service';
-import { ModalService } from 'src/components/modal/modal.service';
+import { HTMLElementEvent } from 'shared/types/field/field.model';
+import { ImageLabellingActionService } from 'components/image-labelling/image-labelling-action.service';
+import { ImageLabellingApiService } from 'components/image-labelling/image-labelling-api.service';
+import { ImageLabellingLayoutService } from 'layouts/image-labelling-layout/image-labelling-layout.service';
+import { ImageLabellingModeService } from 'components/image-labelling/image-labelling-mode.service';
+import { LanguageService } from 'shared/services/language.service';
+import { ModalService } from 'components/modal/modal.service';
 import { Router } from '@angular/router';
-import { SpinnerService } from 'src/components/spinner/spinner.service';
+import { SpinnerService } from 'components/spinner/spinner.service';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
+import { ExportStatus, Message } from 'shared/types/message/message.model';
+import { ModalBodyStyle } from 'shared/types/modal/modal.model';
+import { ProjectSchema } from 'shared/types/dataset-layout/data-set-layout.model';
 import {
-    AddSubLabel,
-    BboxMetadata,
-    ChangeAnnotationLabel,
+    ImgLabelProps,
+    ImageLabelUrl,
     CompleteMetadata,
+    TabsProps,
+    AddSubLabel,
+    LabelChoosen,
+    BboxMetadata,
+    PolyMetadata,
+    EventEmitter_Url,
     EventEmitter_Action,
     EventEmitter_ThumbnailDetails,
-    EventEmitter_Url,
-    ImageLabelUrl,
-    ImgLabelProps,
-    LabelChoosen,
-    PolyMetadata,
     SelectedLabelProps,
-    TabsProps,
-} from 'src/components/image-labelling/image-labelling.model';
-import { ExportStatus, Message } from 'src/shared/types/message/message.model';
-import { ModalBodyStyle } from 'src/components/modal/modal.model';
-import { ProjectSchema } from '../data-set-layout/data-set-layout.model';
+    ChangeAnnotationLabel,
+} from 'shared/types/image-labelling/image-labelling.model';
 
 @Component({
     selector: 'image-labelling-layout',

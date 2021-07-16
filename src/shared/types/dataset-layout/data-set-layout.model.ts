@@ -4,7 +4,7 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { UUID } from 'src/shared/types/message/message.model';
+import { UUID } from 'shared/types/message/message.model';
 
 type message = boolean | number;
 type progress = any;

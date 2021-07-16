@@ -4,9 +4,9 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { WheelDelta } from 'src/shared/services/zoom.service';
+import { BehaviorSubject } from 'rxjs';
+import { WheelDelta } from 'shared/services/zoom.service';
 
 export type MouseCursorState = {
     move: boolean;

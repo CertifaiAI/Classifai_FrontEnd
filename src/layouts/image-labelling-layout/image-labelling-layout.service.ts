@@ -5,7 +5,7 @@
  */
 
 import { first } from 'rxjs/operators';
-import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
+import { ImageLabellingApiService } from 'components/image-labelling/image-labelling-api.service';
 import { Injectable } from '@angular/core';
 import {
     PolyMetadata,
@@ -14,7 +14,7 @@ import {
     CompleteMetadata,
     EventEmitter_Action,
     TabsProps,
-} from '../../components/image-labelling/image-labelling.model';
+} from 'shared/types/image-labelling/image-labelling.model';
 
 type CustomHistory = Omit<History, 'state'> & {
     state: { thumbnailList: (BboxMetadata & PolyMetadata)[]; labelList: string[]; projectName: string };

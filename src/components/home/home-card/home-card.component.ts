@@ -4,8 +4,8 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { CardFieldSchema } from '../../../layouts/home-layout/home-layout.model';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { CardFieldSchema } from 'shared/types/home-layout/home-layout.model';
 
 @Component({
     selector: 'home-card',

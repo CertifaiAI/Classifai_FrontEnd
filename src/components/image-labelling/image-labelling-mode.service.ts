@@ -4,9 +4,9 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { BehaviorSubject } from 'rxjs';
-import { ImageLabellingMode } from './image-labelling.model';
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { ImageLabellingMode } from 'shared/types/image-labelling/image-labelling.model';
 
 const initialValue: ImageLabellingMode = null;
 

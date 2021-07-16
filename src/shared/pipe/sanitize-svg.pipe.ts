@@ -4,8 +4,8 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { DomSanitizer } from '@angular/platform-browser';
 import { Pipe, PipeTransform } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 
 /** @pipe responsibe for saniziting SVG to allow Angular to treat it as a trusty element to render into DOM */
 @Pipe({ name: 'safe' })

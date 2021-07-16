@@ -4,14 +4,14 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { CardChoiceImgLblUrlPath, CardChoiceSchema } from './home-layout.model';
+import { CardChoiceImgLblUrlPath, CardChoiceSchema } from '../../shared/types/home-layout/home-layout.model';
 import { Component } from '@angular/core';
-import { ImageLabellingModeService } from './../../components/image-labelling/image-labelling-mode.service';
-import { ModalBodyStyle } from 'src/components/modal/modal.model';
-import { ModalService } from 'src/components/modal/modal.service';
+import { ModalBodyStyle } from 'shared/types/modal/modal.model';
+import { ModalService } from 'components/modal/modal.service';
 import { Router } from '@angular/router';
-import { ImageLabellingMode } from 'src/components/image-labelling/image-labelling.model';
-import { LanguageService } from 'src/shared/services/language.service';
+import { LanguageService } from 'shared/services/language.service';
+import { ImageLabellingModeService } from 'components/image-labelling/image-labelling-mode.service';
+import { ImageLabellingMode } from 'shared/types/image-labelling/image-labelling.model';
 
 @Component({
     selector: 'home-layout',
@@ -34,7 +34,7 @@ export class HomeLayoutComponent {
                 enabled: true,
                 title: 'imageOpt.boundingBoxes',
                 urlPath: 'boundingbox',
-                imgPath: '../../assets/landing-page/Classifai_Thumbnail_Band_Labeling.jpg',
+                imgPath: 'assets/landing-page/Classifai_Thumbnail_Band_Labeling.jpg',
                 imgAlt: 'Bounding Box',
             },
             {
@@ -42,7 +42,7 @@ export class HomeLayoutComponent {
                 title: 'imageOpt.polygons',
                 urlPath: 'segmentation',
                 hoverLabel: 'comingSoon',
-                imgPath: '../../assets/landing-page/Classifai_Thumbnail_Band_Segmentation.jpg',
+                imgPath: 'assets/landing-page/Classifai_Thumbnail_Band_Segmentation.jpg',
                 imgAlt: 'Segmentation',
             },
         ],

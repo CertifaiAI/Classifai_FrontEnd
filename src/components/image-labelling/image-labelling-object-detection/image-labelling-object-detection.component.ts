@@ -1,33 +1,9 @@
-import { ShortcutKeyService } from './../../../shared/services/shortcut-key.service';
 /**
  * @license
  * Use of this source code is governed by Apache License 2.0 that can be
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { AnnotateActionState, AnnotateSelectionService } from '../../../shared/services/annotate-selection.service';
-import { BoundingBoxCanvasService } from './bounding-box-canvas.service';
-import { cloneDeep } from 'lodash-es';
-import { CopyPasteService } from '../../../shared/services/copy-paste.service';
-import { HTMLElementEvent } from 'src/shared/types/field/field.model';
-import { ImageLabellingActionService } from '../image-labelling-action.service';
-import { MouseCursorState, MousrCursorService } from 'src/shared/services/mouse-cursor.service';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { UndoRedoService } from '../../../shared/services/undo-redo.service';
-import { WheelDelta, ZoomService, ZoomState } from 'src/shared/services/zoom.service';
-import {
-    ActionState,
-    BboxMetadata,
-    Boundingbox,
-    ChangeAnnotationLabel,
-    CompleteMetadata,
-    Direction,
-    LabelInfo,
-    SelectedLabelProps,
-    TabsProps,
-    UndoState,
-} from '../image-labelling.model';
 import {
     Component,
     OnInit,
@@ -43,6 +19,30 @@ import {
     EventEmitter,
     OnDestroy,
 } from '@angular/core';
+import { cloneDeep } from 'lodash-es';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import {
+    ActionState,
+    LabelInfo,
+    BboxMetadata,
+    TabsProps,
+    CompleteMetadata,
+    ChangeAnnotationLabel,
+    SelectedLabelProps,
+    Boundingbox,
+    UndoState,
+    Direction,
+} from 'shared/types/image-labelling/image-labelling.model';
+import { MouseCursorState, MousrCursorService } from 'shared/services/mouse-cursor.service';
+import { ZoomState, ZoomService, WheelDelta } from 'shared/services/zoom.service';
+import { CopyPasteService } from 'shared/services/copy-paste.service';
+import { UndoRedoService } from 'shared/services/undo-redo.service';
+import { AnnotateActionState, AnnotateSelectionService } from 'shared/services/annotate-selection.service';
+import { ShortcutKeyService } from 'shared/services/shortcut-key.service';
+import { HTMLElementEvent } from 'shared/types/field/field.model';
+import { BoundingBoxCanvasService } from './bounding-box-canvas.service';
+import { ImageLabellingActionService } from '../image-labelling-action.service';
 
 @Component({
     selector: 'image-labelling-object-detection',

@@ -4,18 +4,18 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
+import { Injectable } from '@angular/core';
 import * as fileSaver from 'file-saver';
 import * as jszip from 'jszip';
-import { Injectable } from '@angular/core';
-import { WithOptional } from '../types/with-optional/with-optional';
+import { WithOptional } from 'shared/types/with-optional/with-optional';
 import {
-    BboxMetadata,
     CompleteMetadata,
     PolyMetadata,
-    Polygons,
+    BboxMetadata,
     Coordinate,
+    Polygons,
     SubLabel,
-} from 'src/components/image-labelling/image-labelling.model';
+} from 'shared/types/image-labelling/image-labelling.model';
 
 export type SaveFormat = 'pascalVoc' | 'yolo' | 'ocr' | 'label' | 'coco' | 'json';
 

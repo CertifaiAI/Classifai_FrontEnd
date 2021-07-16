@@ -5,8 +5,8 @@
  */
 
 import { Component, ElementRef, QueryList, ViewChildren } from '@angular/core';
-import { LanguageService } from 'src/shared/services/language.service';
 import { TranslateService } from '@ngx-translate/core';
+import { LanguageService } from 'shared/services/language.service';
 
 @Component({
     selector: 'home-header',
@@ -15,8 +15,8 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class HomeHeaderComponent {
     languageArr: (string | null)[] = [];
-    // headerImage: string = `../../assets/landing-page/Classifai_PoweredBy_Horizontal_light.png`;
-    headerImage: string = `../../assets/landing-page/Classifai_Community_Logo.png`;
+    // headerImage: string = `assets/landing-page/Classifai_PoweredBy_Horizontal_light.png`;
+    headerImage: string = `assets/landing-page/Classifai_Community_Logo.png`;
     @ViewChildren('languages') languages!: QueryList<ElementRef>;
 
     constructor(public _translate: TranslateService, private _languageService: LanguageService) {

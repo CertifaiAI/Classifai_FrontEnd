@@ -4,11 +4,11 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { PageHeaderComponent } from './page-header.component';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { PageHeaderComponent } from './page-header.component';
 
 @NgModule({
     imports: [CommonModule, RouterModule, TranslateModule],

@@ -4,8 +4,6 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { IconSchema } from 'src/shared/types/icon/icon.model';
-import { CompleteMetadata, ImgLabelProps, TabsProps, ThumbnailInfoProps } from '../image-labelling.model';
 import {
     Component,
     EventEmitter,
@@ -16,6 +14,8 @@ import {
     SimpleChanges,
     ChangeDetectionStrategy,
 } from '@angular/core';
+import { ImgLabelProps, TabsProps, CompleteMetadata, ThumbnailInfoProps } from 'shared/types/image-labelling/image-labelling.model';
+import { IconSchema } from 'shared/types/icon/icon.model';
 
 @Component({
     selector: 'image-labelling-info',
@@ -39,13 +39,13 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
         this.jsonSchema = {
             logosCenter: [
                 {
-                    imgPath: `../../../assets/icons/previous.svg`,
+                    imgPath: `assets/icons/previous.svg`,
                     hoverLabel: `labellingInfo.previous`,
                     alt: `Previous`,
                     onClick: () => this.emitParentEvent({ thumbnailAction: -1 }),
                 },
                 {
-                    imgPath: `../../../assets/icons/next.svg`,
+                    imgPath: `assets/icons/next.svg`,
                     hoverLabel: `labellingInfo.next`,
                     alt: `Next`,
                     onClick: () => this.emitParentEvent({ thumbnailAction: 1 }),
@@ -53,25 +53,25 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
             ],
             logosEnd: [
                 {
-                    imgPath: `../../../assets/icons/undo.svg`,
+                    imgPath: `assets/icons/undo.svg`,
                     hoverLabel: `labellingInfo.undo`,
                     alt: `Undo`,
                     onClick: () => null,
                 },
                 {
-                    imgPath: `../../../assets/icons/redo.svg`,
+                    imgPath: `assets/icons/redo.svg`,
                     hoverLabel: `labellingInfo.redo`,
                     alt: `Redo`,
                     onClick: () => null,
                 },
                 // {
-                //     imgPath: `../../../assets/icons/zoom_in.svg`,
+                //     imgPath: `assets/icons/zoom_in.svg`,
                 //     hoverLabel: `Zoom In`,
                 //     alt: `Zoom In`,
                 //     onClick: () => null,
                 // },
                 // {
-                //     imgPath: `../../../assets/icons/zoom_out.svg`,
+                //     imgPath: `assets/icons/zoom_out.svg`,
                 //     hoverLabel: `Zoom Out`,
                 //     alt: `Zoom Out`,
                 //     onClick: () => null,

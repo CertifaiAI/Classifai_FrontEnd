@@ -5,9 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { IconSchema } from 'src/shared/types/icon/icon.model';
-import { ImgLabelProps } from '../image-labelling/image-labelling.model';
 import { Router } from '@angular/router';
+import { IconSchema } from 'shared/types/icon/icon.model';
+import { ImgLabelProps } from 'shared/types/image-labelling/image-labelling.model';
 
 type HeaderLabelSchema = {
     name: string;
@@ -24,7 +24,7 @@ type HeaderLabelSchema = {
 export class PageHeaderComponent {
     @Input() _onChange!: ImgLabelProps;
     // @Output() _navigate: EventEmitter<UrlProps> = new EventEmitter();
-    logoSrc: string = `../../../assets/icons/classifai_logo_white.svg`;
+    logoSrc: string = `assets/icons/classifai_logo_white.svg`;
     jsonSchema!: IconSchema;
     headerLabels: HeaderLabelSchema[] = [
         {
@@ -55,25 +55,25 @@ export class PageHeaderComponent {
                 url === '/imglabel'
                     ? [
                           {
-                              imgPath: `../../../assets/icons/add_user.svg`,
+                              imgPath: `assets/icons/add_user.svg`,
                               hoverLabel: `Add user to project`,
                               alt: `pageHeader.addUser`,
                               onClick: () => null,
                           },
                           // {
-                          //     imgPath: `../../../assets/icons/workspaces.svg`,
+                          //     imgPath: `assets/icons/workspaces.svg`,
                           //     hoverLabel: `Workspaces`,
                           //     alt: `Workspaces`,
                           // },
                           // {
-                          //     imgPath: `../../../assets/icons/upload.svg`,
+                          //     imgPath: `assets/icons/upload.svg`,
                           //     hoverLabel: `Share / Upload`,
                           //     alt: `Upload`,
                           // },
                       ]
                     : [
                           {
-                              imgPath: `../../../assets/icons/profile.svg`,
+                              imgPath: `assets/icons/profile.svg`,
                               hoverLabel: `pageHeader.profile`,
                               alt: `Profile`,
                               onClick: () => null,

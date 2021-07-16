@@ -5,12 +5,7 @@
  */
 
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import {
-    Project,
-    ProjectRename,
-    ProjectSchema,
-    StarredProps,
-} from './../../../layouts/data-set-layout/data-set-layout.model';
+import { ProjectSchema, StarredProps, ProjectRename, Project } from 'shared/types/dataset-layout/data-set-layout.model';
 
 type CardSchema = {
     clickIndex: number;
@@ -29,8 +24,8 @@ export class DataSetCardComponent implements OnChanges {
     @Output() _onRename: EventEmitter<ProjectRename> = new EventEmitter();
 
     // clonedJsonSchema!: ProjectSchema;
-    starredActiveIcon: string = `../../../assets/icons/starred_active.svg`;
-    starredInactiveIcon: string = `../../../assets/icons/starred.svg`;
+    starredActiveIcon: string = `assets/icons/starred_active.svg`;
+    starredInactiveIcon: string = `assets/icons/starred.svg`;
     cardSchema: CardSchema = {
         clickIndex: -1,
     };

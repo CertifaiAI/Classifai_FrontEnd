@@ -13,9 +13,9 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
     favIcon: HTMLLinkElement = document.querySelector('#favIcon') as HTMLLinkElement;
-    lightIcon: string = `../assets/classifai_dark.ico`;
+    icon: string = `assets/classifai_dark.ico`;
 
     constructor() {
-        this.favIcon.href = this.lightIcon;
+        this.favIcon.href = this.icon;
     }
 }

@@ -4,12 +4,11 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { BboxMetadata, ImageLabellingMode, PolyMetadata } from 'src/components/image-labelling/image-labelling.model';
 import { distinctUntilChanged } from 'rxjs/operators';
-import { environment } from 'src/environments/environment.prod';
-import { LabelList, Labels, Project, Folder } from './data-set-layout.model';
+import { environment } from 'environments/environment.prod';
+import { LabelList, Labels, Project, Folder } from '../../shared/types/dataset-layout/data-set-layout.model';
 import { HttpClient } from '@angular/common/http';
-import { ImageLabellingModeService } from 'src/components/image-labelling/image-labelling-mode.service';
+import { ImageLabellingModeService } from 'components/image-labelling/image-labelling-mode.service';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
@@ -20,8 +19,9 @@ import {
     MessageUploadStatus,
     ImportResponse,
     ProjectMessage,
-} from 'src/shared/types/message/message.model';
-import { UnsupportedImageService } from 'src/shared/services/unsupported-image.service';
+} from 'shared/types/message/message.model';
+import { UnsupportedImageService } from 'shared/services/unsupported-image.service';
+import { ImageLabellingMode, BboxMetadata, PolyMetadata } from 'shared/types/image-labelling/image-labelling.model';
 
 @Injectable({ providedIn: 'any' })
 export class DataSetLayoutService {

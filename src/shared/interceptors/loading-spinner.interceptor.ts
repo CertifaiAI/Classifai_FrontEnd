@@ -6,7 +6,7 @@
 
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { SpinnerService } from 'src/components/spinner/spinner.service';
+import { SpinnerService } from 'components/spinner/spinner.service';
 import { tap } from 'rxjs/operators';
 import {
     HttpErrorResponse,

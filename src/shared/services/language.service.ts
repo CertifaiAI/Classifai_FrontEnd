@@ -4,10 +4,10 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { BehaviorSubject } from 'rxjs';
-import { first } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { BehaviorSubject } from 'rxjs';
+import { first } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
