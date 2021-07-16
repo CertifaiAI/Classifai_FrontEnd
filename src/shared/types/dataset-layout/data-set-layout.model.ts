@@ -61,7 +61,7 @@ export type ProjectSchema = {
 };
 
 /** @type mainly used for passing props with generic type while ability to allow conditional of generic type usage */
-export type DataSetProps<T = undefined> = {} & (T extends undefined
+export type DataSetProps<T = undefined> = {} | (T extends undefined
     ? {
           // theme: string;
           status?: boolean;
