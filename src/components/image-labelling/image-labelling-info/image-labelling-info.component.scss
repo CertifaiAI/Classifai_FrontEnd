@@ -1,7 +1,7 @@
-@use '../../../shared/scss/ellipsis' as ellipsis;
-@use '../../../shared/scss/indicator' as indicator;
-@use '../../../shared/scss/variables' as color;
-@use '../../../shared/scss/icon' as icon;
+@use 'shared/scss/ellipsis' as ellipsis;
+@use 'shared/scss/indicator' as indicator;
+@use 'shared/scss/variables' as color;
+@use 'shared/scss/icon' as icon;
 
 .header-container {
     min-width: 100vw;

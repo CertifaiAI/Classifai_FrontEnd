@@ -1,6 +1,6 @@
-@use '../../../shared/scss/ellipsis' as ellipsis;
-@use "../../../shared/scss/icon" as icon;
-@use "../../../shared/scss/variables" as color;
+@use 'shared/scss/ellipsis' as ellipsis;
+@use "shared/scss/icon" as icon;
+@use "shared/scss/variables" as color;
 
 .footer-container {
     position: absolute;

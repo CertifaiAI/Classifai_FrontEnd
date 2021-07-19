@@ -1,7 +1,7 @@
-@use '../../../shared/scss/scrollbar' as scroll;
-@use '../../../shared/scss/variables' as color;
-@use '../../../shared/scss/ellipsis' as ellipsis;
-@use '../../../shared/scss/fadeIn' as fadeIn;
+@use 'shared/scss/scrollbar' as scroll;
+@use 'shared/scss/variables' as color;
+@use 'shared/scss/ellipsis' as ellipsis;
+@use 'shared/scss/fadeIn' as fadeIn;
 
 $fadeInEaseDuration: ease 1.5s;
 $hoverBackground: #393838;

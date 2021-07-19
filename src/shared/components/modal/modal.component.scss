@@ -1,5 +1,5 @@
-@use '../../scss/variables' as color;
-@use '../../scss/scrollbar' as scrollbar;
+@use 'shared/scss/variables' as color;
+@use 'shared/scss/scrollbar' as scrollbar;
 
 @mixin button-style() {
     line-height: 1vh;
