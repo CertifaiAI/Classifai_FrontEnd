@@ -4,7 +4,7 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 type MenuSchema = {
     src: string;
@@ -17,37 +17,37 @@ type MenuSchema = {
     templateUrl: './data-set-side-menu.component.html',
     styleUrls: ['./data-set-side-menu.component.scss'],
 })
-export class DataSetSideMenuComponent implements OnInit {
+export class DataSetSideMenuComponent {
     selectedId: string = 'myproject';
     menuSchema: MenuSchema[] = [
         {
-            src: '../../../assets/icons/add.svg',
+            src: 'assets/icons/add.svg',
             id: 'newProject',
             name: 'menuName.newProject',
         },
         {
-            src: '../../../assets/icons/import.svg',
+            src: 'assets/icons/import.svg',
             id: 'importProject',
             name: 'menuName.importProject',
             style: 'width: 1.3vw; padding: 0.3vw;',
         },
         {
-            src: '../../../assets/icons/project.svg',
+            src: 'assets/icons/project.svg',
             id: 'myproject',
             name: 'menuName.myProject',
         },
         {
-            src: '../../../assets/icons/starred.svg',
+            src: 'assets/icons/starred.svg',
             id: 'starred',
             name: 'menuName.starred',
         },
         {
-            src: '../../../assets/icons/history.svg',
+            src: 'assets/icons/history.svg',
             id: 'recent',
             name: 'menuName.recent',
         },
         // {
-        //     src: '../../../assets/icons/trash.svg',
+        //     src: 'assets/icons/trash.svg',
         //     id: 'trash',
         //     name: 'menuName.trash',
         // },
@@ -55,10 +55,6 @@ export class DataSetSideMenuComponent implements OnInit {
     @Output() _onCreate: EventEmitter<boolean> = new EventEmitter();
     @Output() _onFilter: EventEmitter<string> = new EventEmitter();
     @Output() _onImport = new EventEmitter();
-
-    constructor() {}
-
-    ngOnInit(): void {}
 
     displayModal = (): void => {
         this._onCreate.emit(true);

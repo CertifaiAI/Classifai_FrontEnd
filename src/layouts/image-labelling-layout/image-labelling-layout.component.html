@@ -249,7 +249,7 @@
                 <br /><span class="with-data">{{ 'exportModal.withData' | translate }}</span>
             </button>
             <div class="help-icon-container">
-                <img class="help-icon" src="../../assets/icons/help.svg" />
+                <img class="help-icon" src="assets/icons/help.svg" alt="tips" />
                 <span class="tooltiptext">
                     <p>{{ 'configFileInfoTitle' | translate }}:</p>
                     <p>{{ 'configFileInfoDest1' | translate }}</p>
@@ -261,9 +261,14 @@
 </modal>
 
 <modal [id]="modalShortcutKeyInfo" [modalBodyStyle]="infoModalBodyStyle" [scrollable]="true">
-    <div class="shortcut-key-info-header">{{ 'info.header' | translate }}</div>
     <div class="table-box">
-        <table cellpadding="20">
+        <table>
+            <caption class="shortcut-key-info-header">
+                {{
+                    'info.header' | translate
+                }}
+            </caption>
+            <th id="keyInfo"></th>
             <tr *ngFor="let info of shortcutKeyInfo()">
                 <td innerHTML="{{ info.shortcutKey | translate }}"></td>
                 <td innerHTML="{{ info.functionality | translate }}"></td>

@@ -5,7 +5,7 @@
  */
 
 import { first } from 'rxjs/operators';
-import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
+import { ImageLabellingApiService } from 'components/image-labelling/image-labelling-api.service';
 import { Injectable } from '@angular/core';
 import {
     PolyMetadata,
@@ -14,7 +14,7 @@ import {
     CompleteMetadata,
     EventEmitter_Action,
     TabsProps,
-} from '../../components/image-labelling/image-labelling.model';
+} from 'shared/types/image-labelling/image-labelling.model';
 
 type CustomHistory = Omit<History, 'state'> & {
     state: { thumbnailList: (BboxMetadata & PolyMetadata)[]; labelList: string[]; projectName: string };
@@ -57,17 +57,19 @@ export class ImageLabellingLayoutService {
         currImageIndex: number,
         thumbnailListLength: number,
     ) => {
-        let calIndex = currImageIndex;
-        const finalIndex =
-            thumbnailAction === 1
-                ? calIndex >= thumbnailListLength - 1
-                    ? thumbnailListLength - 1
-                    : (calIndex += 1)
-                : calIndex <= 0
-                ? 0
-                : (currImageIndex -= 1);
-
-        return finalIndex;
+        if (thumbnailAction === 1) {
+            if (currImageIndex >= thumbnailListLength - 1) {
+                return thumbnailListLength - 1;
+            } else {
+                return currImageIndex + 1;
+            }
+        } else {
+            if (currImageIndex <= 0) {
+                return 0;
+            } else {
+                return currImageIndex - 1;
+            }
+        }
     };
 
     checkAnnotationMetadataProp = ({ bnd_box, polygons }: CompleteMetadata) => {
@@ -203,10 +205,6 @@ export class ImageLabellingLayoutService {
     };
 
     setLocalStorageProjectProgress = (projectName: string, annotation: CompleteMetadata[]) => {
-        // this.checkIfBboxMetaType(annotation)
-        //     ? localStorage.setItem(`${projectName}_bndbox`, JSON.stringify({ cache: annotation }))
-        //     : localStorage.setItem(`${projectName}_seg`, JSON.stringify({ cache: annotation }));
-
         localStorage.setItem(
             `${projectName}_${this._imgLblApiService.imageLabellingMode}`,
             JSON.stringify({ cache: annotation }),
@@ -215,21 +213,22 @@ export class ImageLabellingLayoutService {
 
     getLocalStorageProjectProgress = <T extends CompleteMetadata>(projectName: string) => {
         const result = localStorage.getItem(`${projectName}_${this._imgLblApiService.imageLabellingMode}`);
-        const jsonResult: T | null = result ? JSON.parse(result) : null;
-        return jsonResult;
+        return result ? JSON.parse(result) : null;
     };
 
     updateProjectProgress = (tabs: TabsProps<CompleteMetadata>[], projectName: string) => {
         tabs.forEach(({ annotation }) => {
-            annotation
-                ? (this.setLocalStorageProjectProgress(projectName, annotation),
-                  annotation?.forEach((metadata) => {
-                      this._imgLblApiService
-                          .updateProjectProgress(projectName, metadata.uuid, metadata)
-                          .pipe(first())
-                          .subscribe(({ error_code, message }) => {});
-                  }))
-                : null;
+            if (annotation) {
+                this.setLocalStorageProjectProgress(projectName, annotation);
+                annotation?.forEach((metadata) => {
+                    this._imgLblApiService
+                        .updateProjectProgress(projectName, metadata.uuid, metadata)
+                        .pipe(first())
+                        .subscribe(({ error_code, message }) => {
+                            /** This is intentional */
+                        });
+                });
+            }
         });
     };
 }

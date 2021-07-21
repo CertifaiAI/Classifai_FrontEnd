@@ -4,19 +4,18 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
     favIcon: HTMLLinkElement = document.querySelector('#favIcon') as HTMLLinkElement;
-    lightIcon: string = `../assets/classifai_dark.ico`;
+    icon: string = `assets/classifai_dark.ico`;
 
     constructor() {
-        this.favIcon.href = this.lightIcon;
+        this.favIcon.href = this.icon;
     }
-    ngOnInit(): void {}
 }

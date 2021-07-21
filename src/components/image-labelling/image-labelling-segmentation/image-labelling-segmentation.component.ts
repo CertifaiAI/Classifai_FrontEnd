@@ -5,27 +5,6 @@
  */
 
 import {
-    ActionState,
-    ChangeAnnotationLabel,
-    CompleteMetadata,
-    Direction,
-    LabelInfo,
-    Polygons,
-    PolyMetadata,
-    TabsProps,
-    UndoState,
-} from '../image-labelling.model';
-import { AnnotateActionState, AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
-import { cloneDeep } from 'lodash-es';
-import { CopyPasteService } from 'src/shared/services/copy-paste.service';
-import { ImageLabellingActionService } from '../image-labelling-action.service';
-import { MouseCursorState, MousrCursorService } from 'src/shared/services/mouse-cursor.service';
-import { SegmentationCanvasService } from './segmentation-canvas.service';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { UndoRedoService } from 'src/shared/services/undo-redo.service';
-import { WheelDelta, ZoomService, ZoomState } from 'src/shared/services/zoom.service';
-import {
     ChangeDetectionStrategy,
     Component,
     ElementRef,
@@ -39,7 +18,28 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { ShortcutKeyService } from 'src/shared/services/shortcut-key.service';
+import { cloneDeep } from 'lodash-es';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import {
+  ActionState,
+  ChangeAnnotationLabel,
+  CompleteMetadata,
+  Direction,
+  LabelInfo,
+  Polygons,
+  PolyMetadata,
+  TabsProps,
+  UndoState,
+} from 'shared/types/image-labelling/image-labelling.model';
+import { AnnotateActionState, AnnotateSelectionService } from 'shared/services/annotate-selection.service';
+import { CopyPasteService } from 'shared/services/copy-paste.service';
+import { MouseCursorState, MousrCursorService } from 'shared/services/mouse-cursor.service';
+import { ShortcutKeyService } from 'shared/services/shortcut-key.service';
+import { UndoRedoService } from 'shared/services/undo-redo.service';
+import { ZoomState, ZoomService, WheelDelta } from 'shared/services/zoom.service';
+import { SegmentationCanvasService } from './segmentation-canvas.service';
+import { ImageLabellingActionService } from '../image-labelling-action.service';
 
 @Component({
     selector: 'image-labelling-segmentation',

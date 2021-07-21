@@ -27,14 +27,14 @@
                             (click)="onClick(thumbnail, i)"
                         >
                             <div class="img-skeleton">
-                                <img imgLazyLoad class="img" [src]="thumbnail.img_thumbnail" />
+                                <img imgLazyLoad class="img" [src]="thumbnail.img_thumbnail" alt="thumbnail" />
                             </div>
                             <div class="img-name">
                                 <label class="img-path">{{ thumbnail.img_path | fileNameSlice }}</label>
                             </div>
                             <div class="thumbnail-actions">
                                 <img
-                                    src="../../../assets/icons/last_modify.svg"
+                                    src="assets/icons/last_modify.svg"
                                     alt="edit"
                                     height="20vh"
                                     width="20vw"
@@ -43,7 +43,7 @@
                                     [title]="'renameModal.renameImg' | translate"
                                 />
                                 <img
-                                    src="../../../assets/icons/trash.svg"
+                                    src="assets/icons/trash.svg"
                                     alt="edit"
                                     height="20vh"
                                     width="20vw"

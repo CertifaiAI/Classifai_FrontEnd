@@ -4,10 +4,10 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { BehaviorSubject } from 'rxjs';
-import { first } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { BehaviorSubject } from 'rxjs';
+import { first } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
@@ -21,17 +21,12 @@ export class LanguageService {
 
     setLanguageState(language: string): void {
         const changedLangString = language.length > 2 ? language.slice(-2) : language;
-        // console.log(changedLangString);
         this.languageSubject.next(changedLangString);
         localStorage.setItem('language', changedLangString);
     }
 
     filterLanguageList = (langList: string[], compName: string): (string | null)[] => {
-        const languageArr: (string | null)[] = langList
-            .map((language) => (language.startsWith(compName) ? language : null))
-            .filter((f) => f !== null);
-
-        return languageArr;
+        return langList.map((language) => (language.startsWith(compName) ? language : null)).filter((f) => f !== null);
     };
 
     initializeLanguage = (compName: string, langsArr: string[]): void => {
@@ -46,31 +41,9 @@ export class LanguageService {
         this._translate.addLangs(langsArr);
 
         this.language$.pipe(first()).subscribe((language) => {
-            // console.log(language);
             const validateLang = language ? language : localStorage.getItem('language') || 'en';
-            // console.log(validateLang);
-            // _translate.use(`image-labelling-${validateLang}`);
-            // this.setLanguageState(validateLang);
             this.setTranslation(compName, validateLang, finalizedLang);
         });
-
-        // const languageLocalStore: string = localStorage.getItem('language');
-        // const ss = languageLocalStore ? true : false;
-        // console.log(`${compName}-${languageLocalStore}`);
-        // console.log(ss);
-        // languageLocalStore
-        //   ?
-        //   (
-        //     // this._translate.use(`${compName}-${languageLocalStore}`),
-        //     this.setTranslation(compName, languageLocalStore, finalizedLang))
-        //   : this.language$.pipe(first()).subscribe((language) => {
-        //       console.log(language);
-        //       const validateLang = language ? language : 'en';
-        //       // console.log(validateLang);
-        //       // _translate.use(`image-labelling-${validateLang}`);
-        //       this.setLanguageState(validateLang);
-        //       this.setTranslation(compName, validateLang, finalizedLang);
-        //     });
     };
 
     private setTranslation = (compName: string, lang: string, finalizedLang: string): void => {

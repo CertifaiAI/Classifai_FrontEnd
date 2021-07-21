@@ -4,44 +4,44 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
+import { AnnotateSelectionService } from 'shared/services/annotate-selection.service';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { DataSetLayoutService } from '../data-set-layout/data-set-layout-api.service';
+import { DataSetLayoutService } from 'layouts/data-set-layout/data-set-layout-api.service';
 import {
     ExportSaveFormatService,
     ExportSaveType,
     SaveFormat,
     ProcessResponse,
-} from 'src/shared/services/export-save-format.service';
+} from 'shared/services/export-save-format.service';
 import { first, mergeMap, takeUntil } from 'rxjs/operators';
-import { HTMLElementEvent } from 'src/shared/types/field/field.model';
-import { ImageLabellingActionService } from 'src/components/image-labelling/image-labelling-action.service';
-import { ImageLabellingApiService } from 'src/components/image-labelling/image-labelling-api.service';
-import { ImageLabellingLayoutService } from 'src/layouts/image-labelling-layout/image-labelling-layout.service';
-import { ImageLabellingModeService } from 'src/components/image-labelling/image-labelling-mode.service';
-import { LanguageService } from 'src/shared/services/language.service';
-import { ModalService } from 'src/components/modal/modal.service';
+import { HTMLElementEvent } from 'shared/types/field/field.model';
+import { ImageLabellingActionService } from 'components/image-labelling/image-labelling-action.service';
+import { ImageLabellingApiService } from 'components/image-labelling/image-labelling-api.service';
+import { ImageLabellingLayoutService } from 'layouts/image-labelling-layout/image-labelling-layout.service';
+import { ImageLabellingModeService } from 'components/image-labelling/image-labelling-mode.service';
+import { LanguageService } from 'shared/services/language.service';
+import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
-import { SpinnerService } from 'src/components/spinner/spinner.service';
+import { SpinnerService } from 'shared/components/spinner/spinner.service';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
+import { ExportStatus, Message } from 'shared/types/message/message.model';
+import { ModalBodyStyle } from 'shared/types/modal/modal.model';
+import { ProjectSchema } from 'shared/types/dataset-layout/data-set-layout.model';
 import {
-    AddSubLabel,
-    BboxMetadata,
-    ChangeAnnotationLabel,
+    ImgLabelProps,
+    ImageLabelUrl,
     CompleteMetadata,
+    TabsProps,
+    AddSubLabel,
+    LabelChoosen,
+    BboxMetadata,
+    PolyMetadata,
+    EventEmitter_Url,
     EventEmitter_Action,
     EventEmitter_ThumbnailDetails,
-    EventEmitter_Url,
-    ImageLabelUrl,
-    ImgLabelProps,
-    LabelChoosen,
-    PolyMetadata,
     SelectedLabelProps,
-    TabsProps,
-} from 'src/components/image-labelling/image-labelling.model';
-import { ExportStatus, Message } from 'src/shared/types/message/message.model';
-import { ModalBodyStyle } from 'src/components/modal/modal.model';
-import { ProjectSchema } from '../data-set-layout/data-set-layout.model';
+    ChangeAnnotationLabel,
+} from 'shared/types/image-labelling/image-labelling.model';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -134,7 +134,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         overflow: 'none',
     };
     infoModalBodyStyle: ModalBodyStyle = {
-        maxHeight: '80vh',
+        maxHeight: '50vh',
         minWidth: '40vw',
         maxWidth: '40vw',
         margin: '20vh 23vw',
@@ -252,20 +252,18 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                         this.tabStatus[1].label_list = this.labelList;
                         return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
                     } else {
-                        const thumbnailResponse = interval(500).pipe(
+                        return interval(500).pipe(
                             mergeMap(() => projLoadingStatus$),
                             first(({ message }) => message === 2),
-                            mergeMap(({ uuid_list, label_list }) => {
-                                this.tabStatus[1].label_list = label_list;
-                                return uuid_list.length > 0
-                                    ? uuid_list
+                            mergeMap((labelList) => {
+                                this.tabStatus[1].label_list = labelList.label_list;
+                                return labelList.uuid_list.length > 0
+                                    ? labelList.uuid_list
                                           .slice(this.sliceNum, (this.sliceNum += 20))
                                           .map((uuid) => thumbnail$(projectName, uuid))
                                     : [];
                             }),
                         );
-
-                        return thumbnailResponse;
                     }
                 }),
                 // * this mergeMap responsible for flaten all observable into one layer
@@ -276,7 +274,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     this.thumbnailList = [...this.thumbnailList, res];
                     this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: this.thumbnailList.length };
                 },
-                (error: Error) => {},
+                (error: Error) => {
+                    /** This is intentional */
+                },
                 () => {
                     this.isLoading = false;
                     this._annotateService.labelStaging$
@@ -343,6 +343,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.subject$.next();
     };
 
+
     loadThumbnails = (): void => {
         if (!this.blockLoadThumbnails && this.sliceNum < this.totalUuid) {
             this.blockLoadThumbnails = true;
@@ -353,19 +354,17 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 .pipe(
                     first(),
                     mergeMap(() => {
-                        const thumbnailResponse = interval(500).pipe(
+                        return interval(500).pipe(
                             mergeMap(() => projLoadingStatus$),
                             first(({ message }) => message === 2),
                             mergeMap(({ uuid_list }) => {
                                 return uuid_list.length > 0
                                     ? uuid_list
-                                          .slice(this.sliceNum, (this.sliceNum += 10))
+                                          .slice(this.sliceNum, this.sliceNum += 10)
                                           .map((uuid) => thumbnail$(this.selectedProjectName, uuid))
                                     : [];
                             }),
                         );
-
-                        return thumbnailResponse;
                     }),
                     // * this mergeMap responsible for flaten all observable into one layer
                     mergeMap((data) => data),
@@ -375,7 +374,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                         this.thumbnailList = [...this.thumbnailList, res];
                         this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: this.thumbnailList.length };
                     },
-                    (error: Error) => {},
+                    (error: Error) => {
+                        /** This is intentional */
+                    },
                     () => {
                         this.blockLoadThumbnails = false;
                         this._spinnerService.hideSpinner();
@@ -464,9 +465,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                       first(({ export_status }) => {
                           this.isOverlayOn = export_status === 1 ? true : false;
                           this.isLoading = export_status === 1 ? true : false;
-                          const isValidResponse: boolean =
-                              export_status === 0 || export_status === 2 || export_status === 3;
-                          return isValidResponse;
+                          return export_status === 0 || export_status === 2 || export_status === 3;
                       }),
                   )
                 : throwError((error: any) => {
@@ -498,7 +497,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                         });
                     }
                 },
-                (error: Error) => {},
+                (error: Error) => {
+                    /** This is intentional */
+                },
                 () => {
                     this.closeExportProjectModal();
                 },
@@ -512,7 +513,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         if (open) {
             this._modalService.open(this.modalExportProject);
         } else {
-            this._modalService.open(this.modalExportProject);
+            this._modalService.close(this.modalExportProject);
         }
     };
 
@@ -542,8 +543,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                       /** @property {number} message value 4 means upload completed, value 1 means cancelled */
                       first(({ file_system_status, unsupported_image_list }) => {
                           this.unsupportedImageList = unsupported_image_list;
-                          const isValidResponse: boolean = file_system_status === 3 || file_system_status === 0;
-                          return isValidResponse;
+                          return file_system_status === 3 || file_system_status === 0;
                       }),
                       mergeMap((res) => {
                           /** @property {number} message if value 4 means client has received uploaded item(s) */
@@ -564,7 +564,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                           const thumbnails =
                               res.file_system_status === 3 && listTemp.length > 0
                                   ? listTemp
-                                        .slice(this.sliceNum, (this.sliceNum += 20))
+                                        .slice(this.sliceNum, this.sliceNum += 20)
                                         .map((uuid) => thumbnail$(projectName, uuid))
                                   : [];
 
@@ -591,7 +591,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     this.isLoading = true;
                     thumbnailListTemp.push(res);
                 },
-                (error: Error) => {},
+                (error: Error) => {
+                    /** This is intentional */
+                },
                 () => {
                     this.thumbnailList = thumbnailListTemp;
                     this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: this.thumbnailList.length };
@@ -752,9 +754,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     onChangeAnnotationLabel = (changeAnnoLabel: ChangeAnnotationLabel): void => {
         changeAnnoLabel.index = this.currentAnnotationIndex;
         if (this.selectedMetaData) {
-            // if (this.selectedMetaData.bnd_box) {
-            //   this.selectedMetaData.bnd_box[changeAnnoLabel.index].label = changeAnnoLabel.label;
-            // }
             if (this.selectedMetaData.polygons) {
                 this.selectedMetaData.polygons[changeAnnoLabel.index].label = changeAnnoLabel.label;
             }
@@ -783,7 +782,11 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onChangeInput = (event: HTMLElementEvent<HTMLTextAreaElement>, type: 'main' | 'sub') => {
         const { value } = event.target;
-        type === 'main' ? (this.mainLabelRegionVal = value) : (this.subLabelRegionVal = value);
+        if (type === 'main') {
+            this.mainLabelRegionVal = value;
+        } else {
+            this.subLabelRegionVal = value;
+        }
     };
 
     onSubmitLabel = () => {

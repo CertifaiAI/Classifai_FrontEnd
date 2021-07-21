@@ -4,8 +4,8 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 export type ZoomState = {
     scale: number;
@@ -29,8 +29,6 @@ export type WheelDelta = {
 export class ZoomService {
     private zoomSubject = new BehaviorSubject<ZoomState>(initialState);
     public zoom$ = this.zoomSubject.asObservable();
-
-    constructor() {}
 
     setState = (newZoomState: Partial<ZoomState>): void => {
         newZoomState
