@@ -78,6 +78,7 @@
                             src="assets/icons/help.svg"
                             (mouseover)="showLabelTooltip = true"
                             (mouseout)="showLabelTooltip = false"
+                            alt="info"
                         />
                     </label>
                     <div style="padding-top: 1vh">
@@ -167,7 +168,7 @@
                 <div class="select-file-container">
                     <label class="label-config">{{ 'importJson' | translate }} </label>
                     <div class="help-icon-container">
-                        <img class="help-icon" src="assets/icons/help.svg" />
+                        <img class="help-icon" src="assets/icons/help.svg" alt="info"/>
                         <span class="tooltiptext">
                             <p>{{ 'configFileInfoDest1' | translate }}</p>
                             <p>{{ 'configFileInfoDest2' | translate }}</p>
@@ -205,8 +206,7 @@
 >
     <div class="display-modal-container">
         <p class="display-msg">
-            {{ projectName }} {{ 'renameMsg' | translate }} <b class="validation-success">{{ 'success' | translate }}</b
-            >!
+            {{ projectName }} {{ 'renameMsg' | translate }} <strong class="validation-success">{{ 'success' | translate }}</strong>!
         </p>
     </div>
 </modal>
@@ -219,8 +219,7 @@
 >
     <div class="display-modal-container">
         <p class="display-msg">
-            {{ projectName }} {{ 'deleteMsg' | translate }} <b class="validation-success">{{ 'success' | translate }}</b
-            >!
+            {{ projectName }} {{ 'deleteMsg' | translate }} <strong class="validation-success">{{ 'success' | translate }}</strong>!
         </p>
     </div>
 </modal>
