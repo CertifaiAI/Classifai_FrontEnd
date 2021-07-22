@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { IconSchema } from 'src/shared/types/icon/icon.model';
+import { IconSchema } from '../../../shared/types/icon/icon.model';
 
 @Component({
     selector: 'video-labelling-right-sidebar',

@@ -5,7 +5,7 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { TabsProps } from 'src/components/video-labelling/video-labelling.modal';
+import { TabsProps } from '../../components/video-labelling/video-labelling.modal';
 
 @Component({
     selector: 'app-video-labelling-layout',

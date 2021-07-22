@@ -6,10 +6,10 @@
 
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { SharedModule } from 'src/shared/shared.module';
+import { SharedModule } from 'shared/shared.module';
 import { VideoLabellingLayoutComponent } from './video-labelling-layout.component';
 import { VideoLabellingLayoutRoutingModule } from './video-labelling-layout-routing.module';
-import { VideoLabellingModule } from 'src/components/video-labelling/video-labelling.module';
+import { VideoLabellingModule } from 'components/video-labelling/video-labelling.module';
 
 @NgModule({
     imports: [CommonModule, SharedModule, VideoLabellingLayoutRoutingModule, VideoLabellingModule],

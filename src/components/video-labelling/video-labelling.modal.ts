@@ -4,8 +4,8 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { UUID } from 'src/shared/types/message/message.model';
-import { WithOptional } from 'src/shared/types/with-optional/with-optional';
+import { UUID } from '../../shared/types/message/message.model';
+import { WithOptional } from '../../shared/types/with-optional/with-optional';
 
 export type LabelledFrame = {
     frame: number[];

@@ -6,7 +6,7 @@
 
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { SharedModule } from 'src/shared/shared.module';
+import { SharedModule } from '../../shared/shared.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { VideoLabellingLeftSidebarComponent } from './video-labelling-left-sidebar/video-labelling-left-sidebar.component';
 import { VideoLabellingRightSidebarComponent } from './video-labelling-right-sidebar/video-labelling-right-sidebar.component';

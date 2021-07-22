@@ -1,9 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { IconSchema } from 'src/shared/types/icon/icon.model';
+import { IconSchema } from '../../../shared/types/icon/icon.model';
 import { AnnotateSelectionService } from '../../../shared/services/annotate-selection.service';
 import { VideoLabellingActionService } from '../../video-labelling/video-labelling-action.service';
-import { isEqual } from 'lodash-es';
-import { CompleteMetadata, ImageLabelUrl, ImgLabelProps, TabsProps } from '../../image-labelling/image-labelling.model';
 
 @Component({
     selector: 'video-labelling-left-sidebar',
