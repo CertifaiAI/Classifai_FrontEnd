@@ -1,7 +1,7 @@
 @use 'shared/scss/scrollbar' as scroll;
 @use 'shared/scss/variables' as color;
 @use 'shared/scss/ellipsis' as ellipsis;
-@use 'shared/scss/fadeIn' as fadeIn;
+@use 'shared/scss/fadeIn';
 
 $fadeInEaseDuration: ease 1.5s;
 $hoverBackground: #393838;
@@ -20,11 +20,11 @@ $hoverBackground: #393838;
 }
 
 .fade-in {
-    animation: fadeIn $fadeInEaseDuration;
-    -webkit-animation: fadeIn $fadeInEaseDuration;
-    -moz-animation: fadeIn $fadeInEaseDuration;
-    -o-animation: fadeIn $fadeInEaseDuration;
-    -ms-animation: fadeIn $fadeInEaseDuration;
+    animation: fade-in $fadeInEaseDuration;
+    -webkit-animation: fade-in $fadeInEaseDuration;
+    -moz-animation: fade-in $fadeInEaseDuration;
+    -o-animation: fade-in $fadeInEaseDuration;
+    -ms-animation: fade-in $fadeInEaseDuration;
 }
 
 .card-layout-container {
