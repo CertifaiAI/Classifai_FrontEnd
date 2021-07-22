@@ -4,21 +4,21 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { CardChoiceImgLblUrlPath, CardChoiceSchema } from './home-layout.model';
-import { Component, OnInit } from '@angular/core';
-import { ImageLabellingModeService } from './../../components/image-labelling/image-labelling-mode.service';
-import { ModalBodyStyle } from 'src/components/modal/modal.model';
-import { ModalService } from 'src/components/modal/modal.service';
+import { CardChoiceImgLblUrlPath, CardChoiceSchema } from '../../shared/types/home-layout/home-layout.model';
+import { Component } from '@angular/core';
+import { ModalBodyStyle } from 'shared/types/modal/modal.model';
+import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
-import { ImageLabellingMode } from 'src/components/image-labelling/image-labelling.model';
-import { LanguageService } from 'src/shared/services/language.service';
+import { LanguageService } from 'shared/services/language.service';
+import { ImageLabellingModeService } from 'components/image-labelling/image-labelling-mode.service';
+import { ImageLabellingMode } from 'shared/types/image-labelling/image-labelling.model';
 
 @Component({
     selector: 'home-layout',
     templateUrl: './home-layout.component.html',
     styleUrls: ['./home-layout.component.scss'],
 })
-export class HomeLayoutComponent implements OnInit {
+export class HomeLayoutComponent {
     navigateUrl = '';
     modalBodyStyle: ModalBodyStyle = {
         minHeight: '37vh',
@@ -34,7 +34,7 @@ export class HomeLayoutComponent implements OnInit {
                 enabled: true,
                 title: 'imageOpt.boundingBoxes',
                 urlPath: 'boundingbox',
-                imgPath: '../../assets/landing-page/Classifai_Thumbnail_Band_Labeling.jpg',
+                imgPath: 'assets/landing-page/Classifai_Thumbnail_Band_Labeling.jpg',
                 imgAlt: 'Bounding Box',
             },
             {
@@ -42,7 +42,7 @@ export class HomeLayoutComponent implements OnInit {
                 title: 'imageOpt.polygons',
                 urlPath: 'segmentation',
                 hoverLabel: 'comingSoon',
-                imgPath: '../../assets/landing-page/Classifai_Thumbnail_Band_Segmentation.jpg',
+                imgPath: 'assets/landing-page/Classifai_Thumbnail_Band_Segmentation.jpg',
                 imgAlt: 'Segmentation',
             },
         ],
@@ -60,8 +60,6 @@ export class HomeLayoutComponent implements OnInit {
         const langsArr: string[] = ['landing-page-en', 'landing-page-cn', 'landing-page-ms'];
         this._languageService.initializeLanguage(`landing-page`, langsArr);
     }
-
-    ngOnInit() {}
 
     navigate(url: string): void {
         this.navigateUrl = url;

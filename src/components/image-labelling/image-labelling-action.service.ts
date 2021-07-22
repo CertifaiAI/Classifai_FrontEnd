@@ -4,9 +4,9 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { ActionState } from './image-labelling.model';
-import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { ActionState } from 'shared/types/image-labelling/image-labelling.model';
 
 const initialValue: ActionState = {
     scroll: false,
@@ -26,8 +26,6 @@ export class ImageLabellingActionService {
     private actionSubject = new BehaviorSubject<ActionState>(initialValue);
 
     public action$ = this.actionSubject.asObservable();
-
-    constructor() {}
 
     // pass null value to reset state
     public setState = (inComingState: Partial<ActionState> | null): void => {

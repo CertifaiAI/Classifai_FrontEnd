@@ -5,43 +5,6 @@ $fontSize: 2vh;
     margin-top: 5vh;
 }
 
-.model {
-    position: fixed; /* Stay in place */
-    z-index: 1000; /*Sit on top*/
-    padding-top: 10vh; /* Location of the box */
-    // left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: transparent;
-    scrollbar-width: none;
-    position: fixed;
-    background: rgba(0, 0, 0, 0.7);
-}
-
-.model-content {
-    background-color: #525353;
-    margin: auto;
-    padding: 1vw;
-    border: solid;
-    max-width: 30vw;
-    min-width: 30vw;
-    border-radius: 1vw;
-    margin-top: 15vh;
-    // min-height: 30vh;
-    // max-height: 30vh;
-}
-
-.content-container {
-    margin-left: 1.3vw;
-}
-
-.content-header {
-    color: white;
-    font-size: 3vh;
-}
-
 .new-project-container {
     display: flex;
     flex-direction: row;
@@ -187,11 +150,6 @@ $fontSize: 2vh;
     color: #777777 !important;
 }
 
-.cancel-btn {
-    background-color: #444444;
-    margin-right: 0.7vw;
-}
-
 .choose-file-btn {
     font-size: $fontSize;
     text-decoration: none;
@@ -219,11 +177,6 @@ $fontSize: 2vh;
     height: 3vh;
 }
 
-.label-file {
-    padding-top: 1vh;
-    padding-right: 0.2vw;
-}
-
 .label-select-folder {
     padding-top: 0.7vh;
     padding-right: 1vw;
@@ -235,11 +188,6 @@ $fontSize: 2vh;
     font-size: $fontSize;
     padding-top: 0vh;
     width: 11.5vw;
-}
-
-.label-select-file {
-    padding-top: 0.5vh;
-    width: 9.5vw;
 }
 
 .input-id {
@@ -254,19 +202,6 @@ $fontSize: 2vh;
     width: 99.9vw;
     height: 99.7vh;
     cursor: not-allowed;
-}
-
-.tooltip {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black;
-    font-size: 15px;
-    text-decoration: underline;
-    margin-top: 1vh;
-}
-
-.tooltiptitle {
-    opacity: 0.3;
 }
 
 .help-icon-container .tooltiptext {
@@ -304,7 +239,7 @@ $fontSize: 2vh;
     text-justify: inter-word;
 }
 
-.display-message-container {
+.display-modal-container {
     padding-left: 1.2vw;
 }
 
@@ -312,52 +247,3 @@ $fontSize: 2vh;
     font-size: 2vh;
     color: white;
 }
-
-.modal-content-container {
-    margin-left: 1.3vw;
-}
-
-// .file-input {
-//     color: transparent;
-//     color: transparent;
-//     min-height: 2vh;
-//     max-height: 2vh;
-//     min-width: 4vw;
-//     max-width: 5vw;
-// }
-
-// .file-input::-webkit-file-upload-button {
-//     visibility: hidden;
-// }
-
-// .file-input::before {
-//     content: 'Choose File';
-//     color: black;
-//     display: block;
-//     position: absolute;
-//     background: white;
-//     border-radius: 1vw;
-//     padding: 0.2vw;
-//     outline: none;
-//     white-space: nowrap;
-//     -webkit-user-select: none;
-//     cursor: pointer;
-//     text-shadow: 1px 1px #fff;
-//     font-size: 1.5vh;
-//     min-height: inherit;
-//     max-height: inherit;
-//     min-width: inherit;
-//     max-width: inherit;
-// }
-
-// .file-input:hover::before {
-//     border-color: black;
-// }
-
-// .file-input:active {
-//     outline: 0;
-// }
-
-// .file-input:active::before {
-//     background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
-// }

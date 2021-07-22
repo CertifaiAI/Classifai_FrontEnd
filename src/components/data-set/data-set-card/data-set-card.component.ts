@@ -4,22 +4,8 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import {
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    Input,
-    OnChanges,
-    OnInit,
-    Output,
-    SimpleChanges,
-} from '@angular/core';
-import {
-    Project,
-    ProjectRename,
-    ProjectSchema,
-    StarredProps,
-} from './../../../layouts/data-set-layout/data-set-layout.model';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { ProjectSchema, StarredProps, ProjectRename, Project } from 'shared/types/dataset-layout/data-set-layout.model';
 
 type CardSchema = {
     clickIndex: number;
@@ -30,7 +16,7 @@ type CardSchema = {
     templateUrl: './data-set-card.component.html',
     styleUrls: ['./data-set-card.component.scss'],
 })
-export class DataSetCardComponent implements OnInit, OnChanges {
+export class DataSetCardComponent implements OnChanges {
     @Input() _jsonSchema!: ProjectSchema;
     @Output() _onClick: EventEmitter<string> = new EventEmitter();
     @Output() _onStarred: EventEmitter<StarredProps> = new EventEmitter();
@@ -38,24 +24,19 @@ export class DataSetCardComponent implements OnInit, OnChanges {
     @Output() _onRename: EventEmitter<ProjectRename> = new EventEmitter();
 
     // clonedJsonSchema!: ProjectSchema;
-    starredActiveIcon: string = `../../../assets/icons/starred_active.svg`;
-    starredInactiveIcon: string = `../../../assets/icons/starred.svg`;
+    starredActiveIcon: string = `assets/icons/starred_active.svg`;
+    starredInactiveIcon: string = `assets/icons/starred.svg`;
     cardSchema: CardSchema = {
         clickIndex: -1,
     };
     previousProjectLength = 0;
-    constructor(private _cd: ChangeDetectorRef) {
-        // this.clonedJsonSchema = cloneDeep(this._jsonSchema);
-    }
-
-    ngOnInit(): void {}
+    constructor(private _cd: ChangeDetectorRef) {}
 
     conditionalDisableProject = ({ is_loaded }: Project): string | null => (is_loaded ? 'disabled' : 'enabled');
 
     conditionalDisableClickEvent = (is_loaded: boolean): boolean => is_loaded;
 
     onOpenProject = (index: number, { project_name, is_loaded }: Project): void => {
-        // !is_loaded && !this.isExactIndex(index) && this._onClick.emit(project_name);
         !this.isExactIndex(index) && this._onClick.emit(project_name);
     };
 
@@ -72,7 +53,6 @@ export class DataSetCardComponent implements OnInit, OnChanges {
     onDisplayMore = (index: number = this.cardSchema.clickIndex): void => {
         const { clickIndex } = this.cardSchema;
         this.cardSchema = { clickIndex: clickIndex === index ? -1 : index };
-        // console.log(this.cardSchema);
     };
 
     onCloseDisplay = (): void => {
@@ -81,8 +61,8 @@ export class DataSetCardComponent implements OnInit, OnChanges {
 
     onStarred = (project: Project, starred: boolean): void => {
         const { project_name } = project;
-        this._jsonSchema.projects = this._jsonSchema.projects.map((project) =>
-            project.project_name === project_name ? ((project.is_starred = starred), project) : project,
+        this._jsonSchema.projects = this._jsonSchema.projects.map((proj) =>
+            proj.project_name === project_name ? ((proj.is_starred = starred), proj) : proj,
         );
         this._onStarred.emit({ projectName: project_name, starred });
     };

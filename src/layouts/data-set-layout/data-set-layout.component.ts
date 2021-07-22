@@ -4,21 +4,41 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { BboxMetadata, ImageLabellingMode, PolyMetadata } from 'src/components/image-labelling/image-labelling.model';
 import { cloneDeep } from 'lodash-es';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from './data-set-layout-api.service';
-import { DataSetProps, Project, ProjectRename, ProjectSchema, StarredProps } from './data-set-layout.model';
+import {
+    DataSetProps,
+    Project,
+    ProjectRename,
+    ProjectSchema,
+    StarredProps,
+} from '../../shared/types/dataset-layout/data-set-layout.model';
 import { distinctUntilChanged, first, map, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
 import { interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ImageLabellingModeService } from './../../components/image-labelling/image-labelling-mode.service';
-import { LanguageService } from 'src/shared/services/language.service';
-import { MessageUploadStatus, ProjectMessage } from 'src/shared/types/message/message.model';
-import { ModalBodyStyle } from 'src/components/modal/modal.model';
-import { ModalService } from 'src/components/modal/modal.service';
+import { ImageLabellingModeService } from 'components/image-labelling/image-labelling-mode.service';
+import { LanguageService } from 'shared/services/language.service';
+import { MessageUploadStatus, ProjectMessage } from 'shared/types/message/message.model';
+import { ModalBodyStyle } from 'shared/types/modal/modal.model';
+import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
-import { SpinnerService } from 'src/components/spinner/spinner.service';
+import { SpinnerService } from 'shared/components/spinner/spinner.service';
+import { BboxMetadata, PolyMetadata, ImageLabellingMode } from 'shared/types/image-labelling/image-labelling.model';
+
+type FormattedProject = {
+    created_timestamp: Date;
+    last_modified_timestamp: Date;
+    created_date: string;
+    last_modified_date: string;
+    project_name: string;
+    project_path: string;
+    is_loaded: boolean;
+    is_starred: boolean;
+    is_new: boolean;
+    total_uuid: number;
+    root_path_valid: boolean;
+};
 
 @Component({
     selector: 'data-set-layout',
@@ -164,72 +184,85 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this._dataSetService
             .getProjectList()
             .pipe(first())
-            .subscribe(({ content }) => {
-                if (content) {
-                    const clonedProjectList = cloneDeep(content);
-                    const formattedProjectList = clonedProjectList.map((project) => {
-                        const newProjectList = (project = {
-                            ...project,
-                            created_timestamp: this.formatTimestamp(project.created_date),
-                            last_modified_timestamp: this.formatTimestamp(project.last_modified_date),
-                            created_date: this.formatDate(project.created_date),
-                            last_modified_date: this.formatDate(project.last_modified_date),
-                        });
-                        return newProjectList;
-                    });
-                    switch (projectType) {
-                        case 'starred':
-                            this.sortedProject = formattedProjectList.filter((proj) => proj.is_starred);
-                            break;
-                        case 'recent':
-                            this.sortedProject = formattedProjectList.sort((a, b) =>
-                                b.last_modified_timestamp > a.last_modified_timestamp ? 1 : -1,
-                            );
-                            this.sortedProject = this.sortedProject.slice(0, 6);
-                            break;
-                        default:
-                            this.sortedProject = formattedProjectList;
-                            break;
+            .subscribe(
+                ({ content }) => {
+                    if (content) {
+                        this.handleProjectList(content, projectType);
                     }
-                    if (this.enableSort) {
-                        switch (this.keyToSort) {
-                            case 'project_name':
-                                this.sortedProject.sort((a, b) => (b.project_name < a.project_name ? 1 : -1));
-                                break;
-                            case 'created_date':
-                                this.sortedProject.sort((a, b) => (b.created_timestamp > a.created_timestamp ? 1 : -1));
-                                break;
-                            case 'last_modified_date':
-                                this.sortedProject.sort((a, b) =>
-                                    b.last_modified_timestamp > a.last_modified_timestamp ? 1 : -1,
-                                );
-                                break;
-                            default:
-                                this.sortedProject.sort((a, b) => (b.project_name < a.project_name ? 1 : -1));
-                                break;
-                        }
-                    }
-
-                    /**
-                     * !! IMPORTANT
-                     * @author Daniel Lim Heng Jie
-                     * @description converted to ES6 style to trick Angular's Lifecycle
-                     * to allow the bypass of it to always be unequal object compare during lifecyckle hooks checking (ngOnChanges)
-                     * as comp "data-set-card" needs to check prop changes
-                     * via ngOnChanges to run logic
-                     */
-                    this.projectList = {
-                        ...this.projectList,
-                        projects: this.sortedProject,
-                        isFetching: false,
-                    };
-                }
-            }),
-            (error: Error) => {
-                console.error(error);
-                this.projectList.isFetching = false;
-            };
+                },
+                (error: Error) => {
+                    console.error(error);
+                    this.projectList.isFetching = false;
+                },
+            );
     };
+
+    handleProjectList(content: Project[], projectType: string) {
+        const clonedProjectList = cloneDeep(content);
+
+        const formattedProjectList: FormattedProject[] = clonedProjectList.map((project) => {
+            return {
+                ...project,
+                created_timestamp: this.formatTimestamp(project.created_date),
+                last_modified_timestamp: this.formatTimestamp(project.last_modified_date),
+                created_date: this.formatDate(project.created_date),
+                last_modified_date: this.formatDate(project.last_modified_date),
+            };
+        });
+
+        this.projectTypeFilter(projectType, formattedProjectList);
+        this.enableSort && this.projectSort();
+
+        /**
+         * !! IMPORTANT
+         * @author Daniel Lim Heng Jie
+         * @description converted to ES6 style to trick Angular's Lifecycle
+         * to allow the bypass of it to always be unequal object compare during lifecyckle hooks checking (ngOnChanges)
+         * as comp "data-set-card" needs to check prop changes
+         * via ngOnChanges to run logic
+         */
+        this.projectList = {
+            ...this.projectList,
+            projects: this.sortedProject,
+            isFetching: false,
+        };
+    }
+
+    private projectTypeFilter(projectType: string, formattedProjectList: FormattedProject[]) {
+        switch (projectType) {
+            case 'starred':
+                this.sortedProject = formattedProjectList.filter((proj) => proj.is_starred);
+                break;
+            case 'recent':
+                this.sortedProject = this.sortProjectByModifiedTimestamp(formattedProjectList);
+                this.sortedProject = this.sortedProject.slice(0, 6);
+                break;
+            default:
+                this.sortedProject = formattedProjectList;
+                break;
+        }
+    }
+
+    private projectSort() {
+        switch (this.keyToSort) {
+            case 'project_name':
+                this.sortedProject.sort((a, b) => (b.project_name < a.project_name ? 1 : -1));
+                break;
+            case 'created_date':
+                this.sortedProject.sort((a, b) => (b.created_timestamp > a.created_timestamp ? 1 : -1));
+                break;
+            case 'last_modified_date':
+                this.sortedProject.sort((a, b) => (b.last_modified_timestamp > a.last_modified_timestamp ? 1 : -1));
+                break;
+            default:
+                this.sortedProject.sort((a, b) => (b.project_name < a.project_name ? 1 : -1));
+                break;
+        }
+    }
+
+    private sortProjectByModifiedTimestamp(formattedProjectList: FormattedProject[]) {
+        return formattedProjectList.sort((a, b) => (b.last_modified_timestamp > a.last_modified_timestamp ? 1 : -1));
+    }
 
     filterProjects = (id: string) => {
         this.projectType = id;
@@ -247,8 +280,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     formatTimestamp = (date: string): Date => {
-        const initializedDate: Date = new Date(date);
-        return initializedDate;
+        return new Date(date);
     };
 
     createFormControls = (): void => {
@@ -278,8 +310,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         shown
             ? this._modalService.open(this.modalIdCreateProject)
             : this._modalService.close(this.modalIdCreateProject);
-        /** timeOut needed to allow focus due to Angular's templating sys issue / bug */
-        // setTimeout(() => this._refProjectName.nativeElement.focus());
     };
 
     toggleRenameModalDisplay = (event?: ProjectRename): void => {
@@ -288,14 +318,14 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             return;
         }
         const { shown, projectName } = event;
-        shown
-            ? (this.renameForm.reset(), this._modalService.open(this.modalIdRenameProject))
-            : this._modalService.close(this.modalIdRenameProject);
+        shown ? this.openRenameModal() : this._modalService.close(this.modalIdRenameProject);
         this.oldProjectName = projectName;
-
-        /** timeOut needed to allow focus due to Angular's templating sys issue / bug */
-        // setTimeout(() => this._refNewProjectName.nativeElement.focus());
     };
+
+    openRenameModal() {
+        this.renameForm.reset();
+        this._modalService.open(this.modalIdRenameProject);
+    }
 
     toggleImportProjectModalDisplay = (event: any): void => {
         this.modalSpanMessage = '';
@@ -319,8 +349,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     .pipe(
                         switchMap(() => importStatus$),
                         first((response) => {
-                            // console.log('RESPONSE IMPORT PROJECT MESSAGE', response);
-                            // this.modalSpanMessage = response.error_message;
                             this.isOverlayOn =
                                 response.file_system_status === 1 || response.file_system_status === 2 ? true : false;
                             if (
@@ -363,72 +391,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.toggleImportProjectModalDisplay(true);
     };
 
-    // onFileChange = ({ target: { files } }: HTMLElementEvent<HTMLInputElement>): void => {
-    //     const filename = this._labelTextFile.nativeElement.files?.item(0)?.name;
-    //     this._labelTextFilename.nativeElement.innerHTML = filename === undefined ? '' : filename;
-    //     const reader = new FileReader();
-
-    //     if (files && files.length) {
-    //         const file = files.item(0);
-    //         reader.onload = () => {
-    //             // need to run CD since file load runs outside of zone
-    //             this._cd.markForCheck();
-    //         };
-    //         reader.onloadend = () => {
-    //             const labelResult = reader.result as string;
-    //             const labelSplitArr = labelResult.split('\n');
-    //             if (labelSplitArr.length > 0) {
-    //                 const newLabelArray = labelSplitArr.reduce((prev: string[], curr: string) => {
-    //                     const clearCharLabel = curr.replace(/[^A-Z0-9]+/gi, '').toLowerCase();
-    //                     prev.push(clearCharLabel);
-    //                     return prev;
-    //                 }, []);
-    //                 // clear entire array before giving it new set of data, prevents stacking more array of data
-    //                 this.labelTextUpload = [];
-    //                 // spread due to newLabelArray is already an array
-    //                 // with push would lead to nested array
-    //                 this.labelTextUpload.push(...newLabelArray);
-    //                 // console.log(this.labelTextUpload);
-    //             }
-    //         };
-    //         // console.log(file);
-    //         file && reader.readAsText(file);
-    //     }
-    // };
-
-    // onJSONFileChange = ({ target: { files } }: HTMLElementEvent<HTMLInputElement>): void => {
-    //     const filename = this._jsonImportProjectFile.nativeElement.files?.item(0)?.name;
-    //     this._jsonImportProjectFilename.nativeElement.innerHTML = filename === undefined ? '' : filename;
-    //     const reader = new FileReader();
-
-    //     if (files && files.length) {
-    //         const file = files.item(0);
-    //         reader.onload = () => {
-    //             // need to run CD since file load runs outside of zone
-    //             this._cd.markForCheck();
-    //         };
-    //         reader.onloadend = () => {
-    //             const labelResult = reader.result as string;
-    //             const labelSplitArr = labelResult.split('\n');
-    //             if (labelSplitArr.length > 0) {
-    //                 const newLabelArray = labelSplitArr.reduce((prev: string[], curr: string) => {
-    //                     const clearCharLabel = curr.replace(/[^A-Z0-9]+/gi, '').toLowerCase();
-    //                     prev.push(clearCharLabel);
-    //                     return prev;
-    //                 }, []);
-    //                 // clear entire array before giving it new set of data, prevents stacking more array of data
-    //                 this.labelTextUpload = [];
-    //                 // spread due to newLabelArray is already an array
-    //                 // with push would lead to nested array
-    //                 this.labelTextUpload.push(...newLabelArray);
-    //                 // console.log(this.labelTextUpload);
-    //             }
-    //         };
-    //         // console.log(file);
-    //         file && reader.readAsText(file);
-    //     }
-    // };
-
     onStarred = ({ projectName, starred }: StarredProps) => {
         this._dataSetService
             .updateProjectStatus(projectName, starred, 'star')
@@ -456,12 +418,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
 
         if (!isNewProject) {
             projectName && this.startProject(projectName);
-            // if (this.form.get('selectExistProject')?.value) {
-            //     // this.startProject(this.form.get('selectExistProject')?.value);
-            //     this.selectedProjectName = this.form.get('selectExistProject')?.value;
-            // } else {
-            //     this.form.get('selectExistProject')?.setErrors({ required: true });
-            // }
         } else {
             if (this.inputProjectName) {
                 const checkExistProject =
@@ -469,17 +425,23 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     this.projectList.projects.find(
                         (project) => project && project.project_name === this.inputProjectName,
                     );
-                checkExistProject
-                    ? (this.form.get('projectName')?.setErrors({ exist: true }),
-                      this._refProjectName.nativeElement.focus())
-                    : (this.createProject(this.inputProjectName),
-                      (this.selectedProjectName = this.form.get('projectName')?.value));
+                checkExistProject ? this.projectExistError() : this.startCreateProject(this.inputProjectName);
             } else {
                 this.form.get('projectName')?.setErrors({ required: true });
                 this._refProjectName.nativeElement.focus();
             }
         }
     };
+
+    projectExistError() {
+        this.form.get('projectName')?.setErrors({ exist: true });
+        this._refProjectName.nativeElement.focus();
+    }
+
+    startCreateProject(inputProjectName: string) {
+        this.createProject(inputProjectName);
+        this.selectedProjectName = this.form.get('projectName')?.value;
+    }
 
     onSubmitRename() {
         this.renameForm.markAllAsTouched();
@@ -490,14 +452,22 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     project ? project.project_name === this.newInputProjectName : null,
                 );
             checkExistProject
-                ? (this.renameForm.get('newProjectName')?.setErrors({ exist: true }),
-                  this._refProjectName.nativeElement.focus())
-                : (this.renameProject(this.oldProjectName, this.newInputProjectName),
-                  (this.selectedProjectName = this.renameForm.get('newProjectName')?.value));
+                ? this.newProjectNameError()
+                : this.startRenameProject(this.oldProjectName, this.newInputProjectName);
         } else {
             this.renameForm.get('newProjectName')?.setErrors({ required: true });
             this._refProjectName.nativeElement.focus();
         }
+    }
+
+    newProjectNameError() {
+        this.renameForm.get('newProjectName')?.setErrors({ exist: true });
+        this._refProjectName.nativeElement.focus();
+    }
+
+    startRenameProject(oldName: string, newName: string) {
+        this.renameProject(oldName, newName);
+        this.selectedProjectName = this.renameForm.get('newProjectName')?.value;
     }
 
     startProject = (projectName: string): void => {
@@ -528,8 +498,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                           this.unsupportedImageList = unsupported_image_list;
                           this.isOverlayOn = file_system_status === 1 || file_system_status === 2 ? true : false;
                           this.isImageUploading = file_system_status === 2 ? true : false;
-                          const isValidResponse: boolean = file_system_status === 3;
-                          return isValidResponse;
+                          return file_system_status === 3;
                       }),
                   )
                 : throwError(new Error(`ERROR ${error_code}: ${error_message}`));
@@ -648,7 +617,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .subscribe((message) => {
                 if (message === 1) {
                     this._languageService._translate.get('renameSuccess').subscribe((translated) => {
-                        // alert(oldProjectName + ' ' + translated);
                         this.projectName = oldProjectName;
                         this.modalSpanMessage = translated;
                         this._modalService.open(this.modalIdRenameSuccess);

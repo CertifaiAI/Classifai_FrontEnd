@@ -4,7 +4,6 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
 import {
     Component,
     ElementRef,
@@ -18,25 +17,26 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { HTMLElementEvent } from 'src/shared/types/field/field.model';
-import { ImageLabellingActionService } from '../image-labelling-action.service';
 import { cloneDeep, isEqual } from 'lodash-es';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import {
-    BboxMetadata,
-    Boundingbox,
-    ChangeAnnotationLabel,
-    CompleteMetadata,
-    EventEmitter_ThumbnailDetails,
     ImgLabelProps,
-    Polygons,
+    BboxMetadata,
     PolyMetadata,
-    SelectedLabelProps,
+    CompleteMetadata,
     TabsProps,
-} from '../image-labelling.model';
-import { LanguageService } from 'src/shared/services/language.service';
-import { UndoRedoService } from 'src/shared/services/undo-redo.service';
+    EventEmitter_ThumbnailDetails,
+    SelectedLabelProps,
+    ChangeAnnotationLabel,
+    Boundingbox,
+    Polygons,
+} from 'shared/types/image-labelling/image-labelling.model';
+import { AnnotateSelectionService } from 'shared/services/annotate-selection.service';
+import { LanguageService } from 'shared/services/language.service';
+import { UndoRedoService } from 'shared/services/undo-redo.service';
+import { HTMLElementEvent } from 'shared/types/field/field.model';
+import { ImageLabellingActionService } from '../image-labelling-action.service';
 
 @Component({
     selector: 'image-labelling-project',
@@ -90,8 +90,6 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
             this._annotateService.labelStaging$
                 .pipe(takeUntil(this.unsubscribe$))
                 .subscribe(({ annotation: annnotationIndex, isDlbClick }) => {
-                    // isDlbClick && this._annotateService.setState();
-
                     this.selectedIndexAnnotation = annnotationIndex;
                     const [{ annotation }] = this._tabStatus.filter((tab) => tab.annotation);
                     const resultLabel = annotation?.map(({ bnd_box, polygons }) => {
@@ -103,24 +101,6 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
                         }
                     })[0];
                     this.selectedLabel = resultLabel?.label ?? '';
-                    // this.selectedIndexAnnotation = this._tabStatus.reduce((prev, { annotation }) => {
-                    //     const currentIndex =
-                    //         annotation?.findIndex(({ bnd_box }) =>
-                    //             bnd_box.findIndex((_, i) => {
-                    //                 const ss = i === annnotationIndex;
-                    //                 console.log(`${i}===${annnotationIndex}`);
-                    //                 console.log(ss);
-                    //                 return ss;
-                    //             }),
-                    //         ) || -1;
-                    //     prev = currentIndex || -1;
-                    //     return prev;
-                    // }, 0);
-
-                    // this.selectedIndexAnnotation = this._tabStatus.findIndex(({ annotation }) =>
-                    //     annotation?.findIndex(({ bnd_box }) => bnd_box.findIndex((_, i) => i === annnotationIndex)),
-                    // );
-                    // console.log({ annnotationIndex, isDlbClick });
                 });
     }
 
@@ -209,9 +189,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
 
     onClickLabel = (label: string) => {
         this.selectedLabel = label;
-        // this.selectedIndexAnnotation > -1 &&
         this._onChangeAnnotationLabel.emit({ label, index: this.selectedIndexAnnotation });
-        // this._selectMetadata.bnd_box[this.selectedIndexAnnotation].label = label;
         this._undoRedoService.appendStages({
             meta: this._selectMetadata,
             method: 'draw',
@@ -219,8 +197,6 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     };
 
     onClickAnnotation = (index: number, { label }: Boundingbox & Polygons) => {
-        // this._onClickThumbnail.emit(thumbnail);
-        // const bbLabel = bnd_box.map(({ label }) => label);
         this.selectedLabel = label;
         this._annotateService.setState({ annotation: index });
     };
@@ -262,10 +238,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     checkStateEqual = (currObj: object, prevObj: object): boolean => !isEqual(currObj, prevObj);
 
     ngOnChanges(changes: SimpleChanges): void {
-        // console.log(changes);
         if (changes._thumbnailList) {
             const { currentValue }: { currentValue: BboxMetadata[] & PolyMetadata[] } = changes._thumbnailList;
-            // console.log(currentValue);
             this._thumbnailList = Object.assign([], this._thumbnailList, [...currentValue]);
         }
 

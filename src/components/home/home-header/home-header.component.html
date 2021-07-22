@@ -1,6 +1,6 @@
 <header class="flex-header header-container">
     <div class="div-header-container">
-        <img class="header-img" [src]="headerImage" />
+        <img class="header-img" [src]="headerImage" alt="Classifai logo" />
     </div>
 </header>
 <div class="version-container">
@@ -8,11 +8,6 @@
         <p>Version: 2.0.0 alpha1</p>
     </div>
 </div>
-<!-- <select #langSelect (change)="setLanguage(langSelect.value)" class="select-padding">
-    <option *ngFor="let lang of languageArr" [value]="lang" [selected]="lang === _translate.currentLang">
-        {{ lang | languageSlice }}
-    </option>
-</select> -->
 <div class="share" (mouseenter)="showLangOpts()" (mouseleave)="hideLangOpts()">
     <ul>
         <div class="toggle">{{ _translate.currentLang | languageSlice }}</div>

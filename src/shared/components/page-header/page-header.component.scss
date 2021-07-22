@@ -1,0 +1,94 @@
+.header-container {
+    min-width: 100vw;
+    max-width: 100vw;
+    min-height: 4.3vh;
+    max-height: 4.3vh;
+    background: #525353;
+    border: 0.0625vw solid rgb(255, 255, 255, 0.25);
+    display: flex;
+    justify-content: space-between;
+    z-index: 1000;
+    position: relative;
+}
+
+.container-flex-start {
+    display: flex;
+}
+
+.container-flex-end {
+    display: flex;
+    min-width: 6.5vw;
+    max-width: 6.5vw;
+}
+
+.logo-container {
+    min-width: 2.15vw;
+    max-width: 2.15vw;
+}
+
+.logo,
+.utility-icon-light {
+    min-width: 1.6vw;
+    max-width: 1.6vw;
+    min-height: inherit;
+    max-height: inherit;
+    padding: 0.32vw;
+}
+
+.utility-icon-light {
+    cursor: pointer;
+}
+
+.utility-icon-light:active {
+    background: rgb(105, 105, 105);
+}
+
+.img {
+    margin-left: 4.2vw;
+}
+
+.position-absolute {
+    position: absolute;
+}
+
+.utility-icon-container {
+    display: flex;
+    min-height: 3.4vh;
+    max-height: 3.4vh;
+}
+
+.btn-container {
+    min-height: 4.36vh;
+    max-height: 4.36vh;
+    font-size: 2vh;
+    background: #525353;
+    border-left: 0.0625vw solid rgb(255, 255, 255, 0.25);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    padding: 0 1.5vw;
+    &:hover {
+        background: #383535;
+    }
+}
+
+.last-btn-container {
+    border-right: 0.0625vw solid rgb(255, 255, 255, 0.25);
+}
+
+.link {
+    text-decoration: none;
+    color: white;
+}
+
+.label {
+    white-space: nowrap;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.active-link {
+    background: #383535;
+}
