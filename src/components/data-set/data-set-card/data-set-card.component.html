@@ -1,152 +1,147 @@
+<!-------------------------- Fetching Project -------------------------->
+
 <ng-container *ngIf="_jsonSchema.isFetching; else showCardBody">
-  <div class="card-layout-container scroll fade-in">
-      <div class="no-project-card-container">
-          <div class="no-project-title-padding">
-              <label class="no-project-title">{{ 'datasetCard.fetchingProject' | translate }}</label>
-          </div>
-          <div>
-              <label class="no-project-subtitle">{{ 'datasetCard.pleaseWait' | translate }}</label>
-          </div>
-      </div>
-  </div>
+    <empty-container class="card-layout-container scroll fade-in" [_case]="'FETCH'"></empty-container>
 </ng-container>
 
+<!-------------------------- Project Card -------------------------->
+
 <ng-template #showCardBody>
-  <ng-container *ngIf="_jsonSchema.projects.length > 0; else noProject">
-      <div class="card-layout-container scroll fade-in">
-          <ng-container *ngFor="let project of _jsonSchema.projects; index as i">
-              <div
-                  class="card-container"
-                  [attr.data-index]="i"
-                  (dblclick)="project.root_path_valid && onOpenProject(i, project)"
-                  [ngClass]="{ disabled: !project.root_path_valid }"
-              >
-                  <div class="card-header-style">
-                      <div>
-                          <ng-container
-                              [ngTemplateOutlet]="isExactIndex(i) && _jsonSchema.isUploading ? uploadLabel : newLabel"
-                              [ngTemplateOutletContext]="{ project: project }"
-                          ></ng-container>
-                      </div>
-                      <div class="card-icon-container">
-                          <div
-                              (click)="onStarred(project, project.is_starred ? false : true)"
-                              (dblclick)="onDblClickStopPropagate($event)"
-                          >
-                              <img
-                                  class="card-icon-style"
-                                  [src]="[project.is_starred ? starredActiveIcon : starredInactiveIcon]"
-                                  alt="star"
-                              />
-                          </div>
+    <ng-container *ngIf="_jsonSchema.projects.length > 0; else noProject">
+        <div class="card-layout-container scroll fade-in">
+            <ng-container *ngFor="let project of _jsonSchema.projects; index as i">
+                <div
+                    class="card-container"
+                    [attr.data-index]="i"
+                    (dblclick)="project.root_path_valid && onOpenProject(i, project)"
+                    [ngClass]="{ disabled: !project.root_path_valid }"
+                >
+                    <div class="card-header-style">
+                        <div>
+                            <ng-container
+                                [ngTemplateOutlet]="isExactIndex(i) && _jsonSchema.isUploading ? uploadLabel : newLabel"
+                                [ngTemplateOutletContext]="{ project: project }"
+                            ></ng-container>
+                        </div>
+                        <div class="card-icon-container">
+                            <div
+                                (click)="onStarred(project, project.is_starred ? false : true)"
+                                (dblclick)="onDblClickStopPropagate($event)"
+                            >
+                                <img
+                                    class="card-icon-style"
+                                    [src]="[project.is_starred ? starredActiveIcon : starredInactiveIcon]"
+                                    alt="star"
+                                />
+                            </div>
 
-                          <div (click)="onDisplayMore(i)" (dblclick)="onDblClickStopPropagate($event)">
-                              <img class="card-icon-style enabled" src="assets/icons/more.svg" alt="more" />
-                          </div>
-                          <ng-container *ngIf="isExactIndex(i)">
-                              <span>
-                                  <div class="popup-container enabled">
-                                      <div class="popup-label" (click)="onRenameProject(project.project_name)">
-                                          {{ 'datasetCard.renameProject' | translate }}
-                                      </div>
-                                      <div class="popup-label" (click)="onDeleteProject(project.project_name)">
-                                          {{ 'datasetCard.deleteProject' | translate }}
-                                      </div>
-                                  </div>
-                              </span>
-                          </ng-container>
-                      </div>
-                  </div>
-                  <div class="card-title-style">
-                      <label
-                          [title]="project.created_timestamp | date: 'medium'"
-                          [ngClass]="{ disabled: !project.root_path_valid }"
-                      >
-                          <div class="card-title-txt">
-                              {{ 'datasetCard.created' | translate }} {{ project.created_date }}
-                          </div>
-                      </label>
-                      <label
-                          [title]="project.last_modified_timestamp | date: 'medium'"
-                          [ngClass]="{ disabled: !project.root_path_valid }"
-                      >
-                          <div class="card-title-txt">
-                              {{ 'datasetCard.modified' | translate }} {{ project.last_modified_date }}
-                          </div>
-                      </label>
-                  </div>
-                  <div class="project-name-style">
-                      <label [title]="project.project_name" [ngClass]="{ disabled: !project.root_path_valid }">
-                          <div class="project-info">
-                              {{ project.project_name }}
-                          </div>
-                      </label>
-                  </div>
+                            <div (click)="onDisplayMore(i)" (dblclick)="onDblClickStopPropagate($event)">
+                                <img class="card-icon-style enabled" src="assets/icons/more.svg" alt="more" />
+                            </div>
+                            <ng-container *ngIf="isExactIndex(i)">
+                                <span>
+                                    <div class="popup-container enabled">
+                                        <div class="popup-label" (click)="onRenameProject(project.project_name)">
+                                            {{ 'datasetCard.renameProject' | translate }}
+                                        </div>
+                                        <div class="popup-label" (click)="onDeleteProject(project.project_name)">
+                                            {{ 'datasetCard.deleteProject' | translate }}
+                                        </div>
+                                    </div>
+                                </span>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <div class="card-date-style">
+                        <label
+                            [title]="project.created_timestamp | date: 'medium'"
+                            [ngClass]="{ disabled: !project.root_path_valid }"
+                        >
+                            <div class="card-date-text">
+                                {{ 'datasetCard.created' | translate }} {{ project.created_date }}
+                            </div>
+                        </label>
+                        <label
+                            [title]="project.last_modified_timestamp | date: 'medium'"
+                            [ngClass]="{ disabled: !project.root_path_valid }"
+                        >
+                            <div class="card-date-text">
+                                {{ 'datasetCard.modified' | translate }} {{ project.last_modified_date }}
+                            </div>
+                        </label>
+                    </div>
+                    <div class="project-name-style">
+                        <label [title]="project.project_name" [ngClass]="{ disabled: !project.root_path_valid }">
+                            <div class="project-name-text">
+                                {{ project.project_name }}
+                            </div>
+                        </label>
+                    </div>
 
-                  <div class="project-name-style">
-                      <label
-                          [title]="'Total Photo: ' + project.total_uuid"
-                          [ngClass]="{ disabled: !project.root_path_valid }"
-                      >
-                          <div class="project-info">
-                              {{ 'datasetCard.totalPhoto' | translate }} {{ project.total_uuid }}
-                          </div>
-                      </label>
-                  </div>
+                    <div class="total-photo-style">
+                        <label
+                            [title]="'Total Photo: ' + project.total_uuid"
+                            [ngClass]="{ disabled: !project.root_path_valid }"
+                        >
+                            <div class="total-photo-text">
+                                {{ 'datasetCard.totalPhoto' | translate }} {{ project.total_uuid }}
+                            </div>
+                        </label>
+                    </div>
 
-                  <div class="project-path-style">
-                      <label [title]="project.project_path" [ngClass]="{ disabled: !project.root_path_valid }">
-                          <div class="project-path">
-                              {{ 'datasetCard.projectPath' | translate }} : {{ project.project_path }}
-                          </div>
-                      </label>
-                  </div>
-              </div>
-          </ng-container>
-      </div>
-  </ng-container>
+                    <div class="project-path-style">
+                        <label [title]="project.project_path" [ngClass]="{ disabled: !project.root_path_valid }">
+                            <div class="project-path-text">
+                                {{ 'datasetCard.projectPath' | translate }} : {{ project.project_path }}
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </ng-container>
 </ng-template>
+
+<!-------------------------- No Project Exist -------------------------->
 
 <ng-template #noProject>
-  <div class="card-layout-container scroll fade-in">
-      <div class="no-project-card-container">
-          <div class="no-project-title-padding">
-              <label class="no-project-title">{{ 'datasetCard.noProject' | translate }}</label>
-          </div>
-          <div>
-              <label class="no-project-subtitle">{{ 'datasetCard.createNew' | translate }}</label>
-          </div>
-      </div>
-  </div>
+  <ng-container *ngIf="_projectType === 'starred'; else noProjectCreated">
+    <empty-container class="card-layout-container scroll fade-in" [_case]="'NO_STARRED'"></empty-container>
+  </ng-container>
+</ng-template>
+<ng-template #noProjectCreated>
+  <empty-container class="card-layout-container scroll fade-in" [_case]="'NO_CONTENT'"></empty-container>
 </ng-template>
 
+<!-------------------------- Card Label -------------------------->
+
 <ng-template #uploadLabel let-project="project">
-  <label class="project-status-uploading" [ngClass]="{ disabled: !project.root_path_valid }">
-      {{ 'datasetCard.uploading' | translate }}
-  </label>
+    <label class="project-status-uploading" [ngClass]="{ disabled: !project.root_path_valid }">
+        {{ 'datasetCard.uploading' | translate }}
+    </label>
 </ng-template>
 
 <ng-template #newLabel let-project="project">
-  <ng-container [ngSwitch]="project">
-      <ng-container *ngIf="project.is_new && project.root_path_valid">
-          <label class="project-status-new" [ngClass]="{ disabled: !project.root_path_valid }">{{
-              'datasetCard.new' | translate
-          }}</label>
-      </ng-container>
-      <ng-container *ngIf="!project.is_new && !project.is_loaded && project.root_path_valid">
-          <label class="project-status-available" [ngClass]="{ disabled: !project.root_path_valid }">{{
-              'datasetCard.available' | translate
-          }}</label>
-      </ng-container>
-      <ng-container *ngIf="!project.is_new && project.is_loaded && project.root_path_valid">
-          <label class="project-status-opened" [ngClass]="{ disabled: !project.root_path_valid }">{{
-              'datasetCard.opened' | translate
-          }}</label>
-      </ng-container>
-      <ng-container *ngIf="!project.root_path_valid">
-          <label class="project-status-invalid" [ngClass]="{ disabled: !project.root_path_valid }">{{
-              'datasetCard.invalidPath' | translate
-          }}</label>
-      </ng-container>
-  </ng-container>
+    <ng-container [ngSwitch]="project">
+        <ng-container *ngIf="project.is_new && project.root_path_valid">
+            <label class="project-status-new" [ngClass]="{ disabled: !project.root_path_valid }">{{
+                'datasetCard.new' | translate
+            }}</label>
+        </ng-container>
+        <ng-container *ngIf="!project.is_new && !project.is_loaded && project.root_path_valid">
+            <label class="project-status-available" [ngClass]="{ disabled: !project.root_path_valid }">{{
+                'datasetCard.available' | translate
+            }}</label>
+        </ng-container>
+        <ng-container *ngIf="!project.is_new && project.is_loaded && project.root_path_valid">
+            <label class="project-status-opened" [ngClass]="{ disabled: !project.root_path_valid }">{{
+                'datasetCard.opened' | translate
+            }}</label>
+        </ng-container>
+        <ng-container *ngIf="!project.root_path_valid">
+            <label class="project-status-invalid" [ngClass]="{ disabled: !project.root_path_valid }">{{
+                'datasetCard.invalidPath' | translate
+            }}</label>
+        </ng-container>
+    </ng-container>
 </ng-template>

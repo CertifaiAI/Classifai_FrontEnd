@@ -1,5 +1,9 @@
+<!-------------------------- Dataset Header Container -------------------------->
+
 <div class="dataset-header-container">
-    <label class="label" style="padding-right: 50vw">{{ 'datasetHeader.datasetManagement' | translate }}</label>
+    <!-------------------------- Dataset Header Title -------------------------->
+    <label class="dataset-header-title">{{ 'datasetHeader.datasetManagement' | translate }}</label>
+    <!-------------------------- Sort Dropdown -------------------------->
     <div class="dataset-dropdown-container" *ngIf="_enableSort">
         <label class="dropdown-title">Sort By: </label>
         <select class="dropdown" [value]="selectedOpt" (change)="onOptionsSelected(mySelect.value)" #mySelect>

@@ -6,26 +6,9 @@
 $fadeInEaseDuration: ease 1.5s;
 $hoverBackground: #393838;
 
-@mixin project-status($color) {
-    color: whitesmoke;
-    background-color: $color;
-    font-size: 60%;
-    padding: 0.3vh 1.5vw 0.6vh 1vw;
-}
-
-@mixin text-ellipsis($fontSize, $color) {
-    color: $color;
-    font-size: $fontSize;
-    @include ellipsis.ellipsis-styling();
-}
-
-.fade-in {
-    animation: fade-in $fadeInEaseDuration;
-    -webkit-animation: fade-in $fadeInEaseDuration;
-    -moz-animation: fade-in $fadeInEaseDuration;
-    -o-animation: fade-in $fadeInEaseDuration;
-    -ms-animation: fade-in $fadeInEaseDuration;
-}
+/*-------------------------------------------*\
+    Card Layout
+\*-------------------------------------------*/
 
 .card-layout-container {
     width: 80vw;
@@ -49,6 +32,18 @@ $hoverBackground: #393838;
     }
 }
 
+.fade-in {
+  animation: fade-in $fadeInEaseDuration;
+  -webkit-animation: fade-in $fadeInEaseDuration;
+  -moz-animation: fade-in $fadeInEaseDuration;
+  -o-animation: fade-in $fadeInEaseDuration;
+  -ms-animation: fade-in $fadeInEaseDuration;
+}
+
+/*-------------------------------------------*\
+    Card Container
+\*-------------------------------------------*/
+
 .card-container {
     min-width: 11vw;
     max-width: 11vw;
@@ -56,7 +51,6 @@ $hoverBackground: #393838;
     max-height: 30vh;
     border-style: solid;
     font-size: 2.2vh;
-    // background: #404040;
     background: rgb(46, 45, 45);
     position: relative;
     &:hover {
@@ -82,20 +76,16 @@ $hoverBackground: #393838;
     cursor: not-allowed;
 }
 
-.project-status-new {
-    @include project-status(#f59221);
-}
+/*-------------------------------------------*\
+    Card Header
+\*-------------------------------------------*/
 
-.project-status-available {
-    @include project-status(#92c91b);
-}
-
-.project-status-opened {
-    @include project-status(#258fc0);
-}
-
-.project-status-invalid {
-    @include project-status(#de1c44);
+.card-header-style {
+  margin-top: 1vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  position: relative;
 }
 
 .card-icon-container {
@@ -108,55 +98,21 @@ $hoverBackground: #393838;
     min-height: 3vh;
     max-height: 3vh;
     &:hover {
-        // cursor: pointer;
         border-radius: 5vh;
         background-color: $hoverBackground;
     }
 }
 
-.card-header-style {
-    margin-top: 1vh;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    position: relative;
-}
+/*-------------------------------------------*\
+    More Project Settings Popup
+\*-------------------------------------------*/
 
-.card-title-style {
-    margin-left: 1vw;
+@keyframes appear {
+  0% {
+      opacity: 0;
+      transform: translateY(-10px);
+  }
 }
-
-.card-title-txt {
-    @include text-ellipsis(1.3vh, #656667);
-}
-
-.project-name-style {
-    margin-left: 1vw;
-    padding: 1vh 0 0 0;
-}
-
-.project-path-style {
-    margin-left: 1vw;
-    padding: 1vh 0 0 0;
-    width: 90%;
-    position: absolute;
-    bottom: 1vh;
-}
-
-.project-info {
-    @include text-ellipsis(2vh, #dbdbda);
-}
-
-.project-path {
-    word-wrap: break-word;
-    font-size: 1.2vh;
-    color: #737475;
-    position: relative;
-}
-
-//#########################
-//    Start - Modal PopUp
-//#########################
 
 .popup-container {
     overflow: hidden;
@@ -174,47 +130,83 @@ $hoverBackground: #393838;
     animation: appear 350ms ease-in 1;
 }
 
-@keyframes appear {
-    0% {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-}
-
 .popup-label {
     font-size: 2vh;
     padding: 0.5vw;
-    // margin: 0.5vw;
     &:hover {
         background: #e9e9e9;
     }
 }
 
-//#########################
-//    Start - No Project Template
-//#########################
+/*-------------------------------------------*\
+    Card Content
+\*-------------------------------------------*/
 
-.no-project-title {
-    font-size: 4vh;
-    color: white;
-    white-space: nowrap;
+@mixin text-ellipsis($fontSize, $color) {
+  color: $color;
+  font-size: $fontSize;
+  @include ellipsis.ellipsis-styling();
 }
 
-.no-project-title-padding {
-    padding: 2vw;
+.card-date-style {
+    margin-left: 1vw;
 }
 
-.no-project-subtitle {
-    font-size: 2vh;
-    color: #bebebe;
-    white-space: nowrap;
+.card-date-text {
+    @include text-ellipsis(1.3vh, #656667);
 }
 
-.no-project-card-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: #1f1f1f;
-    width: 100%;
+.project-name-style, .total-photo-style {
+    margin-left: 1vw;
+    padding: 1vh 0 0 0;
+}
+
+.project-name-text, .total-photo-text {
+    @include text-ellipsis(2vh, #dbdbda);
+}
+
+.project-path-style {
+  margin-left: 1vw;
+  padding: 1vh 0 0 0;
+  width: 90%;
+  position: absolute;
+  bottom: 1vh;
+}
+
+.project-path-text {
+    word-wrap: break-word;
+    font-size: 1.2vh;
+    color: #737475;
+    position: relative;
+}
+
+/*-------------------------------------------*\
+    Card Label
+\*-------------------------------------------*/
+
+@mixin project-status($color) {
+  color: whitesmoke;
+  background-color: $color;
+  font-size: 60%;
+  padding: 0.3vh 1.5vw 0.6vh 1vw;
+}
+
+.project-status-uploading {
+  @include project-status(#c421f5);
+}
+
+.project-status-new {
+    @include project-status(#f59221);
+}
+
+.project-status-available {
+    @include project-status(#92c91b);
+}
+
+.project-status-opened {
+    @include project-status(#258fc0);
+}
+
+.project-status-invalid {
+    @include project-status(#de1c44);
 }

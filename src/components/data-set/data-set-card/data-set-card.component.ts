@@ -18,6 +18,7 @@ type CardSchema = {
 })
 export class DataSetCardComponent implements OnChanges {
     @Input() _jsonSchema!: ProjectSchema;
+    @Input() _projectType: string = 'myproject';
     @Output() _onClick: EventEmitter<string> = new EventEmitter();
     @Output() _onStarred: EventEmitter<StarredProps> = new EventEmitter();
     @Output() _onDelete: EventEmitter<string> = new EventEmitter();
@@ -72,13 +73,15 @@ export class DataSetCardComponent implements OnChanges {
     onDblClickStopPropagate = (event: MouseEvent) => event.stopPropagation();
 
     ngOnChanges(changes: SimpleChanges): void {
-        const { isUploading }: { isUploading: boolean } = changes._jsonSchema.currentValue;
-        !isUploading && this.onDisplayMore();
+        if (changes._jsonSchema?.currentValue) {
+          const { isUploading }: { isUploading: boolean } = changes._jsonSchema.currentValue;
+          !isUploading && this.onDisplayMore();
 
-        if (this._jsonSchema.projects.length !== this.previousProjectLength) {
-            // Close 'display more' popup after create/delete a project
-            this.cardSchema.clickIndex = -1;
+          if (this._jsonSchema.projects.length !== this.previousProjectLength) {
+              // Close 'display more' popup after create/delete a project
+              this.cardSchema.clickIndex = -1;
+          }
+          this.previousProjectLength = this._jsonSchema.projects.length;
         }
-        this.previousProjectLength = this._jsonSchema.projects.length;
     }
 }

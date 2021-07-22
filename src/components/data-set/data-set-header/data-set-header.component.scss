@@ -1,5 +1,9 @@
 $hoverBackground: #393838;
 
+/*-------------------------------------------*\
+    Dataset Header Container
+\*-------------------------------------------*/
+
 .dataset-header-container {
     display: flex;
     justify-content: space-around;
@@ -9,15 +13,11 @@ $hoverBackground: #393838;
     max-width: 80vw;
 }
 
-.dropdown {
-    background-color: rgb(53, 53, 53);
-    border: black;
-    color: white;
-    font-size: 2vh;
-    padding: 0.7vh 0.7vw;
-}
+/*-------------------------------------------*\
+    Dataset Header Title
+\*-------------------------------------------*/
 
-.label {
+.dataset-header-title {
     flex: 1 1 80vw;
     background: none;
     font-size: 2.5vh;
@@ -25,7 +25,12 @@ $hoverBackground: #393838;
     white-space: nowrap;
     min-height: inherit;
     max-height: inherit;
+    padding-right: 50vw;
 }
+
+/*-------------------------------------------*\
+    Sort Dropdown
+\*-------------------------------------------*/
 
 .dataset-dropdown-container {
     display: flex;
@@ -42,11 +47,17 @@ $hoverBackground: #393838;
     max-height: inherit;
 }
 
+.dropdown {
+    background-color: rgb(53, 53, 53);
+    border: black;
+    color: white;
+    font-size: 2vh;
+    padding: 0.7vh 0.7vw;
+}
+
 select {
-    // background: $base64Arrow no-repeat 10vw;
     -moz-appearance: none;
     -webkit-appearance: none;
-    // background-position: 12.1vh;
 }
 
 option {
