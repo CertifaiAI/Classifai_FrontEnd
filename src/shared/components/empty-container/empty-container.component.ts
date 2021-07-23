@@ -11,8 +11,6 @@ export class EmptyContainerComponent implements OnInit {
   title = 'datasetCard.noProject';
   subtitle = 'datasetCard.createNew';
 
-  constructor() { }
-
   ngOnInit() {
     switch (this._case) {
       case 'FETCH':
