@@ -1,14 +1,17 @@
+<!-------------------------- Modal -------------------------->
+
 <div class="modal">
     <div [ngStyle]="modalBodyStyle" [ngClass]="applyStyling()" class="modal-body">
         <div class="modal-header-container" *ngIf="showHeader">
-            <label
-                style="text-indent: 0.5vw; padding-left: 0.2vw"
-                [ngStyle]="{ 'font-size': modalTitle.length > 20 ? '2.2vh' : '3vh' }"
-                >{{ modalTitle }}</label
-            >
+            <label class="modal-title" [ngStyle]="{ 'font-size': modalTitle.length > 20 ? '2.2vh' : '3vh' }">{{
+                modalTitle
+            }}</label>
             <button class="modal-button close-button float-right" (click)="close()">&#10006;</button>
         </div>
         <ng-content></ng-content>
     </div>
 </div>
+
+<!-------------------------- Modal Background -------------------------->
+
 <div class="modal-background" [ngStyle]="{ 'z-index': zIndex * 1000 }" (click)="close()"></div>

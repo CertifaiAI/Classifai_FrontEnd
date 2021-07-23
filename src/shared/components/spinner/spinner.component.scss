@@ -16,6 +16,17 @@
     width: 100%;
 }
 
+.mesh-loader > div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
+.mesh-loader > div:last-child {
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
 .mesh-loader .circle {
     width: 1.6276041666666667vw;
     height: 3.315649867374005vh;
@@ -30,17 +41,6 @@
 .mesh-loader > div .circle:last-child {
     -webkit-animation-delay: 0s;
     animation-delay: 0s;
-}
-
-.mesh-loader > div {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-}
-
-.mesh-loader > div:last-child {
-    -webkit-transform: rotate(90deg);
-    transform: rotate(90deg);
 }
 
 @-webkit-keyframes mesh {

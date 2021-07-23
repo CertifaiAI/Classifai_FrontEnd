@@ -29,14 +29,14 @@
     white-space: nowrap; /* prevent new line */
 }
 
-.label-hidden {
-    visibility: hidden;
-}
-
 .logo {
     position: relative;
     height: 15vh;
     margin-top: 10vh;
+}
+
+.label-hidden {
+    visibility: hidden;
 }
 
 .banner {

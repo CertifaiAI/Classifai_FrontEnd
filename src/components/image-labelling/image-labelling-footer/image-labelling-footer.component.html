@@ -1,20 +1,27 @@
+<!-------------------------- Footer Container -------------------------->
+
 <div class="footer-container">
     <ng-container *ngIf="(_thumbnailInfo | json) != '{}'">
         <div class="footer-label-container">
+            <!-------------------------- Project Name -------------------------->
             <div class="footer-label footer-project-name">
                 {{ 'footer.projectName' | translate }}:
                 {{ _thumbnailInfo.project_name }}
             </div>
+            <!-------------------------- Image Size-------------------------->
             <div class="footer-label">{{ 'footer.size' | translate }}: {{ thumbnailSize }}</div>
+            <!-------------------------- Image Type -------------------------->
             <ng-container *ngIf="thumbnailType">
                 <div class="footer-label">{{ 'footer.image' | translate }}: {{ thumbnailType }}</div></ng-container
             >
+            <!-------------------------- Image Resolution-------------------------->
             <div class="footer-label">{{ _thumbnailInfo.img_ori_w }} x {{ _thumbnailInfo.img_ori_h }}</div>
+            <!-------------------------- Image Path -------------------------->
             <div class="footer-image-path" [title]="'footer.copyToClipboard' | translate">
                 <label class="footer-path-label" (click)="copyMessage(_thumbnailInfo.img_path)">{{
                     _thumbnailInfo.img_path
                 }}</label>
             </div>
-        </div></ng-container
-    >
+        </div>
+    </ng-container>
 </div>

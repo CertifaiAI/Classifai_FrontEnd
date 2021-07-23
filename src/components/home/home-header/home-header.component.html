@@ -1,13 +1,21 @@
+<!-------------------------- Classifai Logo -------------------------->
+
 <header class="flex-header header-container">
     <div class="div-header-container">
         <img class="header-img" [src]="headerImage" alt="Classifai logo" />
     </div>
 </header>
+
+<!-------------------------- Classifai Version -------------------------->
+
 <div class="version-container">
     <div class="version-text">
         <p>Version: 2.0.0 alpha1</p>
     </div>
 </div>
+
+<!-------------------------- Translation Options -------------------------->
+
 <div class="share" (mouseenter)="showLangOpts()" (mouseleave)="hideLangOpts()">
     <ul>
         <div class="toggle">{{ _translate.currentLang | languageSlice }}</div>

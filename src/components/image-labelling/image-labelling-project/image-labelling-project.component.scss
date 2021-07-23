@@ -3,6 +3,24 @@
 @use 'shared/scss/ellipsis' as ellipsis;
 @use 'shared/scss/indicator' as indicator;
 
+.flex-content {
+    display: flex;
+    flex-flow: column;
+    height: 33%;
+    min-height: 10%;
+    flex-shrink: 0;
+    flex-grow: 0;
+    resize: vertical;
+}
+
+.closed {
+    display: none;
+}
+
+/*-------------------------------------------*\
+    Tab Container
+\*-------------------------------------------*/
+
 @mixin tab-after() {
     position: absolute;
     content: '';
@@ -64,23 +82,9 @@
     flex: 1 1 auto;
 }
 
-.flex-content {
-    display: flex;
-    flex-flow: column;
-    height: 33%;
-    min-height: 10%;
-    flex-shrink: 0;
-    flex-grow: 0;
-    resize: vertical;
-}
-
-.tab-name {
-    font-size: 1.7vh;
-    padding: 0.5vw 2vw 0 1vw;
-    display: inline-block;
-    color: white;
-    position: absolute;
-}
+/*-------------------------------------------*\
+    Tab Header
+\*-------------------------------------------*/
 
 @mixin tab-close-styling {
     float: right;
@@ -93,6 +97,19 @@
     text-align: center;
     display: inline-grid;
     padding-bottom: 1vh;
+}
+
+.tab-name {
+    font-size: 1.7vh;
+    padding: 0.5vw 2vw 0 1vw;
+    display: inline-block;
+    color: white;
+    position: absolute;
+}
+
+.flex-tab-icons {
+    display: flex;
+    width: 100%;
 }
 
 .tab-close-thumbnailless {
@@ -117,6 +134,10 @@
     }
 }
 
+/*-------------------------------------------*\
+    Tab Containers
+\*-------------------------------------------*/
+
 .utility-inner-container {
     padding: 2.5vh 0 0 0.2vw;
     scroll-behavior: smooth;
@@ -124,14 +145,6 @@
     z-index: 100;
     min-width: 15.5vw;
     max-width: 15.5vw;
-}
-
-.tab-height {
-    height: 85%;
-}
-
-.tab-smaller-height {
-    height: 60%;
 }
 
 .scroll {
@@ -145,6 +158,50 @@
         @include scrollbar.scrollbar-thumb(color.$greyColor);
     }
 }
+
+/*-------------------------------------------*\
+    Project & Label Tab Containers
+\*-------------------------------------------*/
+
+.tab-height {
+    height: 85%;
+}
+
+/*-------------------------------------------*\
+    Label & Annotation Tab Containers
+\*-------------------------------------------*/
+
+.flex-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 1.5vh;
+    color: white;
+    @include ellipsis.ellipsis-styling();
+}
+
+.flex-center-width {
+    display: flex;
+    justify-content: center;
+    width: 90%;
+    flex-wrap: wrap;
+}
+
+.label-active,
+.annotation-active {
+    border: 0.15vw solid yellow;
+}
+
+.delete-annotation,
+.delete-label {
+    position: absolute;
+    right: 2vw;
+}
+
+/*-------------------------------------------*\
+    Project Tab Containers
+\*-------------------------------------------*/
 
 .img-container {
     font-size: 1.5vh;
@@ -168,6 +225,14 @@
     background: #555;
 }
 
+.img-skeleton {
+    max-height: 4.3vh;
+    min-height: 4.3vh;
+    min-width: 3vw;
+    max-width: 3vw;
+    border: 0.005vh color.$greyColor dotted;
+}
+
 .img {
     max-height: 4.3vh;
     min-height: 4.3vh;
@@ -177,61 +242,42 @@
     display: block;
 }
 
-.img-skeleton {
-    max-height: 4.3vh;
-    min-height: 4.3vh;
-    min-width: 3vw;
-    max-width: 3vw;
-    border: 0.005vh color.$greyColor dotted;
-}
-
 .img-name {
     margin-left: 0.5vw;
     @include ellipsis.ellipsis-styling();
     width: 100%;
 }
 
-.closed {
-    display: none;
+.img-path {
+    margin-top: 4vh;
 }
 
-.flex-item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    font-size: 1.5vh;
-    color: white;
-    @include ellipsis.ellipsis-styling();
+.thumbnail-actions {
+    text-align: end;
+    padding-right: 1vw;
+    width: 10vw;
 }
 
-.flex-center-width {
-    display: flex;
-    justify-content: center;
-    width: 90%;
-    flex-wrap: wrap;
+.thumbnail-actions-icon {
+    border-radius: 50%;
+    padding: 0.2vh;
 }
 
-.label {
-    flex: 1 1 80%;
-    display: flex;
-    justify-content: flex-start;
-    margin: 0.25vh 0 0.25vh 0;
+.thumbnail-actions-icon:hover {
+    background: #555;
 }
 
-.pointer {
-    cursor: pointer;
+.indicator {
+    @include indicator.indicator-styling(#75fe7c, relative);
 }
 
-.label-active,
-.annotation-active {
-    border: 0.15vw solid yellow;
+.no-indicator {
+    @include indicator.indicator-styling(#ffba54, relative);
 }
 
-.flex-tab-icons {
-    display: flex;
-    width: 100%;
-}
+/*-------------------------------------------*\
+    Label Search Field
+\*-------------------------------------------*/
 
 .div-input {
     display: flex;
@@ -257,16 +303,19 @@
     border: 0.2vw solid red;
 }
 
-.img-path {
-    margin-top: 4vh;
+/*-------------------------------------------*\
+    Label Tab Containers
+\*-------------------------------------------*/
+
+.label {
+    flex: 1 1 80%;
+    display: flex;
+    justify-content: flex-start;
+    margin: 0.25vh 0 0.25vh 0;
 }
 
-.indicator {
-    @include indicator.indicator-styling(#75fe7c, relative);
-}
-
-.no-indicator {
-    @include indicator.indicator-styling(#ffba54, relative);
+.pointer {
+    cursor: pointer;
 }
 
 .not-exist {
@@ -274,23 +323,10 @@
     color: #999;
 }
 
-.delete-annotation,
-.delete-label {
-    position: absolute;
-    right: 2vw;
-}
+/*-------------------------------------------*\
+    Annotation Tab Containers
+\*-------------------------------------------*/
 
-.thumbnail-actions {
-    text-align: end;
-    padding-right: 1vw;
-    width: 10vw;
-}
-
-.thumbnail-actions-icon {
-    border-radius: 50%;
-    padding: 0.2vh;
-}
-
-.thumbnail-actions-icon:hover {
-    background: #555;
+.tab-smaller-height {
+    height: 60%;
 }

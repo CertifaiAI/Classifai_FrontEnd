@@ -11,10 +11,18 @@
     border: 3px solid white;
 }
 
+/*-------------------------------------------*\
+    Label List Popup Container
+\*-------------------------------------------*/
+
 .floatdiv {
     position: absolute;
     z-index: 10000;
 }
+
+/*-------------------------------------------*\
+    Label Search/ OCR Input
+\*-------------------------------------------*/
 
 .lbltypetxt {
     width: 11vw;
@@ -29,6 +37,18 @@
     padding: 0;
     text-indent: 0.4vw;
 }
+
+.invalidInput {
+    border: 0.2vw solid red;
+}
+
+.validInput {
+    border: 0.2vw solid grey;
+}
+
+/*-------------------------------------------*\
+    Label List
+\*-------------------------------------------*/
 
 .availablelbl {
     background-color: black;
@@ -81,10 +101,19 @@
     font-size: 1.5vh;
 }
 
-.invalidInput {
-    border: 0.2vw solid red;
-}
+/*-------------------------------------------*\
+    Canvas
+\*-------------------------------------------*/
 
-.validInput {
-    border: 0.2vw solid grey;
+.canvasstyle {
+    position: fixed;
+    left: 2.2vw;
+    right: auto;
+    top: 8vh;
+    overflow: scroll;
+    scrollbar-width: none;
+    margin: 0px;
+    padding: 0px;
+    outline: none;
+    border: none;
 }

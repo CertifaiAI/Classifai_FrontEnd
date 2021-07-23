@@ -1,6 +1,10 @@
 @use 'shared/scss/variables' as color;
 @use 'shared/scss/scrollbar' as scrollbar;
 
+/*-------------------------------------------*\
+    Modal
+\*-------------------------------------------*/
+
 @mixin button-style() {
     line-height: 1vh;
     font-size: 1vw;
@@ -8,9 +12,6 @@
     background: #262a2e;
     color: azure;
 }
-
-/* MODAL STYLES
--------------------------------*/
 
 .modal {
     position: absolute;
@@ -34,16 +35,6 @@
     z-index: 2000;
 }
 
-.modal-body-height {
-    min-height: 75%;
-    max-height: 80%;
-}
-
-.modal-body-width {
-    min-width: 50%;
-    max-width: 50%;
-}
-
 .modal-header-container {
     display: flex;
     flex-direction: row;
@@ -53,6 +44,11 @@
     padding: 0.5vw;
     background: #262a2e;
     color: azure;
+}
+
+.modal-title {
+    text-indent: 0.5vw;
+    padding-left: 0.2vw;
 }
 
 .modal-button {
@@ -66,6 +62,40 @@
 
 .float-right {
     float: right;
+}
+
+/*-------------------------------------------*\
+    Modal Background
+\*-------------------------------------------*/
+
+.modal-background {
+    /* modal background fixed across whole screen */
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    /* semi-transparent black  */
+    background-color: #000;
+    opacity: 0.75;
+
+    /* z-index must be below .jw-modal and above everything else  */
+    // z-index: 1000;
+}
+
+/*-------------------------------------------*\
+    Modal Styling
+\*-------------------------------------------*/
+
+.modal-body-height {
+    min-height: 75%;
+    max-height: 80%;
+}
+
+.modal-body-width {
+    min-width: 50%;
+    max-width: 50%;
 }
 
 .modal-body-margin {
@@ -84,22 +114,6 @@
     &::-webkit-scrollbar-thumb {
         @include scrollbar.scrollbar-thumb(color.$greyColor);
     }
-}
-
-.modal-background {
-    /* modal background fixed across whole screen */
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-
-    /* semi-transparent black  */
-    background-color: #000;
-    opacity: 0.75;
-
-    /* z-index must be below .jw-modal and above everything else  */
-    // z-index: 1000;
 }
 
 body.modal-open {

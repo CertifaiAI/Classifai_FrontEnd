@@ -2,6 +2,18 @@
 @use "shared/scss/icon" as icon;
 @use "shared/scss/variables" as color;
 
+@mixin footer-texts($flex) {
+    font-size: 1.6vh;
+    color: white;
+    outline: none;
+    border-right: 0.05vw solid white;
+    padding: 0 1vw 0 1vw;
+}
+
+/*-------------------------------------------*\
+    Footer Container
+\*-------------------------------------------*/
+
 .footer-container {
     position: absolute;
     background: #525353;
@@ -21,23 +33,27 @@
     width: 80%;
 }
 
-@mixin footer-texts($flex) {
-    font-size: 1.6vh;
-    color: white;
-    outline: none;
-    border-right: 0.05vw solid white;
-    padding: 0 1vw 0 1vw;
-}
+/*-------------------------------------------*\
+    All Footer Labels
+\*-------------------------------------------*/
 
 .footer-label {
     @include footer-texts(15%);
     text-align: left;
 }
 
+/*-------------------------------------------*\
+    Project Name Label
+\*-------------------------------------------*/
+
 .footer-project-name {
     @include ellipsis.ellipsis-styling();
     max-width: 20vw;
 }
+
+/*-------------------------------------------*\
+    Image Path Label
+\*-------------------------------------------*/
 
 .footer-image-path {
     display: flex;

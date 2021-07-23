@@ -1,10 +1,14 @@
+<!-------------------------- Page Header Container -------------------------->
 <div class="header-container">
+    <!-------------------------- Left Side Page Header -------------------------->
     <div class="container-flex-start">
+        <!-------------------------- Classifai Logo -------------------------->
         <div class="logo-container">
             <img [src]="logoSrc" class="logo position-absolute" alt="logo" title="Classifai" />
         </div>
-        <ng-container *ngFor="let label of headerLabels; let last = last"
-            ><div *ngIf="!label.disable">
+        <!-------------------------- Navigations -------------------------->
+        <ng-container *ngFor="let label of headerLabels; let last = last">
+            <div *ngIf="!label.disable">
                 <a class="link" [routerLink]="label.url">
                     <div
                         class="btn-container"
@@ -31,6 +35,7 @@
             </div>
         </ng-container>
     </div>
+    <!-------------------------- Right Side Page Header -------------------------->
     <div class="container-flex-end">
         <ng-container *ngFor="let logo of jsonSchema.logos; index as i">
             <div class="utility-icon-container">

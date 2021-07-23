@@ -14,6 +14,7 @@
         <data-set-header (selectedKey)="keyIsSelected($event)" [_enableSort]="enableSort"></data-set-header>
         <data-set-card
             [_jsonSchema]="projectList"
+            [_projectType]="projectType"
             (_onClick)="onSubmit(false, $event)"
             (_onStarred)="onStarred($event)"
             (_onDelete)="deleteProject($event)"

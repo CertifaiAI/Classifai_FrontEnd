@@ -1,0 +1,28 @@
+/*-------------------------------------------*\
+    No Project Container
+\*-------------------------------------------*/
+
+.no-project-card-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #1f1f1f;
+    width: 100%;
+}
+
+.no-project-title-padding {
+    padding: 2vw;
+}
+
+.no-project-title {
+    font-size: 4vh;
+    color: white;
+    white-space: nowrap;
+}
+
+.no-project-subtitle {
+    font-size: 2vh;
+    color: #bebebe;
+    white-space: nowrap;
+}

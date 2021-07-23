@@ -1,20 +1,34 @@
-.canvasstyle {
-    position: fixed;
-    left: 2.2vw;
-    right: auto;
-    top: 8vh;
-    overflow: scroll;
-    scrollbar-width: none;
-    margin: 0px;
-    padding: 0px;
-    outline: none;
-    border: none;
-}
+/*-------------------------------------------*\
+    Label List Popup Container
+\*-------------------------------------------*/
 
 .floatdiv {
     position: absolute;
     z-index: 10000;
 }
+
+/*-------------------------------------------*\
+    Label Search Input
+\*-------------------------------------------*/
+
+.lbltypetxt {
+    width: 11vw;
+    height: 4vh;
+    color: snow;
+    font-size: 2vh;
+    // font-weight: bold;
+    border: 0.2vw solid gray;
+    background-color: black;
+    outline: none;
+    border-radius: 0.2vh;
+    border-bottom: none;
+    padding: 0;
+    text-indent: 0.4vw;
+}
+
+/*-------------------------------------------*\
+    Label List
+\*-------------------------------------------*/
 
 .availablelbl {
     background-color: black;
@@ -67,17 +81,19 @@
     font-size: 1.5vh;
 }
 
-.lbltypetxt {
-    width: 11vw;
-    height: 4vh;
-    color: snow;
-    font-size: 2vh;
-    // font-weight: bold;
-    border: 0.2vw solid gray;
-    background-color: black;
+/*-------------------------------------------*\
+    Canvas
+\*-------------------------------------------*/
+
+.canvasstyle {
+    position: fixed;
+    left: 2.2vw;
+    right: auto;
+    top: 8vh;
+    overflow: scroll;
+    scrollbar-width: none;
+    margin: 0px;
+    padding: 0px;
     outline: none;
-    border-radius: 0.2vh;
-    border-bottom: none;
-    padding: 0;
-    text-indent: 0.4vw;
+    border: none;
 }

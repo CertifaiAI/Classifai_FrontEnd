@@ -1,5 +1,7 @@
 <div>
+    <!-------------------------- Label List Popup Container -------------------------->
     <div #floatdiv class="floatdiv unclosedOut" [hidden]="!showDropdownLabelBox">
+        <!-------------------------- Label Search/ OCR Input -------------------------->
         <form autocomplete="off" spellcheck="false" class="unclosedOut">
             <input
                 #lbltypetxt
@@ -12,6 +14,7 @@
                 [ngModelOptions]="{ standalone: true }"
             />
         </form>
+        <!-------------------------- Label List -------------------------->
         <div #availablelbl class="availablelbl unclosedOut">
             <ul class="lblList unclosedOut">
                 <li
@@ -29,5 +32,6 @@
             </ul>
         </div>
     </div>
+    <!-------------------------- Canvas -------------------------->
     <canvas #canvasdrawing class="canvasstyle" [ngStyle]="{ cursor: currentCursor() }"></canvas>
 </div>
