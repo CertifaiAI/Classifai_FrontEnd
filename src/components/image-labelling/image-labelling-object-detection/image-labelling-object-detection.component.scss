@@ -1,3 +1,97 @@
+/*-------------------------------------------*\
+    Label List Popup Container
+\*-------------------------------------------*/
+
+.floatdiv {
+  position: absolute;
+  z-index: 10000;
+}
+
+/*-------------------------------------------*\
+    Label Search/ OCR Input
+\*-------------------------------------------*/
+
+.lbltypetxt {
+  width: 11vw;
+  height: 4vh;
+  color: snow;
+  font-size: 2vh;
+  border: 0.2vw solid gray;
+  background-color: black;
+  outline: none;
+  border-radius: 0.2vh;
+  border-bottom: none;
+  padding: 0;
+  text-indent: 0.4vw;
+}
+
+.invalidInput {
+  border: 0.2vw solid red;
+}
+
+.validInput {
+  border: 0.2vw solid grey;
+}
+
+/*-------------------------------------------*\
+    Label List
+\*-------------------------------------------*/
+
+.availablelbl {
+  background-color: black;
+  width: 11vw;
+  height: 15vh;
+  color: snow;
+  font-size: 2vh;
+  font-weight: bold;
+  border: 0.2vw solid gray;
+  outline: none;
+  border-radius: 0.2vh;
+  border-top: 0.1vh dotted snow;
+  overflow: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+      display: none;
+  }
+}
+
+.lblList {
+  padding: 0 0.2vw;
+}
+
+.lblElement {
+  list-style-type: none;
+  margin: 0.3vh 0;
+  padding: 0;
+  justify-content: space-between;
+  display: flex;
+  &:hover {
+      background-color: #111;
+  }
+}
+
+.lblName {
+  margin-left: 0.2vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lblCount {
+  background-color: #222;
+  margin-right: 0.2vw;
+  padding: 0.1vh 0.2vw;
+  border-radius: 0.2vw;
+}
+
+.notExist {
+  color: #999;
+  font-size: 1.5vh;
+}
+
+/*-------------------------------------------*\
+    Canvas
+\*-------------------------------------------*/
+
 .canvasstyle {
     position: fixed;
     left: 2.2vw;
@@ -9,82 +103,4 @@
     padding: 0px;
     outline: none;
     border: none;
-}
-
-.floatdiv {
-    position: absolute;
-    z-index: 10000;
-}
-
-.lbltypetxt {
-    width: 11vw;
-    height: 4vh;
-    color: snow;
-    font-size: 2vh;
-    border: 0.2vw solid gray;
-    background-color: black;
-    outline: none;
-    border-radius: 0.2vh;
-    border-bottom: none;
-    padding: 0;
-    text-indent: 0.4vw;
-}
-
-.availablelbl {
-    background-color: black;
-    width: 11vw;
-    height: 15vh;
-    color: snow;
-    font-size: 2vh;
-    font-weight: bold;
-    border: 0.2vw solid gray;
-    outline: none;
-    border-radius: 0.2vh;
-    border-top: 0.1vh dotted snow;
-    overflow: auto;
-    scrollbar-width: none;
-    &::-webkit-scrollbar {
-        display: none;
-    }
-}
-
-.lblList {
-    padding: 0 0.2vw;
-}
-
-.lblElement {
-    list-style-type: none;
-    margin: 0.3vh 0;
-    padding: 0;
-    justify-content: space-between;
-    display: flex;
-    &:hover {
-        background-color: #111;
-    }
-}
-
-.lblName {
-    margin-left: 0.2vw;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.lblCount {
-    background-color: #222;
-    margin-right: 0.2vw;
-    padding: 0.1vh 0.2vw;
-    border-radius: 0.2vw;
-}
-
-.notExist {
-    color: #999;
-    font-size: 1.5vh;
-}
-
-.invalidInput {
-    border: 0.2vw solid red;
-}
-
-.validInput {
-    border: 0.2vw solid grey;
 }

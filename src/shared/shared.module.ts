@@ -21,6 +21,7 @@ import { ModalModule } from 'shared/components/modal/modal.module';
 import { PageHeaderModule } from 'shared/components/page-header/page-header.module';
 import { SpinnerModule } from 'shared/components/spinner/spinner.module';
 import { UnsupportedImageModalModule } from 'shared/components/unsupported-image-modal/unsupported-image-modal.module';
+import { EmptyContainerModule } from './components/empty-container/empty-container.module';
 
 // AoT requires an exported function for factories
 export const httpLoaderFactory = (httpClient: HttpClient) => {
@@ -42,6 +43,7 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
         SpinnerModule,
         ToastrModule,
         PageHeaderModule,
+        EmptyContainerModule,
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,
@@ -59,6 +61,7 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
         SpinnerModule,
         ToastrModule,
         PageHeaderModule,
+        EmptyContainerModule,
         FormsModule,
         ReactiveFormsModule,
         TranslateModule,

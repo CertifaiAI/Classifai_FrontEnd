@@ -2,12 +2,20 @@ $normalBackground: #525353;
 $hoveredBackground: #393838;
 $activeBackground: #313131;
 
+/*-------------------------------------------*\
+    Side Menu Container
+\*-------------------------------------------*/
+
 .dataset-sidemenu-container {
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
     width: 16vw;
 }
+
+/*-------------------------------------------*\
+    Create New Project Button
+\*-------------------------------------------*/
 
 .new-project-container {
     margin-bottom: 5vh;
@@ -50,7 +58,11 @@ $activeBackground: #313131;
     white-space: nowrap;
 }
 
-.current-project-btn {
+/*-------------------------------------------*\
+    Other Menu Button
+\*-------------------------------------------*/
+
+.project-btn {
     color: white;
     cursor: pointer;
     display: flex;
@@ -78,7 +90,7 @@ $activeBackground: #313131;
     flex: 1 1 10%;
 }
 
-.current-project-txt {
+.project-txt {
     border: none;
     background: none;
     outline: none;
