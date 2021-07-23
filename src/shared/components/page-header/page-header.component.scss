@@ -1,3 +1,6 @@
+/*-------------------------------------------*\
+    Page Header Container
+\*-------------------------------------------*/
 .header-container {
     min-width: 100vw;
     max-width: 100vw;
@@ -11,19 +14,25 @@
     position: relative;
 }
 
+/*-------------------------------------------*\
+    Left Side Page Header
+\*-------------------------------------------*/
+
 .container-flex-start {
     display: flex;
 }
 
-.container-flex-end {
-    display: flex;
-    min-width: 6.5vw;
-    max-width: 6.5vw;
-}
+/*-------------------------------------------*\
+    Classiai Logo
+\*-------------------------------------------*/
 
 .logo-container {
     min-width: 2.15vw;
     max-width: 2.15vw;
+}
+
+.position-absolute {
+    position: absolute;
 }
 
 .logo,
@@ -35,26 +44,17 @@
     padding: 0.32vw;
 }
 
-.utility-icon-light {
-    cursor: pointer;
+/*-------------------------------------------*\
+    Navigations
+\*-------------------------------------------*/
+
+.link {
+    text-decoration: none;
+    color: white;
 }
 
-.utility-icon-light:active {
-    background: rgb(105, 105, 105);
-}
-
-.img {
-    margin-left: 4.2vw;
-}
-
-.position-absolute {
-    position: absolute;
-}
-
-.utility-icon-container {
-    display: flex;
-    min-height: 3.4vh;
-    max-height: 3.4vh;
+.active-link {
+    background: #383535;
 }
 
 .btn-container {
@@ -77,11 +77,6 @@
     border-right: 0.0625vw solid rgb(255, 255, 255, 0.25);
 }
 
-.link {
-    text-decoration: none;
-    color: white;
-}
-
 .label {
     white-space: nowrap;
     border: none;
@@ -89,6 +84,30 @@
     cursor: pointer;
 }
 
-.active-link {
-    background: #383535;
+/*-------------------------------------------*\
+    Right Side Page Header
+\*-------------------------------------------*/
+
+.container-flex-end {
+    display: flex;
+    min-width: 6.5vw;
+    max-width: 6.5vw;
+}
+
+.utility-icon-container {
+    display: flex;
+    min-height: 3.4vh;
+    max-height: 3.4vh;
+}
+
+.img {
+    margin-left: 4.2vw;
+}
+
+.utility-icon-light {
+    cursor: pointer;
+}
+
+.utility-icon-light:active {
+    background: rgb(105, 105, 105);
 }
