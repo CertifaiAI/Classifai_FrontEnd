@@ -34,6 +34,7 @@ import {
     UndoState,
     Direction,
 } from 'shared/types/image-labelling/image-labelling.model';
+import { SharedUndoRedoService } from 'shared/services/shared-undo-redo.service';
 import { MouseCursorState, MousrCursorService } from 'shared/services/mouse-cursor.service';
 import { ZoomState, ZoomService, WheelDelta } from 'shared/services/zoom.service';
 import { CopyPasteService } from 'shared/services/copy-paste.service';
@@ -89,6 +90,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         private _zoomService: ZoomService,
         private _mouseCursorService: MousrCursorService,
         private _shortcutKeyService: ShortcutKeyService,
+        private _sharedUndoRedoService: SharedUndoRedoService
     ) {}
 
     ngOnInit() {
@@ -132,6 +134,17 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         this._mouseCursorService.mouseCursor$
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe((state) => (this.mouseCursor = state));
+
+        this._sharedUndoRedoService.action.subscribe((message) => {
+            switch (message) {
+              case 'BBOX_UNDO':
+                this.undoAction();
+                break;
+              case 'BBOX_REDO':
+                this.redoAction();
+                break;
+            }
+        });
     }
 
     ngOnChanges(changes: SimpleChanges): void {

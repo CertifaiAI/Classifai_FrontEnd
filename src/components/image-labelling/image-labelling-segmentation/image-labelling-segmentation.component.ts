@@ -38,6 +38,7 @@ import { MouseCursorState, MousrCursorService } from 'shared/services/mouse-curs
 import { ShortcutKeyService } from 'shared/services/shortcut-key.service';
 import { UndoRedoService } from 'shared/services/undo-redo.service';
 import { ZoomState, ZoomService, WheelDelta } from 'shared/services/zoom.service';
+import { SharedUndoRedoService } from 'shared/services/shared-undo-redo.service';
 import { SegmentationCanvasService } from './segmentation-canvas.service';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
 
@@ -82,6 +83,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         private _zoomService: ZoomService,
         private _mouseCursorService: MousrCursorService,
         private _shortcutKeyService: ShortcutKeyService,
+        private _sharedUndoRedoService: SharedUndoRedoService
     ) {}
 
     ngOnInit(): void {
@@ -121,6 +123,17 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         this._mouseCursorService.mouseCursor$
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe((state) => (this.mouseCursor = state));
+
+        this._sharedUndoRedoService.action.subscribe((message) => {
+            switch (message) {
+              case 'SEG_UNDO':
+                this.undoAction();
+                break;
+              case 'SEG_REDO':
+                this.redoAction();
+                break;
+            }
+        });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
