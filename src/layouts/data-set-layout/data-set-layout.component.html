@@ -1,5 +1,5 @@
 <div *ngIf="isOverlayOn" class="overlay">
-    <p style="margin-top: 40vh; color: rgb(255, 255, 255, 0.9); text-align: center; font-size: 3vh">
+    <p class="overlay-text">
         {{ isImageUploading ? 'Uploading the Images. Please Wait...' : 'Selection Window is Opened' }}
     </p>
 </div>
@@ -82,7 +82,7 @@
                             alt="info"
                         />
                     </label>
-                    <div style="padding-top: 1vh">
+                    <div class="pad-top-1">
                         <button class="button-file-style choose-file-button" type="button" (click)="importLabelFile()">
                             {{ 'chooseFile' | translate }}
                         </button>
@@ -192,7 +192,7 @@
                         </span>
                     </div>
                 </ng-container>
-                <div style="padding-bottom: 2vh"></div>
+                <div class="pad-bot-2"></div>
                 <div class="horizontal-line"></div>
             </div>
         </form>

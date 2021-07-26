@@ -23,13 +23,12 @@
             <div *ngIf="label.disable">
                 <a class="link">
                     <div
-                        class="btn-container"
-                        style="cursor: not-allowed"
+                        class="btn-container not-allowed"
                         [ngClass]="{ 'last-btn-container': last }"
                         routerLinkActive="active-link"
                         [routerLinkActiveOptions]="{ exact: true }"
                     >
-                        <label class="label" style="cursor: not-allowed">{{ label.name | translate }}</label>
+                        <label class="label not-allowed">{{ label.name | translate }}</label>
                     </div></a
                 >
             </div>

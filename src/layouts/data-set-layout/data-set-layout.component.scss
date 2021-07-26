@@ -1,5 +1,12 @@
 $fontSize: 2vh;
 
+.overlay-text {
+    margin-top: 40vh;
+    color: rgb(255, 255, 255, 0.9);
+    text-align: center;
+    font-size: 3vh
+}
+
 .upper-container {
     display: flex;
     margin-top: 5vh;
@@ -124,6 +131,10 @@ $fontSize: 2vh;
     font-size: $fontSize;
 }
 
+.pad-top-1 {
+  padding-top: 1vh;
+}
+
 .button-file-style {
     padding: 1vh 1.5vw 1vh 1.5vw;
     border-radius: 1vh;
@@ -246,4 +257,8 @@ $fontSize: 2vh;
 .display-msg {
     font-size: 2vh;
     color: white;
+}
+
+.pad-bot-2 {
+    padding-bottom: 2vh;
 }
