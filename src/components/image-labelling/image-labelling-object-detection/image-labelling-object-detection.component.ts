@@ -55,6 +55,9 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @ViewChild('floatdiv') floatdiv!: ElementRef<HTMLDivElement>;
     @ViewChild('lbltypetxt') lbltypetxt!: ElementRef<HTMLInputElement>;
     @ViewChild('availablelbl') availablelbl!: ElementRef<HTMLDivElement>;
+    @ViewChild('crossH') crossH!: ElementRef<HTMLDivElement>;
+    @ViewChild('crossV') crossV!: ElementRef<HTMLDivElement>;
+
     private canvasContext!: CanvasRenderingContext2D;
     private image: HTMLImageElement = new Image();
     private mousedown: boolean = false;
@@ -434,6 +437,15 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this._selectMetadata,
                     event,
                 );
+                if (mouseWithinPointPath && !this.showDropdownLabelBox && this.boundingBoxState.draw) {
+                    this.crossH.nativeElement.style.visibility = 'visible';
+                    this.crossV.nativeElement.style.visibility = 'visible';
+                    this.crossH.nativeElement.style.top = event.pageY.toString() + 'px';
+                    this.crossV.nativeElement.style.left = event.pageX.toString() + 'px';
+                } else {
+                    this.crossH.nativeElement.style.visibility = 'hidden';
+                    this.crossV.nativeElement.style.visibility = 'hidden';
+                }
                 if (mouseWithinPointPath && !this.showDropdownLabelBox) {
                     if (this.boundingBoxState.drag && this.mousedown) {
                         const diff = this._boundingBoxCanvas.getDiffXY(event);
@@ -501,6 +513,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             }
                             // 7. Else
                             else {
+                                this.crossH.nativeElement.style.visibility = 'hidden';
+                                this.crossV.nativeElement.style.visibility = 'hidden';
                                 this.changeMouseCursorState({ move: true });
                             }
                         } else {
@@ -574,6 +588,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('mouseout', ['$event'])
     mouseOut(event: MouseEvent) {
         try {
+            this.crossH.nativeElement.style.visibility = 'hidden';
+            this.crossV.nativeElement.style.visibility = 'hidden';
             if (this.boundingBoxState.draw && this.mousedown) {
                 this.finishDrawBoundingBox(event);
             }
