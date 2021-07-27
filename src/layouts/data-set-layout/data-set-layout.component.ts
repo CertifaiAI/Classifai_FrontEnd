@@ -111,7 +111,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
     deleteProjectBodyStyle: ModalBodyStyle = {
         minHeight: '11vh',
-        maxHeight: '11vh',
         minWidth: '31vw',
         maxWidth: '31vw',
         margin: '15vw 71vh',
@@ -622,24 +621,29 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     deleteProject = (projectName: string): void => {
-        const deleteProj$ = this._dataSetService.deleteProject(projectName);
-
-        deleteProj$
-            .pipe(
-                first(),
-                map(({ message }) => message),
-            )
-            .subscribe((message) => {
-                if (message === 1) {
-                    this._languageService._translate.get('deleteSuccess').subscribe((translated) => {
-                        this.isDeleteSuccess = true;
-                        this.projectName = projectName;
-                        this._modalService.open(this.modalIdDeleteProject);
-                    });
-                    this.showProjectList(this.projectType);
-                }
-            });
+      this.isDeleteSuccess = false;
+      this.projectName = projectName;
+      this._languageService._translate.get('deleteSuccess').subscribe((translated) => {
+        this.projectName = projectName;
+        this._modalService.open(this.modalIdDeleteProject);
+    });
     };
+
+    confirmDeleteProject = (): void => {
+      const deleteProj$ = this._dataSetService.deleteProject(this.projectName);
+
+      deleteProj$
+          .pipe(
+              first(),
+              map(({ message }) => message),
+          )
+          .subscribe((message) => {
+              if (message === 1) {
+                  this.isDeleteSuccess = true;
+                  this.showProjectList(this.projectType);
+              }
+          });
+    }
 
     @HostListener('window:keydown', ['$event'])
     keyDownEvent = ({ key }: KeyboardEvent): void => {
