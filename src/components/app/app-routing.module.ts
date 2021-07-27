@@ -14,6 +14,11 @@ const imgLabellingLayout: LoadChildren = () =>
         ({ ImageLabellingLayoutModule }) => ImageLabellingLayoutModule,
     );
 
+const videoLabellingLayout: LoadChildren = () =>
+    import('../../layouts/video-labelling-layout/video-labelling-layout.module').then(
+        ({ VideoLabellingLayoutModule }) => VideoLabellingLayoutModule,
+    );
+
 const routes: Routes = [
     { path: '', component: HomeLayoutComponent },
     {
@@ -33,10 +38,7 @@ const routes: Routes = [
     },
     {
         path: 'videolbl/bndbox',
-        loadChildren: () =>
-            import('../../layouts/video-labelling-layout/video-labelling-layout.module').then(
-                ({ VideoLabellingLayoutModule }) => VideoLabellingLayoutModule,
-            ),
+        loadChildren: videoLabellingLayout,
     },
     { path: '**', component: PageNotFoundComponent },
 ];

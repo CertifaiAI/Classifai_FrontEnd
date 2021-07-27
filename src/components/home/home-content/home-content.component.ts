@@ -40,9 +40,8 @@ export class HomeContentComponent {
                     logoAlt: 'image',
                 },
                 {
-                    enabled: false,
-                    urlPath: '',
-                    hoverLabel: 'comingSoon',
+                    enabled: true,
+                    urlPath: '/videolbl/bndbox',
                     title: 'video',
                     imgPath: 'assets/landing-page/Classifai_Thumbnail_Video.jpg',
                     imgAlt: 'video',

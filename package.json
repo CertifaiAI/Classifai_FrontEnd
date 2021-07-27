@@ -1,6 +1,7 @@
 {
     "name": "classifai",
     "version": "0.0.0",
+    "main": "main.js",
     "scripts": {
         "format:prettier": "./node_modules/.bin/prettier --write src/**/*.{js,ts,json,css,scss,md}",
         "start:dev": "nodemon -w ./webpack.config.js --exec \"ng s --hmr --extra-webpack-config webpack.config.js\"",
@@ -11,7 +12,8 @@
         "analyze:stats": "npm run analyze",
         "test": "ng test",
         "lint": "ng lint",
-        "e2e": "ng e2e"
+        "e2e": "ng e2e",
+        "start-electron": "electron ."
     },
     "private": true,
     "dependencies": {
@@ -46,6 +48,7 @@
         "@types/lodash-es": "^4.17.3",
         "@types/node": "^12.11.1",
         "codelyzer": "^6.0.0",
+        "electron": "^13.1.7",
         "husky": "^4.2.5",
         "jasmine-core": "~3.6.0",
         "jasmine-spec-reporter": "~5.0.0",

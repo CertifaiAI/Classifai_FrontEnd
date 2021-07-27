@@ -1,9 +1,5 @@
 import { Injectable } from '@angular/core';
-
-enum VideoToFramesMethod {
-    fps,
-    totalFrames,
-}
+import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 
 @Injectable({
     providedIn: 'root',
@@ -11,58 +7,61 @@ enum VideoToFramesMethod {
 export class FrameExtractionService {
     constructor() {}
 
-    /**
-     * Extracts frames from the video and returns them as an array of imageData
-     * @param videoUrl url to the video file (html5 compatible format) eg: mp4
-     * @param amount number of frames per second or total number of frames that you want to extract
-     * @param type [fps, totalFrames] The method of extracting frames: Number of frames per second of video or the total number of frames acros the whole video duration. defaults to fps
-     */
-    getFrames(
-        videoUrl: string,
-        amount: number,
-        type: VideoToFramesMethod = VideoToFramesMethod.fps,
-    ): Promise<ImageData[]> {
-        return new Promise((resolve: (frames: ImageData[]) => void, reject: (error: string) => void) => {
-            let frames: ImageData[] = [];
-            let canvas: HTMLCanvasElement = document.createElement('canvas');
-            let context: CanvasRenderingContext2D = (canvas.getContext('2d') as unknown) as CanvasRenderingContext2D;
-            let duration: number;
+    videoToFrame = async (fps: number) => {
+        const bolbList = [];
+        const videoSrc = '';
 
-            let video = document.createElement('video');
-            video.preload = 'auto';
-            let that = this;
-            video.addEventListener('loadeddata', async function () {
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                duration = video.duration;
-
-                let totalFrames: number = amount;
-                if (type === VideoToFramesMethod.fps) {
-                    totalFrames = duration * amount;
-                }
-                for (let time = 0; time < duration; time += duration / totalFrames) {
-                    frames.push(await that.getVideoFrame(video, context, time));
-                }
-                resolve(frames);
-            });
-            video.src = videoUrl;
-            video.load();
+        const ffmpeg = createFFmpeg({
+            // corePath: '',
+            log: true,
+            logger: (options) => console.log('logger: ', options),
+            progress: (options) => console.log('progress: ', options),
         });
-    }
 
-    getVideoFrame(video: HTMLVideoElement, context: CanvasRenderingContext2D, time: number): Promise<ImageData> {
-        return new Promise((resolve: (frame: ImageData) => void, reject: (error: string) => void) => {
-            let eventCallback = () => {
-                video.removeEventListener('seeked', eventCallback);
-                this.storeFrame(video, context, resolve);
-            };
-            video.addEventListener('seeked', eventCallback);
-            video.currentTime = time;
-        });
-    }
+        if (videoSrc) {
+            await ffmpeg.load();
+            const video = videoSrc;
+            if (video) {
+                ffmpeg.FS('writeFile', `in_%02d.mp4`, await fetchFile(video));
 
-    storeFrame(video: HTMLVideoElement, context: CanvasRenderingContext2D, resolve: (frame: ImageData) => void) {
-        context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-        resolve(context.getImageData(0, 0, video.videoWidth, video.videoHeight));
-    }
+                /**
+                 * !! for -qscale:v flag
+                 * https://stackoverflow.com/questions/10225403/how-can-i-extract-a-good-quality-jpeg-image-from-a-video-file-with-ffmpeg
+                 **/
+                // await ffmpeg.run('-i', `in_%02d.mp4`, '-qscale:v', '2', '-vf', 'fps=1', `out_%03d.jpg`);
+                await ffmpeg.run(
+                    '-i',
+                    `in_%02d.mp4`,
+                    '-qscale:v',
+                    '2',
+                    // '-vf',
+                    // 'fps=1',
+                    // '-frame_pts',
+                    // 'true',
+                    '-vf',
+                    `fps=${fps}`,
+                    `out_%03d.jpg`,
+                    // '>',
+                    // 'log.txt',
+                );
+                // setMessage('Complete decoding');
+
+                for (let m = 1; ; m++) {
+                    try {
+                        const indexCount = String(m).padStart(3, '0');
+                        const data = ffmpeg.FS('readFile', `out_${indexCount}.jpg`);
+                        const url = URL.createObjectURL(new Blob([data.buffer], { type: 'image/jpg' }));
+                        ffmpeg.FS('unlink', `out_${indexCount}.jpg`);
+                        bolbList.push({
+                            frameURL: url,
+                        });
+                    } catch (e) {
+                        // exit the loop
+                        break;
+                    }
+                }
+                return bolbList;
+            }
+        }
+    };
 }

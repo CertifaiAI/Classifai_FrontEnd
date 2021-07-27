@@ -13,6 +13,7 @@ import {
 } from '@angular/core';
 import { Subject, timer } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { FrameExtractionService } from '../video-frame-extraction.service';
 import { VideoLabellingActionService } from '../video-labelling-action.service';
 import { FrameArray, LabelledFrame } from '../video-labelling.modal';
 
@@ -22,128 +23,7 @@ import { FrameArray, LabelledFrame } from '../video-labelling.modal';
     styleUrls: ['./video-labelling-object-detection.component.scss'],
 })
 export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges, AfterViewInit {
-    totalFrameArr: FrameArray[] = [
-        {
-            frameURL: '../../../assets/video_img/1.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/2.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/3.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/4.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/5.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/6.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/7.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/8.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/9.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/10.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/11.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/12.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/13.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/14.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/15.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/16.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/17.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/18.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/19.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/20.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/21.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/22.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/23.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/24.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/25.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/26.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/27.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/28.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/29.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/30.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/1.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/2.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/3.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/4.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/5.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/6.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/7.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/8.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/9.jpg',
-        },
-        {
-            frameURL: '../../../assets/video_img/10.jpg',
-        },
-    ];
+    totalFrameArr: FrameArray[] = [];
 
     labelledFrame: LabelledFrame[] = [
         {
@@ -348,7 +228,10 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     locA: { x: number; y: number } | undefined;
     locB: { x: number; y: number } | undefined;
 
-    constructor(private _videoLblStateService: VideoLabellingActionService) {}
+    constructor(
+        private _videoLblStateService: VideoLabellingActionService,
+        private videoFrameExtractionService: FrameExtractionService,
+    ) {}
 
     ngOnInit() {
         this._videoLblStateService.action$
@@ -358,6 +241,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this.onEraseBoundingBox();
                 }
             });
+
+        this.totalFrameArr = this.videoFrameExtractionService.videoToFrame(30);
     }
 
     ngAfterViewInit(): void {
@@ -538,9 +423,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     @HostListener('mouseup', ['$event'])
     mouseUp(event: MouseEvent) {
-        // const points = this.canvasContext.canvas.getBoundingClientRect();
-        // console.log(points);
-        // console.log(event);
         this.locB = this.getMousePos(event);
         this.canvasContext.fillStyle = '#000000';
         this.canvasContext.rect(this.locA!.x, this.locA!.y, this.locB!.x - this.locA!.x, this.locB!.y - this.locA!.y);
