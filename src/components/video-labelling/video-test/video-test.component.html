@@ -1,0 +1,10 @@
+<div style="background-color: white">
+    <label for="file">Choose Video</label>
+    <input type="file" id="file" (change)="handleFileInput($event)" />
+    <button (click)="doDecode()">Start</button>
+    <!-- <button (click)="frameExtraction()">Test</button> -->
+    <hr />
+    <div *ngFor="let image of bolbList">
+        <img [src]="image | safeResourceUrl" alt="" />
+    </div>
+</div>
