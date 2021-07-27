@@ -1,14 +1,16 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { TabsProps } from '../video-labelling.modal';
+import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { TabsProps } from 'shared/types/image-labelling/image-labelling.model';
+import { isEqual } from 'lodash-es';
 
 @Component({
     selector: 'video-labelling-project',
     templateUrl: './video-labelling-project.component.html',
     styleUrls: ['./video-labelling-project.component.scss'],
 })
-export class VideoLabellingProjectComponent implements OnInit {
+export class VideoLabellingProjectComponent implements OnInit, OnChanges {
     @Input() _tabStatus: TabsProps[] = [];
     @Output() _onClose = new EventEmitter();
+    isTabStillOpen: boolean = true;
 
     constructor() {}
 
@@ -34,4 +36,21 @@ export class VideoLabellingProjectComponent implements OnInit {
         }
         return classes;
     };
+
+    checkStateEqual = (currObj: object, prevObj: object): boolean => !isEqual(currObj, prevObj);
+
+    ngOnChanges(changes: SimpleChanges): void {
+      if (
+          changes._tabStatus &&
+          this.checkStateEqual(changes._tabStatus.currentValue, changes._tabStatus.previousValue)
+      ) {
+          this.isTabStillOpen = false;
+          for (const { closed } of this._tabStatus) {
+              if (!closed) {
+                  this.isTabStillOpen = true;
+                  break;
+              }
+          }
+      }
+  }
 }
