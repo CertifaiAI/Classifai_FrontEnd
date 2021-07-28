@@ -23,7 +23,17 @@ import { FrameArray, LabelledFrame } from '../video-labelling.modal';
     styleUrls: ['./video-labelling-object-detection.component.scss'],
 })
 export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges, AfterViewInit {
-    totalFrameArr: FrameArray[] = [];
+    totalFrameArr: FrameArray[] = [
+        {
+            frameURL: '../../../assets/video_img/1.jpg',
+        },
+        {
+            frameURL: '../../../assets/video_img/2.jpg',
+        },
+        {
+            frameURL: '../../../assets/video_img/3.jpg',
+        },
+    ];
 
     labelledFrame: LabelledFrame[] = [
         {
@@ -242,13 +252,19 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 }
             });
 
-        this.totalFrameArr = this.videoFrameExtractionService.getBlobList();
+        // this.totalFrameArr = this.videoFrameExtractionService.getBlobList();
     }
 
     ngAfterViewInit(): void {
         this.initializeCanvas();
         this.activePreview.src = this.totalFrameArr[0].frameURL;
-        this.canvasContext.drawImage(this.activePreview, 0, 0);
+
+        /**
+         * https://stackoverflow.com/questions/37532790/typescript-class-drawimage/37534804#37534804
+         */
+        this.activePreview.onload = () => {
+            this.canvasContext.drawImage(this.activePreview, 0, 0);
+        };
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -302,8 +318,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         index > this.totalFrameArr.length
             ? (this.activePreview.src = '')
             : (this.activePreview.src = this.totalFrameArr[index].frameURL);
-        console.log(this.activePreview);
-        this.canvasContext.drawImage(this.activePreview, 0, 0);
+        this.activePreview.onload = () => {
+            this.canvasContext.drawImage(this.activePreview, 0, 0);
+        };
     };
 
     // clickPlay = () => {
