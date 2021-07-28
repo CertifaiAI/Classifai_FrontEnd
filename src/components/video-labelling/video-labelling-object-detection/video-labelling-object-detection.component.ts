@@ -252,7 +252,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 }
             });
 
-        // this.totalFrameArr = this.videoFrameExtractionService.getBlobList();
+        this.totalFrameArr = this.videoFrameExtractionService.getBlobList();
     }
 
     ngAfterViewInit(): void {
