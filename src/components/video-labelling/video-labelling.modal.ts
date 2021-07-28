@@ -18,6 +18,12 @@ export type FrameArray = {
     frameURL: string;
 };
 
+export type VideoDuration = {
+    hour: number;
+    minute: number;
+    second: number;
+};
+
 type Metadata = {
     img_h: number;
     img_ori_h: number;

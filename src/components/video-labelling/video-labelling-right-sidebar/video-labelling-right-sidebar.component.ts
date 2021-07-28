@@ -18,38 +18,38 @@ export class VideoLabellingRightSidebarComponent implements OnInit {
         this.jsonSchema = {
             logos: [
                 {
-                    imgPath: `../../../assets/icons/folder.svg`,
+                    imgPath: `assets/icons/folder.svg`,
                     hoverLabel: `rightSideBar.folderOrFiles`,
                     alt: `Folder`,
                     onClick: () => this._onClick.emit({ name: 'project', closed: false }),
                 },
                 {
-                    imgPath: `../../../assets/icons/tag.svg`,
+                    imgPath: `assets/icons/tag.svg`,
                     hoverLabel: `rightSideBar.label`,
                     alt: `Label`,
                     onClick: () => this._onClick.emit({ name: 'label', closed: false }),
                 },
                 {
-                    imgPath: `../../../assets/icons/bounding_box.svg`,
+                    imgPath: `assets/icons/bounding_box.svg`,
                     hoverLabel: `rightSideBar.annotation`,
                     alt: `Annotation`,
                     onClick: () => this._onClick.emit({ name: 'annotation', closed: false }),
                 },
                 {
-                    imgPath: `../../../assets/icons/statistic.svg`,
+                    imgPath: `assets/icons/statistic.svg`,
                     hoverLabel: `rightSideBar.statistic`,
                     alt: `Statistic`,
                     onClick: () => null,
                 },
                 {
-                    imgPath: `../../../assets/icons/export.svg`,
+                    imgPath: `assets/icons/export.svg`,
                     hoverLabel: `rightSideBar.export`,
                     alt: `Export`,
                     style: 'padding: 1.5vh 0.5vw;',
                     onClick: () => null,
                 },
                 {
-                    imgPath: `../../../assets/icons/reload.svg`,
+                    imgPath: `assets/icons/reload.svg`,
                     hoverLabel: `rightSideBar.reload`,
                     alt: `Reload`,
                     style: 'padding: 1.5vh 0.5vw;',

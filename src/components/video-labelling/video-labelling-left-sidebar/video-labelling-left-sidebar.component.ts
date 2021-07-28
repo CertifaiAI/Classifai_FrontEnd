@@ -31,7 +31,7 @@ export class VideoLabellingLeftSidebarComponent implements OnInit, OnChanges {
         this.jsonSchema = {
             logos: [
                 {
-                    imgPath: `../../../assets/icons/separator.svg`,
+                    imgPath: `assets/icons/separator.svg`,
                     hoverLabel: ``,
                     alt: ``,
                     nonClickable: true,
@@ -39,14 +39,14 @@ export class VideoLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     onClick: () => null,
                 },
                 {
-                    imgPath: `../../../assets/icons/pointer.svg`,
+                    imgPath: `assets/icons/pointer.svg`,
                     hoverLabel: 'leftSideBar.pointer',
                     alt: `Pointer`,
                     toggleable: true,
                     onClick: () => null,
                 },
                 {
-                    imgPath: `../../../assets/icons/rec_bounding_box.svg`,
+                    imgPath: `assets/icons/rec_bounding_box.svg`,
                     hoverLabel: `leftSideBar.rectangularBB`,
                     alt: `RectangularBB`,
                     toggleable: true,
@@ -56,7 +56,7 @@ export class VideoLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     },
                 },
                 {
-                    imgPath: `../../../assets/icons/eraser.svg`,
+                    imgPath: `assets/icons/eraser.svg`,
                     hoverLabel: `leftSideBar.eraser`,
                     alt: `Eraser`,
                     toggleable: false,
@@ -66,7 +66,7 @@ export class VideoLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     },
                 },
                 {
-                    imgPath: `../../../assets/icons/fit_center.svg`,
+                    imgPath: `assets/icons/fit_center.svg`,
                     hoverLabel: `leftSideBar.fitCenter`,
                     alt: `Fit Center`,
                     toggleable: false,

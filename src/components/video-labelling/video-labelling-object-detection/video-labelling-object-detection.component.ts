@@ -222,8 +222,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     isPausingFrame: boolean = true;
     pauseFrameIndex: number = 0;
 
-    showDetailsIcon: string = `../../../assets/icons/eye_show.svg`;
-    hideDetailsIcon: string = `../../../assets/icons/eye_hide.svg`;
+    showDetailsIcon: string = `assets/icons/eye_show.svg`;
+    hideDetailsIcon: string = `assets/icons/eye_hide.svg`;
 
     locA: { x: number; y: number } | undefined;
     locB: { x: number; y: number } | undefined;
@@ -242,7 +242,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 }
             });
 
-        this.totalFrameArr = this.videoFrameExtractionService.videoToFrame(30);
+        this.totalFrameArr = this.videoFrameExtractionService.getBlobList();
     }
 
     ngAfterViewInit(): void {
@@ -302,6 +302,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         index > this.totalFrameArr.length
             ? (this.activePreview.src = '')
             : (this.activePreview.src = this.totalFrameArr[index].frameURL);
+        console.log(this.activePreview);
         this.canvasContext.drawImage(this.activePreview, 0, 0);
     };
 

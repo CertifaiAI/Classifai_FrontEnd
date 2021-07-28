@@ -6,12 +6,17 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { VideoUploadComponent } from 'components/video-labelling/video-upload/video-upload.component';
 import { VideoLabellingLayoutComponent } from './video-labelling-layout.component';
 
 const videoLabellingLayoutRoutes: Routes = [
     {
         path: '',
         component: VideoLabellingLayoutComponent,
+    },
+    {
+        path: 'upload',
+        component: VideoUploadComponent,
     },
 ];
 

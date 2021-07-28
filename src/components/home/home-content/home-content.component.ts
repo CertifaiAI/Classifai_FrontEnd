@@ -41,7 +41,7 @@ export class HomeContentComponent {
                 },
                 {
                     enabled: true,
-                    urlPath: '/videolbl/bndbox',
+                    urlPath: '/videolbl/bndbox/upload',
                     title: 'video',
                     imgPath: 'assets/landing-page/Classifai_Thumbnail_Video.jpg',
                     imgAlt: 'video',

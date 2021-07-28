@@ -12,6 +12,7 @@ import { VideoLabellingLeftSidebarComponent } from './video-labelling-left-sideb
 import { VideoLabellingRightSidebarComponent } from './video-labelling-right-sidebar/video-labelling-right-sidebar.component';
 import { VideoLabellingObjectDetectionComponent } from './video-labelling-object-detection/video-labelling-object-detection.component';
 import { VideoLabellingProjectComponent } from './video-labelling-project/video-labelling-project.component';
+import { VideoUploadComponent } from './video-upload/video-upload.component';
 
 @NgModule({
     imports: [CommonModule, SharedModule, TranslateModule],
@@ -20,12 +21,14 @@ import { VideoLabellingProjectComponent } from './video-labelling-project/video-
         VideoLabellingRightSidebarComponent,
         VideoLabellingObjectDetectionComponent,
         VideoLabellingProjectComponent,
+        VideoUploadComponent,
     ],
     exports: [
         VideoLabellingLeftSidebarComponent,
         VideoLabellingRightSidebarComponent,
         VideoLabellingObjectDetectionComponent,
         VideoLabellingProjectComponent,
+        VideoUploadComponent,
     ],
 })
 export class VideoLabellingModule {}
