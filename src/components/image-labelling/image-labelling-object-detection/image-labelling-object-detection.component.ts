@@ -99,12 +99,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         // subscribes to action state & handles side effect
         this._imgLblStateService.action$
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(({ clear, fitCenter, ...action }) => {
+            .subscribe(({ clear, fitCenter, crossLine, ...action }) => {
                 if (clear || fitCenter || action.drag || action.draw || action.save || action.keyInfo) {
                     this.showDropdownLabelBox = false; // close dropdown label if user click clear
                     this._ref.detectChanges();
                 }
-                this.boundingBoxState = { ...action, clear, fitCenter };
+                this.boundingBoxState = { ...action, clear, fitCenter, crossLine };
 
                 fitCenter && this.imgFitToCenter();
                 if (clear) {
@@ -450,7 +450,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this._selectMetadata,
                     event,
                 );
-                if (mouseWithinPointPath && !this.showDropdownLabelBox && this.boundingBoxState.draw) {
+                if (mouseWithinPointPath && !this.showDropdownLabelBox && this.boundingBoxState.draw && this.boundingBoxState.crossLine) {
                     this.crossH.nativeElement.style.visibility = 'visible';
                     this.crossV.nativeElement.style.visibility = 'visible';
                     this.crossH.nativeElement.style.top = event.pageY.toString() + 'px';
