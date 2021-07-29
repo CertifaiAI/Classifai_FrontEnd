@@ -15,7 +15,8 @@ import { Subject, timer } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FrameExtractionService } from '../video-frame-extraction.service';
 import { VideoLabellingActionService } from '../video-labelling-action.service';
-import { FrameArray, LabelledFrame } from '../video-labelling.modal';
+import { BboxMetadata, FrameArray, LabelledFrame } from '../video-labelling.modal';
+import { BoundingBoxCanvasService } from './bounding-box-canvas.service';
 
 @Component({
     selector: 'video-labelling-object-detection',
@@ -219,6 +220,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     ];
 
     @Input() _totalFrame = this.totalFrameArr.length;
+    @Input() _selectMetadata!: BboxMetadata;
     @Output() _onHide: EventEmitter<LabelledFrame> = new EventEmitter();
     @ViewChild('videoTimelineRef') _videoTimelineRef!: ElementRef<HTMLDivElement>;
     @ViewChild('canvasdrawing') canvas!: ElementRef<HTMLCanvasElement>;
@@ -231,16 +233,15 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     isPlayingFrame: boolean = false;
     isPausingFrame: boolean = true;
     pauseFrameIndex: number = 0;
+    isMouseDown: boolean = false;
 
     showDetailsIcon: string = `assets/icons/eye_show.svg`;
     hideDetailsIcon: string = `assets/icons/eye_hide.svg`;
 
-    locA: { x: number; y: number } | undefined;
-    locB: { x: number; y: number } | undefined;
-
     constructor(
         private _videoLblStateService: VideoLabellingActionService,
         private videoFrameExtractionService: FrameExtractionService,
+        private _boundingBoxCanvas: BoundingBoxCanvasService,
     ) {}
 
     ngOnInit() {
@@ -252,7 +253,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 }
             });
 
-        this.totalFrameArr = this.videoFrameExtractionService.getBlobList();
+        // this.totalFrameArr = this.videoFrameExtractionService.getBlobList();
     }
 
     ngAfterViewInit(): void {
@@ -407,45 +408,24 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this.canvasContext.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
     }
 
-    getMousePos(evt: any) {
-        const rect = this.canvasContext.canvas.getBoundingClientRect();
-        return {
-            x: evt.clientX - rect.left,
-            y: evt.clientY - rect.top,
-        };
-    }
-
-    @HostListener('window:keydown', ['$event'])
-    onKeyDown(event: any) {
-        if (event.code === 'ShiftLeft') {
-            this.verticalScroll = true;
-        }
-
-        if (event.code === 'Space') {
-            this.clickPause();
-        }
-    }
-
-    @HostListener('window:keyup', ['$event'])
-    onReleaseKey() {
-        this.verticalScroll = false;
-    }
-
     @HostListener('mousedown', ['$event'])
     mouseDown(event: MouseEvent) {
-        // const points = this.canvasContext.canvas.getBoundingClientRect();
-        // console.log(points);
-        // console.log(event);
-        this.locA = this.getMousePos(event);
+        this._boundingBoxCanvas.getMousePosA(event, this.canvasContext);
+        this.isMouseDown = true;
     }
 
     @HostListener('mouseup', ['$event'])
     mouseUp(event: MouseEvent) {
-        this.locB = this.getMousePos(event);
-        this.canvasContext.fillStyle = '#000000';
-        this.canvasContext.rect(this.locA!.x, this.locA!.y, this.locB!.x - this.locA!.x, this.locB!.y - this.locA!.y);
-        this.canvasContext.strokeStyle = 'rgba(0,255,0,1.0)';
-        this.canvasContext.lineWidth = 2;
-        this.canvasContext.stroke();
+        this._boundingBoxCanvas.getMousePosB(event, this.canvasContext);
+        this._boundingBoxCanvas.drawBoundingBox(this.canvasContext);
+        this.isMouseDown = false;
+    }
+
+    @HostListener('mousemove', ['$event'])
+    mouseMove(event: MouseEvent) {
+        if (this.isMouseDown) {
+            // this._boundingBoxCanvas.getMousePosB(event, this.canvasContext);
+            // this._boundingBoxCanvas.drawBoundingBox(this.canvasContext);
+        }
     }
 }

@@ -92,3 +92,30 @@ export type LabelInfo = {
     name: string;
     count: number;
 };
+
+export type Coordinate = {
+    x: number;
+    y: number;
+    distancetoImg: {
+        x: number;
+        y: number;
+    };
+};
+
+export type Polygons = {
+    coorPt: Coordinate[];
+    label: string;
+    id: number;
+    lineWidth: number;
+    color: string;
+    region: string;
+    subLabel: SubLabel[];
+};
+
+export type PolyMetadata = Metadata & {
+    polygons: Polygons[];
+    file_size: number;
+};
+
+export type CompleteMetadata = WithOptional<BboxMetadata, 'bnd_box' | 'img_depth'> &
+    WithOptional<PolyMetadata, 'polygons'>;

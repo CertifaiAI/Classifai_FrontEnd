@@ -5,7 +5,7 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { TabsProps } from '../../components/video-labelling/video-labelling.modal';
+import { CompleteMetadata, TabsProps } from '../../components/video-labelling/video-labelling.modal';
 
 @Component({
     selector: 'app-video-labelling-layout',
@@ -13,6 +13,8 @@ import { TabsProps } from '../../components/video-labelling/video-labelling.moda
     styleUrls: ['./video-labelling-layout.component.scss'],
 })
 export class VideoLabellingLayoutComponent implements OnInit {
+    selectedMetaData?: CompleteMetadata;
+
     tabStatus: TabsProps[] = [
         {
             name: 'project',
