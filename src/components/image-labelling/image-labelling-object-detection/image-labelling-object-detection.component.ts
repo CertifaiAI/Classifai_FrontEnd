@@ -34,6 +34,7 @@ import {
     UndoState,
     Direction,
 } from 'shared/types/image-labelling/image-labelling.model';
+import { SharedUndoRedoService } from 'shared/services/shared-undo-redo.service';
 import { MouseCursorState, MousrCursorService } from 'shared/services/mouse-cursor.service';
 import { ZoomState, ZoomService, WheelDelta } from 'shared/services/zoom.service';
 import { CopyPasteService } from 'shared/services/copy-paste.service';
@@ -55,6 +56,9 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @ViewChild('floatdiv') floatdiv!: ElementRef<HTMLDivElement>;
     @ViewChild('lbltypetxt') lbltypetxt!: ElementRef<HTMLInputElement>;
     @ViewChild('availablelbl') availablelbl!: ElementRef<HTMLDivElement>;
+    @ViewChild('crossH') crossH!: ElementRef<HTMLDivElement>;
+    @ViewChild('crossV') crossV!: ElementRef<HTMLDivElement>;
+
     private canvasContext!: CanvasRenderingContext2D;
     private image: HTMLImageElement = new Image();
     private mousedown: boolean = false;
@@ -86,6 +90,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         private _zoomService: ZoomService,
         private _mouseCursorService: MousrCursorService,
         private _shortcutKeyService: ShortcutKeyService,
+        private _sharedUndoRedoService: SharedUndoRedoService
     ) {}
 
     ngOnInit() {
@@ -94,12 +99,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         // subscribes to action state & handles side effect
         this._imgLblStateService.action$
             .pipe(takeUntil(this.unsubscribe$))
-            .subscribe(({ clear, fitCenter, ...action }) => {
+            .subscribe(({ clear, fitCenter, crossLine, ...action }) => {
                 if (clear || fitCenter || action.drag || action.draw || action.save || action.keyInfo) {
                     this.showDropdownLabelBox = false; // close dropdown label if user click clear
                     this._ref.detectChanges();
                 }
-                this.boundingBoxState = { ...action, clear, fitCenter };
+                this.boundingBoxState = { ...action, clear, fitCenter, crossLine };
 
                 fitCenter && this.imgFitToCenter();
                 if (clear) {
@@ -129,6 +134,17 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         this._mouseCursorService.mouseCursor$
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe((state) => (this.mouseCursor = state));
+
+        this._sharedUndoRedoService.action.subscribe((message) => {
+            switch (message) {
+              case 'BBOX_UNDO':
+                this.undoAction();
+                break;
+              case 'BBOX_REDO':
+                this.redoAction();
+                break;
+            }
+        });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -434,6 +450,15 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this._selectMetadata,
                     event,
                 );
+                if (mouseWithinPointPath && !this.showDropdownLabelBox && this.boundingBoxState.draw && this.boundingBoxState.crossLine) {
+                    this.crossH.nativeElement.style.visibility = 'visible';
+                    this.crossV.nativeElement.style.visibility = 'visible';
+                    this.crossH.nativeElement.style.top = event.pageY.toString() + 'px';
+                    this.crossV.nativeElement.style.left = event.pageX.toString() + 'px';
+                } else {
+                    this.crossH.nativeElement.style.visibility = 'hidden';
+                    this.crossV.nativeElement.style.visibility = 'hidden';
+                }
                 if (mouseWithinPointPath && !this.showDropdownLabelBox) {
                     if (this.boundingBoxState.drag && this.mousedown) {
                         const diff = this._boundingBoxCanvas.getDiffXY(event);
@@ -501,6 +526,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                             }
                             // 7. Else
                             else {
+                                this.crossH.nativeElement.style.visibility = 'hidden';
+                                this.crossV.nativeElement.style.visibility = 'hidden';
                                 this.changeMouseCursorState({ move: true });
                             }
                         } else {
@@ -574,6 +601,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('mouseout', ['$event'])
     mouseOut(event: MouseEvent) {
         try {
+            this.crossH.nativeElement.style.visibility = 'hidden';
+            this.crossV.nativeElement.style.visibility = 'hidden';
             if (this.boundingBoxState.draw && this.mousedown) {
                 this.finishDrawBoundingBox(event);
             }

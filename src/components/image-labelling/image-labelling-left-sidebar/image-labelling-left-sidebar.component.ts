@@ -36,6 +36,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     jsonSchema!: IconSchema;
     iconIndex!: number;
     labelList: string[] = [];
+    isCrossLineOn: boolean = false;
 
     constructor(
         private _imgLabelState: ImageLabellingActionService,
@@ -93,7 +94,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                           toggleable: true,
                           onClick: () => {
                               this.resetSelectedAnnotate();
-                              this._imgLabelState.setState({ draw: true, drag: false, scroll: false });
+                              this._imgLabelState.setState({ draw: true, drag: false, scroll: false, crossLine: this.isCrossLineOn });
                           },
                       }
                     : {
@@ -135,6 +136,19 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                 //   hoverLabel: `Key Point`,
                 //   alt: `KeyPoint`,
                 // },
+                {
+                    imgPath: this.isCrossLineOn ? `assets/icons/indicator_on.svg` : `assets/icons/indicator.svg`,
+                    hoverLabel: `leftSideBar.info`,
+                    alt: `KeyPoint`,
+                    toggleable: false,
+                    onClick: () => {
+                      this.isCrossLineOn = !this.isCrossLineOn;
+                      this.bindImagePath();
+                      if (this.iconIndex === 2 ) {
+                          this._imgLabelState.setState({ draw: true, drag: false, scroll: false, crossLine: this.isCrossLineOn });
+                      }
+                    },
+                },
                 {
                     imgPath: `assets/icons/eraser.svg`,
                     hoverLabel: `leftSideBar.eraser`,
@@ -218,6 +232,9 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     }
 
     getIndex = (index: number): void => {
+        if (index === 3) {
+            return;
+        }
         this.iconIndex = index;
     };
 
