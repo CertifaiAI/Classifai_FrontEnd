@@ -75,7 +75,11 @@ export class ModalComponent implements OnInit, OnDestroy {
 
     @HostListener('window:keydown', ['$event'])
     keyDownEvent = ({ key }: KeyboardEvent): void => {
-        if (this.id !== 'modal-create-project' && this.id !== 'modal-import-project') {
+        if (
+            this.id !== 'modal-create-project' &&
+            this.id !== 'modal-import-project' &&
+            this.id !== 'modal-image-labelling'
+        ) {
             key === 'Escape' && this.close();
         }
     };
