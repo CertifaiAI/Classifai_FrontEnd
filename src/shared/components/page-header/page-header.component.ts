@@ -1,18 +1,29 @@
+import { TutorialService, TutorialState } from './../../services/tutorial.service';
 /**
  * @license
  * Use of this source code is governed by Apache License 2.0 that can be
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IconSchema } from 'shared/types/icon/icon.model';
 import { ImgLabelProps } from 'shared/types/image-labelling/image-labelling.model';
+import { ModalBodyStyle } from 'shared/types/modal/modal.model';
+import { ModalService } from '../modal/modal.service';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 type HeaderLabelSchema = {
     name: string;
     url: string;
     disable: boolean;
+};
+
+type Tutorial = {
+    imageTutorialPath: string;
+    imageTutorialAlt: string;
+    imageTutorialDesc: string;
 };
 
 @Component({
@@ -21,11 +32,13 @@ type HeaderLabelSchema = {
     styleUrls: ['./page-header.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PageHeaderComponent {
+export class PageHeaderComponent implements OnInit {
     @Input() _onChange!: ImgLabelProps;
     // @Output() _navigate: EventEmitter<UrlProps> = new EventEmitter();
     logoSrc: string = `assets/icons/classifai_logo_white.svg`;
     jsonSchema!: IconSchema;
+    private unsubscribe$: Subject<any> = new Subject();
+    private tutorialState!: TutorialState;
     headerLabels: HeaderLabelSchema[] = [
         {
             name: 'pageHeader.home',
@@ -44,9 +57,113 @@ export class PageHeaderComponent {
         // },
     ];
 
-    constructor(private _router: Router) {
+    readonly createProjectId = 'modal-create-project-tutorial';
+    readonly createProjectTutorial = [
+        {
+            imageTutorialPath: 'assets/tutorial/dm_new_project_btn.png',
+            imageTutorialAlt: 'New Project Button',
+            imageTutorialDesc: 'Click New Project button to start a new project.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/dm_project_name.png',
+            imageTutorialAlt: 'Project Name',
+            imageTutorialDesc: 'Enter the project name.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/dm_project_folder.png',
+            imageTutorialAlt: 'Project Folder',
+            imageTutorialDesc: 'Then, click Choose Folder button to choose data folder.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/dm_label_file.png',
+            imageTutorialAlt: 'Label File',
+            imageTutorialDesc: 'Next, click Choose File button to add label text file (optional).',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/dm_create_project.png',
+            imageTutorialAlt: 'Create Button',
+            imageTutorialDesc: 'After that, click Create button to proceed the project creation.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/dm_project_created.png',
+            imageTutorialAlt: 'Project Card',
+            imageTutorialDesc:
+                'Finally, the created project will show in the dataset management page. Click the project card to open the project.',
+        },
+    ];
+    readonly drawBboxId = 'modal-draw-bbox-tutorial';
+    readonly drawBboxTutorial = [
+        {
+            imageTutorialPath: 'assets/tutorial/dm_new_project_btn.png',
+            imageTutorialAlt: 'New Project Button',
+            imageTutorialDesc: 'Click New Project button to start a new project.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/dm_project_name.png',
+            imageTutorialAlt: 'Project Name',
+            imageTutorialDesc: 'Enter the project name.',
+        },
+    ];
+    tutorialIdx: number = 0;
+    modalIdTutorial: string = this.createProjectId;
+    tutorial: Tutorial[] = this.createProjectTutorial;
+    tutorialBodyStyle: ModalBodyStyle = {
+        minHeight: '55vh',
+        maxHeight: '60vh',
+        maxWidth: '70vw',
+        margin: '8vw 71vh',
+        overflow: 'none',
+    };
+
+    constructor(
+        private _router: Router,
+        private _modalService: ModalService,
+        private _tutorialService: TutorialService,
+    ) {
         const { url } = _router;
         this.bindImagePath(url);
+        this._tutorialService.tutorial$
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe((state) => (this.tutorialState = state));
+    }
+
+    ngOnInit(): void {
+        const pageURL = this._router.url;
+        if (pageURL === '/dataset') {
+            if (!this.tutorialState.createProject) {
+                this.modalIdTutorial = this.createProjectId;
+                this.tutorial = this.createProjectTutorial;
+                this._tutorialService.setState({ createProject: true });
+                this.openTutorial();
+            }
+        } else if (pageURL === '/imglabel/bndbox') {
+            if (!this.tutorialState.drawBbox) {
+                this.modalIdTutorial = this.drawBboxId;
+                this.tutorial = this.drawBboxTutorial;
+                this._tutorialService.setState({ drawBbox: true });
+                this.openTutorial();
+            }
+        }
+
+    }
+
+    openTutorial() {
+        setTimeout(() => {
+            this.tutorialIdx = 0;
+            this._modalService.open(this.modalIdTutorial);
+        }, 1000);
+    }
+
+    prevTutorial() {
+        this.tutorialIdx--;
+    }
+
+    nextTutorial() {
+        this.tutorialIdx++;
+    }
+
+    endTutorial() {
+        this._modalService.close(this.modalIdTutorial);
     }
 
     bindImagePath = (url: string) => {
