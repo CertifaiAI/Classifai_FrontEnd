@@ -1,6 +1,6 @@
 <div *ngIf="isOverlayOn" class="overlay">
     <p style="margin-top: 40vh; color: rgb(255, 255, 255, 0.9); text-align: center; font-size: 3vh">
-        {{ isImageUploading ? 'Uploading the Images. Please Wait...' : 'Selection Window is Opened' }}
+        {{ isImageUploading ? 'Uploading the Images. Please Wait...' : 'Selection Window was Opened' }}
     </p>
 </div>
 <page-header [_onChange]="onChangeSchema"></page-header>
@@ -218,7 +218,18 @@
     [modalTitle]="'deleteProject' | translate"
     [scrollable]="false"
 >
-    <div class="display-modal-container">
+
+    <div class="display-modal-container" *ngIf="!isDeleteSuccess">
+        <p class="display-msg">
+            {{ 'deleteConfirmation' | translate }} {{ projectName }} ?
+        </p>
+        <div class="model-button-container">
+            <button class="button-style create-btn" type="submit" (click)="confirmDeleteProject()">
+                {{ 'confirm' | translate }}
+            </button>
+        </div>
+    </div>
+    <div class="display-modal-container" *ngIf="isDeleteSuccess">
         <p class="display-msg">
             {{ projectName }} {{ 'deleteMsg' | translate }} <strong class="validation-success">{{ 'success' | translate }}</strong>!
         </p>
