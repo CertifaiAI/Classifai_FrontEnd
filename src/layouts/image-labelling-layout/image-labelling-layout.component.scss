@@ -80,7 +80,7 @@ $fontSize: 2vh;
 }
 
 .sub-label-container {
-    @include container-flex-width(40vw);
+    @include container-flex-width(45vw);
 }
 
 .sub-label-flex-container {
@@ -554,6 +554,16 @@ tr th:nth-child(1) {
     padding: 1vh 0.5vw 1vh 0.5vw;
     background-color: #2d8ceb;
     margin-top: 0.7vw;
+    margin-right: 0.7vw;
+    font-size: 2vh;
+    min-width: 7.5vw;
+    float: right;
+}
+
+.addsublabel-btn {
+    padding: 1vh 0.5vw 1vh 0.5vw;
+    background-color: #2d8ceb;
+    // margin-top: 0.7vw;
     margin-right: 0.7vw;
     font-size: 2vh;
     min-width: 7.5vw;
