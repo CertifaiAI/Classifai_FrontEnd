@@ -570,6 +570,16 @@ tr th:nth-child(1) {
     float: right;
 }
 
+.removesublabel-btn {
+    padding: 1vh 0.5vw 1vh 0.5vw;
+    background-color: #ff3f3f;
+    // margin-top: 0.7vw;
+    margin-right: 0.7vw;
+    font-size: 2vh;
+    min-width: 2vw;
+    float: right;
+}
+
 .font-delete-img {
     line-height: 4vh;
     font-size: 1vw;
