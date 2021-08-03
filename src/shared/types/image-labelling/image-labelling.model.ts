@@ -45,6 +45,7 @@ export type ActionState = {
     isActiveModal: boolean;
     save: boolean;
     keyInfo: boolean;
+    crossLine: boolean;
     // dbClick: boolean;
 };
 
