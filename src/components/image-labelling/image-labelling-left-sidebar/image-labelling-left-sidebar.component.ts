@@ -138,8 +138,8 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                 // },
                 {
                     imgPath: this.isCrossLineOn ? `assets/icons/indicator_on.svg` : `assets/icons/indicator.svg`,
-                    hoverLabel: `leftSideBar.info`,
-                    alt: `KeyPoint`,
+                    hoverLabel: this.isCrossLineOn ? `leftSideBar.offCrossLine` : `leftSideBar.onCrossLine`,
+                    alt: `Cross Guiding Line`,
                     toggleable: false,
                     onClick: () => {
                       this.isCrossLineOn = !this.isCrossLineOn;
