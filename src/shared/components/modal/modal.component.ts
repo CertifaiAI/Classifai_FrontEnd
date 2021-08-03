@@ -77,10 +77,12 @@ export class ModalComponent implements OnInit, OnDestroy {
         document.body.classList.remove('modal-open');
         this._modalService.openedModalsId = this._modalService.openedModalsId.filter((idx) => idx !== this.id);
 
-        // Set Segmentation Labelling State
-        if (this.id === 'modal-image-labelling') {
-            this._imgLblActionService.setState({ isActiveModal: false, draw: true, scroll: true });
-        }
+        this._imgLblActionService.action$.subscribe(({ isActiveModal }) => {
+            if (isActiveModal) {
+                this._imgLblActionService.setState({ isActiveModal: false, draw: true, scroll: true });
+            }
+        });
+        // this._imgLblActionService.setState({ isActiveModal: false, draw: true });
     }
 
     @HostListener('window:keydown', ['$event'])

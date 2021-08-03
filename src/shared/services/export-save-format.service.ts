@@ -687,12 +687,12 @@ export class ExportSaveFormatService {
 
     private generateImageString(metadata: Polygons[], imageName: string, fileSize: string) {
         let imageContent = `'${imageName}':{`;
-        imageContent += `fileref:"",`;
-        imageContent += `size:"${fileSize}",`;
-        imageContent += `filename:"${imageName}",`;
-        imageContent += `base64_img_data:"",`;
-        imageContent += `file_attributes:{},`;
-        imageContent += `regions:{${this.generateRegion(metadata)}}`;
+        imageContent += `"fileref":"",`;
+        imageContent += `"size":"${fileSize}",`;
+        imageContent += `"filename":"${imageName}",`;
+        imageContent += `"base64_img_data":"",`;
+        imageContent += `"file_attributes":{},`;
+        imageContent += `"regions":{${this.generateRegion(metadata)}}`;
         // imageContent += `},`;
 
         return imageContent;

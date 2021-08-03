@@ -612,7 +612,6 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 }
             } else {
                 this.changeMouseCursorState();
-                console.log('3');
                 this.mousedown = false;
             }
         } catch (err) {
