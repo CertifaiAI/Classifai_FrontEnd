@@ -5,6 +5,7 @@
  */
 
 import { Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { ImageLabellingActionService } from 'components/image-labelling/image-labelling-action.service';
 import { ModalBodyStyle } from '../../types/modal/modal.model';
 import { ModalService } from './modal.service';
 
@@ -23,7 +24,11 @@ export class ModalComponent implements OnInit, OnDestroy {
     @Input() zIndex: number = 1; // Assign [zIndex]="2" , if it is the second modal show in display at one time.
     private element: HTMLDivElement;
 
-    constructor(private _modalService: ModalService, private _el: ElementRef) {
+    constructor(
+        private _modalService: ModalService,
+        private _el: ElementRef,
+        private _imgLblActionService: ImageLabellingActionService,
+    ) {
         this.element = this._el.nativeElement;
         // move element to bottom of page (just before </body>) so it can be displayed above everything else
         // document.body.appendChild(this.element);
@@ -71,15 +76,16 @@ export class ModalComponent implements OnInit, OnDestroy {
         this.element.style.display = 'none';
         document.body.classList.remove('modal-open');
         this._modalService.openedModalsId = this._modalService.openedModalsId.filter((idx) => idx !== this.id);
+
+        // Set Segmentation Labelling State
+        if (this.id === 'modal-image-labelling') {
+            this._imgLblActionService.setState({ isActiveModal: false, draw: true, scroll: true });
+        }
     }
 
     @HostListener('window:keydown', ['$event'])
     keyDownEvent = ({ key }: KeyboardEvent): void => {
-        if (
-            this.id !== 'modal-create-project' &&
-            this.id !== 'modal-import-project' &&
-            this.id !== 'modal-image-labelling'
-        ) {
+        if (this.id !== 'modal-create-project' && this.id !== 'modal-import-project') {
             key === 'Escape' && this.close();
         }
     };
