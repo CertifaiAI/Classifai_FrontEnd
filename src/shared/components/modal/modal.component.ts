@@ -82,7 +82,6 @@ export class ModalComponent implements OnInit, OnDestroy {
                 this._imgLblActionService.setState({ isActiveModal: false, draw: true, scroll: true });
             }
         });
-        // this._imgLblActionService.setState({ isActiveModal: false, draw: true });
     }
 
     @HostListener('window:keydown', ['$event'])
