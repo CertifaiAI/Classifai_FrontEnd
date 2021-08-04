@@ -38,6 +38,7 @@ import { MouseCursorState, MousrCursorService } from 'shared/services/mouse-curs
 import { ShortcutKeyService } from 'shared/services/shortcut-key.service';
 import { UndoRedoService } from 'shared/services/undo-redo.service';
 import { ZoomState, ZoomService, WheelDelta } from 'shared/services/zoom.service';
+import { SharedUndoRedoService } from 'shared/services/shared-undo-redo.service';
 import { SegmentationCanvasService } from './segmentation-canvas.service';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
 
@@ -72,6 +73,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Output() _onChangeMetadata: EventEmitter<PolyMetadata> = new EventEmitter();
     @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
+    @ViewChild('crossH') crossH!: ElementRef<HTMLDivElement>;
+    @ViewChild('crossV') crossV!: ElementRef<HTMLDivElement>;
 
     constructor(
         private _segCanvasService: SegmentationCanvasService,
@@ -82,6 +85,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         private _zoomService: ZoomService,
         private _mouseCursorService: MousrCursorService,
         private _shortcutKeyService: ShortcutKeyService,
+        private _sharedUndoRedoService: SharedUndoRedoService,
     ) {}
 
     ngOnInit(): void {
@@ -121,6 +125,17 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         this._mouseCursorService.mouseCursor$
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe((state) => (this.mouseCursor = state));
+
+        this._sharedUndoRedoService.action.subscribe((message) => {
+            switch (message) {
+                case 'SEG_UNDO':
+                    this.undoAction();
+                    break;
+                case 'SEG_REDO':
+                    this.redoAction();
+                    break;
+            }
+        });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -584,6 +599,20 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             // but mouse has already moving into canvas, thus getting error
             this.isMouseWithinPoint =
                 this._selectMetadata && this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
+            if (
+                this.isMouseWithinPoint &&
+                !this.showDropdownLabelBox &&
+                this.segState.draw &&
+                this.segState.crossLine
+            ) {
+                this.crossH.nativeElement.style.visibility = 'visible';
+                this.crossV.nativeElement.style.visibility = 'visible';
+                this.crossH.nativeElement.style.top = event.pageY.toString() + 'px';
+                this.crossV.nativeElement.style.left = event.pageX.toString() + 'px';
+            } else {
+                this.crossH.nativeElement.style.visibility = 'hidden';
+                this.crossV.nativeElement.style.visibility = 'hidden';
+            }
             if (this.isMouseWithinPoint) {
                 if (this.segState.drag && this.mousedown) {
                     const { diffX, diffY } = this._segCanvasService.getDiffXY(event);
@@ -613,6 +642,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                     // this._segCanvasService.setPanXY(event);
                     const mouseWithinShape = this.mouseMoveDrawCanvas(event);
                     if (mouseWithinShape) {
+                        this.crossH.nativeElement.style.visibility = 'hidden';
+                        this.crossV.nativeElement.style.visibility = 'hidden';
                         this.changeMouseCursorState({ move: true });
                     } else {
                         this.changeMouseCursorState({ crosshair: true });
@@ -662,6 +693,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     @HostListener('mouseout', ['$event'])
     mouseOut(event: MouseEvent) {
         try {
+            this.crossH.nativeElement.style.visibility = 'hidden';
+            this.crossV.nativeElement.style.visibility = 'hidden';
             if (this.segState.drag && this.isMouseWithinPoint && this.mousedown) {
                 this._segCanvasService.setGlobalXY(event);
                 this.redrawImage(this._selectMetadata);

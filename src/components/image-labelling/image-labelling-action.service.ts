@@ -17,6 +17,7 @@ const initialValue: ActionState = {
     isActiveModal: false,
     save: false,
     keyInfo: false,
+    crossLine: false,
 };
 
 @Injectable({
