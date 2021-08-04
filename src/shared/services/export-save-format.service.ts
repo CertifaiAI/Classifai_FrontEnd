@@ -692,7 +692,11 @@ export class ExportSaveFormatService {
         imageContent += `"filename":"${imageName}",`;
         imageContent += `"base64_img_data":"",`;
         imageContent += `"file_attributes":{},`;
-        imageContent += `"regions":{${this.generateRegion(metadata)}}`;
+        if (this.generateRegion(metadata) !== -1) {
+            imageContent += `"regions":{${this.generateRegion(metadata)}}`;
+        } else {
+            imageContent += `"regions":{}`;
+        }
         // imageContent += `},`;
 
         return imageContent;
@@ -716,10 +720,10 @@ export class ExportSaveFormatService {
                 }, '');
 
                 prev += `${i.toString()}:{`;
-                prev += `shape_attributes:{name:polygon,`;
-                prev += `all_points_x:${pointX},`;
-                prev += `all_points_y:${pointY}},`;
-                prev += `region_attributes:{${label.trim()}:"${region.trim()}"}`;
+                prev += `"shape_attributes":{name:polygon,`;
+                prev += `"all_points_x":${pointX},`;
+                prev += `"all_points_y":${pointY}},`;
+                prev += `"region_attributes":{${label.trim()}:"${region.trim()}"}`;
                 prev += `}`;
                 if (subLabel.length === 0) {
                     // prev += '}';
@@ -731,6 +735,8 @@ export class ExportSaveFormatService {
                 }
                 return prev;
             }, '');
+        } else {
+            return -1;
         }
     }
 
