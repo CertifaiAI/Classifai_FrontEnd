@@ -570,6 +570,7 @@ export class ExportSaveFormatService {
             }
             return prev;
         }, '');
+        cocoImage = cocoImage.slice(0, -1);
         cocoImage += `],`;
         return cocoImage;
     }
@@ -652,7 +653,7 @@ export class ExportSaveFormatService {
         let cocoLicense = `"licenses":[{`;
         cocoLicense += `"id":1,`;
         cocoLicense += `"name":"APACHE LICENSE, VERSION 2.0",`;
-        cocoLicense += `"url":"https://www.apache.org/licenses/LICENSE-2.0",`;
+        cocoLicense += `"url":"https://www.apache.org/licenses/LICENSE-2.0"`;
         cocoLicense += `}],`;
         return cocoLicense;
     }
@@ -662,7 +663,7 @@ export class ExportSaveFormatService {
         if (labelList) {
             cocoCategory += labelList.reduce((prev, curr, i) => {
                 prev += `{"supercategory":"type",`;
-                prev += `"id":${i.toString()},`;
+                prev += `"id":${(i + 1).toString()},`;
                 prev += `"name":"${curr}"`;
                 prev += `},`;
                 return prev;
@@ -679,25 +680,22 @@ export class ExportSaveFormatService {
             const filename = this.getFileName(img_path);
             const fileSize = file_size > 0 ? file_size.toString() : '';
             prev += this.generateImageString(polygons, filename, fileSize);
-            prev += '},';
+            prev += ',';
             return prev;
         }, '');
+        jsonContent = jsonContent.slice(0, -1);
         jsonContent += '}';
         return jsonContent;
     }
 
     private generateImageString(metadata: Polygons[], imageName: string, fileSize: string) {
-        let imageContent = `'${imageName}':{`;
+        let imageContent = `"${imageName}":{`;
         imageContent += `"fileref":"",`;
         imageContent += `"size":"${fileSize}",`;
         imageContent += `"filename":"${imageName}",`;
         imageContent += `"base64_img_data":"",`;
         imageContent += `"file_attributes":{},`;
-        if (this.generateRegion(metadata) !== -1) {
-            imageContent += `"regions":{${this.generateRegion(metadata)}}`;
-        } else {
-            imageContent += `"regions":{}`;
-        }
+        imageContent += `"regions":{${this.generateRegion(metadata)}}`;
         // imageContent += `},`;
 
         return imageContent;
@@ -720,33 +718,35 @@ export class ExportSaveFormatService {
                     }
                 }, '');
 
-                prev += `${i.toString()}:{`;
-                prev += `"shape_attributes":{name:polygon,`;
+                prev += `"${i.toString()}":{`;
+                prev += `"shape_attributes":{"name":"polygon",`;
                 prev += `"all_points_x":${pointX},`;
                 prev += `"all_points_y":${pointY}},`;
-                prev += `"region_attributes":{${label.trim()}:"${region.trim()}"}`;
-                prev += `}`;
+                prev += `"region_attributes":{"${label.trim()}":"${region.trim()}"`;
+                // prev += `}`;
                 if (subLabel.length === 0) {
-                    // prev += '}';
+                    prev += '}}}';
                 } else {
                     prev += this.subLabelExist(subLabel);
                 }
-                if (i !== metadata.length - 1) {
-                    prev += ',';
-                }
+                // if (i !== metadata.length - 1) {
+                //     prev += ',';
+                // }
+                // prev = prev.slice(0, -1);
                 return prev;
             }, '');
         } else {
-            return -1;
+            return `}`;
         }
     }
 
     subLabelExist(subLabel: SubLabel[]) {
-        let prev = ',';
+        let prev = `,`;
         for (const [_, { label, region }] of subLabel.entries()) {
-            prev += `"${label.trim()}":"${region.trim()}"`;
-            prev += '},';
+            prev += `"${label.trim()}":"${region.trim()}",`;
         }
+        prev = prev.slice(0, -1);
+        prev = prev += `}}}`;
         return prev;
     }
 }
