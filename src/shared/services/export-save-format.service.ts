@@ -546,25 +546,25 @@ export class ExportSaveFormatService {
     private generateCocoInfo() {
         const d = new Date();
         let cocoInfo: string = `"info":{`;
-        cocoInfo += `year:"${d.getFullYear().toString()}",`;
-        cocoInfo += `version:"1.0",`;
-        cocoInfo += `description\:\"VIA project exported to COCO format using classifai(https://classifai.ai/)",`;
-        cocoInfo += `contributor:"",`;
-        cocoInfo += `url:"https://classifai.ai/",`;
-        cocoInfo += `date_created:"${d.toUTCString()}"`;
+        cocoInfo += `"year":"${d.getFullYear().toString()}",`;
+        cocoInfo += `"version":"1.0",`;
+        cocoInfo += `"description"\:\"VIA project exported to COCO format using classifai(https://classifai.ai/)",`;
+        cocoInfo += `"contributor":"",`;
+        cocoInfo += `"url":"https://classifai.ai/",`;
+        cocoInfo += `"date_created":"${d.toUTCString()}"`;
         cocoInfo += '},';
         return cocoInfo;
     }
 
     private generateCocoImage(metadata: PolyMetadata[]) {
-        let cocoImage = 'images:[';
+        let cocoImage = '"images":[';
         cocoImage += metadata.reduce((prev, { img_ori_w, img_ori_h, img_path }, i) => {
-            prev += `{id:${(i + 1).toString()},`;
-            prev += `width:${img_ori_w.toString()},`;
-            prev += `height:${img_ori_h.toString()},`;
-            prev += `file_name:"${this.getFileName(img_path)}",`;
-            prev += `license:0,`;
-            prev += `date_captured:""}`;
+            prev += `{"id":${(i + 1).toString()},`;
+            prev += `"width":${img_ori_w.toString()},`;
+            prev += `"height":${img_ori_h.toString()},`;
+            prev += `"file_name":"${this.getFileName(img_path)}",`;
+            prev += `"license":0,`;
+            prev += `"date_captured":""}`;
             if (i !== metadata.length) {
                 prev += ',';
             }
@@ -575,7 +575,7 @@ export class ExportSaveFormatService {
     }
 
     private generateCocoAnnotation(metadata: PolyMetadata[], labelList?: string[]) {
-        let cocoAnnotation = `annotations:[`;
+        let cocoAnnotation = `"annotations":[`;
         let count = 0;
         cocoAnnotation += metadata.reduce((prevMetadata, { polygons }, i) => {
             if (polygons.length > 0) {
@@ -583,7 +583,7 @@ export class ExportSaveFormatService {
                 const calculatedPolyMetadata = this.calPolyCoorOriginalImages(metadata);
                 const filteredPoly = this.getFilteredPoly(calculatedPolyMetadata);
                 prevMetadata += filteredPoly.reduce((prevFilteredPoly, { coorPt, label, ...polyRest }, j) => {
-                    prevFilteredPoly += `{segmentation:[`;
+                    prevFilteredPoly += `{"segmentation":[`;
                     if (coorPt.length > 0) {
                         prevFilteredPoly += `[`;
                         prevFilteredPoly += this.getPolyCoordinate(coorPt);
@@ -592,14 +592,14 @@ export class ExportSaveFormatService {
                     const bndBox = this.getPolyBBox({ coorPt, label, ...polyRest });
                     if (bndBox) {
                         prevFilteredPoly += `],`;
-                        prevFilteredPoly += `area:${((bndBox.x2 - bndBox.x1) * (bndBox.y2 - bndBox.y1)).toString()},`;
-                        prevFilteredPoly += `bbox:[${bndBox.x1.toString()},${bndBox.y1.toString()},${(
+                        prevFilteredPoly += `"area":${((bndBox.x2 - bndBox.x1) * (bndBox.y2 - bndBox.y1)).toString()},`;
+                        prevFilteredPoly += `"bbox":[${bndBox.x1.toString()},${bndBox.y1.toString()},${(
                             bndBox.x2 - bndBox.x1
                         ).toString()},${(bndBox.y2 - bndBox.y1).toString()}],`;
-                        prevFilteredPoly += `iscrowd:0,`;
-                        prevFilteredPoly += `id:${count.toString()},`;
-                        prevFilteredPoly += `image_id:${(i + 1).toString()},`;
-                        prevFilteredPoly += `category_id:${labelList?.indexOf(label)}}`;
+                        prevFilteredPoly += `"iscrowd":0,`;
+                        prevFilteredPoly += `"id":${count.toString()},`;
+                        prevFilteredPoly += `"image_id":${(i + 1).toString()},`;
+                        prevFilteredPoly += `"category_id":${labelList?.indexOf(label)}}`;
                     }
                     return prevFilteredPoly;
                 }, '');
@@ -649,25 +649,26 @@ export class ExportSaveFormatService {
     }
 
     private generateCocoLicense() {
-        let cocoLicense = `licenses:[{`;
-        cocoLicense += `id:1,`;
-        cocoLicense += `name:"APACHE LICENSE, VERSION 2.0",`;
-        cocoLicense += `url:"https://www.apache.org/licenses/LICENSE-2.0",`;
+        let cocoLicense = `"licenses":[{`;
+        cocoLicense += `"id":1,`;
+        cocoLicense += `"name":"APACHE LICENSE, VERSION 2.0",`;
+        cocoLicense += `"url":"https://www.apache.org/licenses/LICENSE-2.0",`;
         cocoLicense += `}],`;
         return cocoLicense;
     }
 
     private generateCocoCategory(labelList?: string[]) {
-        let cocoCategory = `categories\:[`;
+        let cocoCategory = `"categories"\:[`;
         if (labelList) {
             cocoCategory += labelList.reduce((prev, curr, i) => {
-                prev += `{supercategory:"type",`;
-                prev += `id:${i.toString()},`;
-                prev += `name:"${curr}"`;
+                prev += `{"supercategory":"type",`;
+                prev += `"id":${i.toString()},`;
+                prev += `"name":"${curr}"`;
                 prev += `},`;
                 return prev;
             }, '');
         }
+        cocoCategory = cocoCategory.slice(0, -1);
         cocoCategory += `]`;
         return cocoCategory;
     }
