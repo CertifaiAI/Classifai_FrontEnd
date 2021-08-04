@@ -58,6 +58,7 @@ export class PageHeaderComponent implements OnInit {
     ];
 
     readonly createProjectId = 'modal-create-project-tutorial';
+    readonly createProjectTitle = 'How to Start a Project ?';
     readonly createProjectTutorial = [
         {
             imageTutorialPath: 'assets/tutorial/create_project/dm_new_project_btn.png',
@@ -93,6 +94,7 @@ export class PageHeaderComponent implements OnInit {
     ];
 
     readonly drawBboxId = 'modal-draw-bbox-tutorial';
+    readonly drawBboxTitle = 'How to Draw Boundingbox ?';
     readonly drawBboxTutorial = [
         {
             imageTutorialPath: 'assets/tutorial/draw_bbox/dm_draw_bbox_pointer.gif',
@@ -140,6 +142,7 @@ export class PageHeaderComponent implements OnInit {
     tutorialIdx: number = 0;
     modalIdTutorial: string = this.createProjectId;
     tutorial: Tutorial[] = this.createProjectTutorial;
+    modalTitle: string = this.createProjectTitle;
     tutorialBodyStyle: ModalBodyStyle = {
         minHeight: '55vh',
         maxHeight: '60vh',
@@ -164,6 +167,7 @@ export class PageHeaderComponent implements OnInit {
         const pageURL = this._router.url;
         if (pageURL === '/dataset') {
             if (!this.tutorialState.createProject) {
+                this.modalTitle = this.createProjectTitle;
                 this.modalIdTutorial = this.createProjectId;
                 this.tutorial = this.createProjectTutorial;
                 this._tutorialService.setState({ createProject: true });
@@ -171,6 +175,7 @@ export class PageHeaderComponent implements OnInit {
             }
         } else if (pageURL === '/imglabel/bndbox') {
             if (!this.tutorialState.drawBbox) {
+                this.modalTitle = this.drawBboxTitle;
                 this.modalIdTutorial = this.drawBboxId;
                 this.tutorial = this.drawBboxTutorial;
                 this._tutorialService.setState({ drawBbox: true });

@@ -51,12 +51,7 @@
     </div>
 </div>
 
-<modal
-    [id]="modalIdTutorial"
-    [modalBodyStyle]="tutorialBodyStyle"
-    [modalTitle]="'How to Start a Project ?'"
-    [scrollable]="false"
->
+<modal [id]="modalIdTutorial" [modalBodyStyle]="tutorialBodyStyle" [modalTitle]="modalTitle" [scrollable]="false">
     <div class="display-modal-container">
         <img
             [src]="tutorial[tutorialIdx].imageTutorialPath"
@@ -78,12 +73,7 @@
     </div>
 </modal>
 
-<modal
-    [id]="modalIdTutorial"
-    [modalBodyStyle]="tutorialBodyStyle"
-    [modalTitle]="'How to draw bounding box ?'"
-    [scrollable]="false"
->
+<modal [id]="modalIdTutorial" [modalBodyStyle]="tutorialBodyStyle" [modalTitle]="modalTitle" [scrollable]="false">
     <div class="display-modal-container">
         <img
             [src]="tutorial[tutorialIdx].imageTutorialPath"
