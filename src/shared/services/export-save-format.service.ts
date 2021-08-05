@@ -748,7 +748,7 @@ export class ExportSaveFormatService {
             prev += `"${label.trim()}":"${region.trim()}",`;
         }
         prev = prev.slice(0, -1);
-        prev = prev += `}`;
+        prev += `}`;
         return prev;
     }
 }

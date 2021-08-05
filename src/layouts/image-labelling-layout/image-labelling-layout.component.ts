@@ -357,9 +357,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                             mergeMap(() => projLoadingStatus$),
                             first(({ message }) => message === 2),
                             mergeMap(({ uuid_list }) => {
+                                const endSliceNum = this.sliceNum + 10;
                                 return uuid_list.length > 0
                                     ? uuid_list
-                                          .slice(this.sliceNum, (this.sliceNum += 10))
+                                          .slice(this.sliceNum, endSliceNum)
                                           .map((uuid) => thumbnail$(this.selectedProjectName, uuid))
                                     : [];
                             }),
@@ -560,10 +561,11 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                               this.totalUuid--;
                           });
                           this.sliceNum = 0;
+                          const endSliceNum = this.sliceNum + 20;
                           const thumbnails =
                               res.file_system_status === 3 && listTemp.length > 0
                                   ? listTemp
-                                        .slice(this.sliceNum, (this.sliceNum += 20))
+                                        .slice(this.sliceNum, endSliceNum)
                                         .map((uuid) => thumbnail$(projectName, uuid))
                                   : [];
 
