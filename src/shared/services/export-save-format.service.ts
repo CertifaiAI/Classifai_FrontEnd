@@ -725,13 +725,13 @@ export class ExportSaveFormatService {
                 prev += `"region_attributes":{"${label.trim()}":"${region.trim()}"`;
                 // prev += `}`;
                 if (subLabel.length === 0) {
-                    prev += '}}}';
+                    prev += '}';
                 } else {
                     prev += this.subLabelExist(subLabel);
                 }
-                // if (i !== metadata.length - 1) {
-                //     prev += ',';
-                // }
+                if (i !== metadata.length - 1) {
+                    prev += '},';
+                }
                 // prev = prev.slice(0, -1);
                 return prev;
             }, '');
@@ -746,7 +746,7 @@ export class ExportSaveFormatService {
             prev += `"${label.trim()}":"${region.trim()}",`;
         }
         prev = prev.slice(0, -1);
-        prev = prev += `}}}`;
+        prev = prev += `}}`;
         return prev;
     }
 }

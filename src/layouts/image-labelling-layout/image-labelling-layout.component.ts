@@ -755,6 +755,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         if (this.selectedMetaData) {
             if (this.selectedMetaData.polygons) {
                 this.selectedMetaData.polygons[changeAnnoLabel.index].label = changeAnnoLabel.label;
+                this.currentAnnotationLabel = changeAnnoLabel.label;
             }
         }
         this.tabStatus = this._imgLblLayoutService.changeAnnotationLabel(this.tabStatus, changeAnnoLabel);
