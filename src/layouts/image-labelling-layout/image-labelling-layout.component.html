@@ -192,7 +192,7 @@
                 [placeholder]="'labellingArea.subRegionInfo' | translate"
                 (change)="onChangeInput($event, 'sub')"
             />
-            <button class="modal-button" (click)="onSubmitLabel()">
+            <button class="button-style addsublabel-btn" (click)="onSubmitLabel()">
                 {{ 'labellingArea.add' | translate }}
             </button>
         </div>
@@ -206,10 +206,10 @@
 
     <ng-container *ngFor="let tab of tabStatus">
         <ng-container *ngFor="let annotation of tab.annotation">
-            <ng-container *ngFor="let bb of annotation?.bnd_box; index as annotationIndex">
-                <ng-container *ngIf="bb?.subLabel?.length > 0 && annotationIndex === currentAnnotationIndex">
+            <ng-container *ngFor="let pp of annotation?.polygons; index as annotationIndex">
+                <ng-container *ngIf="pp?.subLabel?.length > 0 && annotationIndex === currentAnnotationIndex">
                     <h2 class="font-title">{{ 'labellingArea.addedSubLabel' | translate }}</h2>
-                    <ng-container *ngFor="let sublabel of bb.subLabel; index as subLabelIndex">
+                    <ng-container *ngFor="let sublabel of pp.subLabel; index as subLabelIndex">
                         <div class="sub-label-flex-container sub-label-padding">
                             <label class="font-label flex-first"
                                 >{{ 'labellingArea.label' | translate }}: {{ sublabel.label }}</label
@@ -220,7 +220,7 @@
                             >
                             <span class="flex-third"></span>
                             <button
-                                class="modal-butto flex-fourth"
+                                class="button-style removesublabel-btn"
                                 (click)="onRemoveSubLabel(annotationIndex, subLabelIndex)"
                             >
                                 X
