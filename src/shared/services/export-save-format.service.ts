@@ -696,7 +696,7 @@ export class ExportSaveFormatService {
         imageContent += `"base64_img_data":"",`;
         imageContent += `"file_attributes":{},`;
         imageContent += `"regions":{${this.generateRegion(metadata)}}`;
-        // imageContent += `},`;
+        // imageContent += `}`;
 
         return imageContent;
     }
@@ -731,12 +731,14 @@ export class ExportSaveFormatService {
                 }
                 if (i !== metadata.length - 1) {
                     prev += '},';
+                } else {
+                    prev += '}}';
                 }
-                // prev = prev.slice(0, -1);
+                // prev += '}';
                 return prev;
             }, '');
         } else {
-            return `}`;
+            return '}';
         }
     }
 
@@ -746,7 +748,7 @@ export class ExportSaveFormatService {
             prev += `"${label.trim()}":"${region.trim()}",`;
         }
         prev = prev.slice(0, -1);
-        prev = prev += `}}`;
+        prev = prev += `}`;
         return prev;
     }
 }
