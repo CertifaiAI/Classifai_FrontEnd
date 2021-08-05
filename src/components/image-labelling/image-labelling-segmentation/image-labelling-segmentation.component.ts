@@ -287,24 +287,16 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     }
 
     @HostListener('dblclick', ['$event'])
-    canvasDblClickEvent(_: MouseEvent) {
+    canvasDblClickEvent(event: MouseEvent) {
         if (this.validateEndDrawPolygon(this.segState, this.isMouseWithinPoint, this.canvasContext)) {
             if (this._segCanvasService.isNewPolygon()) {
-                this._segCanvasService.drawNewPolygon(
-                    this._selectMetadata,
-                    this.image,
-                    this.canvasContext,
-                    this.canvas.nativeElement,
-                    true,
-                );
-                this.positioningLabelListPopup(this._selectMetadata.polygons);
-                this._segCanvasService.validateXYDistance(this._selectMetadata);
-                this.redrawImage(this._selectMetadata);
-                this.emitMetadata();
+                this.completingPolygon();
             }
-            if (this.annotateState.annotation > -1) {
-                this.annotateStateChange({ annotation: this.annotateState.annotation, isDlbClick: true });
-                // this._undoRedoService.clearRedundantStages();
+            if (this.segState.draw) {
+                const mouseWithinShape = this.mouseMoveDrawCanvas(event);
+                if (mouseWithinShape) {
+                    this.annotateStateChange({ annotation: this.annotateState.annotation, isDlbClick: true });
+                }
             }
         }
     }
