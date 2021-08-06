@@ -13,9 +13,10 @@ import {
 } from '@angular/core';
 import { Subject, timer } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { MouseCursorState, MousrCursorService } from 'shared/services/mouse-cursor.service';
 import { FrameExtractionService } from '../video-frame-extraction.service';
 import { VideoLabellingActionService } from '../video-labelling-action.service';
-import { BboxMetadata, FrameArray, LabelledFrame } from '../video-labelling.modal';
+import { ActionState, BboxMetadata, FrameArray, LabelledFrame } from '../video-labelling.modal';
 import { BoundingBoxCanvasService } from './bounding-box-canvas.service';
 
 @Component({
@@ -226,6 +227,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @ViewChild('canvasdrawing') canvas!: ElementRef<HTMLCanvasElement>;
     private canvasContext!: CanvasRenderingContext2D;
     private unsubscribe$: Subject<any> = new Subject();
+    private mouseCursor!: MouseCursorState;
+    private boundingBoxState!: ActionState;
     occupiedSpace = [];
     activeFrame = 0;
     activePreview: HTMLImageElement = new Image();
@@ -242,6 +245,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         private _videoLblStateService: VideoLabellingActionService,
         private videoFrameExtractionService: FrameExtractionService,
         private _boundingBoxCanvas: BoundingBoxCanvasService,
+        private _mouseCursorService: MousrCursorService,
     ) {}
 
     ngOnInit() {
@@ -253,6 +257,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 }
             });
 
+        this._mouseCursorService.mouseCursor$
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe((state) => (this.mouseCursor = state));
         // this.totalFrameArr = this.videoFrameExtractionService.getBlobList();
     }
 
@@ -400,16 +407,16 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this.canvasContext.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
     }
 
-    testDraw() {
-        this.canvasContext.drawImage(this.activePreview, 0, 0);
-    }
-
-    testClear() {
-        this.canvasContext.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
+    changeMouseCursorState(mouseCursor?: Partial<MouseCursorState>) {
+        this._mouseCursorService.setState(mouseCursor);
     }
 
     @HostListener('mousedown', ['$event'])
     mouseDown(event: MouseEvent) {
+        if (this.boundingBoxState.draw) {
+            this.changeMouseCursorState({ crosshair: true });
+            // this._boundingBoxCanvas.setPanXY(event.offsetX, event.offsetY);
+        }
         this._boundingBoxCanvas.getMousePosA(event, this.canvasContext);
         this.isMouseDown = true;
     }
@@ -424,8 +431,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('mousemove', ['$event'])
     mouseMove(event: MouseEvent) {
         if (this.isMouseDown) {
-            // this._boundingBoxCanvas.getMousePosB(event, this.canvasContext);
-            // this._boundingBoxCanvas.drawBoundingBox(this.canvasContext);
+            this._boundingBoxCanvas.getMousePosB(event, this.canvasContext);
+            this._boundingBoxCanvas.drawBoundingBox(this.canvasContext);
         }
     }
 }
