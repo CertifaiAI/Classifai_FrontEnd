@@ -85,7 +85,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         private _zoomService: ZoomService,
         private _mouseCursorService: MousrCursorService,
         private _shortcutKeyService: ShortcutKeyService,
-        private _sharedUndoRedoService: SharedUndoRedoService
+        private _sharedUndoRedoService: SharedUndoRedoService,
     ) {}
 
     ngOnInit(): void {
@@ -128,12 +128,12 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
 
         this._sharedUndoRedoService.action.subscribe((message) => {
             switch (message) {
-              case 'SEG_UNDO':
-                this.undoAction();
-                break;
-              case 'SEG_REDO':
-                this.redoAction();
-                break;
+                case 'SEG_UNDO':
+                    this.undoAction();
+                    break;
+                case 'SEG_REDO':
+                    this.redoAction();
+                    break;
             }
         });
     }
@@ -330,9 +330,13 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'paste')) {
                 this.pastePolygon();
             } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'redo')) {
-                this.redoAction();
+                if (!this._segCanvasService.isNewPolygon()) {
+                    this.redoAction();
+                }
             } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'undo')) {
-                this.undoAction();
+                if (!this._segCanvasService.isNewPolygon()) {
+                    this.undoAction();
+                }
             }
             // }
         } catch (err) {
@@ -591,7 +595,12 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             // but mouse has already moving into canvas, thus getting error
             this.isMouseWithinPoint =
                 this._selectMetadata && this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
-            if (this.isMouseWithinPoint && !this.showDropdownLabelBox && this.segState.draw && this.segState.crossLine) {
+            if (
+                this.isMouseWithinPoint &&
+                !this.showDropdownLabelBox &&
+                this.segState.draw &&
+                this.segState.crossLine
+            ) {
                 this.crossH.nativeElement.style.visibility = 'visible';
                 this.crossV.nativeElement.style.visibility = 'visible';
                 this.crossH.nativeElement.style.top = event.pageY.toString() + 'px';
