@@ -85,7 +85,7 @@
             },
             "6": {
                 "key": "Backspace",
-                "functionality": "Remove previous polygon points /Delete a selected bounding box/ polygon"
+                "functionality": "Delete a selected bounding box/ polygon/ remove previous polygon points when drawing"
             },
             "7": {
                 "key": "Delete",

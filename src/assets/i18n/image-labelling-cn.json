@@ -83,7 +83,7 @@
             },
             "6": {
                 "key": "Backspace",
-                "functionality": "删除之前的多边形点 /删除选定的边界框/多边形"
+                "functionality": "删除选定的边界框/多边形/删除之前的多边形点"
             },
             "7": {
                 "key": "Delete",
