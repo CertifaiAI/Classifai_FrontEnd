@@ -68,6 +68,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     labelSearch: string = '';
     labelList: LabelInfo[] = [];
     allLabelList: LabelInfo[] = [];
+    mouseEvent: MouseEvent | undefined;
     @Input() _selectMetadata!: PolyMetadata;
     @Input() _imgSrc: string = '';
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
@@ -313,6 +314,9 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                         case 'Escape':
                             this.resetDrawingPolygon();
                             break;
+                        case 'Backspace':
+                            this.removeLastPointPolygon();
+                            break;
                     }
                 } else {
                     switch (key) {
@@ -366,6 +370,17 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             this.canvasContext,
             this.canvas.nativeElement,
         );
+    }
+
+    removeLastPointPolygon() {
+        this._segCanvasService.removeLastPoint(
+            this._selectMetadata,
+            this.canvasContext,
+            this.image,
+            this.canvas.nativeElement
+        );
+        this.redrawImage(this._selectMetadata);
+        this.mouseMoveDrawCanvas(this.mouseEvent as MouseEvent);
     }
 
     deletePolygon() {
@@ -627,6 +642,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 }
                 if (this.segState.draw) {
                     // this._segCanvasService.setPanXY(event);
+                    this.mouseEvent = event;
                     const mouseWithinShape = this.mouseMoveDrawCanvas(event);
                     if (mouseWithinShape) {
                         this.crossH.nativeElement.style.visibility = 'hidden';
