@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { xyCoordinate } from '../video-labelling.modal';
+import { BboxMetadata, xyCoordinate } from '../video-labelling.modal';
 @Injectable({
     providedIn: 'any',
 })
@@ -44,6 +44,20 @@ export class BoundingBoxCanvasService {
         context.lineWidth = 2;
         context.stroke();
     };
+
+    public mouseClickWithinPointPath(
+        { img_x, img_y, img_w, img_h }: BboxMetadata,
+        { offsetX, offsetY }: MouseEvent,
+    ): boolean {
+        try {
+            return offsetX > img_x && offsetX < img_x + img_w && offsetY > img_y && offsetY < img_y + img_h
+                ? true
+                : false;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
+    }
 
     public setPanXY(newX: number, newY: number): boolean {
         try {

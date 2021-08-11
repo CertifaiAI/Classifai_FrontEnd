@@ -30,7 +30,25 @@ export class VideoLabellingLayoutComponent implements OnInit {
         },
     ];
 
-    constructor() {}
+    constructor() {
+        // Mock Values from Backend
+        this.selectedMetaData = {
+            img_x: 0,
+            img_y: 0,
+            img_w: 960,
+            img_h: 540,
+            img_ori_h: 1920,
+            img_ori_w: 1080,
+            img_path: 'path',
+            img_thumbnail: '',
+            project_name: 'project name',
+            uuid: '1234',
+            bnd_box: undefined,
+            img_depth: undefined,
+            file_size: 12345,
+            polygons: undefined,
+        };
+    }
 
     ngOnInit() {}
 

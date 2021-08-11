@@ -438,9 +438,15 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     @HostListener('mousemove', ['$event'])
     mouseMove(event: MouseEvent) {
-        // if (this.isMouseDown) {
-        //     this._boundingBoxCanvas.getMousePosB(event, this.canvasContext);
-        //     this._boundingBoxCanvas.drawBoundingBox(this.canvasContext);
-        // }
+        if (this._selectMetadata) {
+            const mouseWithinPointPath = this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event);
+            if (mouseWithinPointPath) {
+                if (this.boundingBoxState.draw) {
+                    this.changeMouseCursorState({ crosshair: true });
+                }
+            } else {
+                this.changeMouseCursorState();
+            }
+        }
     }
 }
