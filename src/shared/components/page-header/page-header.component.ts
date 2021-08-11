@@ -181,7 +181,11 @@ export class PageHeaderComponent implements OnInit {
                 this._tutorialService.setState({ drawBbox: true });
                 this.openTutorial();
             }
-        }
+        } else if (pageURL === '/imglabel/seg') {
+          if (!this.tutorialState.drawPolygon) {
+              // TODO: Tutorial for Segmentation
+          }
+      }
     }
 
     openTutorial() {

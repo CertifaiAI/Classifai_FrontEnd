@@ -10,11 +10,13 @@ import { BehaviorSubject } from 'rxjs';
 export type TutorialState = {
     createProject: boolean;
     drawBbox: boolean;
+    drawPolygon: boolean;
 };
 
 const initialState: TutorialState = {
     createProject: false,
     drawBbox: false,
+    drawPolygon: false
 };
 
 @Injectable({
