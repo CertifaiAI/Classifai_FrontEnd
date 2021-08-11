@@ -8,7 +8,7 @@
         </div>
         <!-------------------------- Navigations -------------------------->
         <ng-container *ngFor="let label of headerLabels; let last = last">
-          <div *ngIf="!label.disable">
+            <div *ngIf="!label.disable">
                 <a class="link" [routerLink]="label.url">
                     <div
                         class="btn-container"
@@ -51,21 +51,24 @@
     </div>
 </div>
 
-<modal
-    [id]="modalIdTutorial"
-    [modalBodyStyle]="tutorialBodyStyle"
-    [modalTitle]="'How to Start a Project ?'"
-    [scrollable]="false"
->
+<modal [id]="modalIdTutorial" [modalBodyStyle]="tutorialBodyStyle" [modalTitle]="modalTitle" [scrollable]="false">
     <div class="display-modal-container">
-      <img [src]="tutorial[tutorialIdx].imageTutorialPath" [alt]="tutorial[tutorialIdx].imageTutorialAlt" class="tutorial-img"/>
-      <p class="tutorial-description">
-          {{ tutorial[tutorialIdx].imageTutorialDesc }}
-      </p>
+        <img
+            [src]="tutorial[tutorialIdx].imageTutorialPath"
+            [alt]="tutorial[tutorialIdx].imageTutorialAlt"
+            class="tutorial-img"
+        />
+        <p class="tutorial-description">
+            {{ tutorial[tutorialIdx].imageTutorialDesc }}
+        </p>
     </div>
     <div class="modal-button-container">
-        <button class="button-style end-btn" (click)="endTutorial()" *ngIf="tutorialIdx === tutorial.length - 1">Get Started</button>
-        <button class="button-style next-btn" (click)="nextTutorial()" *ngIf="tutorialIdx < tutorial.length - 1">Next</button>
+        <button class="button-style end-btn" (click)="endTutorial()" *ngIf="tutorialIdx === tutorial.length - 1">
+            Get Started
+        </button>
+        <button class="button-style next-btn" (click)="nextTutorial()" *ngIf="tutorialIdx < tutorial.length - 1">
+            Next
+        </button>
         <button class="button-style prev-btn" (click)="prevTutorial()" *ngIf="tutorialIdx > 0">Previous</button>
     </div>
 </modal>
