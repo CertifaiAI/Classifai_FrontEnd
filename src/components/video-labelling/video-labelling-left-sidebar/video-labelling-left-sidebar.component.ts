@@ -43,7 +43,9 @@ export class VideoLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     hoverLabel: 'leftSideBar.pointer',
                     alt: `Pointer`,
                     toggleable: true,
-                    onClick: () => null,
+                    onClick: () => {
+                        this._videoLabelState.setState({ draw: false, drag: true, scroll: true });
+                    },
                 },
                 {
                     imgPath: `assets/icons/rec_bounding_box.svg`,

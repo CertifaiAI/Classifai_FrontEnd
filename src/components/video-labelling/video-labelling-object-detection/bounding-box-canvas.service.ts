@@ -5,10 +5,13 @@
  */
 
 import { Injectable } from '@angular/core';
+import { xyCoordinate } from '../video-labelling.modal';
 @Injectable({
     providedIn: 'any',
 })
 export class BoundingBoxCanvasService {
+    private panXY: xyCoordinate = { x: 0, y: 0 };
+
     locA: { x: number; y: number } = {
         x: 0,
         y: 0,
@@ -41,4 +44,13 @@ export class BoundingBoxCanvasService {
         context.lineWidth = 2;
         context.stroke();
     };
+
+    public setPanXY(newX: number, newY: number): boolean {
+        try {
+            return newX && newY ? ((this.panXY.x = newX), (this.panXY.y = newY), true) : false;
+        } catch (err) {
+            console.log('ObjectDetection setPanXY(newX: number, newY: number):boolean', err.name + ': ', err.message);
+            return false;
+        }
+    }
 }

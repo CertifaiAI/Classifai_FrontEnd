@@ -255,6 +255,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 if (clear) {
                     this.onEraseBoundingBox();
                 }
+                this.boundingBoxState = { ...action, clear, fitCenter };
             });
 
         this._mouseCursorService.mouseCursor$
@@ -412,20 +413,26 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this._mouseCursorService.setState(mouseCursor);
     }
 
+    currentCursor() {
+        return this._mouseCursorService.changeCursor(this.mouseCursor);
+    }
+
     @HostListener('mousedown', ['$event'])
     mouseDown(event: MouseEvent) {
-        // if (this.boundingBoxState.draw) {
-        //     this.changeMouseCursorState({ crosshair: true });
-        //     this._boundingBoxCanvas.setPanXY(event.offsetX, event.offsetY);
-        // }
-        this._boundingBoxCanvas.getMousePosA(event, this.canvasContext);
+        if (this.boundingBoxState.draw) {
+            this.changeMouseCursorState({ crosshair: true });
+            this._boundingBoxCanvas.setPanXY(event.offsetX, event.offsetY);
+            this._boundingBoxCanvas.getMousePosA(event, this.canvasContext);
+        }
         this.isMouseDown = true;
     }
 
     @HostListener('mouseup', ['$event'])
     mouseUp(event: MouseEvent) {
-        this._boundingBoxCanvas.getMousePosB(event, this.canvasContext);
-        this._boundingBoxCanvas.drawBoundingBox(this.canvasContext);
+        if (this.boundingBoxState.draw) {
+            this._boundingBoxCanvas.getMousePosB(event, this.canvasContext);
+            this._boundingBoxCanvas.drawBoundingBox(this.canvasContext);
+        }
         this.isMouseDown = false;
     }
 

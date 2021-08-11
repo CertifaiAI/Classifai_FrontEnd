@@ -1,6 +1,6 @@
 <div class="videoTimelineContainer">
     <div class="canvas-container">
-        <canvas #canvasdrawing class="canvasstyle"></canvas>
+        <canvas #canvasdrawing class="canvasstyle" [ngStyle]="{ cursor: currentCursor() }"></canvas>
     </div>
     <div class="control-layout">
         <div class="control-container">
