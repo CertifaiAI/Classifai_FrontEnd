@@ -19,6 +19,10 @@ import {
 } from 'shared/types/image-labelling/image-labelling.model';
 import { Utils } from 'util/utils';
 
+interface ExtendedMouseEvent extends MouseEvent {
+  layerX: number;
+  layerY: number;
+}
 
 type ClickPoint = {
     polygonIndex: number;
@@ -45,7 +49,7 @@ export class SegmentationCanvasService {
     constructor() {}
 
     mouseDownDraw(
-        event: MouseEvent,
+        event: ExtendedMouseEvent,
         metadata: PolyMetadata,
         canvas: HTMLCanvasElement,
         img: HTMLImageElement,
@@ -92,7 +96,7 @@ export class SegmentationCanvasService {
         img: HTMLImageElement,
         context: CanvasRenderingContext2D,
         canvas: HTMLCanvasElement,
-        event: MouseEvent,
+        event: ExtendedMouseEvent,
         ctrlDown: boolean,
         isMouseDown: boolean,
         redrawCallback: (arg: Method) => void,
@@ -613,14 +617,17 @@ export class SegmentationCanvasService {
         }
     }
 
-    private drawfromPreviousPoint({ offsetX, offsetY }: MouseEvent, context: CanvasRenderingContext2D) {
+    private drawfromPreviousPoint({ offsetX, offsetY, layerX, layerY }: ExtendedMouseEvent, context: CanvasRenderingContext2D) {
         try {
             if (this.tmpPolygon?.coorPt) {
                 const { length } = this.tmpPolygon.coorPt;
+                const X = offsetX === 0 ? layerX : offsetX;
+                const Y = offsetY === 0 ? layerY : offsetY;
+                console.log(X, offsetX, layerX);
                 const newLength = length - 1;
                 context.beginPath();
                 context.moveTo(this.tmpPolygon.coorPt[newLength].x, this.tmpPolygon.coorPt[newLength].y);
-                context.lineTo(offsetX, offsetY);
+                context.lineTo(X, Y);
                 context.stroke();
             }
         } catch (err) {
