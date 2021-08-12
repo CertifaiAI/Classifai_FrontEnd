@@ -255,6 +255,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 if (clear) {
                     this.onEraseBoundingBox();
                 }
+
+                fitCenter && this.imgFitToCenter();
+
                 this.boundingBoxState = { ...action, clear, fitCenter };
             });
 
@@ -333,22 +336,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         };
     };
 
-    // clickPlay = () => {
-    //     this.isPlayingFrame = true;
-    //     this.isPausingFrame = false;
-    //     let isLooping: boolean = true;
-    //     let timeOut: number = 0;
-
-    //     for (let index = this.activeFrame; index < this.totalFrameArr.length; index++) {
-    //         timer(300 * timeOut).subscribe((x) => {
-    //             this.clearCanvas();
-    //             this.activePreview.src = this.totalFrameArr[index].frameURL;
-    //             this.canvasContext.drawImage(this.activePreview, 0, 0);
-    //         });
-    //         timeOut++;
-    //     }
-    // }
-
     clickPlay = () => {
         this.isPlayingFrame = true;
         this.isPausingFrame = false;
@@ -415,6 +402,55 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     currentCursor() {
         return this._mouseCursorService.changeCursor(this.mouseCursor);
+    }
+
+    imgFitToCenter() {
+        try {
+            const tmpObj = this._boundingBoxCanvas.calScaleTofitScreen(
+                this._selectMetadata.img_w,
+                this._selectMetadata.img_h,
+                this.canvas.nativeElement.offsetWidth,
+                this.canvas.nativeElement.offsetHeight,
+            );
+            this._selectMetadata.img_w *= tmpObj.factor;
+            this._selectMetadata.img_h *= tmpObj.factor;
+            this._boundingBoxCanvas.scaleAllBoxes(
+                tmpObj.factor,
+                this._selectMetadata.bnd_box,
+                this._selectMetadata.img_x,
+                this._selectMetadata.img_y,
+            );
+            this._selectMetadata.img_x = tmpObj.newX;
+            this._selectMetadata.img_y = tmpObj.newY;
+            this._boundingBoxCanvas.setGlobalXY(tmpObj.newX, tmpObj.newY);
+            this._boundingBoxCanvas.moveAllBbox(
+                this._selectMetadata.bnd_box,
+                this._selectMetadata.img_x,
+                this._selectMetadata.img_y,
+            );
+            this.redrawImage(this._selectMetadata);
+            // this.resetZoom();
+            this.canvasContext.canvas.style.transformOrigin = `0 0`;
+            this.canvasContext.canvas.style.transform = `scale(1, 1)`;
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    redrawImage({ img_x, img_y, img_w, img_h }: BboxMetadata) {
+        this.clearCanvas();
+        this.canvasContext.drawImage(this.activePreview, img_x, img_y, img_w, img_h);
+        // if (this._tabStatus[2].annotation?.length !== 0) {
+        //     this.getLabelList();
+        //     let annotationList: Boundingbox[] = [];
+        //     if (this._tabStatus[2].annotation) {
+        //         if (this._tabStatus[2].annotation[0].bnd_box) {
+        //             annotationList = this._tabStatus[2].annotation[0].bnd_box;
+        //         }
+        //     }
+        //     this.sortingLabelList(this.labelList, annotationList);
+        // }
+        // this._boundingBoxCanvas.drawAllBoxOn(this.labelList, this._selectMetadata.bnd_box, this.canvasContext);
     }
 
     @HostListener('mousedown', ['$event'])

@@ -72,7 +72,10 @@ export class VideoLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     hoverLabel: `leftSideBar.fitCenter`,
                     alt: `Fit Center`,
                     toggleable: false,
-                    onClick: () => null,
+                    onClick: () => {
+                        this.resetSelectedAnnotate();
+                        this._videoLabelState.setState({ draw: false, drag: false, fitCenter: true, scroll: false });
+                    },
                 },
             ],
         };
