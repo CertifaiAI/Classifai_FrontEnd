@@ -275,19 +275,22 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         /**
          * https://stackoverflow.com/questions/37532790/typescript-class-drawimage/37534804#37534804
          */
-        this.activePreview.onload = () => {
-            this.canvasContext.drawImage(this.activePreview, 0, 0);
-        };
+        // this.activePreview.onload = () => {
+        //     this.canvasContext.drawImage(this.activePreview, 0, 0);
+        // };
+        this.canvasContext.drawImage(this.activePreview, 0, 0);
+        this.imgFitToCenter();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes._totalFrame.currentValue) {
-            this.totalFrameArr = [...Array(changes._totalFrame.currentValue as number)];
-        }
+        console.log('changes', changes);
+        // if (changes._totalFrame.currentValue) {
+        //     this.totalFrameArr = [...Array(changes._totalFrame.currentValue as number)];
+        // }
 
-        if (this.canvas) {
-            console.log('CALLED');
-        }
+        // if (this.canvas) {
+        //     console.log('CALLED');
+        // }
     }
 
     onScroll = ({ deltaY }: WheelEvent) => {
@@ -390,6 +393,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this.clearCanvas();
         this.canvasContext.beginPath();
         this.canvasContext.drawImage(this.activePreview, 0, 0);
+        this.imgFitToCenter();
     }
 
     clearCanvas() {
