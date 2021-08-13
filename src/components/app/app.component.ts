@@ -13,7 +13,7 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
     favIcon: HTMLLinkElement = document.querySelector('#favIcon') as HTMLLinkElement;
-    icon: string = `assets/classifai_dark.ico`;
+    icon: string = `../assets/cs-icon.ico`;
 
     constructor() {
         this.favIcon.href = this.icon;

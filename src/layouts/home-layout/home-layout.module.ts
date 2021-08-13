@@ -14,7 +14,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from 'shared/shared.module';
 import { TranslateModule } from '@ngx-translate/core';
-import { HomeFooterComponent } from 'components/home/home-footer/home-footer.component';
 
 @NgModule({
     imports: [CommonModule, SharedModule, TranslateModule, ModalModule, RouterModule],
@@ -23,7 +22,6 @@ import { HomeFooterComponent } from 'components/home/home-footer/home-footer.com
         HomeHeaderComponent,
         HomeCardComponent,
         HomeContentComponent,
-        HomeFooterComponent,
     ],
     // providers: [TranslateService],
 })

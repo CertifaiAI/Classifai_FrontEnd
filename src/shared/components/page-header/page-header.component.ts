@@ -24,7 +24,7 @@ type HeaderLabelSchema = {
 export class PageHeaderComponent {
     @Input() _onChange!: ImgLabelProps;
     // @Output() _navigate: EventEmitter<UrlProps> = new EventEmitter();
-    logoSrc: string = `assets/icons/classifai_logo_white.svg`;
+    // logoSrc: string = `assets/icons/classifai_logo_white.svg`;
     jsonSchema!: IconSchema;
     headerLabels: HeaderLabelSchema[] = [
         {
