@@ -80,7 +80,7 @@ $fontSize: 2vh;
 }
 
 .sub-label-container {
-    @include container-flex-width(40vw);
+    @include container-flex-width(45vw);
 }
 
 .sub-label-flex-container {
@@ -97,19 +97,19 @@ $fontSize: 2vh;
     margin: 0rem;
     -moz-text-align-last: center;
     text-align-last: center;
-    background: #262a2e;
+    background: #363636;
     color: white;
-    box-shadow: inset -0.5vw 6.25vw 1vw 0 rgba(0, 0, 0, 0.2), inset -0.5vw -0.5vw 1vw 0 rgba(255, 255, 255, 0.4);
+    // box-shadow: inset -0.5vw 6.25vw 1vw 0 rgba(0, 0, 0, 0.2), inset -0.5vw -0.5vw 1vw 0 rgba(255, 255, 255, 0.4);
 
-    &:hover {
-        box-shadow: inset -0.375vw -0.375vw 0.625vw 0 rgba(0, 0, 0, 0.2),
-            inset 0.375vw 0.375vw 0.625vw 0 rgba(255, 255, 255, 0.5);
-    }
+    // &:hover {
+    //     box-shadow: inset -0.375vw -0.375vw 0.625vw 0 rgba(0, 0, 0, 0.2),
+    //         inset 0.375vw 0.375vw 0.625vw 0 rgba(255, 255, 255, 0.5);
+    // }
 
-    &:active {
-        box-shadow: inset 0.375vw 0.375vw 0.625vw 0 rgba(0, 0, 0, 0.2),
-            inset -0.375vw -0.375vw 0.625vw 0 rgba(255, 255, 255, 0.5);
-    }
+    // &:active {
+    //     box-shadow: inset 0.375vw 0.375vw 0.625vw 0 rgba(0, 0, 0, 0.2),
+    //         inset -0.375vw -0.375vw 0.625vw 0 rgba(255, 255, 255, 0.5);
+    // }
 }
 
 .static-input {
@@ -557,6 +557,26 @@ tr th:nth-child(1) {
     margin-right: 0.7vw;
     font-size: 2vh;
     min-width: 7.5vw;
+    float: right;
+}
+
+.addsublabel-btn {
+    padding: 1vh 0.5vw 1vh 0.5vw;
+    background-color: #2d8ceb;
+    // margin-top: 0.7vw;
+    margin-right: 0.7vw;
+    font-size: 2vh;
+    min-width: 7.5vw;
+    float: right;
+}
+
+.removesublabel-btn {
+    padding: 1vh 0.5vw 1vh 0.5vw;
+    background-color: #ff3f3f;
+    // margin-top: 0.7vw;
+    margin-right: 0.7vw;
+    font-size: 2vh;
+    min-width: 2vw;
     float: right;
 }
 

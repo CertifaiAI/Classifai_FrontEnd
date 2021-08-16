@@ -359,7 +359,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                             mergeMap(({ uuid_list }) => {
                                 return uuid_list.length > 0
                                     ? uuid_list
-                                          .slice(this.sliceNum, (this.sliceNum += 10))
+                                          .slice(this.sliceNum, (this.sliceNum += 20))
                                           .map((uuid) => thumbnail$(this.selectedProjectName, uuid))
                                     : [];
                             }),
@@ -755,6 +755,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         if (this.selectedMetaData) {
             if (this.selectedMetaData.polygons) {
                 this.selectedMetaData.polygons[changeAnnoLabel.index].label = changeAnnoLabel.label;
+                this.currentAnnotationLabel = changeAnnoLabel.label;
             }
         }
         this.tabStatus = this._imgLblLayoutService.changeAnnotationLabel(this.tabStatus, changeAnnoLabel);
@@ -808,6 +809,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 }
             }),
         );
+
+        if (this.currentAnnotationLabel === value) {
+            isDupSubLabel = true;
+        }
 
         if (!isDupSubLabel) {
             this.tabStatus = this._imgLblLayoutService.submitLabel(this.tabStatus, value, this.currentAnnotationIndex, {
