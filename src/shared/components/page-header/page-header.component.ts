@@ -244,7 +244,7 @@ export class PageHeaderComponent implements OnInit {
               this.modalTitle = this.drawPolygonTitle;
               this.modalIdTutorial = this.drawPolygonId;
               this.tutorial = this.drawPolygonTutorial;
-              this._tutorialService.setState({ drawBbox: true });
+              this._tutorialService.setState({ drawPolygon: true });
               this.openTutorial(ignoreCheckState);
           }
       }
@@ -299,7 +299,7 @@ export class PageHeaderComponent implements OnInit {
                     : [
                           {
                               imgPath: `assets/icons/help.svg`,
-                              hoverLabel: `pageHeader.profile`,
+                              hoverLabel: `pageHeader.tutorial`,
                               alt: `Tutorial`,
                               onClick: () => this.tutorialConfig(true),
                           },
