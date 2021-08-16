@@ -218,39 +218,48 @@ export class PageHeaderComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        const pageURL = this._router.url;
-        if (pageURL === '/dataset') {
-            if (!this.tutorialState.createProject) {
-                this.modalTitle = this.createProjectTitle;
-                this.modalIdTutorial = this.createProjectId;
-                this.tutorial = this.createProjectTutorial;
-                this._tutorialService.setState({ createProject: true });
-                this.openTutorial();
-            }
-        } else if (pageURL === '/imglabel/bndbox') {
-            if (!this.tutorialState.drawBbox) {
-                this.modalTitle = this.drawBboxTitle;
-                this.modalIdTutorial = this.drawBboxId;
-                this.tutorial = this.drawBboxTutorial;
-                this._tutorialService.setState({ drawBbox: true });
-                this.openTutorial();
-            }
-        } else if (pageURL === '/imglabel/seg') {
-            if (!this.tutorialState.drawPolygon) {
-                this.modalTitle = this.drawPolygonTitle;
-                this.modalIdTutorial = this.drawPolygonId;
-                this.tutorial = this.drawPolygonTutorial;
-                this._tutorialService.setState({ drawBbox: true });
-                this.openTutorial();
-            }
-        }
+        this.tutorialConfig(false);
     }
 
-    openTutorial() {
-        setTimeout(() => {
+    tutorialConfig(ignoreCheckState: boolean) {
+      const pageURL = this._router.url;
+      if (pageURL === '/dataset') {
+          if (!this.tutorialState.createProject || ignoreCheckState) {
+              this.modalTitle = this.createProjectTitle;
+              this.modalIdTutorial = this.createProjectId;
+              this.tutorial = this.createProjectTutorial;
+              this._tutorialService.setState({ createProject: true });
+              this.openTutorial(ignoreCheckState);
+          }
+      } else if (pageURL === '/imglabel/bndbox') {
+          if (!this.tutorialState.drawBbox || ignoreCheckState) {
+              this.modalTitle = this.drawBboxTitle;
+              this.modalIdTutorial = this.drawBboxId;
+              this.tutorial = this.drawBboxTutorial;
+              this._tutorialService.setState({ drawBbox: true });
+              this.openTutorial(ignoreCheckState);
+          }
+      } else if (pageURL === '/imglabel/seg') {
+          if (!this.tutorialState.drawPolygon || ignoreCheckState) {
+              this.modalTitle = this.drawPolygonTitle;
+              this.modalIdTutorial = this.drawPolygonId;
+              this.tutorial = this.drawPolygonTutorial;
+              this._tutorialService.setState({ drawBbox: true });
+              this.openTutorial(ignoreCheckState);
+          }
+      }
+    }
+
+    openTutorial(ignoreCheckState: boolean) {
+        if (!ignoreCheckState) {
+          setTimeout(() => {
+              this.tutorialIdx = 0;
+              this._modalService.open(this.modalIdTutorial);
+          }, 1000);
+        } else {
             this.tutorialIdx = 0;
             this._modalService.open(this.modalIdTutorial);
-        }, 1000);
+        }
     }
 
     prevTutorial() {
@@ -289,11 +298,17 @@ export class PageHeaderComponent implements OnInit {
                       ]
                     : [
                           {
-                              imgPath: `assets/icons/profile.svg`,
+                              imgPath: `assets/icons/help.svg`,
                               hoverLabel: `pageHeader.profile`,
-                              alt: `Profile`,
-                              onClick: () => null,
+                              alt: `Tutorial`,
+                              onClick: () => this.tutorialConfig(true),
                           },
+                          {
+                            imgPath: `assets/icons/profile.svg`,
+                            hoverLabel: `pageHeader.profile`,
+                            alt: `Profile`,
+                            onClick: () => null,
+                        }
                       ],
         };
     };
