@@ -5,7 +5,12 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { CompleteMetadata, TabsProps } from '../../components/video-labelling/video-labelling.modal';
+import {
+    BboxMetadata,
+    CompleteMetadata,
+    PolyMetadata,
+    TabsProps,
+} from '../../components/video-labelling/video-labelling.modal';
 
 @Component({
     selector: 'app-video-labelling-layout',
@@ -43,7 +48,7 @@ export class VideoLabellingLayoutComponent implements OnInit {
             img_thumbnail: '',
             project_name: 'project name',
             uuid: '1234',
-            bnd_box: undefined,
+            bnd_box: [],
             img_depth: undefined,
             file_size: 12345,
             polygons: undefined,
@@ -58,5 +63,28 @@ export class VideoLabellingLayoutComponent implements OnInit {
                 element.closed = !element.closed;
             }
         });
+    };
+
+    onChangeMetadata = (mutatedMetadata: BboxMetadata & PolyMetadata): void => {
+        console.log(mutatedMetadata);
+        // this.tabStatus = this.tabStatus.map((tab) =>
+        //     tab.annotation ? { ...tab, annotation: [mutatedMetadata] } : tab,
+        // );
+        // // whenever object-detection / segmentation adding new drawing
+        // // mutate state in thumbnailList to update child comp (project comp)
+        // this.thumbnailList = this.thumbnailList.map((metadata, i) => {
+        //     return this.currentImageDisplayIndex === i ? mutatedMetadata : metadata;
+        // });
+        // // whenever object-detection / segmentation adding new drawing
+        // // mutate state in onChangeSchema to update child comp (info comp)
+        // const hasAnnotation = mutatedMetadata.bnd_box
+        //     ? mutatedMetadata.bnd_box.length > 0
+        //     : mutatedMetadata.polygons.length > 0;
+
+        // this.onChangeSchema = {
+        //     ...this.onChangeSchema,
+        //     hasAnnotation,
+        // };
+        // this.updateProjectProgress();
     };
 }

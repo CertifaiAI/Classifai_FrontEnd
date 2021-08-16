@@ -11,12 +11,14 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
+import { cloneDeep } from 'lodash-es';
 import { Subject, timer } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { AnnotateActionState, AnnotateSelectionService } from 'shared/services/annotate-selection.service';
 import { MouseCursorState, MousrCursorService } from 'shared/services/mouse-cursor.service';
 import { FrameExtractionService } from '../video-frame-extraction.service';
 import { VideoLabellingActionService } from '../video-labelling-action.service';
-import { ActionState, BboxMetadata, FrameArray, LabelledFrame } from '../video-labelling.modal';
+import { ActionState, BboxMetadata, Boundingbox, FrameArray, LabelledFrame } from '../video-labelling.modal';
 import { BoundingBoxCanvasService } from './bounding-box-canvas.service';
 
 @Component({
@@ -223,12 +225,14 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @Input() _totalFrame = this.totalFrameArr.length;
     @Input() _selectMetadata!: BboxMetadata;
     @Output() _onHide: EventEmitter<LabelledFrame> = new EventEmitter();
+    @Output() _onChangeMetadata: EventEmitter<BboxMetadata> = new EventEmitter();
     @ViewChild('videoTimelineRef') _videoTimelineRef!: ElementRef<HTMLDivElement>;
     @ViewChild('canvasdrawing') canvas!: ElementRef<HTMLCanvasElement>;
     private canvasContext!: CanvasRenderingContext2D;
     private unsubscribe$: Subject<any> = new Subject();
     private mouseCursor!: MouseCursorState;
     private boundingBoxState!: ActionState;
+    private annotateState!: AnnotateActionState;
     occupiedSpace = [];
     activeFrame = 0;
     activePreview: HTMLImageElement = new Image();
@@ -246,6 +250,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         private videoFrameExtractionService: FrameExtractionService,
         private _boundingBoxCanvas: BoundingBoxCanvasService,
         private _mouseCursorService: MousrCursorService,
+        private _annotateSelectState: AnnotateSelectionService,
     ) {}
 
     ngOnInit() {
@@ -258,12 +263,33 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
                 fitCenter && this.imgFitToCenter();
 
+                if (clear) {
+                    this._selectMetadata.bnd_box = [];
+                    // this._undoRedoService.appendStages({
+                    //     meta: this._selectMetadata,
+                    //     method: 'draw',
+                    // });
+                    this.redrawImage(this._selectMetadata);
+                    this.emitMetadata();
+                }
+
                 this.boundingBoxState = { ...action, clear, fitCenter };
             });
 
         this._mouseCursorService.mouseCursor$
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe((state) => (this.mouseCursor = state));
+
+        this._annotateSelectState.labelStaging$.pipe(takeUntil(this.unsubscribe$)).subscribe((state) => {
+            this.annotateState = state;
+            this._boundingBoxCanvas.setCurrentSelectedbBox(state.annotation);
+            /**
+             * allow click annotate to highlight respective BB
+             * @property _selectMetadata trufy check due to first start project will have no state
+             *           but after that it will always it's state being filled
+             */
+            this._selectMetadata && this.redrawImage(this._selectMetadata);
+        });
 
         // this.totalFrameArr = this.videoFrameExtractionService.getBlobList();
     }
@@ -282,14 +308,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log('changes', changes);
-        // if (changes._totalFrame.currentValue) {
-        //     this.totalFrameArr = [...Array(changes._totalFrame.currentValue as number)];
-        // }
-
-        // if (this.canvas) {
-        //     console.log('CALLED');
-        // }
+        if (changes._selectMetadata?.previousValue && changes._selectMetadata?.currentValue) {
+            this.redrawImage(this._selectMetadata);
+        }
     }
 
     onScroll = ({ deltaY }: WheelEvent) => {
@@ -383,7 +404,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     initializeCanvas(width: string = '95%') {
         this.canvas.nativeElement.style.width = width;
-        this.canvas.nativeElement.style.height = '45%';
+        this.canvas.nativeElement.style.height = '50%';
         this.canvas.nativeElement.width = this.canvas.nativeElement.offsetWidth;
         this.canvas.nativeElement.height = this.canvas.nativeElement.offsetHeight;
         this.canvasContext = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
@@ -454,39 +475,246 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         //     }
         //     this.sortingLabelList(this.labelList, annotationList);
         // }
-        // this._boundingBoxCanvas.drawAllBoxOn(this.labelList, this._selectMetadata.bnd_box, this.canvasContext);
+        this._boundingBoxCanvas.drawAllBoxOn(
+            [{ name: 'People', count: 1 }],
+            this._selectMetadata.bnd_box,
+            this.canvasContext,
+        );
+    }
+
+    annotateSelectChange(newState: AnnotateActionState) {
+        this._annotateSelectState.setState(newState);
+    }
+
+    finishDrawBoundingBox(event: MouseEvent) {
+        // this.getLabelList();
+        // let annotationList: Boundingbox[] = [];
+        // if (this._tabStatus[2].annotation) {
+        //     if (this._tabStatus[2].annotation[0].bnd_box) {
+        //         annotationList = this._tabStatus[2].annotation[0].bnd_box;
+        //     }
+        // }
+        // this.sortingLabelList(this.labelList, annotationList);
+        const retObj = this._boundingBoxCanvas.mouseUpDrawEnable(
+            this._selectMetadata,
+            [{ name: 'People', count: 1 }],
+            (isDone) => {
+                if (isDone) {
+                    // this._undoRedoService.isStateChange(this._selectMetadata.bnd_box) &&
+                    //     this._undoRedoService.appendStages({
+                    //         meta: cloneDeep(this._selectMetadata),
+                    //         method: 'draw',
+                    //     });
+                    this.getBBoxDistanceFromImage();
+                    this.emitMetadata();
+                }
+            },
+        );
+        if (retObj.isNew || event.type === 'mouseout') {
+            // Positioning the floating div at the bottom right corner of bounding box
+            let posFromTop = event.offsetY * (100 / document.documentElement.clientHeight) + 8.5;
+            let posFromLeft = event.offsetX * (100 / document.documentElement.clientWidth) + 2.5;
+            // Re-adjustment of floating div position if it is outside of the canvas
+            if (posFromTop < 9) {
+                posFromTop = 9;
+            }
+            if (posFromTop > 76) {
+                posFromTop = 76;
+            }
+            if (posFromLeft < 2.5) {
+                posFromLeft = 2.5;
+            }
+            if (posFromLeft > 66) {
+                posFromLeft = 66;
+            }
+            // this.floatdiv.nativeElement.style.top = posFromTop.toString() + 'vh';
+            // this.floatdiv.nativeElement.style.left = posFromLeft.toString() + 'vw';
+            // this.showDropdownLabelBox = true;
+            // this.labelSearch = '';
+            // this.invalidInput = false;
+            // setTimeout(() => {
+            //     this.lbltypetxt.nativeElement.focus();
+            // }, 100);
+        } else {
+            // this.showDropdownLabelBox = false;
+        }
+        retObj.isNew && this.annotateSelectChange({ annotation: retObj.selBox, isDlbClick: false });
+    }
+
+    getBBoxDistanceFromImage() {
+        this._boundingBoxCanvas.getBBoxDistfromImg(
+            this._selectMetadata.bnd_box,
+            this._selectMetadata.img_x,
+            this._selectMetadata.img_y,
+        );
+    }
+
+    emitMetadata() {
+        this._onChangeMetadata.emit(this._selectMetadata);
     }
 
     @HostListener('mousedown', ['$event'])
     mouseDown(event: MouseEvent) {
-        if (this.boundingBoxState.draw) {
-            this.changeMouseCursorState({ crosshair: true });
-            this._boundingBoxCanvas.setPanXY(event.offsetX, event.offsetY);
-            this._boundingBoxCanvas.getMousePosA(event, this.canvasContext);
+        try {
+            if (this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event)) {
+                this.isMouseDown = true;
+                if (this.boundingBoxState.drag) {
+                    this.changeMouseCursorState({ grabbing: true });
+                    this._boundingBoxCanvas.setPanXY(event.offsetX, event.offsetY);
+                }
+                if (this.boundingBoxState.draw) {
+                    const tmpBox = this._boundingBoxCanvas.mouseDownDrawEnable(
+                        event.offsetX,
+                        event.offsetY,
+                        this._selectMetadata.bnd_box,
+                    );
+                    console.log(tmpBox);
+                    this.annotateSelectChange({ annotation: tmpBox, isDlbClick: false });
+                    this.redrawImage(this._selectMetadata);
+                }
+            } else {
+                this.isMouseDown = false;
+            }
+        } catch (err) {
+            console.log(err);
         }
-        this.isMouseDown = true;
     }
 
     @HostListener('mouseup', ['$event'])
     mouseUp(event: MouseEvent) {
-        if (this.boundingBoxState.draw) {
-            this._boundingBoxCanvas.getMousePosB(event, this.canvasContext);
-            this._boundingBoxCanvas.drawBoundingBox(this.canvasContext);
+        // if (this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event)) {
+        //     if (this.boundingBoxState.drag && this.isMouseDown) {
+        //         this._boundingBoxCanvas.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
+        //     }
+
+        //     this.isMouseDown = false;
+        // }
+
+        // if (this.boundingBoxState.draw) {
+        //     // this._boundingBoxCanvas.getMousePosB(event, this.canvasContext);
+        //     this._boundingBoxCanvas.drawBoundingBox(this.canvasContext);
+        // }
+        // this.isMouseDown = false;
+
+        try {
+            if (this.boundingBoxState.draw && this.isMouseDown) {
+                this.finishDrawBoundingBox(event);
+            }
+            if (this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event)) {
+                if (this.boundingBoxState.drag && this.isMouseDown) {
+                    this._boundingBoxCanvas.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
+                }
+
+                this.isMouseDown = false;
+            }
+        } catch (err) {
+            console.log(err);
         }
-        this.isMouseDown = false;
     }
 
     @HostListener('mousemove', ['$event'])
     mouseMove(event: MouseEvent) {
-        if (this._selectMetadata) {
-            const mouseWithinPointPath = this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event);
-            if (mouseWithinPointPath) {
-                if (this.boundingBoxState.draw) {
-                    this.changeMouseCursorState({ crosshair: true });
+        try {
+            if (this._selectMetadata) {
+                const mouseWithinPointPath = this._boundingBoxCanvas.mouseClickWithinPointPath(
+                    this._selectMetadata,
+                    event,
+                );
+                // if (
+                //     mouseWithinPointPath &&
+                //     !this.showDropdownLabelBox &&
+                //     this.boundingBoxState.draw &&
+                //     this.boundingBoxState.crossLine
+                // ) {
+                //     this.crossH.nativeElement.style.visibility = 'visible';
+                //     this.crossV.nativeElement.style.visibility = 'visible';
+                //     this.crossH.nativeElement.style.top = event.pageY.toString() + 'px';
+                //     this.crossV.nativeElement.style.left = event.pageX.toString() + 'px';
+                // } else {
+                //     this.crossH.nativeElement.style.visibility = 'hidden';
+                //     this.crossV.nativeElement.style.visibility = 'hidden';
+                // }
+                if (mouseWithinPointPath) {
+                    if (this.boundingBoxState.drag && this.isMouseDown) {
+                        const diff = this._boundingBoxCanvas.getDiffXY(event);
+                        this._selectMetadata.img_x = diff.diffX;
+                        this._selectMetadata.img_y = diff.diffY;
+                        this._boundingBoxCanvas.panRectangle(
+                            this._selectMetadata.bnd_box,
+                            this._selectMetadata.img_x,
+                            this._selectMetadata.img_y,
+                            (isDone) => {
+                                if (isDone) {
+                                    const meta = cloneDeep(this._selectMetadata);
+                                    // this._undoRedoService.isMethodChange('pan')
+                                    //     ? this._undoRedoService.appendStages({
+                                    //           meta,
+                                    //           method: 'pan',
+                                    //       })
+                                    //     : this._undoRedoService.replaceStages({
+                                    //           meta,
+                                    //           method: 'pan',
+                                    //       });
+                                }
+                            },
+                        );
+                        this.redrawImage(this._selectMetadata);
+                    } else if (this.boundingBoxState.drag && !this.isMouseDown) {
+                        this.changeMouseCursorState({ grab: true });
+                    }
+                    if (this.boundingBoxState.draw && this.isMouseDown) {
+                        this._boundingBoxCanvas.mouseMoveDrawEnable(event.offsetX, event.offsetY, this._selectMetadata);
+                        this.redrawImage(this._selectMetadata);
+                    }
+                    if (this.boundingBoxState.draw && !this.isMouseDown) {
+                        const { box, pos } = this._boundingBoxCanvas.getCurrentClickBox(
+                            event.offsetX,
+                            event.offsetY,
+                            this._selectMetadata.bnd_box,
+                        );
+
+                        if (box !== -1) {
+                            // 7 cases:
+                            // 1. top left
+                            if (pos === 'tl') {
+                                this.changeMouseCursorState({ 'nw-resize': true });
+                            }
+                            // 2. top right
+                            else if (pos === 'tr') {
+                                this.changeMouseCursorState({ 'ne-resize': true });
+                            }
+                            // 3. bottom left
+                            else if (pos === 'bl') {
+                                this.changeMouseCursorState({ 'sw-resize': true });
+                            }
+                            // 4. bottom right
+                            else if (pos === 'br') {
+                                this.changeMouseCursorState({ 'se-resize': true });
+                            }
+                            // 5. left center & right center
+                            else if (pos === 'l' || pos === 'r') {
+                                this.changeMouseCursorState({ 'w-resize': true });
+                            }
+                            // 6. top center & bottom center
+                            else if (pos === 't' || pos === 'b') {
+                                this.changeMouseCursorState({ 'n-resize': true });
+                            }
+                            // 7. Else
+                            else {
+                                // this.crossH.nativeElement.style.visibility = 'hidden';
+                                // this.crossV.nativeElement.style.visibility = 'hidden';
+                                this.changeMouseCursorState({ move: true });
+                            }
+                        } else {
+                            this.changeMouseCursorState({ crosshair: true });
+                        }
+                    }
+                } else {
+                    this.changeMouseCursorState();
                 }
-            } else {
-                this.changeMouseCursorState();
             }
+        } catch (err) {
+            console.log(err);
         }
     }
 }
