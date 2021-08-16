@@ -257,8 +257,11 @@ export class PageHeaderComponent implements OnInit {
               this._modalService.open(this.modalIdTutorial);
           }, 1000);
         } else {
-            this.tutorialIdx = 0;
-            this._modalService.open(this.modalIdTutorial);
+          // Must set delay to wait for component to reload
+          setTimeout(() => {
+              this.tutorialIdx = 0;
+              this._modalService.open(this.modalIdTutorial);
+          }, 100);
         }
     }
 
