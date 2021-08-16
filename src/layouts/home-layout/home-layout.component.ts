@@ -38,10 +38,9 @@ export class HomeLayoutComponent {
                 imgAlt: 'Bounding Box',
             },
             {
-                enabled: false,
+                enabled: true,
                 title: 'imageOpt.polygons',
                 urlPath: 'segmentation',
-                hoverLabel: 'comingSoon',
                 imgPath: 'assets/landing-page/Classifai_Thumbnail_Band_Segmentation.jpg',
                 imgAlt: 'Segmentation',
             },

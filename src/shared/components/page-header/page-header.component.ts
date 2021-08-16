@@ -139,6 +139,60 @@ export class PageHeaderComponent implements OnInit {
         },
     ];
 
+    readonly drawPolygonId = 'modal-draw-polygon-tutorial';
+    readonly drawPolygonTitle = 'How to Draw Polygon ?';
+    readonly drawPolygonTutorial = [
+        {
+            imageTutorialPath: 'assets/tutorial/draw_polygon/dm_draw_polygon_pointer.gif',
+            imageTutorialAlt: 'How to use pointer',
+            imageTutorialDesc:
+                'Click the pointer tool for moving the image and zoom in and out image using mouse scroll wheel.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/draw_polygon/dm_draw_polygon_annotation_tool.png',
+            imageTutorialAlt: 'Annotation tool',
+            imageTutorialDesc: 'Click annotation tool to annotate image.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/draw_polygon/dm_draw_polygon_draw.gif',
+            imageTutorialAlt: 'Draw polygon',
+            imageTutorialDesc:
+                'Drawing polygon lines by clicking points around the object, then use enter key or double click to complete the polygon line.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/draw_polygon/dm_draw_polygon_remove_previous_polygon_point.gif',
+            imageTutorialAlt: 'Remove previous point',
+            imageTutorialDesc:
+                'When wrongly annotate the points, use backspace key to remove the previous polygon point.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/draw_polygon/dm_draw_polygon_adjust_polygon.gif',
+            imageTutorialAlt: 'Adjust polygon',
+            imageTutorialDesc: 'Click the polygon point and drag to adjust the size of polygon around an object.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/draw_polygon/dm_draw_polygon_label.gif',
+            imageTutorialAlt: 'Select label',
+            imageTutorialDesc: 'Select the label for the object from the label list.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/draw_polygon/dm_draw_polygon_select_polygon.gif',
+            imageTutorialAlt: 'Select a polygon',
+            imageTutorialDesc: 'Click annotation tool and click to select particular polygon.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/draw_polygon/dm_draw_polygon_delete_selected_polygon.gif',
+            imageTutorialAlt: 'Delete selected polygon',
+            imageTutorialDesc:
+                'Click annotation tool, select a particular polygon and use delete or backspace key to remove the unwanted polygon.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/draw_polygon/dm_draw_polygon_remove_all_label.gif',
+            imageTutorialAlt: 'Remove all label',
+            imageTutorialDesc: 'Use eraser tool to remove all the polygon on the image. ',
+        },
+    ];
+
     tutorialIdx: number = 0;
     modalIdTutorial: string = this.createProjectId;
     tutorial: Tutorial[] = this.createProjectTutorial;
@@ -182,10 +236,14 @@ export class PageHeaderComponent implements OnInit {
                 this.openTutorial();
             }
         } else if (pageURL === '/imglabel/seg') {
-          if (!this.tutorialState.drawPolygon) {
-              // TODO: Tutorial for Segmentation
-          }
-      }
+            if (!this.tutorialState.drawPolygon) {
+                this.modalTitle = this.drawPolygonTitle;
+                this.modalIdTutorial = this.drawPolygonId;
+                this.tutorial = this.drawPolygonTutorial;
+                this._tutorialService.setState({ drawBbox: true });
+                this.openTutorial();
+            }
+        }
     }
 
     openTutorial() {

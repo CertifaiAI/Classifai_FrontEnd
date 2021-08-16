@@ -78,8 +78,12 @@
                 "functionality": "Menampal kotak sempadan/poligon yang telah disalin"
             },
             "5": {
-                "key": "Delete/Backspace (ketika kotak sempadan/poligon dipilih)",
+                "key": "Delete (ketika kotak sempadan/poligon dipilih)",
                 "functionality": "Memadam kotak sempadan/poligon yang dipilih"
+            },
+            "5": {
+                "key": "Backspace",
+                "functionality": "Memadam kotak sempadan/ poligon yang dipilih/ Padam titik poligon sebelumnya"
             },
             "6": {
                 "key": "Delete",

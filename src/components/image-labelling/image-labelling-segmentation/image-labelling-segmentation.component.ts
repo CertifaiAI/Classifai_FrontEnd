@@ -22,15 +22,15 @@ import { cloneDeep } from 'lodash-es';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import {
-  ActionState,
-  ChangeAnnotationLabel,
-  CompleteMetadata,
-  Direction,
-  LabelInfo,
-  Polygons,
-  PolyMetadata,
-  TabsProps,
-  UndoState,
+    ActionState,
+    ChangeAnnotationLabel,
+    CompleteMetadata,
+    Direction,
+    LabelInfo,
+    Polygons,
+    PolyMetadata,
+    TabsProps,
+    UndoState,
 } from 'shared/types/image-labelling/image-labelling.model';
 import { AnnotateActionState, AnnotateSelectionService } from 'shared/services/annotate-selection.service';
 import { CopyPasteService } from 'shared/services/copy-paste.service';
@@ -68,6 +68,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     labelSearch: string = '';
     labelList: LabelInfo[] = [];
     allLabelList: LabelInfo[] = [];
+    mouseEvent: MouseEvent | undefined;
     @Input() _selectMetadata!: PolyMetadata;
     @Input() _imgSrc: string = '';
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
@@ -85,7 +86,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         private _zoomService: ZoomService,
         private _mouseCursorService: MousrCursorService,
         private _shortcutKeyService: ShortcutKeyService,
-        private _sharedUndoRedoService: SharedUndoRedoService
+        private _sharedUndoRedoService: SharedUndoRedoService,
     ) {}
 
     ngOnInit(): void {
@@ -128,12 +129,12 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
 
         this._sharedUndoRedoService.action.subscribe((message) => {
             switch (message) {
-              case 'SEG_UNDO':
-                this.undoAction();
-                break;
-              case 'SEG_REDO':
-                this.redoAction();
-                break;
+                case 'SEG_UNDO':
+                    this.undoAction();
+                    break;
+                case 'SEG_REDO':
+                    this.redoAction();
+                    break;
             }
         });
     }
@@ -321,6 +322,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                         case 'Escape':
                             this.resetDrawingPolygon();
                             break;
+                        case 'Backspace':
+                            this.removeLastPointPolygon();
                     }
                 } else {
                     switch (key) {
@@ -374,6 +377,17 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             this.canvasContext,
             this.canvas.nativeElement,
         );
+    }
+
+    removeLastPointPolygon() {
+        this._segCanvasService.removeLastPoint(
+            this._selectMetadata,
+            this.canvasContext,
+            this.image,
+            this.canvas.nativeElement,
+        );
+        this.redrawImage(this._selectMetadata);
+        this.mouseMoveDrawCanvas(this.mouseEvent as MouseEvent);
     }
 
     deletePolygon() {
@@ -599,7 +613,12 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             // but mouse has already moving into canvas, thus getting error
             this.isMouseWithinPoint =
                 this._selectMetadata && this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
-            if (this.isMouseWithinPoint && !this.showDropdownLabelBox && this.segState.draw && this.segState.crossLine) {
+            if (
+                this.isMouseWithinPoint &&
+                !this.showDropdownLabelBox &&
+                this.segState.draw &&
+                this.segState.crossLine
+            ) {
                 this.crossH.nativeElement.style.visibility = 'visible';
                 this.crossV.nativeElement.style.visibility = 'visible';
                 this.crossH.nativeElement.style.top = event.pageY.toString() + 'px';
@@ -635,6 +654,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 }
                 if (this.segState.draw) {
                     // this._segCanvasService.setPanXY(event);
+                    this.mouseEvent = event;
                     const mouseWithinShape = this.mouseMoveDrawCanvas(event);
                     if (mouseWithinShape) {
                         this.crossH.nativeElement.style.visibility = 'hidden';
