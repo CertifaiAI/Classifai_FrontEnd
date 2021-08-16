@@ -343,7 +343,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.subject$.next();
     };
 
-
     loadThumbnails = (): void => {
         if (!this.blockLoadThumbnails && this.sliceNum < this.totalUuid) {
             this.blockLoadThumbnails = true;
@@ -360,7 +359,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                             mergeMap(({ uuid_list }) => {
                                 return uuid_list.length > 0
                                     ? uuid_list
-                                          .slice(this.sliceNum, this.sliceNum += 10)
+                                          .slice(this.sliceNum, (this.sliceNum += 10))
                                           .map((uuid) => thumbnail$(this.selectedProjectName, uuid))
                                     : [];
                             }),
@@ -564,7 +563,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                           const thumbnails =
                               res.file_system_status === 3 && listTemp.length > 0
                                   ? listTemp
-                                        .slice(this.sliceNum, this.sliceNum += 20)
+                                        .slice(this.sliceNum, (this.sliceNum += 20))
                                         .map((uuid) => thumbnail$(projectName, uuid))
                                   : [];
 
@@ -1060,6 +1059,11 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 no: 8,
                 shortcutKey: `info.shortcut.8.key`,
                 functionality: `info.shortcut.8.functionality`,
+            },
+            {
+                no: 9,
+                shortcutKey: `info.shortcut.9.key`,
+                functionality: `info.shortcut.9.functionality`,
             },
         ];
     }
