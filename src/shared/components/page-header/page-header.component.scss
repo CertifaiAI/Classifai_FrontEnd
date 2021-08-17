@@ -90,8 +90,8 @@
 
 .container-flex-end {
     display: flex;
-    min-width: 6.5vw;
-    max-width: 6.5vw;
+    // min-width: 6.5vw;
+    // max-width: 6.5vw;
 }
 
 .utility-icon-container {
@@ -100,9 +100,9 @@
     max-height: 3.4vh;
 }
 
-.img {
-    margin-left: 4.2vw;
-}
+// .img {
+//     margin-left: 1.2vw;
+// }
 
 .utility-icon-light {
     cursor: pointer;
@@ -110,4 +110,48 @@
 
 .utility-icon-light:active {
     background: rgb(105, 105, 105);
+}
+
+/*-------------------------------------------*\
+    Tutorial Modal
+\*-------------------------------------------*/
+
+.tutorial-img {
+    min-height: 40vh;
+    max-height: 40vh;
+    width: auto;
+    margin-top: 1vh;
+}
+
+.tutorial-description {
+    font-size: 2vh;
+    color: white;
+    text-align: center;
+}
+
+.next-btn,
+.end-btn {
+    background-color: #2d8ceb;
+    margin: 0.5vh 0.5vw;
+}
+
+.prev-btn {
+    background-color: #444444;
+    margin: 0.5vh 0.5vw;
+}
+
+.modal-button-container {
+    display: flex;
+    flex-direction: row-reverse;
+    padding: 0.5vw;
+}
+
+.button-style {
+    padding: 1vh 1.5vw 1vh 1.5vw;
+    border-radius: 1vh;
+    border: none;
+    outline: none;
+    color: white;
+    cursor: pointer;
+    font-size: 2vh;
 }

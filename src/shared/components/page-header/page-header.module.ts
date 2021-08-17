@@ -1,3 +1,4 @@
+import { ModalModule } from 'shared/components/modal/modal.module';
 /**
  * @license
  * Use of this source code is governed by Apache License 2.0 that can be
@@ -11,7 +12,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { PageHeaderComponent } from './page-header.component';
 
 @NgModule({
-    imports: [CommonModule, RouterModule, TranslateModule],
+    imports: [CommonModule, RouterModule, TranslateModule, ModalModule],
     declarations: [PageHeaderComponent],
     exports: [PageHeaderComponent],
 })
