@@ -1,3 +1,33 @@
+<!-------------------------- Label List Popup Container -------------------------->
+<div #floatdiv class="floatdiv unclosedOut" [hidden]="!showDropdownLabelBox">
+    <!-------------------------- Label Search/ OCR Input -------------------------->
+    <form autocomplete="off" spellcheck="false" class="unclosedOut">
+        <input
+            #lbltypetxt
+            type="text"
+            class="lbltypetxt unclosedOut"
+            [ngClass]="invalidInput ? 'invalidInput' : 'validInput'"
+            [(ngModel)]="labelSearch"
+            (ngModelChange)="labelTypeTextChange($event)"
+            (keydown.enter)="validateInputLabel($event)"
+            [ngModelOptions]="{ standalone: true }"
+        />
+    </form>
+    <!-------------------------- Label List -------------------------->
+    <div #availablelbl class="availablelbl unclosedOut">
+        <ul class="lblList unclosedOut">
+            <li *ngFor="let label of labelList" class="lblElement unclosedOut" (click)="labelNameClicked(label.name)">
+                <span class="lblName unclosedOut">{{ label.name }}</span>
+                <span class="lblCount unclosedOut">{{ label.count }}</span>
+            </li>
+            <li *ngIf="labelList.length === 0" class="unclosedOut notExist">
+                <div class="unclosedOut">{{ 'searchLabel.labelNotExist' | translate }}</div>
+                <div class="unclosedOut">{{ 'searchLabel.enterToAdd' | translate }}</div>
+            </li>
+        </ul>
+    </div>
+</div>
+
 <div class="videoTimelineContainer">
     <div class="canvas-container">
         <canvas #canvasdrawing class="canvasstyle" [ngStyle]="{ cursor: currentCursor() }"></canvas>

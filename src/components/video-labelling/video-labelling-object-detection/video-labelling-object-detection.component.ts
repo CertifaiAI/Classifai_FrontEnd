@@ -16,9 +16,10 @@ import { Subject, timer } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AnnotateActionState, AnnotateSelectionService } from 'shared/services/annotate-selection.service';
 import { MouseCursorState, MousrCursorService } from 'shared/services/mouse-cursor.service';
+import { HTMLElementEvent } from 'shared/types/field/field.model';
 import { FrameExtractionService } from '../video-frame-extraction.service';
 import { VideoLabellingActionService } from '../video-labelling-action.service';
-import { ActionState, BboxMetadata, Boundingbox, FrameArray, LabelledFrame } from '../video-labelling.modal';
+import { ActionState, BboxMetadata, Boundingbox, FrameArray, LabelInfo, LabelledFrame } from '../video-labelling.modal';
 import { BoundingBoxCanvasService } from './bounding-box-canvas.service';
 
 @Component({
@@ -222,17 +223,34 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         },
     ];
 
+    labelList: LabelInfo[] = [
+        {
+            name: 'People',
+            count: 2,
+        },
+        {
+            name: 'People 2',
+            count: 2,
+        },
+    ];
+
     @Input() _totalFrame = this.totalFrameArr.length;
     @Input() _selectMetadata!: BboxMetadata;
     @Output() _onHide: EventEmitter<LabelledFrame> = new EventEmitter();
     @Output() _onChangeMetadata: EventEmitter<BboxMetadata> = new EventEmitter();
     @ViewChild('videoTimelineRef') _videoTimelineRef!: ElementRef<HTMLDivElement>;
     @ViewChild('canvasdrawing') canvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('floatdiv') floatdiv!: ElementRef<HTMLDivElement>;
+    @ViewChild('lbltypetxt') lbltypetxt!: ElementRef<HTMLInputElement>;
     private canvasContext!: CanvasRenderingContext2D;
     private unsubscribe$: Subject<any> = new Subject();
     private mouseCursor!: MouseCursorState;
     private boundingBoxState!: ActionState;
     private annotateState!: AnnotateActionState;
+    // allLabelList: LabelInfo[] = [];
+    showDropdownLabelBox: boolean = false;
+    invalidInput: boolean = false;
+    labelSearch: string = '';
     occupiedSpace = [];
     activeFrame = 0;
     activePreview: HTMLImageElement = new Image();
@@ -467,11 +485,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         //     }
         //     this.sortingLabelList(this.labelList, annotationList);
         // }
-        this._boundingBoxCanvas.drawAllBoxOn(
-            [{ name: 'People', count: 1 }],
-            this._selectMetadata.bnd_box,
-            this.canvasContext,
-        );
+        this._boundingBoxCanvas.drawAllBoxOn(this.labelList, this._selectMetadata.bnd_box, this.canvasContext);
     }
 
     annotateSelectChange(newState: AnnotateActionState) {
@@ -487,21 +501,17 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         //     }
         // }
         // this.sortingLabelList(this.labelList, annotationList);
-        const retObj = this._boundingBoxCanvas.mouseUpDrawEnable(
-            this._selectMetadata,
-            [{ name: 'People', count: 1 }],
-            (isDone) => {
-                if (isDone) {
-                    // this._undoRedoService.isStateChange(this._selectMetadata.bnd_box) &&
-                    //     this._undoRedoService.appendStages({
-                    //         meta: cloneDeep(this._selectMetadata),
-                    //         method: 'draw',
-                    //     });
-                    this.getBBoxDistanceFromImage();
-                    this.emitMetadata();
-                }
-            },
-        );
+        const retObj = this._boundingBoxCanvas.mouseUpDrawEnable(this._selectMetadata, this.labelList, (isDone) => {
+            if (isDone) {
+                // this._undoRedoService.isStateChange(this._selectMetadata.bnd_box) &&
+                //     this._undoRedoService.appendStages({
+                //         meta: cloneDeep(this._selectMetadata),
+                //         method: 'draw',
+                //     });
+                this.getBBoxDistanceFromImage();
+                this.emitMetadata();
+            }
+        });
         if (retObj.isNew || event.type === 'mouseout') {
             // Positioning the floating div at the bottom right corner of bounding box
             let posFromTop = event.offsetY * (100 / document.documentElement.clientHeight) + 8.5;
@@ -519,16 +529,16 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             if (posFromLeft > 66) {
                 posFromLeft = 66;
             }
-            // this.floatdiv.nativeElement.style.top = posFromTop.toString() + 'vh';
-            // this.floatdiv.nativeElement.style.left = posFromLeft.toString() + 'vw';
-            // this.showDropdownLabelBox = true;
-            // this.labelSearch = '';
-            // this.invalidInput = false;
-            // setTimeout(() => {
-            //     this.lbltypetxt.nativeElement.focus();
-            // }, 100);
+            this.floatdiv.nativeElement.style.top = posFromTop.toString() + 'vh';
+            this.floatdiv.nativeElement.style.left = posFromLeft.toString() + 'vw';
+            this.showDropdownLabelBox = true;
+            this.labelSearch = '';
+            this.invalidInput = false;
+            setTimeout(() => {
+                this.lbltypetxt.nativeElement.focus();
+            }, 100);
         } else {
-            // this.showDropdownLabelBox = false;
+            this.showDropdownLabelBox = false;
         }
         retObj.isNew && this.annotateSelectChange({ annotation: retObj.selBox, isDlbClick: false });
     }
@@ -545,9 +555,97 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this._onChangeMetadata.emit(this._selectMetadata);
     }
 
+    labelNameClicked(label: string) {
+        console.log('label clicked');
+        this.showDropdownLabelBox = false;
+        // this._onChangeAnnotationLabel.emit({ label, index: this.annotateState.annotation });
+        this._selectMetadata.bnd_box[this.annotateState.annotation].label = label;
+        // this._undoRedoService.isStateChange(this._selectMetadata.bnd_box) &&
+        //     this._undoRedoService.appendStages({
+        //         meta: this._selectMetadata,
+        //         method: 'draw',
+        //     });
+    }
+
+    labelTypeTextChange(event: string) {
+        console.log('label added');
+        this.labelList.filter((label) => label.name.includes(event));
+    }
+
+    validateInputLabel = ({ target }: HTMLElementEvent<HTMLTextAreaElement>): void => {
+        const { value } = target;
+        const valTrimmed = value.trim();
+        if (valTrimmed) {
+            // const isInvalidLabel: boolean = this._tabStatus.some(
+            //     ({ label_list }) => label_list && label_list.length && label_list.some((label) => label === valTrimmed),
+            // );
+            const isInvalidLabel = false;
+            if (!isInvalidLabel) {
+                this.invalidInput = false;
+                this.showDropdownLabelBox = false;
+                // this._onChangeAnnotationLabel.emit({ label: value, index: this.annotateState.annotation });
+                this._selectMetadata.bnd_box[this.annotateState.annotation].label = value;
+                // this._undoRedoService.isStateChange(this._selectMetadata.bnd_box) &&
+                //     this._undoRedoService.appendStages({
+                //         meta: this._selectMetadata,
+                //         method: 'draw',
+                //     });
+                this.labelSearch = '';
+            } else {
+                this.invalidInput = true;
+                console.error(`Invalid existing label input`);
+            }
+        }
+    };
+
+    deleteSelectedBbox() {
+        this._boundingBoxCanvas.deleteSingleBox(
+            this._selectMetadata.bnd_box,
+            this.annotateState.annotation,
+            (isDone) => {
+                if (isDone) {
+                    this.annotateSelectChange({ annotation: -1, isDlbClick: false });
+                    this.redrawImage(this._selectMetadata);
+                    // this._undoRedoService.appendStages({
+                    //     meta: cloneDeep(this._selectMetadata),
+                    //     method: 'draw',
+                    // });
+                    this.emitMetadata();
+                }
+            },
+        );
+    }
+
     doubleClickEvent() {
         // this._undoRedoService.clearRedundantStages();
         this.annotateSelectChange({ annotation: this.annotateState.annotation, isDlbClick: true });
+    }
+
+    @HostListener('window:keydown', ['$event'])
+    keyStrokeEvent({ ctrlKey, metaKey, shiftKey, key }: KeyboardEvent) {
+        try {
+            const { isActiveModal } = this.boundingBoxState;
+            if (!this.isMouseDown && !isActiveModal && !this.showDropdownLabelBox && this._selectMetadata) {
+                if (this.annotateState.annotation > -1 && (key === 'Delete' || key === 'Backspace')) {
+                    this.deleteSelectedBbox();
+                }
+                // if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'copy')) {
+                //     this.copyImage();
+                // } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'paste')) {
+                //     this.pasteImage();
+                // } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'redo')) {
+                //     this.redoAction();
+                // } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'undo')) {
+                //     this.undoAction();
+                // } else if (this.annotateState.annotation > -1 && (key === 'Delete' || key === 'Backspace')) {
+                //     this.deleteSelectedBbox();
+                // } else {
+                //     this.moveBbox(key);
+                // }
+            }
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     @HostListener('dblclick', ['$event'])
@@ -587,20 +685,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     @HostListener('mouseup', ['$event'])
     mouseUp(event: MouseEvent) {
-        // if (this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event)) {
-        //     if (this.boundingBoxState.drag && this.isMouseDown) {
-        //         this._boundingBoxCanvas.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
-        //     }
-
-        //     this.isMouseDown = false;
-        // }
-
-        // if (this.boundingBoxState.draw) {
-        //     // this._boundingBoxCanvas.getMousePosB(event, this.canvasContext);
-        //     this._boundingBoxCanvas.drawBoundingBox(this.canvasContext);
-        // }
-        // this.isMouseDown = false;
-
         try {
             if (this.boundingBoxState.draw && this.isMouseDown) {
                 this.finishDrawBoundingBox(event);
@@ -625,20 +709,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this._selectMetadata,
                     event,
                 );
-                // if (
-                //     mouseWithinPointPath &&
-                //     !this.showDropdownLabelBox &&
-                //     this.boundingBoxState.draw &&
-                //     this.boundingBoxState.crossLine
-                // ) {
-                //     this.crossH.nativeElement.style.visibility = 'visible';
-                //     this.crossV.nativeElement.style.visibility = 'visible';
-                //     this.crossH.nativeElement.style.top = event.pageY.toString() + 'px';
-                //     this.crossV.nativeElement.style.left = event.pageX.toString() + 'px';
-                // } else {
-                //     this.crossH.nativeElement.style.visibility = 'hidden';
-                //     this.crossV.nativeElement.style.visibility = 'hidden';
-                // }
                 if (mouseWithinPointPath) {
                     if (this.boundingBoxState.drag && this.isMouseDown) {
                         const diff = this._boundingBoxCanvas.getDiffXY(event);
