@@ -40,188 +40,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         },
     ];
 
-    labelledFrame: LabelledFrame[] = [
-        {
-            frame: [5, 6, 7, 8],
-            object: 'Person 1',
-            isShow: true,
-            color: 'green',
-        },
-        {
-            frame: [1, 2, 3, 4, 7, 8, 9],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [0, 1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [5, 6, 7, 8],
-            object: 'Person 1',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [5, 6, 7, 8],
-            object: 'Person 1',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-        {
-            frame: [1, 2, 3, 4],
-            object: 'Person 2',
-            isShow: true,
-            color: 'yellow',
-        },
-    ];
+    labelledFrame: LabelledFrame[] = [];
 
     labelList: LabelInfo[] = [
         {
@@ -301,7 +120,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             // this._selectMetadata && this.redrawImage(this._selectMetadata);
         });
 
-        // this.totalFrameArr = this.videoFrameExtractionService.getBlobList();
+        this.totalFrameArr = this.videoFrameExtractionService.getBlobList();
     }
 
     ngAfterViewInit(): void {
@@ -556,7 +375,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     labelNameClicked(label: string) {
-        console.log('label clicked');
         this.showDropdownLabelBox = false;
         // this._onChangeAnnotationLabel.emit({ label, index: this.annotateState.annotation });
         this._selectMetadata.bnd_box[this.annotateState.annotation].label = label;
@@ -565,6 +383,14 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         //         meta: this._selectMetadata,
         //         method: 'draw',
         //     });
+
+        // has
+        this.labelledFrame.push({
+            frame: [1],
+            object: label,
+            color: 'blue',
+            isShow: true,
+        });
     }
 
     labelTypeTextChange(event: string) {
@@ -611,6 +437,16 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     //     method: 'draw',
                     // });
                     this.emitMetadata();
+
+                    this.labelledFrame.map((labelFrame) => {
+                        if (this._selectMetadata.bnd_box[0].label === labelFrame.object) {
+                            labelFrame.frame.map((element, index) => {
+                                if (element === this.activeFrame) {
+                                    delete labelFrame.frame[index];
+                                }
+                            });
+                        }
+                    });
                 }
             },
         );
