@@ -257,23 +257,14 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this._videoLblStateService.action$
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe(({ clear, fitCenter, ...action }) => {
-                if (clear) {
-                    this.onEraseBoundingBox();
-                }
+                this.boundingBoxState = { ...action, clear, fitCenter };
 
                 fitCenter && this.imgFitToCenter();
-
                 if (clear) {
                     this._selectMetadata.bnd_box = [];
-                    // this._undoRedoService.appendStages({
-                    //     meta: this._selectMetadata,
-                    //     method: 'draw',
-                    // });
                     this.redrawImage(this._selectMetadata);
                     this.emitMetadata();
                 }
-
-                this.boundingBoxState = { ...action, clear, fitCenter };
             });
 
         this._mouseCursorService.mouseCursor$
@@ -282,13 +273,14 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
         this._annotateSelectState.labelStaging$.pipe(takeUntil(this.unsubscribe$)).subscribe((state) => {
             this.annotateState = state;
+            console.log('state', state.annotation);
             this._boundingBoxCanvas.setCurrentSelectedbBox(state.annotation);
             /**
              * allow click annotate to highlight respective BB
              * @property _selectMetadata trufy check due to first start project will have no state
              *           but after that it will always it's state being filled
              */
-            this._selectMetadata && this.redrawImage(this._selectMetadata);
+            // this._selectMetadata && this.redrawImage(this._selectMetadata);
         });
 
         // this.totalFrameArr = this.videoFrameExtractionService.getBlobList();
@@ -553,6 +545,20 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this._onChangeMetadata.emit(this._selectMetadata);
     }
 
+    doubleClickEvent() {
+        // this._undoRedoService.clearRedundantStages();
+        this.annotateSelectChange({ annotation: this.annotateState.annotation, isDlbClick: true });
+    }
+
+    @HostListener('dblclick', ['$event'])
+    toggleEvent(_: MouseEvent) {
+        try {
+            this.annotateState.annotation > -1 && this.doubleClickEvent();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     @HostListener('mousedown', ['$event'])
     mouseDown(event: MouseEvent) {
         try {
@@ -568,7 +574,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                         event.offsetY,
                         this._selectMetadata.bnd_box,
                     );
-                    console.log(tmpBox);
                     this.annotateSelectChange({ annotation: tmpBox, isDlbClick: false });
                     this.redrawImage(this._selectMetadata);
                 }
