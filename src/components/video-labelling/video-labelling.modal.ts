@@ -24,6 +24,17 @@ export type VideoDuration = {
     second: number;
 };
 
+export type FrameResponse = {
+    message: number;
+    encodedImg: string;
+};
+
+export type FrameExtractionResponse = {
+    message: number;
+    videoFramePerSecond: number;
+    numOfGeneratedFrames: number;
+};
+
 type Metadata = {
     img_h: number;
     img_ori_h: number;

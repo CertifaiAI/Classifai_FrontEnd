@@ -12,14 +12,23 @@ import {
     ViewChild,
 } from '@angular/core';
 import { cloneDeep } from 'lodash-es';
-import { Subject, timer } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable, Subject, timer } from 'rxjs';
+import { first, takeUntil } from 'rxjs/operators';
 import { AnnotateActionState, AnnotateSelectionService } from 'shared/services/annotate-selection.service';
 import { MouseCursorState, MousrCursorService } from 'shared/services/mouse-cursor.service';
 import { HTMLElementEvent } from 'shared/types/field/field.model';
 import { FrameExtractionService } from '../video-frame-extraction.service';
 import { VideoLabellingActionService } from '../video-labelling-action.service';
-import { ActionState, BboxMetadata, Boundingbox, FrameArray, LabelInfo, LabelledFrame } from '../video-labelling.modal';
+import { VideoLabellingApiService } from '../video-labelling-api.service';
+import {
+    ActionState,
+    BboxMetadata,
+    Boundingbox,
+    FrameArray,
+    FrameResponse,
+    LabelInfo,
+    LabelledFrame,
+} from '../video-labelling.modal';
 import { BoundingBoxCanvasService } from './bounding-box-canvas.service';
 
 @Component({
@@ -38,9 +47,58 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         {
             frameURL: '../../../assets/video_img/3.jpg',
         },
+        {
+            frameURL: '../../../assets/video_img/1.jpg',
+        },
+        {
+            frameURL: '../../../assets/video_img/2.jpg',
+        },
+        {
+            frameURL: '../../../assets/video_img/3.jpg',
+        },
+        {
+            frameURL: '../../../assets/video_img/1.jpg',
+        },
+        {
+            frameURL: '../../../assets/video_img/2.jpg',
+        },
+        {
+            frameURL: '../../../assets/video_img/3.jpg',
+        },
+        {
+            frameURL: '../../../assets/video_img/1.jpg',
+        },
+        {
+            frameURL: '../../../assets/video_img/2.jpg',
+        },
+        {
+            frameURL: '../../../assets/video_img/3.jpg',
+        },
+        {
+            frameURL: '../../../assets/video_img/1.jpg',
+        },
+        {
+            frameURL: '../../../assets/video_img/2.jpg',
+        },
+        {
+            frameURL: '../../../assets/video_img/3.jpg',
+        },
     ];
 
-    labelledFrame: LabelledFrame[] = [];
+    labelledFrames: LabelledFrame[] = [
+        {
+            frame: [1, 2, 3, 4, 5],
+            object: 'cat1',
+            color: 'blue',
+            isShow: true,
+        },
+        {
+            frame: [1],
+            object: 'cat2',
+            color: 'blue',
+            isShow: true,
+        },
+    ];
 
     labelList: LabelInfo[] = [
         {
@@ -88,9 +146,23 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         private _boundingBoxCanvas: BoundingBoxCanvasService,
         private _mouseCursorService: MousrCursorService,
         private _annotateSelectState: AnnotateSelectionService,
+        private _videoLblApiService: VideoLabellingApiService,
     ) {}
 
     ngOnInit() {
+        // Frame Extraction
+        this._videoLblApiService
+            .frameExtraction('D:\\Certifai\\video\\1.mp4')
+            .pipe(first())
+            .subscribe(
+                (res) => {
+                    console.log('frame extraction', res);
+                },
+                (error: Error) => {
+                    console.log('Retrieve Frame Error', error);
+                },
+            );
+
         this._videoLblStateService.action$
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe(({ clear, fitCenter, ...action }) => {
@@ -120,7 +192,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             // this._selectMetadata && this.redrawImage(this._selectMetadata);
         });
 
-        this.totalFrameArr = this.videoFrameExtractionService.getBlobList();
+        // this.totalFrameArr = this.videoFrameExtractionService.getBlobList();
     }
 
     ngAfterViewInit(): void {
@@ -177,12 +249,46 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         return className;
     };
 
+    // onClickVideoTImeline = (index: number) => {
+    //     this.clearCanvas();
+    //     this.activeFrame = index;
+    //     index > this.totalFrameArr.length
+    //         ? (this.activePreview.src = '')
+    //         : (this.activePreview.src = this.totalFrameArr[index].frameURL);
+    //     this.activePreview.onload = () => {
+    //         this.canvasContext.drawImage(this.activePreview, 0, 0);
+    //         this.imgFitToCenter();
+    //     };
+    // };
+
     onClickVideoTImeline = (index: number) => {
         this.clearCanvas();
         this.activeFrame = index;
-        index > this.totalFrameArr.length
-            ? (this.activePreview.src = '')
-            : (this.activePreview.src = this.totalFrameArr[index].frameURL);
+
+        if (index > this.totalFrameArr.length) {
+            const frameSrc$ = this._videoLblApiService.getSingleFrameSrc(this.totalFrameArr.length - 1);
+            frameSrc$.pipe(first()).subscribe(
+                (res) => {
+                    console.log('res', res);
+                    this.activePreview.src = '';
+                },
+                (error: Error) => {
+                    console.log('Retrieve Frame Error', error);
+                },
+            );
+        } else {
+            const frameSrc$ = this._videoLblApiService.getSingleFrameSrc(index);
+            frameSrc$.pipe(first()).subscribe(
+                (res) => {
+                    console.log('res', res);
+                    this.activePreview.src = '';
+                },
+                (error: Error) => {
+                    console.log('Retrieve Frame Error', error);
+                },
+            );
+        }
+
         this.activePreview.onload = () => {
             this.canvasContext.drawImage(this.activePreview, 0, 0);
             this.imgFitToCenter();
@@ -227,8 +333,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     };
 
     onHide = (idx: number) => {
-        this.labelledFrame[idx].isShow = !this.labelledFrame[idx].isShow;
-        this._onHide.emit(this.labelledFrame[idx]);
+        this.labelledFrames[idx].isShow = !this.labelledFrames[idx].isShow;
+        this._onHide.emit(this.labelledFrames[idx]);
     };
 
     initializeCanvas(width: string = '95%') {
@@ -385,7 +491,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         //     });
 
         // has
-        this.labelledFrame.push({
+        this.labelledFrames.push({
             frame: [1],
             object: label,
             color: 'blue',
@@ -438,7 +544,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     // });
                     this.emitMetadata();
 
-                    this.labelledFrame.map((labelFrame) => {
+                    this.labelledFrames.map((labelFrame) => {
                         if (this._selectMetadata.bnd_box[0].label === labelFrame.object) {
                             labelFrame.frame.map((element, index) => {
                                 if (element === this.activeFrame) {

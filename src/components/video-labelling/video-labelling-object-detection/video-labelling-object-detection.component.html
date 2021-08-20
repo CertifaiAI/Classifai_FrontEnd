@@ -60,7 +60,7 @@
     <div class="videoTimeline" id="videoTimeline" (wheel)="onScroll($event)" #videoTimelineRef>
         <table class="table">
             <tbody class="video-tbody">
-                <tr *ngFor="let item of labelledFrame; index as idx">
+                <tr *ngFor="let item of labelledFrames; index as idx">
                     <td class="label-display">
                         <p>{{ item.object }}</p>
                     </td>
