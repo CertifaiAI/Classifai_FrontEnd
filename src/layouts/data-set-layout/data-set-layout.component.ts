@@ -7,7 +7,13 @@
 import { cloneDeep } from 'lodash-es';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from './data-set-layout-api.service';
-import { DataSetProps, Project, ProjectRename, ProjectSchema, StarredProps } from '../../shared/types/dataset-layout/data-set-layout.model';
+import {
+    DataSetProps,
+    Project,
+    ProjectRename,
+    ProjectSchema,
+    StarredProps,
+} from '../../shared/types/dataset-layout/data-set-layout.model';
 import { distinctUntilChanged, first, map, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
 import { interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -32,6 +38,7 @@ type FormattedProject = {
     is_new: boolean;
     total_uuid: number;
     root_path_valid: boolean;
+    is_docker: boolean;
 };
 
 @Component({
@@ -621,29 +628,29 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     deleteProject = (projectName: string): void => {
-      this.isDeleteSuccess = false;
-      this.projectName = projectName;
-      this._languageService._translate.get('deleteSuccess').subscribe((translated) => {
+        this.isDeleteSuccess = false;
         this.projectName = projectName;
-        this._modalService.open(this.modalIdDeleteProject);
-    });
+        this._languageService._translate.get('deleteSuccess').subscribe((translated) => {
+            this.projectName = projectName;
+            this._modalService.open(this.modalIdDeleteProject);
+        });
     };
 
     confirmDeleteProject = (): void => {
-      const deleteProj$ = this._dataSetService.deleteProject(this.projectName);
+        const deleteProj$ = this._dataSetService.deleteProject(this.projectName);
 
-      deleteProj$
-          .pipe(
-              first(),
-              map(({ message }) => message),
-          )
-          .subscribe((message) => {
-              if (message === 1) {
-                  this.isDeleteSuccess = true;
-                  this.showProjectList(this.projectType);
-              }
-          });
-    }
+        deleteProj$
+            .pipe(
+                first(),
+                map(({ message }) => message),
+            )
+            .subscribe((message) => {
+                if (message === 1) {
+                    this.isDeleteSuccess = true;
+                    this.showProjectList(this.projectType);
+                }
+            });
+    };
 
     @HostListener('window:keydown', ['$event'])
     keyDownEvent = ({ key }: KeyboardEvent): void => {
@@ -662,5 +669,16 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.unsubscribe$.next();
         this.unsubscribe$.complete();
+    }
+
+    isDockerEnv() {
+        const listProjectMetaData: Project[] = this.projectList.projects;
+
+        for (const i in listProjectMetaData) {
+            if (listProjectMetaData[i].is_docker) {
+                this.toggleImportProjectModalDisplay(false);
+                return true;
+            }
+        }
     }
 }

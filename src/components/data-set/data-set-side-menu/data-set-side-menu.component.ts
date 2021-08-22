@@ -5,6 +5,7 @@
  */
 
 import { Component, EventEmitter, Output } from '@angular/core';
+import { DataSetLayoutComponent } from '../../../layouts/data-set-layout/data-set-layout.component';
 
 type MenuSchema = {
     src: string;
@@ -57,6 +58,9 @@ export class DataSetSideMenuComponent {
     @Output() _onImport = new EventEmitter();
 
     displayModal = (): void => {
+        if (DataSetLayoutComponent.prototype.isDockerEnv()) {
+            this._onCreate.emit(false);
+        }
         this._onCreate.emit(true);
     };
 

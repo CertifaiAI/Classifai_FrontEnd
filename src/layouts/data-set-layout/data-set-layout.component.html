@@ -169,7 +169,7 @@
                 <div class="select-file-container">
                     <label class="label-config">{{ 'importJson' | translate }} </label>
                     <div class="help-icon-container">
-                        <img class="help-icon" src="assets/icons/help.svg" alt="info"/>
+                        <img class="help-icon" src="assets/icons/help.svg" alt="info" />
                         <span class="tooltiptext">
                             <p>{{ 'configFileInfoDest1' | translate }}</p>
                             <p>{{ 'configFileInfoDest2' | translate }}</p>
@@ -177,7 +177,12 @@
                     </div>
                     <label class="choose-file-btn">
                         {{ 'chooseFile' | translate }}
-                        <button class="input-id" type="button" (click)="onSelectImportProjectJson()">
+                        <button
+                            class="input-id"
+                            type="button"
+                            (click)="onSelectImportProjectJson()"
+                            [disabled]="isDockerEnv()"
+                        >
                             {{ 'Import' }}
                         </button>
                     </label>
@@ -207,7 +212,9 @@
 >
     <div class="display-modal-container">
         <p class="display-msg">
-            {{ projectName }} {{ 'renameMsg' | translate }} <strong class="validation-success">{{ 'success' | translate }}</strong>!
+            {{ projectName }} {{ 'renameMsg' | translate }}
+            <strong class="validation-success">{{ 'success' | translate }}</strong
+            >!
         </p>
     </div>
 </modal>
@@ -218,11 +225,8 @@
     [modalTitle]="'deleteProject' | translate"
     [scrollable]="false"
 >
-
     <div class="display-modal-container" *ngIf="!isDeleteSuccess">
-        <p class="display-msg">
-            {{ 'deleteConfirmation' | translate }} {{ projectName }} ?
-        </p>
+        <p class="display-msg">{{ 'deleteConfirmation' | translate }} {{ projectName }} ?</p>
         <div class="model-button-container">
             <button class="button-style create-btn" type="submit" (click)="confirmDeleteProject()">
                 {{ 'confirm' | translate }}
@@ -231,7 +235,9 @@
     </div>
     <div class="display-modal-container" *ngIf="isDeleteSuccess">
         <p class="display-msg">
-            {{ projectName }} {{ 'deleteMsg' | translate }} <strong class="validation-success">{{ 'success' | translate }}</strong>!
+            {{ projectName }} {{ 'deleteMsg' | translate }}
+            <strong class="validation-success">{{ 'success' | translate }}</strong
+            >!
         </p>
     </div>
 </modal>
