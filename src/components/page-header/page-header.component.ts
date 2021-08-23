@@ -5,9 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { IconSchema } from 'src/shared/types/icon/icon.model';
-import { ImgLabelProps } from '../image-labelling/image-labelling.model';
 import { Router } from '@angular/router';
+import { IconSchema } from 'shared/types/icon/icon.model';
+import { ImgLabelProps } from 'shared/types/image-labelling/image-labelling.model';
 
 type HeaderLabelSchema = {
     name: string;

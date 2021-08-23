@@ -12,15 +12,15 @@ import { remote } from 'electron';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
     favIcon: HTMLLinkElement = document.querySelector('#favIcon') as HTMLLinkElement;
     lightIcon: string = `assets/classifai_dark.ico`;
     win = remote.getCurrentWindow();
+    icon: string = `assets/classifai_dark.ico`;
 
     constructor() {
-        this.favIcon.href = this.lightIcon;
+        this.favIcon.href = this.icon;
     }
-    ngOnInit(): void {}
 
     minWindow() {
         this.win.minimize();

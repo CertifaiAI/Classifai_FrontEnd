@@ -40,7 +40,6 @@ export class LazyLoadImgDirective implements AfterViewInit {
             // Inside the callback function, check if image isIntersecting with current viewport.
             // If it is, we load the image else unload the image.
             entries.forEach(({ isIntersecting }) => {
-                // console.log(isIntersecting);
                 isIntersecting ? this.loadImage() : this.unloadImage();
             });
         });

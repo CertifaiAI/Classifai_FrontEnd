@@ -4,8 +4,6 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { IconSchema } from 'src/shared/types/icon/icon.model';
-import { CompleteMetadata, ImgLabelProps, TabsProps, ThumbnailInfoProps } from '../image-labelling.model';
 import {
     Component,
     EventEmitter,
@@ -16,6 +14,16 @@ import {
     SimpleChanges,
     ChangeDetectionStrategy,
 } from '@angular/core';
+import { Router } from '@angular/router';
+import { SharedUndoRedoService } from 'shared/services/shared-undo-redo.service';
+import {
+    ImgLabelProps,
+    TabsProps,
+    CompleteMetadata,
+    ThumbnailInfoProps,
+    ImageLabelUrl,
+} from 'shared/types/image-labelling/image-labelling.model';
+import { IconSchema } from 'shared/types/icon/icon.model';
 
 @Component({
     selector: 'image-labelling-info',
@@ -30,7 +38,8 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
     @Output() _onClick: EventEmitter<ThumbnailInfoProps> = new EventEmitter();
     jsonSchema!: IconSchema;
     isTabStillOpen: boolean = true;
-    constructor() {}
+
+    constructor(private _sharedUndoRedoService: SharedUndoRedoService, private router: Router) {}
 
     ngOnInit(): void {
         this.bindImagePath();
@@ -57,13 +66,13 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
                     imgPath: `assets/icons/undo.svg`,
                     hoverLabel: `labellingInfo.undo`,
                     alt: `Undo`,
-                    onClick: () => null,
+                    onClick: () => this.undoRedo('UNDO'),
                 },
                 {
                     imgPath: `assets/icons/redo.svg`,
                     hoverLabel: `labellingInfo.redo`,
                     alt: `Redo`,
-                    onClick: () => null,
+                    onClick: () => this.undoRedo('REDO'),
                 },
                 // {
                 //     imgPath: `assets/icons/zoom_in.svg`,
@@ -81,8 +90,27 @@ export class ImageLabellingInfoComponent implements OnInit, OnChanges {
         };
     };
 
+    undoRedo(action: string) {
+        const imageLblType = this.router.url as ImageLabelUrl;
+        if (action === 'UNDO') {
+            if (imageLblType === '/imglabel/bndbox') {
+                this._sharedUndoRedoService.action.next('BBOX_UNDO');
+            }
+            if (imageLblType === '/imglabel/seg') {
+                this._sharedUndoRedoService.action.next('SEG_UNDO');
+            }
+        }
+        if (action === 'REDO') {
+            if (imageLblType === '/imglabel/bndbox') {
+                this._sharedUndoRedoService.action.next('BBOX_REDO');
+            }
+            if (imageLblType === '/imglabel/seg') {
+                this._sharedUndoRedoService.action.next('SEG_REDO');
+            }
+        }
+    }
+
     emitParentEvent = ({ url, thumbnailAction }: ThumbnailInfoProps): void => {
-        // console.log(url, thumbnailAction);
         this._onClick.emit({ url, thumbnailAction });
     };
 

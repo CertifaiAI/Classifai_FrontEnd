@@ -1,5 +1,10 @@
 $normalBackground: #525353;
 $hoveredBackground: #393838;
+$activeBackground: #313131;
+
+/*-------------------------------------------*\
+    Side Menu Container
+\*-------------------------------------------*/
 
 .dataset-sidemenu-container {
     display: flex;
@@ -8,8 +13,11 @@ $hoveredBackground: #393838;
     width: 16vw;
 }
 
+/*-------------------------------------------*\
+    Create New Project Button
+\*-------------------------------------------*/
+
 .new-project-container {
-    // margin-top: 5vh;
     margin-bottom: 5vh;
     margin-left: 2vw;
 }
@@ -35,10 +43,6 @@ $hoveredBackground: #393838;
 }
 
 .add-icon {
-    // max-width: 2vw;
-    // min-width: 2vw;
-    // min-height: 4vh;
-    // max-height: 4vh;
     min-height: inherit;
     max-height: inherit;
 }
@@ -54,15 +58,17 @@ $hoveredBackground: #393838;
     white-space: nowrap;
 }
 
-.current-project-btn {
+/*-------------------------------------------*\
+    Other Menu Button
+\*-------------------------------------------*/
+
+.project-btn {
     color: white;
     cursor: pointer;
     display: flex;
-    // justify-content: space-evenly;
     align-items: center;
     border-radius: 5vh;
     padding: 1vh 1vw 1vh 1vw;
-    // margin: 0 0 3vh 3vw;
     margin-left: 2vw;
     min-width: 10vw;
     max-width: 10vw;
@@ -70,26 +76,21 @@ $hoveredBackground: #393838;
     max-height: 5vh;
     flex: 1 1 100%;
     &:hover {
-        background-color: $normalBackground;
+        background-color: $hoveredBackground;
     }
 }
 
+.active {
+    background-color: $activeBackground;
+}
+
 .project-icon {
-    // min-width: 2vw;
-    // max-width: 2vw;
     min-height: 4vh;
     max-height: 4vh;
     flex: 1 1 10%;
 }
 
-// .current-project-container {
-//     padding-left: 3vw;
-//     display: flex;
-//     padding-top: 11vh;
-//     flex-direction: column;
-// }
-
-.current-project-txt {
+.project-txt {
     border: none;
     background: none;
     outline: none;
@@ -108,5 +109,6 @@ $hoveredBackground: #393838;
     min-height: 0.3vh;
     max-height: 0.3vh;
     margin: auto;
+    margin-top: 1vh;
     border: 0.0625rem solid black;
 }

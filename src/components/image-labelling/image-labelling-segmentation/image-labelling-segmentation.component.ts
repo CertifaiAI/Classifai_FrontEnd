@@ -5,27 +5,6 @@
  */
 
 import {
-    ActionState,
-    ChangeAnnotationLabel,
-    CompleteMetadata,
-    Direction,
-    LabelInfo,
-    Polygons,
-    PolyMetadata,
-    TabsProps,
-    UndoState,
-} from '../image-labelling.model';
-import { AnnotateActionState, AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
-import { cloneDeep } from 'lodash-es';
-import { CopyPasteService } from 'src/shared/services/copy-paste.service';
-import { ImageLabellingActionService } from '../image-labelling-action.service';
-import { MouseCursorState, MousrCursorService } from 'src/shared/services/mouse-cursor.service';
-import { SegmentationCanvasService } from './segmentation-canvas.service';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { UndoRedoService } from 'src/shared/services/undo-redo.service';
-import { WheelDelta, ZoomService, ZoomState } from 'src/shared/services/zoom.service';
-import {
     ChangeDetectionStrategy,
     Component,
     ElementRef,
@@ -39,7 +18,34 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { ShortcutKeyService } from 'src/shared/services/shortcut-key.service';
+import { cloneDeep } from 'lodash-es';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import {
+    ActionState,
+    ChangeAnnotationLabel,
+    CompleteMetadata,
+    Direction,
+    LabelInfo,
+    Polygons,
+    PolyMetadata,
+    TabsProps,
+    UndoState,
+} from 'shared/types/image-labelling/image-labelling.model';
+import { AnnotateActionState, AnnotateSelectionService } from 'shared/services/annotate-selection.service';
+import { CopyPasteService } from 'shared/services/copy-paste.service';
+import { MouseCursorState, MousrCursorService } from 'shared/services/mouse-cursor.service';
+import { ShortcutKeyService } from 'shared/services/shortcut-key.service';
+import { UndoRedoService } from 'shared/services/undo-redo.service';
+import { ZoomState, ZoomService, WheelDelta } from 'shared/services/zoom.service';
+import { SharedUndoRedoService } from 'shared/services/shared-undo-redo.service';
+import { SegmentationCanvasService } from './segmentation-canvas.service';
+import { ImageLabellingActionService } from '../image-labelling-action.service';
+
+interface ExtendedMouseEvent extends MouseEvent {
+    layerX: number;
+    layerY: number;
+}
 
 @Component({
     selector: 'image-labelling-segmentation',
@@ -67,11 +73,14 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     labelSearch: string = '';
     labelList: LabelInfo[] = [];
     allLabelList: LabelInfo[] = [];
+    mouseEvent: MouseEvent | undefined;
     @Input() _selectMetadata!: PolyMetadata;
     @Input() _imgSrc: string = '';
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Output() _onChangeMetadata: EventEmitter<PolyMetadata> = new EventEmitter();
     @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
+    @ViewChild('crossH') crossH!: ElementRef<HTMLDivElement>;
+    @ViewChild('crossV') crossV!: ElementRef<HTMLDivElement>;
 
     constructor(
         private _segCanvasService: SegmentationCanvasService,
@@ -82,6 +91,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         private _zoomService: ZoomService,
         private _mouseCursorService: MousrCursorService,
         private _shortcutKeyService: ShortcutKeyService,
+        private _sharedUndoRedoService: SharedUndoRedoService,
     ) {}
 
     ngOnInit(): void {
@@ -121,6 +131,17 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         this._mouseCursorService.mouseCursor$
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe((state) => (this.mouseCursor = state));
+
+        this._sharedUndoRedoService.action.subscribe((message) => {
+            switch (message) {
+                case 'SEG_UNDO':
+                    this.undoAction();
+                    break;
+                case 'SEG_REDO':
+                    this.redoAction();
+                    break;
+            }
+        });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -272,24 +293,16 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     }
 
     @HostListener('dblclick', ['$event'])
-    canvasDblClickEvent(_: MouseEvent) {
+    canvasDblClickEvent(event: ExtendedMouseEvent) {
         if (this.validateEndDrawPolygon(this.segState, this.isMouseWithinPoint, this.canvasContext)) {
             if (this._segCanvasService.isNewPolygon()) {
-                this._segCanvasService.drawNewPolygon(
-                    this._selectMetadata,
-                    this.image,
-                    this.canvasContext,
-                    this.canvas.nativeElement,
-                    true,
-                );
-                this.positioningLabelListPopup(this._selectMetadata.polygons);
-                this._segCanvasService.validateXYDistance(this._selectMetadata);
-                this.redrawImage(this._selectMetadata);
-                this.emitMetadata();
+                this.completingPolygon();
             }
-            if (this.annotateState.annotation > -1) {
-                this.annotateStateChange({ annotation: this.annotateState.annotation, isDlbClick: true });
-                // this._undoRedoService.clearRedundantStages();
+            if (this.segState.draw) {
+                const mouseWithinShape = this.mouseMoveDrawCanvas(event);
+                if (mouseWithinShape) {
+                    this.annotateStateChange({ annotation: this.annotateState.annotation, isDlbClick: true });
+                }
             }
         }
     }
@@ -305,6 +318,9 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                             break;
                         case 'Escape':
                             this.resetDrawingPolygon();
+                            break;
+                        case 'Backspace':
+                            this.removeLastPointPolygon();
                             break;
                     }
                 } else {
@@ -323,9 +339,13 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'paste')) {
                 this.pastePolygon();
             } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'redo')) {
-                this.redoAction();
+                if (!this._segCanvasService.isNewPolygon()) {
+                    this.redoAction();
+                }
             } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'undo')) {
-                this.undoAction();
+                if (!this._segCanvasService.isNewPolygon()) {
+                    this.undoAction();
+                }
             }
             // }
         } catch (err) {
@@ -359,6 +379,17 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             this.canvasContext,
             this.canvas.nativeElement,
         );
+    }
+
+    removeLastPointPolygon() {
+        this._segCanvasService.removeLastPoint(
+            this._selectMetadata,
+            this.canvasContext,
+            this.image,
+            this.canvas.nativeElement,
+        );
+        this.redrawImage(this._selectMetadata);
+        this.mouseMoveDrawCanvas(this.mouseEvent as ExtendedMouseEvent);
     }
 
     deletePolygon() {
@@ -455,7 +486,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     }
 
     @HostListener('mousedown', ['$event'])
-    mouseDown(event: MouseEvent) {
+    mouseDown(event: ExtendedMouseEvent) {
         try {
             this.isMouseWithinPoint = this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
 
@@ -577,13 +608,27 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     }
 
     @HostListener('mousemove', ['$event'])
-    mouseMove(event: MouseEvent) {
+    mouseMove(event: ExtendedMouseEvent) {
         try {
             // this._selectMetadata as truefy value
             // as user can click on image but img not yet loaded onto screen
             // but mouse has already moving into canvas, thus getting error
             this.isMouseWithinPoint =
                 this._selectMetadata && this._segCanvasService.mouseClickWithinPointPath(this._selectMetadata, event);
+            if (
+                this.isMouseWithinPoint &&
+                !this.showDropdownLabelBox &&
+                this.segState.draw &&
+                this.segState.crossLine
+            ) {
+                this.crossH.nativeElement.style.visibility = 'visible';
+                this.crossV.nativeElement.style.visibility = 'visible';
+                this.crossH.nativeElement.style.top = event.pageY.toString() + 'px';
+                this.crossV.nativeElement.style.left = event.pageX.toString() + 'px';
+            } else {
+                this.crossH.nativeElement.style.visibility = 'hidden';
+                this.crossV.nativeElement.style.visibility = 'hidden';
+            }
             if (this.isMouseWithinPoint) {
                 if (this.segState.drag && this.mousedown) {
                     const { diffX, diffY } = this._segCanvasService.getDiffXY(event);
@@ -611,8 +656,11 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 }
                 if (this.segState.draw) {
                     // this._segCanvasService.setPanXY(event);
+                    this.mouseEvent = event;
                     const mouseWithinShape = this.mouseMoveDrawCanvas(event);
                     if (mouseWithinShape) {
+                        this.crossH.nativeElement.style.visibility = 'hidden';
+                        this.crossV.nativeElement.style.visibility = 'hidden';
                         this.changeMouseCursorState({ move: true });
                     } else {
                         this.changeMouseCursorState({ crosshair: true });
@@ -627,7 +675,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         }
     }
 
-    mouseMoveDrawCanvas(event: MouseEvent) {
+    mouseMoveDrawCanvas(event: ExtendedMouseEvent) {
         const mouseWithinShape = this._segCanvasService.mouseMoveDraw(
             this._selectMetadata,
             this.image,
@@ -662,6 +710,8 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     @HostListener('mouseout', ['$event'])
     mouseOut(event: MouseEvent) {
         try {
+            this.crossH.nativeElement.style.visibility = 'hidden';
+            this.crossV.nativeElement.style.visibility = 'hidden';
             if (this.segState.drag && this.isMouseWithinPoint && this.mousedown) {
                 this._segCanvasService.setGlobalXY(event);
                 this.redrawImage(this._selectMetadata);

@@ -1,4 +1,4 @@
-@use '../../shared/scss/ellipsis' as ellipsis;
+@use 'shared/scss/ellipsis' as ellipsis;
 $fontSize: 2vh;
 
 .layout-container {
@@ -80,7 +80,7 @@ $fontSize: 2vh;
 }
 
 .sub-label-container {
-    @include container-flex-width(40vw);
+    @include container-flex-width(45vw);
 }
 
 .sub-label-flex-container {
@@ -97,19 +97,19 @@ $fontSize: 2vh;
     margin: 0rem;
     -moz-text-align-last: center;
     text-align-last: center;
-    background: #262a2e;
+    background: #363636;
     color: white;
-    box-shadow: inset -0.5vw 6.25vw 1vw 0 rgba(0, 0, 0, 0.2), inset -0.5vw -0.5vw 1vw 0 rgba(255, 255, 255, 0.4);
+    // box-shadow: inset -0.5vw 6.25vw 1vw 0 rgba(0, 0, 0, 0.2), inset -0.5vw -0.5vw 1vw 0 rgba(255, 255, 255, 0.4);
 
-    &:hover {
-        box-shadow: inset -0.375vw -0.375vw 0.625vw 0 rgba(0, 0, 0, 0.2),
-            inset 0.375vw 0.375vw 0.625vw 0 rgba(255, 255, 255, 0.5);
-    }
+    // &:hover {
+    //     box-shadow: inset -0.375vw -0.375vw 0.625vw 0 rgba(0, 0, 0, 0.2),
+    //         inset 0.375vw 0.375vw 0.625vw 0 rgba(255, 255, 255, 0.5);
+    // }
 
-    &:active {
-        box-shadow: inset 0.375vw 0.375vw 0.625vw 0 rgba(0, 0, 0, 0.2),
-            inset -0.375vw -0.375vw 0.625vw 0 rgba(255, 255, 255, 0.5);
-    }
+    // &:active {
+    //     box-shadow: inset 0.375vw 0.375vw 0.625vw 0 rgba(0, 0, 0, 0.2),
+    //         inset -0.375vw -0.375vw 0.625vw 0 rgba(255, 255, 255, 0.5);
+    // }
 }
 
 .static-input {
@@ -123,9 +123,6 @@ $fontSize: 2vh;
 }
 
 .hr-line {
-    // height: 0.5vh;
-    // color: black;
-    // background: #8c8b8b;
     margin: 5vh 0 5vh 0;
 }
 
@@ -169,35 +166,14 @@ $fontSize: 2vh;
     background: rgba(0, 0, 0, 0.8);
 }
 
-.modal-content {
-    background-color: #525353;
-    margin: auto;
-    padding: 1vw;
-    max-width: 20vw;
-    min-width: 20vw;
-    border-radius: 1vw;
-    margin-top: 15vh;
-}
-
 .modal-content-container {
     margin-left: 1.3vw;
-}
-
-.modal-content-header {
-    text-align: center;
-    color: white;
-    font-size: 3vh;
 }
 
 .modal-button-container {
     display: flex;
     justify-content: center;
     padding: 1vw 1vw 1vw 2vw;
-}
-
-.modal-button-cancel {
-    display: flex;
-    justify-content: flex-end;
 }
 
 .export-content-container {
@@ -228,12 +204,6 @@ $fontSize: 2vh;
 }
 
 .with-data {
-    font-size: 1.5vh;
-}
-
-.cancel-btn {
-    padding: 1vh 1vw;
-    background-color: #444444;
     font-size: 1.5vh;
 }
 
@@ -277,10 +247,6 @@ $fontSize: 2vh;
 
 .modal-message-container {
     padding-right: 3.5vw;
-}
-
-.break {
-    overflow-wrap: break-word;
 }
 
 .save-format-list {
@@ -547,6 +513,12 @@ th {
     border-top: none !important;
 }
 
+/* cellpadding */
+th,
+td {
+    padding: 1.5vh;
+}
+
 tr td:nth-child(2) {
     color: rgb(190, 190, 190);
 }
@@ -573,10 +545,6 @@ tr th:nth-child(1) {
     margin-right: 1vw;
 }
 
-.label-file {
-    padding-top: 0.5vh;
-}
-
 .margin-bottom {
     margin-bottom: 0.5vh;
 }
@@ -589,6 +557,26 @@ tr th:nth-child(1) {
     margin-right: 0.7vw;
     font-size: 2vh;
     min-width: 7.5vw;
+    float: right;
+}
+
+.addsublabel-btn {
+    padding: 1vh 0.5vw 1vh 0.5vw;
+    background-color: #2d8ceb;
+    // margin-top: 0.7vw;
+    margin-right: 0.7vw;
+    font-size: 2vh;
+    min-width: 7.5vw;
+    float: right;
+}
+
+.removesublabel-btn {
+    padding: 1vh 0.5vw 1vh 0.5vw;
+    background-color: #ff3f3f;
+    // margin-top: 0.7vw;
+    margin-right: 0.7vw;
+    font-size: 2vh;
+    min-width: 2vw;
     float: right;
 }
 

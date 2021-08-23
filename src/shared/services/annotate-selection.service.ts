@@ -4,8 +4,8 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 export type AnnotateActionState = {
     annotation: number;
@@ -23,8 +23,6 @@ const initialState: AnnotateActionState = {
 export class AnnotateSelectionService {
     private labelStateSubject = new BehaviorSubject<AnnotateActionState>(initialState);
     public labelStaging$ = this.labelStateSubject.asObservable();
-
-    constructor() {}
 
     /**
      * @function seState handles update state in service

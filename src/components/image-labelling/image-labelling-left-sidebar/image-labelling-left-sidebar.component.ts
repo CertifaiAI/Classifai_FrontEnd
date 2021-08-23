@@ -4,10 +4,6 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { AnnotateSelectionService } from 'src/shared/services/annotate-selection.service';
-import { IconSchema } from 'src/shared/types/icon/icon.model';
-import { ImageLabellingActionService } from '../image-labelling-action.service';
-import { CompleteMetadata, ImageLabelUrl, ImgLabelProps, TabsProps } from '../image-labelling.model';
 import {
     Component,
     OnInit,
@@ -19,6 +15,15 @@ import {
     ChangeDetectionStrategy,
 } from '@angular/core';
 import { isEqual } from 'lodash-es';
+import {
+    ImgLabelProps,
+    ImageLabelUrl,
+    TabsProps,
+    CompleteMetadata,
+} from 'shared/types/image-labelling/image-labelling.model';
+import { AnnotateSelectionService } from 'shared/services/annotate-selection.service';
+import { IconSchema } from 'shared/types/icon/icon.model';
+import { ImageLabellingActionService } from '../image-labelling-action.service';
 
 @Component({
     selector: 'image-labelling-left-sidebar',
@@ -35,6 +40,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     jsonSchema!: IconSchema;
     iconIndex!: number;
     labelList: string[] = [];
+    isCrossLineOn: boolean = false;
 
     constructor(
         private _imgLabelState: ImageLabellingActionService,
@@ -92,7 +98,12 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                           toggleable: true,
                           onClick: () => {
                               this.resetSelectedAnnotate();
-                              this._imgLabelState.setState({ draw: true, drag: false, scroll: false });
+                              this._imgLabelState.setState({
+                                  draw: true,
+                                  drag: false,
+                                  scroll: false,
+                                  crossLine: this.isCrossLineOn,
+                              });
                           },
                       }
                     : {
@@ -134,6 +145,24 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                 //   hoverLabel: `Key Point`,
                 //   alt: `KeyPoint`,
                 // },
+                {
+                    imgPath: this.isCrossLineOn ? `assets/icons/indicator_on.svg` : `assets/icons/indicator.svg`,
+                    hoverLabel: this.isCrossLineOn ? `leftSideBar.offCrossLine` : `leftSideBar.onCrossLine`,
+                    alt: `Cross Guiding Line`,
+                    toggleable: false,
+                    onClick: () => {
+                        this.isCrossLineOn = !this.isCrossLineOn;
+                        this.bindImagePath();
+                        if (this.iconIndex === 2) {
+                            this._imgLabelState.setState({
+                                draw: true,
+                                drag: false,
+                                scroll: false,
+                                crossLine: this.isCrossLineOn,
+                            });
+                        }
+                    },
+                },
                 {
                     imgPath: `assets/icons/eraser.svg`,
                     hoverLabel: `leftSideBar.eraser`,
@@ -178,7 +207,6 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                             save: true,
                             keyInfo: false,
                         });
-                        // this._imgLabelState.setState(null);
                     },
                 },
                 {
@@ -206,7 +234,6 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     checkStateEqual = (currObj: object, prevObj: object): boolean => !isEqual(currObj, prevObj);
 
     ngOnChanges(changes: SimpleChanges): void {
-        // console.log(changes);
         this.bindImagePath();
         if (
             changes._tabStatus &&
@@ -219,6 +246,9 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     }
 
     getIndex = (index: number): void => {
+        if (index === 3) {
+            return;
+        }
         this.iconIndex = index;
     };
 

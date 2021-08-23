@@ -6,7 +6,7 @@
 
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { SpinnerService } from 'src/components/spinner/spinner.service';
+import { SpinnerService } from 'shared/components/spinner/spinner.service';
 import { tap } from 'rxjs/operators';
 import {
     HttpErrorResponse,
@@ -28,7 +28,6 @@ export class LoadingSpinnerInterceptor implements HttpInterceptor {
         return next.handle(request).pipe(
             tap(
                 (event: HttpEvent<any>) => {
-                    // console.log(event);
                     if (event instanceof HttpResponse) {
                         this.pendingRequestsCount--;
                         const link = event.url ? event.url.toString().split('/') : '';
@@ -44,7 +43,6 @@ export class LoadingSpinnerInterceptor implements HttpInterceptor {
                         this.pendingRequestsCount--;
                         // hide spinner when you receive error
                         this._spinner.hideSpinner();
-                        // console.log(error);
                     }
                 },
             ),

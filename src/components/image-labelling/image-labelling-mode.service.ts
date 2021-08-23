@@ -4,9 +4,9 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { BehaviorSubject } from 'rxjs';
-import { ImageLabellingMode } from './image-labelling.model';
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { ImageLabellingMode } from 'shared/types/image-labelling/image-labelling.model';
 
 const initialValue: ImageLabellingMode = null;
 
@@ -17,8 +17,6 @@ export class ImageLabellingModeService {
     private imgLabellingModeSubject = new BehaviorSubject<ImageLabellingMode>(initialValue);
 
     public imgLabelMode$ = this.imgLabellingModeSubject.asObservable();
-
-    constructor() {}
 
     // pass null value to reset state
     public setState = (inComingMode: ImageLabellingMode) => {

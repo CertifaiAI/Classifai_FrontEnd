@@ -1,7 +1,9 @@
-<div class="header-container">
+<!-------------------------- Info Container -------------------------->
+
+<div class="info-container">
+    <!-------------------------- Left Side Info Container -------------------------->
     <div class="container-flex-start">
         <ng-container *ngIf="_onChange.thumbnailName; else defaultName">
-            <!-- <div class="indicator"></div> -->
             <div [ngClass]="_onChange.hasAnnotation ? 'indicator' : 'no-indicator'"></div>
             <label class="imageTitle">{{ _onChange.thumbnailName | fileNameSlice }}</label>
         </ng-container>
@@ -9,6 +11,7 @@
             <label class="imageTitle"></label>
         </ng-template>
     </div>
+    <!-------------------------- Center Side Info Container -------------------------->
     <div [ngClass]="isTabStillOpen ? 'container-flex-center' : 'container-flex-center-adjust'">
         <ng-container *ngFor="let logo of jsonSchema.logosCenter; index as i">
             <ng-container *ngIf="i === 0; else renderOtherIcons">
@@ -42,6 +45,7 @@
             </ng-template>
         </ng-container>
     </div>
+    <!-------------------------- Right Side Info Container -------------------------->
     <div [ngClass]="isTabStillOpen ? 'container-flex-end' : 'container-flex-end-adjust'">
         <ng-container *ngFor="let logo of jsonSchema.logosEnd; index as i">
             <div class="utility-icon-container">
@@ -54,9 +58,6 @@
                     (click)="logo.onClick()"
                 />
             </div>
-            <!-- <ng-container *ngIf="i === 1">
-                <hr class="horizontal-line" />
-            </ng-container> -->
         </ng-container>
     </div>
 </div>

@@ -1,5 +1,8 @@
 $hoverBackground: #393838;
-// $base64Arrow: url(data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0Ljk1IDEwIj48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2ZmZjt9LmNscy0ye2ZpbGw6IzQ0NDt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPmFycm93czwvdGl0bGU+PHJlY3QgY2xhc3M9ImNscy0xIiB3aWR0aD0iNC45NSIgaGVpZ2h0PSIxMCIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtMiIgcG9pbnRzPSIxLjQxIDQuNjcgMi40OCAzLjE4IDMuNTQgNC42NyAxLjQxIDQuNjciLz48cG9seWdvbiBjbGFzcz0iY2xzLTIiIHBvaW50cz0iMy41NCA1LjMzIDIuNDggNi44MiAxLjQxIDUuMzMgMy41NCA1LjMzIi8+PC9zdmc+);
+
+/*-------------------------------------------*\
+    Dataset Header Container
+\*-------------------------------------------*/
 
 .dataset-header-container {
     display: flex;
@@ -8,19 +11,13 @@ $hoverBackground: #393838;
     padding: 1vw;
     min-width: 80vw;
     max-width: 80vw;
-    // min-height: 4vh;
-    // max-height: 4vh;
 }
 
-.dropdown {
-    background-color: rgb(53, 53, 53);
-    border: black;
-    color: white;
-    font-size: 2vh;
-    padding: 0.7vh 0.7vw;
-}
+/*-------------------------------------------*\
+    Dataset Header Title
+\*-------------------------------------------*/
 
-.label {
+.dataset-header-title {
     flex: 1 1 80vw;
     background: none;
     font-size: 2.5vh;
@@ -28,7 +25,12 @@ $hoverBackground: #393838;
     white-space: nowrap;
     min-height: inherit;
     max-height: inherit;
+    padding-right: 50vw;
 }
+
+/*-------------------------------------------*\
+    Sort Dropdown
+\*-------------------------------------------*/
 
 .dataset-dropdown-container {
     display: flex;
@@ -45,51 +47,17 @@ $hoverBackground: #393838;
     max-height: inherit;
 }
 
-.dataset-icon-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex: 1 1 20%;
-}
-
-.dataset-icon {
-    flex: 1 1 3%;
-    min-width: 2vw;
-    max-width: 2vw;
-    cursor: pointer;
-    &:hover {
-        border-radius: 5vh;
-        background-color: $hoverBackground;
-    }
-}
-
-.dataset-select {
-    min-height: 4vh;
-    max-height: 4vh;
-    font-size: 2vh;
-    min-width: 7vw;
-    max-width: 7vw;
-    -moz-text-align-last: center;
-    background: black;
+.dropdown {
+    background-color: rgb(53, 53, 53);
+    border: black;
     color: white;
-    border: 0.1vw solid;
-    text-align-last: center;
-    &:focus,
-    &:hover {
-        // background: $hoverBackground $base64Arrow no-repeat 10vw;
-        background: $hoverBackground;
-        -moz-appearance: none;
-        -webkit-appearance: none;
-        // background-position: 100%;
-        // background-position: 12.1vh;
-    }
+    font-size: 2vh;
+    padding: 0.7vh 0.7vw;
 }
 
 select {
-    // background: $base64Arrow no-repeat 10vw;
     -moz-appearance: none;
     -webkit-appearance: none;
-    // background-position: 12.1vh;
 }
 
 option {

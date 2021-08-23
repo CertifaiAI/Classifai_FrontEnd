@@ -4,23 +4,19 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { CardFieldSchema } from '../../../layouts/home-layout/home-layout.model';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { CardFieldSchema } from 'shared/types/home-layout/home-layout.model';
 
 @Component({
     selector: 'home-card',
     templateUrl: './home-card.component.html',
     styleUrls: ['./home-card.component.scss'],
 })
-export class HomeCardComponent implements OnInit {
+export class HomeCardComponent {
     @Input() _jsonSchema!: CardFieldSchema;
     @Output() _onThumbnailClick: EventEmitter<string> = new EventEmitter();
     hover!: boolean;
     hoverIndex!: number;
-
-    constructor() {}
-
-    ngOnInit() {}
 
     mouseEventCapture(event: MouseEvent, index: number): void {
         const { type } = event;

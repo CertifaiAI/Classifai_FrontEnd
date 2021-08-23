@@ -1,21 +1,27 @@
+<!-------------------------- Side Menu Container -------------------------->
+
 <div class="dataset-sidemenu-container">
     <ng-container *ngFor="let menu of menuSchema; index as i">
+        <!-------------------------- Create New Project Button -------------------------->
         <ng-container *ngIf="i === 0; else otherMenu">
             <div [attr.data-index]="i" class="new-project-container">
                 <div class="new-project-btn" (click)="displayModal()">
-                    <img class="add-icon" [src]="menu.src" />
+                    <img class="add-icon" [src]="menu.src" alt="add project" />
                     <label class="new-project-txt">{{ menu.name | translate }}</label>
                 </div>
             </div>
         </ng-container>
-
+        <!-------------------------- Other Menu Button -------------------------->
         <ng-template #otherMenu>
-            <!-- <div class="current-project-container"> -->
-            <div [attr.data-index]="i" class="current-project-btn" (click)="onClickButton(menu.id)">
-                <img class="project-icon" [src]="menu.src" [style]="menu.style" />
-                <label class="current-project-txt">{{ menu.name | translate }}</label>
+            <div
+                [attr.data-index]="i"
+                class="project-btn"
+                [class.active]="menu.id === selectedId"
+                (click)="onClickButton(menu.id)"
+            >
+                <img class="project-icon" [src]="menu.src" [style]="menu.style" alt="project icon" />
+                <label class="project-txt">{{ menu.name | translate }}</label>
             </div>
-            <!-- </div> -->
         </ng-template>
     </ng-container>
 </div>

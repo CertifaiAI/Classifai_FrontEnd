@@ -1,15 +1,20 @@
 <div *ngIf="isOverlayOn" class="overlay">
     <p style="margin-top: 40vh; color: rgb(255, 255, 255, 0.9); text-align: center; font-size: 3vh">
-        {{ isImageUploading ? 'Uploading the Images. Please Wait...' : 'Selection Window is Opened' }}
+        {{ isImageUploading ? 'Uploading the Images. Please Wait...' : 'Selection Window was Opened' }}
     </p>
 </div>
 <page-header [_onChange]="onChangeSchema"></page-header>
 <div class="upper-container">
-    <data-set-side-menu (_onCreate)="toggleModalDisplay($event)" (_onImport)="importProject()"></data-set-side-menu>
+    <data-set-side-menu
+        (_onCreate)="toggleModalDisplay($event)"
+        (_onImport)="importProject()"
+        (_onFilter)="filterProjects($event)"
+    ></data-set-side-menu>
     <div>
-        <data-set-header (selectedKey)="keyIsSelected($event)"></data-set-header>
+        <data-set-header (selectedKey)="keyIsSelected($event)" [_enableSort]="enableSort"></data-set-header>
         <data-set-card
             [_jsonSchema]="projectList"
+            [_projectType]="projectType"
             (_onClick)="onSubmit(false, $event)"
             (_onStarred)="onStarred($event)"
             (_onDelete)="deleteProject($event)"
@@ -24,84 +29,87 @@
     [modalTitle]="'createNewProject' | translate"
     [scrollable]="false"
 >
-    <form [formGroup]="form">
-        <div class="content-container">
-            <div class="new-project-container">
-                <label class="label label-name">{{ 'newProjectName' | translate }} </label>
-                <input
-                    #refProjectName
-                    class="input-style"
-                    type="text"
-                    placeholder="Enter project name"
-                    formControlName="projectName"
-                    [value]="inputProjectName"
-                    (input)="onChange($event.target.value)"
-                />
-            </div>
-            <ng-container
-                *ngIf="form.get('projectName')?.touched && form.get('projectName')?.invalid; else emptycontainer"
-            >
-                <div class="validation">
-                    <span *ngIf="form.get('projectName')?.getError('exist')">
-                        <small class="error-create-msg"> {{ 'projectNameExist' | translate }} </small>
-                    </span>
-                    <span *ngIf="form.get('projectName')?.getError('required')">
-                        <small class="error-create-msg"> {{ 'projectNameRequired' | translate }} </small>
-                    </span>
-                </div>
-            </ng-container>
-            <ng-template #emptycontainer>
-                <div class="empty-container"></div>
-            </ng-template>
-            <br />
-            <div class="select-folder-container">
-                <label class="label label-select-folder">{{ 'projectFolder' | translate }}</label>
-                <button class="button-style choose-folder-button" type="button" (click)="selectProjectFolder()">
-                    {{ 'chooseFolder' | translate }}
-                </button>
-            </div>
-            <div class="folder-name-container">
-                <label class="foldername" #projectfoldername></label>
-            </div>
-            <br />
-            <div class="select-file-container">
-                <label class="label-select-label">
-                    {{ 'labelListFile' | translate }}<br />
-                    {{ 'optional' | translate }}:
-                    <img
-                        class="help-icon"
-                        src="assets/icons/help.svg"
-                        (mouseover)="showLabelTooltip = true"
-                        (mouseout)="showLabelTooltip = false"
+    <div class="display-modal-container">
+        <form [formGroup]="form">
+            <div class="content-container">
+                <div class="new-project-container">
+                    <label class="label label-name">{{ 'newProjectName' | translate }} </label>
+                    <input
+                        #refProjectName
+                        class="input-style"
+                        type="text"
+                        placeholder="Enter project name"
+                        formControlName="projectName"
+                        [value]="inputProjectName"
+                        (input)="onChange($event.target.value)"
                     />
-                </label>
-                <div style="padding-top: 1vh">
-                    <button class="button-file-style choose-file-button" type="button" (click)="importLabelFile()">
-                        {{ 'chooseFile' | translate }}
+                </div>
+                <ng-container
+                    *ngIf="form.get('projectName')?.touched && form.get('projectName')?.invalid; else emptycontainer"
+                >
+                    <div class="validation">
+                        <span *ngIf="form.get('projectName')?.getError('exist')">
+                            <small class="error-create-msg"> {{ 'projectNameExist' | translate }} </small>
+                        </span>
+                        <span *ngIf="form.get('projectName')?.getError('required')">
+                            <small class="error-create-msg"> {{ 'projectNameRequired' | translate }} </small>
+                        </span>
+                    </div>
+                </ng-container>
+                <ng-template #emptycontainer>
+                    <div class="empty-container"></div>
+                </ng-template>
+                <br />
+                <div class="select-folder-container">
+                    <label class="label label-select-folder">{{ 'projectFolder' | translate }}</label>
+                    <button class="button-style choose-folder-button" type="button" (click)="selectProjectFolder()">
+                        {{ 'chooseFolder' | translate }}
+                    </button>
+                </div>
+                <div class="folder-name-container">
+                    <label class="foldername" #projectfoldername></label>
+                </div>
+                <br />
+                <div class="select-file-container">
+                    <label class="label-select-label">
+                        {{ 'labelListFile' | translate }}<br />
+                        {{ 'optional' | translate }}:
+                        <img
+                            class="help-icon"
+                            src="assets/icons/help.svg"
+                            (mouseover)="showLabelTooltip = true"
+                            (mouseout)="showLabelTooltip = false"
+                            alt="info"
+                        />
+                    </label>
+                    <div style="padding-top: 1vh">
+                        <button class="button-file-style choose-file-button" type="button" (click)="importLabelFile()">
+                            {{ 'chooseFile' | translate }}
+                        </button>
+                    </div>
+                </div>
+                <span class="labeltooltiptext" *ngIf="showLabelTooltip">
+                    <p>{{ 'labelFileDest1' | translate }}</p>
+                    <p>{{ 'labelFileDest2' | translate }}</p>
+                </span>
+                <div class="file-name-container">
+                    <label class="filename" #labeltextfilename></label>
+                </div>
+                <div class="horizontal-line"></div>
+                <div class="model-button-container">
+                    <button
+                        class="button-style create-btn"
+                        type="submit"
+                        (click)="onSubmit(true)"
+                        [ngClass]="isCreateFormIncomplete() ? 'disabled-create-btn' : null"
+                        [disabled]="isCreateFormIncomplete()"
+                    >
+                        {{ 'createButton' | translate }}
                     </button>
                 </div>
             </div>
-            <span class="labeltooltiptext" *ngIf="showLabelTooltip">
-                <p>{{ 'labelFileDest1' | translate }}</p>
-                <p>{{ 'labelFileDest2' | translate }}</p>
-            </span>
-            <div class="file-name-container">
-                <label class="filename" #labeltextfilename></label>
-            </div>
-            <div class="horizontal-line"></div>
-            <div class="model-button-container">
-                <button
-                    class="button-style create-btn"
-                    type="submit"
-                    (click)="onSubmit(true)"
-                    [ngClass]="isCreateFormIncomplete() ? 'disabled-create-btn' : null"
-                    [disabled]="isCreateFormIncomplete()"
-                >
-                    {{ 'createButton' | translate }}
-                </button>
-            </div>
-        </div>
-    </form>
+        </form>
+    </div>
 </modal>
 
 <modal
@@ -110,40 +118,42 @@
     [modalTitle]="'renameProject' | translate"
     [scrollable]="false"
 >
-    <form [formGroup]="renameForm">
-        <div class="content-container">
-            <div class="new-project-container">
-                <label class="label">{{ 'newProjectName' | translate }} </label>
-                <input
-                    #refNewProjectName
-                    class="input-style"
-                    type="text"
-                    placeholder="Enter new project name"
-                    formControlName="newProjectName"
-                    [value]="inputProjectName"
-                    (input)="onChangeRename($event.target.value)"
-                />
-            </div>
-
-            <ng-container *ngIf="renameForm.get('newProjectName')?.touched">
-                <div class="validation-rename">
-                    <span *ngIf="renameForm.get('newProjectName')?.getError('exist')">
-                        <small class="error-msg"> {{ 'projectNameExist' | translate }} </small>
-                    </span>
-                    <span *ngIf="renameForm.get('newProjectName')?.getError('required')">
-                        <small class="error-msg"> {{ 'projectNameRequired' | translate }} </small>
-                    </span>
+    <div class="display-modal-container">
+        <form [formGroup]="renameForm">
+            <div class="content-container">
+                <div class="new-project-container">
+                    <label class="label">{{ 'newProjectName' | translate }} </label>
+                    <input
+                        #refNewProjectName
+                        class="input-style"
+                        type="text"
+                        placeholder="Enter new project name"
+                        formControlName="newProjectName"
+                        [value]="inputProjectName"
+                        (input)="onChangeRename($event.target.value)"
+                    />
                 </div>
-            </ng-container>
 
-            <div class="horizontal-line"></div>
-            <div class="model-button-container">
-                <button class="button-style create-btn" type="submit" (click)="onSubmitRename()">
-                    {{ 'updateButton' | translate }}
-                </button>
+                <ng-container *ngIf="renameForm.get('newProjectName')?.touched">
+                    <div class="validation-rename">
+                        <span *ngIf="renameForm.get('newProjectName')?.getError('exist')">
+                            <small class="error-msg"> {{ 'projectNameExist' | translate }} </small>
+                        </span>
+                        <span *ngIf="renameForm.get('newProjectName')?.getError('required')">
+                            <small class="error-msg"> {{ 'projectNameRequired' | translate }} </small>
+                        </span>
+                    </div>
+                </ng-container>
+
+                <div class="horizontal-line"></div>
+                <div class="model-button-container">
+                    <button class="button-style create-btn" type="submit" (click)="onSubmitRename()">
+                        {{ 'updateButton' | translate }}
+                    </button>
+                </div>
             </div>
-        </div>
-    </form>
+        </form>
+    </div>
 </modal>
 
 <modal
@@ -153,36 +163,40 @@
     [scrollable]="false"
 >
     <br />
-    <form [formGroup]="form">
-        <div class="content-container">
-            <div class="select-file-container">
-                <label class="label-config">{{ 'importJson' | translate }} </label>
-                <div class="help-icon-container">
-                    <img class="help-icon" src="assets/icons/help.svg" />
-                    <span class="tooltiptext">
-                        <p>{{ 'configFileInfoDest1' | translate }}</p>
-                        <p>{{ 'configFileInfoDest2' | translate }}</p>
-                    </span>
+    <div class="display-modal-container">
+        <form [formGroup]="form">
+            <div class="content-container">
+                <div class="select-file-container">
+                    <label class="label-config">{{ 'importJson' | translate }} </label>
+                    <div class="help-icon-container">
+                        <img class="help-icon" src="assets/icons/help.svg" alt="info" />
+                        <span class="tooltiptext">
+                            <p>{{ 'configFileInfoDest1' | translate }}</p>
+                            <p>{{ 'configFileInfoDest2' | translate }}</p>
+                        </span>
+                    </div>
+                    <label class="choose-file-btn">
+                        {{ 'chooseFile' | translate }}
+                        <button class="input-id" type="button" (click)="onSelectImportProjectJson()">
+                            {{ 'Import' }}
+                        </button>
+                    </label>
+                    <label class="filename" #jsonImportProjectFilename></label>
                 </div>
-                <label class="choose-file-btn">
-                    {{ 'chooseFile' | translate }}
-                    <button class="input-id" type="button" (click)="onSelectImportProjectJson()">
-                        {{ 'Import' }}
-                    </button>
-                </label>
-                <label class="filename" #jsonImportProjectFilename></label>
+                <ng-container *ngIf="modalSpanMessage.trim()">
+                    <div [ngClass]="spanClass">
+                        <span>
+                            <small class="error-msg"
+                                >{{ modalSpanMessage | translate }}{{ modalImportProjectName }}</small
+                            >
+                        </span>
+                    </div>
+                </ng-container>
+                <div style="padding-bottom: 2vh"></div>
+                <div class="horizontal-line"></div>
             </div>
-            <ng-container *ngIf="modalSpanMessage.trim()">
-                <div [ngClass]="spanClass">
-                    <span>
-                        <small class="error-msg">{{ modalSpanMessage | translate }}{{ modalImportProjectName }}</small>
-                    </span>
-                </div>
-            </ng-container>
-            <div style="padding-bottom: 2vh"></div>
-            <div class="horizontal-line"></div>
-        </div>
-    </form>
+        </form>
+    </div>
 </modal>
 
 <modal
@@ -191,14 +205,12 @@
     [modalTitle]="'renameProject' | translate"
     [scrollable]="false"
 >
-    <div class="modal-message-container">
-        <div class="display-message-container">
-            <p class="display-msg">
-                {{ projectName }} {{ 'renameMsg' | translate }}
-                <b class="validation-success">{{ 'success' | translate }}</b
-                >!
-            </p>
-        </div>
+    <div class="display-modal-container">
+        <p class="display-msg">
+            {{ projectName }} {{ 'renameMsg' | translate }}
+            <strong class="validation-success">{{ 'success' | translate }}</strong
+            >!
+        </p>
     </div>
 </modal>
 
@@ -208,14 +220,20 @@
     [modalTitle]="'deleteProject' | translate"
     [scrollable]="false"
 >
-    <div class="modal-message-container">
-        <div class="display-message-container">
-            <p class="display-msg">
-                {{ projectName }} {{ 'deleteMsg' | translate }}
-                <b class="validation-success">{{ 'success' | translate }}</b
-                >!
-            </p>
+    <div class="display-modal-container" *ngIf="!isDeleteSuccess">
+        <p class="display-msg">{{ 'deleteConfirmation' | translate }} {{ projectName }} ?</p>
+        <div class="model-button-container">
+            <button class="button-style create-btn" type="submit" (click)="confirmDeleteProject()">
+                {{ 'confirm' | translate }}
+            </button>
         </div>
+    </div>
+    <div class="display-modal-container" *ngIf="isDeleteSuccess">
+        <p class="display-msg">
+            {{ projectName }} {{ 'deleteMsg' | translate }}
+            <strong class="validation-success">{{ 'success' | translate }}</strong
+            >!
+        </p>
     </div>
 </modal>
 

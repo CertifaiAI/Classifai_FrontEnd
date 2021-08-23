@@ -1,197 +1,193 @@
+<!-------------------------- Tabs Container -------------------------->
+
 <div class="tab-container" *ngIf="isTabStillOpen">
     <ng-container *ngFor="let tab of _tabStatus; index as i">
-        <ng-container *ngIf="i === 0; else nonThumbnailTab">
+        <div
+            class="utility-right-project-container tab flex-fill-remaining"
+            [ngClass]="checkCloseToggle(tab)"
+            [attr.data-index]="i"
+        >
+            <ng-container
+                [ngTemplateOutlet]="i === 0 ? thumbnailTab : nonThumbnailTab"
+                [ngTemplateOutletContext]="{ i: i, tab: tab }"
+            ></ng-container>
+        </div>
+    </ng-container>
+</div>
+
+<!-------------------------- Tabs Container: Project Tab -------------------------->
+
+<ng-template #thumbnailTab let-i="i" let-tab="tab">
+    <!-------------------------- Tab Header -------------------------->
+    <label class="tab-name">{{ tab.name | translate }} ({{ _thumbnailList.length }}/{{ _totalUuid }})</label>
+    <div class="flex-tab-icons">
+        <span class="tab-close-thumbnailless">
+            <div class="div-close" (click)="onClose(tab)">&#10006;</div>
+        </span>
+    </div>
+    <!-------------------------- Project Tab Container -------------------------->
+    <div class="utility-inner-container tab-height scroll" id="thumbnailList" #thumbnailList (scroll)="mouseScroll()">
+        <ng-container *ngFor="let thumbnail of _thumbnailList; index as i">
             <div
-                class="utility-right-project-container tab flex-fill-remaining"
-                [ngClass]="checkCloseToggle(tab)"
-                [attr.data-index]="i"
+                class="img-container"
+                [ngClass]="{ 'img-selected': i === _onChange.currentThumbnailIndex - 1 }"
+                (click)="onClick(thumbnail, i)"
             >
-                <label class="tab-name"
-                    >{{ tab.name | translate }} ({{ _thumbnailList.length }}/{{ _totalUuid }})</label
-                >
-                <div class="flex-tab-icons">
-                    <span class="tab-close-thumbnailless">
-                        <div class="div-close" (click)="onClose(tab)">&#10006;</div>
-                    </span>
+                <div class="img-skeleton">
+                    <img imgLazyLoad class="img" [src]="thumbnail.img_thumbnail" alt="thumbnail" />
                 </div>
-                <div
-                    class="utility-inner-container tab-height scroll"
-                    id="thumbnailList"
-                    #thumbnailList
-                    (scroll)="mouseScroll()"
-                >
-                    <ng-container *ngFor="let thumbnail of _thumbnailList; index as i">
-                        <div
-                            class="img-container"
-                            [ngClass]="{ 'img-selected': i === _onChange.currentThumbnailIndex - 1 }"
-                            (click)="onClick(thumbnail, i)"
-                        >
-                            <div class="img-skeleton">
-                                <img imgLazyLoad class="img" [src]="thumbnail.img_thumbnail" />
-                            </div>
-                            <div class="img-name">
-                                <label class="img-path">{{ thumbnail.img_path | fileNameSlice }}</label>
-                            </div>
-                            <div class="thumbnail-actions">
-                                <img
-                                    src="assets/icons/last_modify.svg"
-                                    alt="edit"
-                                    height="20vh"
-                                    width="20vw"
-                                    class="thumbnail-actions-icon"
-                                    (click)="renameImage(thumbnail)"
-                                    [title]="'renameModal.renameImg' | translate"
-                                />
-                                <img
-                                    src="assets/icons/trash.svg"
-                                    alt="edit"
-                                    height="20vh"
-                                    width="20vw"
-                                    class="thumbnail-actions-icon"
-                                    (click)="deleteImage(thumbnail, i)"
-                                    [title]="'Delete Image' | translate"
-                                />
-                            </div>
-                            <div>
-                                <div
-                                    [ngClass]="
-                                        thumbnail.bnd_box?.length > 0 || thumbnail.polygons?.length > 0
-                                            ? 'indicator'
-                                            : 'no-indicator'
-                                    "
-                                ></div>
-                            </div>
-                        </div>
-                    </ng-container>
+                <div class="img-name">
+                    <label class="img-path">{{ thumbnail.img_path | fileNameSlice }}</label>
+                </div>
+                <div class="thumbnail-actions">
+                    <img
+                        src="assets/icons/last_modify.svg"
+                        alt="edit"
+                        height="20vh"
+                        width="20vw"
+                        class="thumbnail-actions-icon"
+                        (click)="renameImage(thumbnail)"
+                        [title]="'renameModal.renameImg' | translate"
+                    />
+                    <img
+                        src="assets/icons/trash.svg"
+                        alt="edit"
+                        height="20vh"
+                        width="20vw"
+                        class="thumbnail-actions-icon"
+                        (click)="deleteImage(thumbnail, i)"
+                        [title]="'Delete Image' | translate"
+                    />
+                </div>
+                <div>
+                    <div
+                        [ngClass]="
+                            thumbnail.bnd_box?.length > 0 || thumbnail.polygons?.length > 0
+                                ? 'indicator'
+                                : 'no-indicator'
+                        "
+                    ></div>
                 </div>
             </div>
         </ng-container>
+    </div>
+</ng-template>
 
-        <ng-template #nonThumbnailTab>
-            <ng-container *ngIf="i === 1; else annotationTab">
-                <div
-                    class="utility-right-project-container tab flex-fill-remaining"
-                    [attr.data-index]="i"
-                    [ngClass]="checkCloseToggle(tab)"
-                >
-                    <label class="tab-name">{{ tab.name | translate }}</label>
-                    <div class="flex-tab-icons">
-                        <span class="tab-close-thumbnailless"
-                            ><div class="div-close" (click)="onClose(tab)">&#10006;</div></span
+<!-------------------------- Tabs Container: Non-project Tab -------------------------->
+
+<ng-template #nonThumbnailTab let-i="i" let-tab="tab">
+    <ng-container
+        [ngTemplateOutlet]="i === 1 ? labelTab : annotationTab"
+        [ngTemplateOutletContext]="{ i: i, tab: tab }"
+    ></ng-container>
+</ng-template>
+
+<!-------------------------- Non-project Tab: Label Tab -------------------------->
+<ng-template #labelTab let-i="i" let-tab="tab">
+    <!-------------------------- Tab Header -------------------------->
+    <label class="tab-name">{{ tab.name | translate }}</label>
+    <div class="flex-tab-icons">
+        <span class="tab-close-thumbnailless"><div class="div-close" (click)="onClose(tab)">&#10006;</div></span>
+    </div>
+    <!-------------------------- Label Search Field -------------------------->
+    <div class="div-input">
+        <input
+            class="input"
+            [ngClass]="invalidInput ? 'input-invalid' : null"
+            type="text"
+            [(ngModel)]="inputLabel"
+            (ngModelChange)="inputLabelChange($event)"
+            (keydown.enter)="validateInputLabel($event)"
+            [placeholder]="'labellingProject.enterLabel' | translate"
+        />
+    </div>
+    <!-------------------------- Label Tab Container -------------------------->
+    <div class="utility-inner-container tab-height scroll" id="inner-container">
+        <div class="flex-item">
+            <ng-container *ngFor="let label of labelList; index as i">
+                <div class="flex-center-width" [ngClass]="label === selectedLabel ? 'label-active' : null">
+                    <label class="label">
+                        <div
+                            [ngClass]="clickAbilityToggle ? 'pointer' : null"
+                            (click)="clickAbilityToggle ? onClickLabel(label) : null"
                         >
-                    </div>
-                    <div class="div-input">
-                        <input
-                            class="input"
-                            [ngClass]="invalidInput ? 'input-invalid' : null"
-                            type="text"
-                            [(ngModel)]="inputLabel"
-                            (ngModelChange)="inputLabelChange($event)"
-                            (keydown.enter)="validateInputLabel($event)"
-                            [placeholder]="'labellingProject.enterLabel' | translate"
-                        />
-                    </div>
-                    <div class="utility-inner-container tab-height scroll" id="inner-container">
-                        <div class="flex-item">
-                            <ng-container *ngFor="let label of labelList; index as i">
-                                <div
-                                    class="flex-center-width"
-                                    [ngClass]="label === selectedLabel ? 'label-active' : null"
-                                >
-                                    <label class="label">
-                                        <div
-                                            [ngClass]="clickAbilityToggle ? 'pointer' : null"
-                                            (click)="clickAbilityToggle ? onClickLabel(label) : null"
-                                        >
-                                            {{ label }}
-                                        </div>
-                                    </label>
-                                    <label class="action"
-                                        ><ng-container *ngIf="label === selectedLabel"
-                                            ><span
-                                                [ngClass]="clickAbilityToggle ? 'pointer' : null"
-                                                class="delete-label"
-                                                (click)="onDeleteLabel(label)"
-                                                >-</span
-                                            ></ng-container
-                                        ></label
-                                    >
-                                </div>
-                            </ng-container>
-                            <label *ngIf="labelList.length === 0" class="not-exist">
-                                {{ 'labellingProject.labelNotExist' | translate }}
-                            </label>
+                            {{ label }}
                         </div>
-                    </div>
+                    </label>
+                    <label
+                        ><ng-container *ngIf="label === selectedLabel"
+                            ><span
+                                [ngClass]="clickAbilityToggle ? 'pointer' : null"
+                                class="delete-label"
+                                (click)="onDeleteLabel(label)"
+                                >-</span
+                            ></ng-container
+                        ></label
+                    >
                 </div>
             </ng-container>
-            <ng-template #annotationTab>
-                <div
-                    class="utility-right-project-container tab flex-fill-remaining"
-                    [attr.data-index]="i"
-                    [ngClass]="checkCloseToggle(tab)"
-                >
-                    <label class="tab-name">{{ tab.name | translate }}</label>
-                    <div class="flex-tab-icons">
-                        <span class="tab-close-thumbnailless"
-                            ><div class="div-close" (click)="onClose(tab)">&#10006;</div></span
-                        >
-                    </div>
-                    <div class="utility-inner-container scroll tab-smaller-height" id="inner-container">
-                        <div class="flex-item">
-                            <div class="flex-center-width">
-                                <ng-container *ngIf="tab?.annotation">
-                                    <ng-container *ngFor="let annotation of tab.annotation">
-                                        <ng-container *ngIf="annotation.bnd_box; else polygon">
-                                            <ng-container *ngFor="let boundingBox of annotation.bnd_box; index as j">
-                                                <label
-                                                    class="label"
-                                                    [attr.data-index]="j"
-                                                    [ngClass]="
-                                                        j === selectedIndexAnnotation ? 'annotation-active' : null
-                                                    "
-                                                    (click)="
-                                                        clickAbilityToggle ? onClickAnnotation(j, boundingBox) : null
-                                                    "
-                                                >
-                                                    <div [ngClass]="clickAbilityToggle ? 'pointer' : null">
-                                                        {{ boundingBox.label }} : {{ boundingBox.id }}
-                                                    </div>
-                                                    <div
-                                                        [ngClass]="clickAbilityToggle ? 'pointer' : null"
-                                                        *ngIf="j === selectedIndexAnnotation"
-                                                        (click)="onDeleteAnnotation()"
-                                                        class="delete-annotation"
-                                                    >
-                                                        -
-                                                    </div>
-                                                </label>
-                                            </ng-container>
-                                        </ng-container>
+            <label *ngIf="labelList.length === 0" class="not-exist">
+                {{ 'labellingProject.labelNotExist' | translate }}
+            </label>
+        </div>
+    </div>
+</ng-template>
 
-                                        <ng-template #polygon>
-                                            <ng-container *ngFor="let polygon of annotation.polygons; index as j">
-                                                <label
-                                                    class="label"
-                                                    [attr.data-index]="j"
-                                                    [ngClass]="
-                                                        j === selectedIndexAnnotation ? 'annotation-active' : null
-                                                    "
-                                                    (click)="clickAbilityToggle ? onClickAnnotation(j, polygon) : null"
-                                                >
-                                                    <div [ngClass]="clickAbilityToggle ? 'pointer' : null">
-                                                        {{ polygon.label }} : {{ polygon.id }}
-                                                    </div>
-                                                </label>
-                                            </ng-container>
-                                        </ng-template>
-                                    </ng-container>
-                                </ng-container>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </ng-template>
-        </ng-template>
+<!-------------------------- Non-project Tab: Annotation Tab -------------------------->
+<ng-template #annotationTab let-i="i" let-tab="tab">
+    <label class="tab-name">{{ tab.name | translate }}</label>
+    <div class="flex-tab-icons">
+        <span class="tab-close-thumbnailless"><div class="div-close" (click)="onClose(tab)">&#10006;</div></span>
+    </div>
+    <!-------------------------- Annotation Tab Container -------------------------->
+    <div class="utility-inner-container scroll tab-smaller-height" id="inner-container">
+        <div class="flex-item">
+            <div class="flex-center-width">
+                <ng-container *ngIf="tab?.annotation">
+                    <ng-container *ngFor="let annotation of tab.annotation">
+                        <ng-container
+                            [ngTemplateOutlet]="annotation.bnd_box ? boundingBox : polygon"
+                            [ngTemplateOutletContext]="{ annotation: annotation }"
+                        ></ng-container>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<!-------------------------- Annotation Tab: Bounding Box Annotation List -------------------------->
+<ng-template #boundingBox let-annotation="annotation">
+    <ng-container *ngFor="let boundingBox of annotation.bnd_box; index as j">
+        <label
+            class="label"
+            [attr.data-index]="j"
+            [ngClass]="j === selectedIndexAnnotation ? 'annotation-active' : null"
+            (click)="clickAbilityToggle ? onClickAnnotation(j, boundingBox) : null"
+        >
+            <div [ngClass]="clickAbilityToggle ? 'pointer' : null">{{ boundingBox.label }} : {{ boundingBox.id }}</div>
+            <div
+                [ngClass]="clickAbilityToggle ? 'pointer' : null"
+                *ngIf="j === selectedIndexAnnotation"
+                (click)="onDeleteAnnotation()"
+                class="delete-annotation"
+            >
+                -
+            </div>
+        </label>
     </ng-container>
-</div>
+</ng-template>
+
+<!-------------------------- Annotation Tab: Polygon Annotation List -------------------------->
+<ng-template #polygon let-annotation="annotation">
+    <ng-container *ngFor="let polygon of annotation.polygons; index as j">
+        <label
+            class="label"
+            [attr.data-index]="j"
+            [ngClass]="j === selectedIndexAnnotation ? 'annotation-active' : null"
+            (click)="clickAbilityToggle ? onClickAnnotation(j, polygon) : null"
+        >
+            <div [ngClass]="clickAbilityToggle ? 'pointer' : null">{{ polygon.label }} : {{ polygon.id }}</div>
+        </label>
+    </ng-container>
+</ng-template>

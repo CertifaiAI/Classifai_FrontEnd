@@ -1,0 +1,75 @@
+<!-------------------------- Page Header Container -------------------------->
+<div class="header-container">
+    <!-------------------------- Left Side Page Header -------------------------->
+    <div class="container-flex-start">
+        <!-------------------------- Classifai Logo -------------------------->
+        <div class="logo-container">
+            <img [src]="logoSrc" class="logo position-absolute" alt="logo" title="Classifai" />
+        </div>
+        <!-------------------------- Navigations -------------------------->
+        <ng-container *ngFor="let label of headerLabels; let last = last">
+            <div *ngIf="!label.disable">
+                <a class="link" [routerLink]="label.url">
+                    <div
+                        class="btn-container"
+                        [ngClass]="{ 'last-btn-container': last }"
+                        routerLinkActive="active-link"
+                        [routerLinkActiveOptions]="{ exact: true }"
+                    >
+                        <label class="label">{{ label.name | translate }}</label>
+                    </div></a
+                >
+            </div>
+            <div *ngIf="label.disable">
+                <a class="link">
+                    <div
+                        class="btn-container"
+                        style="cursor: not-allowed"
+                        [ngClass]="{ 'last-btn-container': last }"
+                        routerLinkActive="active-link"
+                        [routerLinkActiveOptions]="{ exact: true }"
+                    >
+                        <label class="label" style="cursor: not-allowed">{{ label.name | translate }}</label>
+                    </div></a
+                >
+            </div>
+        </ng-container>
+    </div>
+    <!-------------------------- Right Side Page Header -------------------------->
+    <div class="container-flex-end">
+        <ng-container *ngFor="let logo of jsonSchema.logos; index as i">
+            <div class="utility-icon-container">
+                <img
+                    class="img utility-icon-light"
+                    [attr.data-index]="i"
+                    [src]="logo.imgPath"
+                    [alt]="logo.alt"
+                    [title]="logo.hoverLabel | translate"
+                    (click)="logo.onClick()"
+                />
+            </div>
+        </ng-container>
+    </div>
+</div>
+
+<modal [id]="modalIdTutorial" [modalBodyStyle]="tutorialBodyStyle" [modalTitle]="modalTitle" [scrollable]="false">
+    <div class="display-modal-container">
+        <img
+            [src]="tutorial[tutorialIdx].imageTutorialPath"
+            [alt]="tutorial[tutorialIdx].imageTutorialAlt"
+            class="tutorial-img"
+        />
+        <p class="tutorial-description">
+            {{ tutorial[tutorialIdx].imageTutorialDesc }}
+        </p>
+    </div>
+    <div class="modal-button-container">
+        <button class="button-style end-btn" (click)="endTutorial()" *ngIf="tutorialIdx === tutorial.length - 1">
+            Get Started
+        </button>
+        <button class="button-style next-btn" (click)="nextTutorial()" *ngIf="tutorialIdx < tutorial.length - 1">
+            Next
+        </button>
+        <button class="button-style prev-btn" (click)="prevTutorial()" *ngIf="tutorialIdx > 0">Previous</button>
+    </div>
+</modal>

@@ -4,8 +4,6 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { IconSchema } from 'src/shared/types/icon/icon.model';
-import { ImgLabelProps, TabsProps } from '../image-labelling.model';
 import {
     Component,
     EventEmitter,
@@ -16,6 +14,8 @@ import {
     OnChanges,
     ChangeDetectionStrategy,
 } from '@angular/core';
+import { ImgLabelProps, TabsProps } from 'shared/types/image-labelling/image-labelling.model';
+import { IconSchema } from 'shared/types/icon/icon.model';
 
 @Component({
     selector: 'image-labelling-right-sidebar',
@@ -30,8 +30,6 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
     @Output() _onReload = new EventEmitter();
 
     jsonSchema!: IconSchema;
-
-    constructor() {}
 
     ngOnInit(): void {
         this.bindImagePath();
@@ -71,7 +69,9 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     imgPath: `assets/icons/statistic.svg`,
                     hoverLabel: `rightSideBar.statistic`,
                     alt: `Statistic`,
-                    onClick: () => {},
+                    onClick: () => {
+                        console.log('This feature is not available yet');
+                    },
                 },
                 {
                     imgPath: `assets/icons/export.svg`,
