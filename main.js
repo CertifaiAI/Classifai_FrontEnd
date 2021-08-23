@@ -1,4 +1,5 @@
 const { app, BrowserWindow, nativeTheme } = require('electron');
+const fetch = require('electron-fetch').default
 
 if (require('electron-squirrel-startup')) return app.quit();
 
@@ -58,7 +59,17 @@ function createWindow() {
 app.on('ready', createWindow);
 
 app.on('window-all-closed', function () {
-    if (process.platform !== 'darwin') app.quit();
+    if (process.platform !== 'darwin') {
+        fetch('http://localhost:9999/v2/close', {
+            method: 'PUT'
+    })
+        .then((response) => {
+          app.quit()
+        })
+        .catch((error) => {
+          alert('Error')
+        })
+    };
 });
 
 app.on('activate', function () {
