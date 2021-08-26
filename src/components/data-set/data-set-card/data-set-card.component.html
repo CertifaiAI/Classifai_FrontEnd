@@ -47,6 +47,9 @@
                                         <div class="popup-label" (click)="onDeleteProject(project.project_name)">
                                             {{ 'datasetCard.deleteProject' | translate }}
                                         </div>
+                                        <div class="popup-label" (click)="onOpenProjectStats(project.project_name)">
+                                            Project Statistics
+                                        </div>
                                     </div>
                                 </span>
                             </ng-container>
@@ -105,12 +108,12 @@
 <!-------------------------- No Project Exist -------------------------->
 
 <ng-template #noProject>
-  <ng-container *ngIf="_projectType === 'starred'; else noProjectCreated">
-    <empty-container class="card-layout-container scroll fade-in" [_case]="'NO_STARRED'"></empty-container>
-  </ng-container>
+    <ng-container *ngIf="_projectType === 'starred'; else noProjectCreated">
+        <empty-container class="card-layout-container scroll fade-in" [_case]="'NO_STARRED'"></empty-container>
+    </ng-container>
 </ng-template>
 <ng-template #noProjectCreated>
-  <empty-container class="card-layout-container scroll fade-in" [_case]="'NO_CONTENT'"></empty-container>
+    <empty-container class="card-layout-container scroll fade-in" [_case]="'NO_CONTENT'"></empty-container>
 </ng-template>
 
 <!-------------------------- Card Label -------------------------->

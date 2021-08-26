@@ -23,6 +23,7 @@ export class DataSetCardComponent implements OnChanges {
     @Output() _onStarred: EventEmitter<StarredProps> = new EventEmitter();
     @Output() _onDelete: EventEmitter<string> = new EventEmitter();
     @Output() _onRename: EventEmitter<ProjectRename> = new EventEmitter();
+    @Output() _onProjectStats: EventEmitter<string> = new EventEmitter();
 
     // clonedJsonSchema!: ProjectSchema;
     starredActiveIcon: string = `assets/icons/starred_active.svg`;
@@ -51,6 +52,11 @@ export class DataSetCardComponent implements OnChanges {
         this.onCloseDisplay();
     }
 
+    onOpenProjectStats(projectName: string) {
+        this._onProjectStats.emit(projectName);
+        this.onCloseDisplay();
+    }
+
     onDisplayMore = (index: number = this.cardSchema.clickIndex): void => {
         const { clickIndex } = this.cardSchema;
         this.cardSchema = { clickIndex: clickIndex === index ? -1 : index };
@@ -74,14 +80,14 @@ export class DataSetCardComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes._jsonSchema?.currentValue) {
-          const { isUploading }: { isUploading: boolean } = changes._jsonSchema.currentValue;
-          !isUploading && this.onDisplayMore();
+            const { isUploading }: { isUploading: boolean } = changes._jsonSchema.currentValue;
+            !isUploading && this.onDisplayMore();
 
-          if (this._jsonSchema.projects.length !== this.previousProjectLength) {
-              // Close 'display more' popup after create/delete a project
-              this.cardSchema.clickIndex = -1;
-          }
-          this.previousProjectLength = this._jsonSchema.projects.length;
+            if (this._jsonSchema.projects.length !== this.previousProjectLength) {
+                // Close 'display more' popup after create/delete a project
+                this.cardSchema.clickIndex = -1;
+            }
+            this.previousProjectLength = this._jsonSchema.projects.length;
         }
     }
 }

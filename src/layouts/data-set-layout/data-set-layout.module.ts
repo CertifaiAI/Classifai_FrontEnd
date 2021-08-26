@@ -12,9 +12,11 @@ import { DataSetCardComponent } from 'components/data-set/data-set-card/data-set
 import { DataSetHeaderComponent } from 'components/data-set/data-set-header/data-set-header.component';
 import { DataSetSideMenuComponent } from 'components/data-set/data-set-side-menu/data-set-side-menu.component';
 import { SharedModule } from 'shared/shared.module';
+import { BarChartModule } from 'shared/components/charts/bar-chart/bar-chart.module';
+import { PieChartModule } from 'shared/components/charts/pie-chart/pie-chart.module';
 
 @NgModule({
-    imports: [CommonModule, SharedModule, DataSetRoutingModule],
+    imports: [CommonModule, SharedModule, DataSetRoutingModule, BarChartModule, PieChartModule],
     declarations: [DataSetLayoutComponent, DataSetSideMenuComponent, DataSetHeaderComponent, DataSetCardComponent],
 })
 export class DataSetLayoutModule {}

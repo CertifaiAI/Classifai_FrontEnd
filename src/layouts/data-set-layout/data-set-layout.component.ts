@@ -7,7 +7,13 @@
 import { cloneDeep } from 'lodash-es';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from './data-set-layout-api.service';
-import { DataSetProps, Project, ProjectRename, ProjectSchema, StarredProps } from '../../shared/types/dataset-layout/data-set-layout.model';
+import {
+    DataSetProps,
+    Project,
+    ProjectRename,
+    ProjectSchema,
+    StarredProps,
+} from '../../shared/types/dataset-layout/data-set-layout.model';
 import { distinctUntilChanged, first, map, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
 import { interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -86,6 +92,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     readonly modalIdDeleteProject = 'modal-delete-project';
     readonly modalIdRenameSuccess = 'modal-rename-success';
     readonly modalUnsupportedImage = 'modal-unsupported-image';
+    readonly modalIdProjectStats = 'modal-project-stats';
     createProjectModalBodyStyle: ModalBodyStyle = {
         minHeight: '45vh',
         minWidth: '31vw',
@@ -130,6 +137,13 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         minWidth: '31vw',
         maxWidth: '31vw',
         margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    projectStatsBodyStyle: ModalBodyStyle = {
+        minHeight: '50vh',
+        minWidth: '50vw',
+        maxWidth: '50vw',
+        margin: '7vw 36vh',
         overflow: 'none',
     };
     @ViewChild('refProjectName') _refProjectName!: ElementRef<HTMLInputElement>;
@@ -313,6 +327,10 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         const { shown, projectName } = event;
         shown ? this.openRenameModal() : this._modalService.close(this.modalIdRenameProject);
         this.oldProjectName = projectName;
+    };
+
+    toggleProjectStats = (event?: string): void => {
+        this._modalService.open(this.modalIdProjectStats);
     };
 
     openRenameModal() {
@@ -621,29 +639,29 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     deleteProject = (projectName: string): void => {
-      this.isDeleteSuccess = false;
-      this.projectName = projectName;
-      this._languageService._translate.get('deleteSuccess').subscribe((translated) => {
+        this.isDeleteSuccess = false;
         this.projectName = projectName;
-        this._modalService.open(this.modalIdDeleteProject);
-    });
+        this._languageService._translate.get('deleteSuccess').subscribe((translated) => {
+            this.projectName = projectName;
+            this._modalService.open(this.modalIdDeleteProject);
+        });
     };
 
     confirmDeleteProject = (): void => {
-      const deleteProj$ = this._dataSetService.deleteProject(this.projectName);
+        const deleteProj$ = this._dataSetService.deleteProject(this.projectName);
 
-      deleteProj$
-          .pipe(
-              first(),
-              map(({ message }) => message),
-          )
-          .subscribe((message) => {
-              if (message === 1) {
-                  this.isDeleteSuccess = true;
-                  this.showProjectList(this.projectType);
-              }
-          });
-    }
+        deleteProj$
+            .pipe(
+                first(),
+                map(({ message }) => message),
+            )
+            .subscribe((message) => {
+                if (message === 1) {
+                    this.isDeleteSuccess = true;
+                    this.showProjectList(this.projectType);
+                }
+            });
+    };
 
     @HostListener('window:keydown', ['$event'])
     keyDownEvent = ({ key }: KeyboardEvent): void => {
