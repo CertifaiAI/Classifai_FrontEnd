@@ -57,6 +57,7 @@
             (_onClick)="onToggleTab($event)"
             (_onExport)="onExport()"
             (_onReload)="onReload()"
+            (_onOpenProjectStats)="toggleProjectStats()"
         ></image-labelling-right-sidebar>
     </div>
     <image-labelling-footer [_thumbnailInfo]="selectedMetaData" [_imgSrc]="imgSrc"></image-labelling-footer>
@@ -359,6 +360,20 @@
         <button class="button-style deleteimg-btn" (click)="onSubmitDeleteImage()" #deleteBtn>
             {{ 'deleteModal.confirm' | translate }}
         </button>
+    </div>
+</modal>
+
+<modal
+    [id]="modalIdProjectStats"
+    [modalBodyStyle]="projectStatsBodyStyle"
+    [modalTitle]="'Project Stats'"
+    [scrollable]="false"
+>
+    <div class="display-modal-container">
+        <div class="chart-container">
+            <app-pie-chart></app-pie-chart>
+            <app-bar-chart></app-bar-chart>
+        </div>
     </div>
 </modal>
 

@@ -4,7 +4,6 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-
 import {
     Component,
     EventEmitter,
@@ -29,6 +28,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
     @Output() _onClick: EventEmitter<TabsProps> = new EventEmitter();
     @Output() _onExport = new EventEmitter();
     @Output() _onReload = new EventEmitter();
+    @Output() _onOpenProjectStats = new EventEmitter();
 
     jsonSchema!: IconSchema;
 
@@ -71,7 +71,7 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     hoverLabel: `rightSideBar.statistic`,
                     alt: `Statistic`,
                     onClick: () => {
-                        console.log('This feature is not available yet');
+                        this._onOpenProjectStats.emit();
                     },
                 },
                 {

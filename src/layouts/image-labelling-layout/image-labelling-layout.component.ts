@@ -111,6 +111,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     readonly modalExportWarning = 'modalExportWarning';
     readonly modalRenameImage = 'modal-rename-image';
     readonly modalDeleteImage = 'modal-delete-image';
+    readonly modalIdProjectStats = 'modal-project-stats';
     exportModalBodyStyle: ModalBodyStyle = {
         minHeight: '15vh',
         maxHeight: '15vh',
@@ -179,6 +180,13 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         minWidth: '20vw',
         maxWidth: '20vw',
         margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    projectStatsBodyStyle: ModalBodyStyle = {
+        minHeight: '50vh',
+        minWidth: '50vw',
+        maxWidth: '50vw',
+        margin: '7vw 36vh',
         overflow: 'none',
     };
     saveType: ExportSaveType = {
@@ -1022,6 +1030,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.labelChoosen = this.tempLabelChoosen.map((x) => Object.assign({}, x));
         this.onCloseModal('modal-adv');
     }
+
+    toggleProjectStats = (event?: string): void => {
+        this._modalService.open(this.modalIdProjectStats);
+    };
 
     shortcutKeyInfo() {
         return [
