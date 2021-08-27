@@ -195,6 +195,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 ({ content }) => {
                     if (content) {
                         this.handleProjectList(content, projectType);
+
+                        // Bet Project Stats
+                        console.log(content);
                     }
                 },
                 (error: Error) => {
