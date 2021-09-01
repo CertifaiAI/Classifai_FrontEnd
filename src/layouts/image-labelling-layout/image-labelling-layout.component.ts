@@ -352,11 +352,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             );
         // make initial call
         this.subject$.next();
-
-        // Get Project Stats Metadata
-        projMetaStatus$.pipe().subscribe((meta) => {
-            console.log(meta);
-        });
     };
 
     loadThumbnails = (): void => {
