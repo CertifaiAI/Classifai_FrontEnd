@@ -18,9 +18,9 @@ export class BarChartComponent implements OnChanges {
     gradient: boolean = false;
     showLegend: boolean = true;
     showXAxisLabel: boolean = true;
-    yAxisLabel: string = 'Count';
+    yAxisLabel: string = 'Labels';
     showYAxisLabel: boolean = true;
-    xAxisLabel: string = 'Labels';
+    xAxisLabel: string = 'Count';
     legendPosition: string = 'below';
 
     colorScheme = {
