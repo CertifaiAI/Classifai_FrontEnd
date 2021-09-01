@@ -1,6 +1,4 @@
-import { Component, Input, NgModule, OnChanges, SimpleChanges } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ChartProps } from 'shared/types/dataset-layout/data-set-layout.model';
 
 @Component({
