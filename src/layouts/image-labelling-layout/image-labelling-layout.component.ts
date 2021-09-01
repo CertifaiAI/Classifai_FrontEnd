@@ -24,9 +24,9 @@ import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'shared/components/spinner/spinner.service';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
-import { ExportStatus, Message } from 'shared/types/message/message.model';
+import { ExportStatus, labels_stats, Message } from 'shared/types/message/message.model';
 import { ModalBodyStyle } from 'shared/types/modal/modal.model';
-import { ProjectSchema } from 'shared/types/dataset-layout/data-set-layout.model';
+import { ChartProps, ProjectSchema } from 'shared/types/dataset-layout/data-set-layout.model';
 import {
     ImgLabelProps,
     ImageLabelUrl,
@@ -104,6 +104,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     selectedUuid: string = '';
     renameImageErrorCode: number = -1;
     dontAskDelete: boolean = false;
+    labelledImage: number = 0;
+    unLabelledImage: number = 0;
+    labelStats: ChartProps[] = [];
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
@@ -1036,8 +1039,25 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.onCloseModal('modal-adv');
     }
 
-    toggleProjectStats = (event?: string): void => {
-        this._modalService.open(this.modalIdProjectStats);
+    toggleProjectStats = (): void => {
+        this._dataSetService
+            .getProjectStats(this.selectedProjectName)
+            .pipe()
+            .subscribe((project) => {
+                if (project.statistic_data) {
+                    this.labelledImage = project.statistic_data[0].labeled_image;
+                    this.unLabelledImage = project.statistic_data[0].unlabeled_image;
+                    this.labelStats = [];
+                    project.statistic_data[0].label_Per_Class_In_Project.forEach((labelMeta: labels_stats) => {
+                        const meta = {
+                            name: labelMeta.label,
+                            value: labelMeta.count,
+                        };
+                        this.labelStats.push(meta);
+                    });
+                    this._modalService.open(this.modalIdProjectStats);
+                }
+            });
     };
 
     shortcutKeyInfo() {

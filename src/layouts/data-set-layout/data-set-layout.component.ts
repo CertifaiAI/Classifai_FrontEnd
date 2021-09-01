@@ -8,6 +8,7 @@ import { cloneDeep } from 'lodash-es';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from './data-set-layout-api.service';
 import {
+    ChartProps,
     DataSetProps,
     Project,
     ProjectRename,
@@ -19,7 +20,7 @@ import { interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ImageLabellingModeService } from 'components/image-labelling/image-labelling-mode.service';
 import { LanguageService } from 'shared/services/language.service';
-import { MessageUploadStatus, ProjectMessage } from 'shared/types/message/message.model';
+import { labels_stats, MessageUploadStatus, ProjectMessage } from 'shared/types/message/message.model';
 import { ModalBodyStyle } from 'shared/types/modal/modal.model';
 import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
@@ -86,6 +87,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     keyToSort: string = 'project_name';
     projectType: string = 'myproject';
     enableSort: boolean = true;
+    labelledImage: number = 0;
+    unLabelledImage: number = 0;
+    labelStats: ChartProps[] = [];
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
@@ -195,9 +199,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                 ({ content }) => {
                     if (content) {
                         this.handleProjectList(content, projectType);
-
-                        // Bet Project Stats
-                        console.log(content);
                     }
                 },
                 (error: Error) => {
@@ -332,8 +333,25 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.oldProjectName = projectName;
     };
 
-    toggleProjectStats = (event?: string): void => {
-        this._modalService.open(this.modalIdProjectStats);
+    toggleProjectStats = (projectName: string): void => {
+        this._dataSetService
+            .getProjectStats(projectName)
+            .pipe()
+            .subscribe((project) => {
+                if (project.statistic_data) {
+                    this.labelledImage = project.statistic_data[0].labeled_image;
+                    this.unLabelledImage = project.statistic_data[0].unlabeled_image;
+                    this.labelStats = [];
+                    project.statistic_data[0].label_Per_Class_In_Project.forEach((labelMeta: labels_stats) => {
+                        const meta = {
+                            name: labelMeta.label,
+                            value: labelMeta.count,
+                        };
+                        this.labelStats.push(meta);
+                    });
+                    this._modalService.open(this.modalIdProjectStats);
+                }
+            });
     };
 
     openRenameModal() {

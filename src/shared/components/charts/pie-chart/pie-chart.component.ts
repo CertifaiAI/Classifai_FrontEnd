@@ -1,29 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Subject } from 'rxjs';
+import { ChartProps } from 'shared/types/dataset-layout/data-set-layout.model';
 
 @Component({
     selector: 'app-pie-chart',
     templateUrl: './pie-chart.component.html',
     styleUrls: ['./pie-chart.component.scss'],
 })
-export class PieChartComponent {
-    single: any[] = [
+export class PieChartComponent implements OnChanges {
+    @Input() labelledImage: number = 0;
+    @Input() unLabelledImage: number = 10;
+
+    single: ChartProps[] = [
         {
-            name: 'Germany',
-            value: 8940000,
+            name: 'Labelled Image',
+            value: this.labelledImage,
         },
         {
-            name: 'USA',
-            value: 5000000,
-        },
-        {
-            name: 'France',
-            value: 7200000,
-        },
-        {
-            name: 'UK',
-            value: 6200000,
+            name: 'Unlabelled Image',
+            value: this.unLabelledImage,
         },
     ];
+
     view: any[] = [450, 350];
 
     // options
@@ -37,8 +35,19 @@ export class PieChartComponent {
         domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA'],
     };
 
-    constructor() {
-        Object.assign(this, { single: this.single });
+    constructor() {}
+
+    ngOnChanges(changes: SimpleChanges): void {
+        this.single = [
+            {
+                name: 'Labelled Image',
+                value: changes.labelledImage.currentValue,
+            },
+            {
+                name: 'Unlabelled Image',
+                value: changes.unLabelledImage.currentValue,
+            },
+        ];
     }
 
     onSelect(data: any): void {

@@ -1,27 +1,17 @@
-import { Component, NgModule } from '@angular/core';
+import { Component, Input, NgModule, OnChanges, SimpleChanges } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { ChartProps } from 'shared/types/dataset-layout/data-set-layout.model';
 
 @Component({
     selector: 'app-bar-chart',
     templateUrl: './bar-chart.component.html',
     styleUrls: ['./bar-chart.component.scss'],
 })
-export class BarChartComponent {
-    single: any = [
-        {
-            name: 'Germany',
-            value: 8940000,
-        },
-        {
-            name: 'USA',
-            value: 5000000,
-        },
-        {
-            name: 'France',
-            value: 7200000,
-        },
-    ];
+export class BarChartComponent implements OnChanges {
+    @Input() labelStats: ChartProps[] = [];
+
+    single: ChartProps[] = this.labelStats;
     view: any[] = [400, 350];
 
     // options
@@ -30,9 +20,9 @@ export class BarChartComponent {
     gradient: boolean = false;
     showLegend: boolean = true;
     showXAxisLabel: boolean = true;
-    yAxisLabel: string = 'Country';
+    yAxisLabel: string = 'Count';
     showYAxisLabel: boolean = true;
-    xAxisLabel: string = 'Population';
+    xAxisLabel: string = 'Labels';
     legendPosition: string = 'below';
 
     colorScheme = {
@@ -40,6 +30,10 @@ export class BarChartComponent {
     };
 
     constructor() {}
+
+    ngOnChanges(changes: SimpleChanges): void {
+        this.single = changes.labelStats.currentValue;
+    }
 
     onSelect(data: any): void {
         console.log('Item clicked', JSON.parse(JSON.stringify(data)));

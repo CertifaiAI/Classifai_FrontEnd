@@ -19,6 +19,7 @@ import {
     MessageUploadStatus,
     ImportResponse,
     ProjectMessage,
+    ProjectStatsResponse,
 } from 'shared/types/message/message.model';
 import { UnsupportedImageService } from 'shared/services/unsupported-image.service';
 import { ImageLabellingMode, BboxMetadata, PolyMetadata } from 'shared/types/image-labelling/image-labelling.model';
@@ -160,4 +161,10 @@ export class DataSetLayoutService {
     downloadUnsupportedImageList(projectName: string, unsupportedImageList: string[]) {
         return this._unsupportedImageService.downloadUnsupportedImageList(projectName, unsupportedImageList);
     }
+
+    getProjectStats = (projectName: string): Observable<ProjectStatsResponse> => {
+        return this.http.get<ProjectStatsResponse>(
+            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/statistic`,
+        );
+    };
 }

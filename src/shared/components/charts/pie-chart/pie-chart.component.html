@@ -1,12 +1,12 @@
 <ngx-charts-pie-chart
     [view]="view"
     [scheme]="colorScheme"
-    [results]="single"
     [gradient]="gradient"
     [legend]="showLegend"
     [legendPosition]="legendPosition"
     [labels]="showLabels"
     [doughnut]="isDoughnut"
+    [results]="single"
     (select)="onSelect($event)"
     (activate)="onActivate($event)"
     (deactivate)="onDeactivate($event)"

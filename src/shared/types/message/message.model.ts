@@ -15,6 +15,18 @@ type uuid_delete_list = string[];
 type uuid_list = string[];
 type project_config_path = string;
 
+export type labels_stats = {
+    label: string;
+    count: number;
+};
+
+type project_stats = {
+    project_name: string;
+    labeled_image: number;
+    unlabeled_image: number;
+    label_Per_Class_In_Project: labels_stats[];
+};
+
 export type MessageContent<TContent = undefined> = {
     content: TContent extends undefined ? content : TContent;
     message: message;
@@ -49,6 +61,13 @@ export type ImportResponse = {
     file_system_status: number;
     file_system_message: string;
     project_name?: string;
+};
+
+export type ProjectStatsResponse = {
+    message: error_code;
+    statistic_data?: project_stats[];
+    error_code?: number;
+    error_message?: string;
 };
 
 export type MessageUploadStatus = {
