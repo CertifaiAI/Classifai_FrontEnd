@@ -11,7 +11,7 @@ import { ChartProps } from 'shared/types/dataset-layout/data-set-layout.model';
 export class BarChartComponent implements OnChanges {
     @Input() labelStats: ChartProps[] = [];
 
-    single: ChartProps[] = this.labelStats;
+    chartData: ChartProps[] = this.labelStats;
     view: any[] = [400, 350];
 
     // options
@@ -32,7 +32,7 @@ export class BarChartComponent implements OnChanges {
     constructor() {}
 
     ngOnChanges(changes: SimpleChanges): void {
-        this.single = changes.labelStats.currentValue;
+        this.chartData = changes.labelStats.currentValue;
     }
 
     onSelect(data: any): void {

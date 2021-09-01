@@ -1,5 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ChartProps } from 'shared/types/dataset-layout/data-set-layout.model';
 
 @Component({
@@ -11,7 +10,7 @@ export class PieChartComponent implements OnChanges {
     @Input() labelledImage: number = 0;
     @Input() unLabelledImage: number = 10;
 
-    single: ChartProps[] = [
+    chartData: ChartProps[] = [
         {
             name: 'Labelled Image',
             value: this.labelledImage,
@@ -38,7 +37,7 @@ export class PieChartComponent implements OnChanges {
     constructor() {}
 
     ngOnChanges(changes: SimpleChanges): void {
-        this.single = [
+        this.chartData = [
             {
                 name: 'Labelled Image',
                 value: changes.labelledImage.currentValue,
