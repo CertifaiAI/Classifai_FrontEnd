@@ -1,11 +1,13 @@
-<ngx-charts-pie-chart
-    [view]="view"
-    [scheme]="colorScheme"
-    [gradient]="gradient"
-    [legend]="showLegend"
-    [legendPosition]="legendPosition"
-    [labels]="showLabels"
-    [doughnut]="isDoughnut"
-    [results]="chartData"
->
-</ngx-charts-pie-chart>
+<div #containerRef style="width: 20vw; height: 40vh">
+    <ngx-charts-pie-chart
+        [view]="[containerRef.offsetWidth, containerRef.offsetHeight]"
+        [scheme]="colorScheme"
+        [gradient]="gradient"
+        [legend]="showLegend"
+        [legendPosition]="legendPosition"
+        [labels]="showLabels"
+        [doughnut]="isDoughnut"
+        [results]="chartData"
+    >
+    </ngx-charts-pie-chart>
+</div>

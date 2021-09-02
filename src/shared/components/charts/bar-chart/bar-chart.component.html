@@ -1,15 +1,17 @@
-<ngx-charts-bar-horizontal
-    [view]="view"
-    [scheme]="colorScheme"
-    [results]="chartData"
-    [gradient]="gradient"
-    [xAxis]="showXAxis"
-    [yAxis]="showYAxis"
-    [legend]="showLegend"
-    [showXAxisLabel]="showXAxisLabel"
-    [showYAxisLabel]="showYAxisLabel"
-    [xAxisLabel]="xAxisLabel"
-    [yAxisLabel]="yAxisLabel"
-    [legendPosition]="legendPosition"
->
-</ngx-charts-bar-horizontal>
+<div #containerRef style="width: 25vw; height: 40vh">
+    <ngx-charts-bar-horizontal
+        [view]="[containerRef.offsetWidth, containerRef.offsetHeight]"
+        [scheme]="colorScheme"
+        [results]="chartData"
+        [gradient]="gradient"
+        [xAxis]="showXAxis"
+        [yAxis]="showYAxis"
+        [legend]="showLegend"
+        [showXAxisLabel]="showXAxisLabel"
+        [showYAxisLabel]="showYAxisLabel"
+        [xAxisLabel]="xAxisLabel"
+        [yAxisLabel]="yAxisLabel"
+        [legendPosition]="legendPosition"
+    >
+    </ngx-charts-bar-horizontal>
+</div>
