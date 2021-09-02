@@ -38,11 +38,11 @@ export class PieChartComponent implements OnChanges {
         this.chartData = [
             {
                 name: 'Labelled Image',
-                value: changes.labelledImage.currentValue,
+                value: changes.labelledImage?.currentValue || 0,
             },
             {
                 name: 'Unlabelled Image',
-                value: changes.unLabelledImage.currentValue,
+                value: changes.unLabelledImage.currentValue || 0,
             },
         ];
     }

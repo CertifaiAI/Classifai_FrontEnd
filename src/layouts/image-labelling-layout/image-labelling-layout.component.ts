@@ -1035,6 +1035,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     }
 
     toggleProjectStats = (): void => {
+        console.log(this.selectedProjectName);
         this._dataSetService
             .getProjectStats(this.selectedProjectName)
             .pipe()
