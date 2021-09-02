@@ -16,7 +16,7 @@ export class BarChartComponent implements OnChanges {
     showXAxis: boolean = true;
     showYAxis: boolean = true;
     gradient: boolean = false;
-    showLegend: boolean = true;
+    showLegend: boolean = false;
     showXAxisLabel: boolean = true;
     yAxisLabel: string = 'Labels';
     showYAxisLabel: boolean = true;
@@ -24,10 +24,18 @@ export class BarChartComponent implements OnChanges {
     legendPosition: string = 'below';
 
     colorScheme = {
-        domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA'],
+        domain: ['#a27ea8'],
     };
 
     ngOnChanges(changes: SimpleChanges): void {
         this.chartData = changes.labelStats.currentValue;
+    }
+
+    axisFormat(val: number) {
+        if (val % 1 === 0) {
+            return val.toLocaleString();
+        } else {
+            return '';
+        }
     }
 }

@@ -107,6 +107,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     labelledImage: number = 0;
     unLabelledImage: number = 0;
     labelStats: ChartProps[] = [];
+    isFetching: boolean = true;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
@@ -1035,7 +1036,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     }
 
     toggleProjectStats = (): void => {
-        console.log(this.selectedProjectName);
+        this._modalService.open(this.modalIdProjectStats);
         this._dataSetService
             .getProjectStats(this.selectedProjectName)
             .pipe()
@@ -1051,7 +1052,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                         };
                         this.labelStats.push(meta);
                     });
-                    this._modalService.open(this.modalIdProjectStats);
+                    this.isFetching = false;
                 }
             });
     };

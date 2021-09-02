@@ -20,7 +20,7 @@ export type labels_stats = {
     count: number;
 };
 
-type project_stats = {
+export type project_stats = {
     project_name: string;
     labeled_image: number;
     unlabeled_image: number;

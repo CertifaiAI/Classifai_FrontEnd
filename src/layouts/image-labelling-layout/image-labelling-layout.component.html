@@ -366,13 +366,20 @@
 <modal
     [id]="modalIdProjectStats"
     [modalBodyStyle]="projectStatsBodyStyle"
-    [modalTitle]="'Project Stats'"
+    [modalTitle]="'projectStats' | translate"
     [scrollable]="false"
 >
     <div class="display-modal-container">
         <div class="chart-container">
-            <app-pie-chart [labelledImage]="labelledImage" [unLabelledImage]="unLabelledImage"></app-pie-chart>
-            <app-bar-chart [labelStats]="labelStats"></app-bar-chart>
+            <app-pie-chart
+                *ngIf="!isFetching"
+                [labelledImage]="labelledImage"
+                [unLabelledImage]="unLabelledImage"
+            ></app-pie-chart>
+            <app-bar-chart *ngIf="!isFetching" [labelStats]="labelStats"></app-bar-chart>
+            <div *ngIf="isFetching">
+                <h3 style="padding-left: 1.3vw">Fetching Statistics...</h3>
+            </div>
         </div>
     </div>
 </modal>

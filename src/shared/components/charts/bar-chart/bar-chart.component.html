@@ -1,4 +1,4 @@
-<div #containerRef style="width: 25vw; height: 38vh">
+<div #containerRef style="width: 25vw; height: 45vh">
     <ngx-charts-bar-horizontal
         [view]="[containerRef.offsetWidth, containerRef.offsetHeight]"
         [scheme]="colorScheme"
@@ -12,6 +12,7 @@
         [xAxisLabel]="xAxisLabel"
         [yAxisLabel]="yAxisLabel"
         [legendPosition]="legendPosition"
+        [xAxisTickFormatting]="axisFormat"
     >
     </ngx-charts-bar-horizontal>
 </div>
