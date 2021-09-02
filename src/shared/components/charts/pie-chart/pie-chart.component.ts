@@ -42,7 +42,7 @@ export class PieChartComponent implements OnChanges {
             },
             {
                 name: 'Unlabelled Image',
-                value: changes.unLabelledImage.currentValue || 0,
+                value: changes.unLabelledImage?.currentValue || 0,
             },
         ];
     }
