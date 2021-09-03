@@ -24,7 +24,7 @@ export type project_stats = {
     project_name: string;
     labeled_image: number;
     unlabeled_image: number;
-    label_Per_Class_In_Project: labels_stats[];
+    label_per_class_in_project: labels_stats[];
 };
 
 export type MessageContent<TContent = undefined> = {

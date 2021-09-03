@@ -342,7 +342,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     this.labelledImage = project.statistic_data[0].labeled_image;
                     this.unLabelledImage = project.statistic_data[0].unlabeled_image;
                     this.labelStats = [];
-                    project.statistic_data[0].label_Per_Class_In_Project.forEach((labelMeta: labels_stats) => {
+                    project.statistic_data[0].label_per_class_in_project.forEach((labelMeta: labels_stats) => {
                         const meta = {
                             name: labelMeta.label,
                             value: labelMeta.count,
