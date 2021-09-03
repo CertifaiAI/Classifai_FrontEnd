@@ -90,6 +90,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     labelledImage: number = 0;
     unLabelledImage: number = 0;
     labelStats: ChartProps[] = [];
+    noLabel: boolean = true;
+    noAnnotation: boolean = true;
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
@@ -334,6 +336,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     toggleProjectStats = (projectName: string): void => {
+        this.noLabel = false;
+        this.noAnnotation = true;
         this._dataSetService
             .getProjectStats(projectName)
             .pipe()
@@ -343,12 +347,19 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     this.unLabelledImage = project.statistic_data[0].unlabeled_image;
                     this.labelStats = [];
                     project.statistic_data[0].label_per_class_in_project.forEach((labelMeta: labels_stats) => {
+                        if (labelMeta.count > 0) {
+                            this.noAnnotation = false;
+                        }
                         const meta = {
                             name: labelMeta.label,
                             value: labelMeta.count,
                         };
                         this.labelStats.push(meta);
                     });
+                    if (project.statistic_data[0].label_per_class_in_project.length === 0) {
+                        this.noLabel = true;
+                        this.noAnnotation = false;
+                    }
                     this._modalService.open(this.modalIdProjectStats);
                 }
             });

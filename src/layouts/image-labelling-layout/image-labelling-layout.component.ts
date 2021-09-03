@@ -108,6 +108,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     unLabelledImage: number = 0;
     labelStats: ChartProps[] = [];
     isFetching: boolean = true;
+    noLabel: boolean = true;
+    noAnnotation: boolean = true;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
@@ -1036,23 +1038,33 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     }
 
     toggleProjectStats = (): void => {
-        this._modalService.open(this.modalIdProjectStats);
+        this.noLabel = false;
+        this.noAnnotation = true;
         this._dataSetService
             .getProjectStats(this.selectedProjectName)
             .pipe()
             .subscribe((project) => {
+                console.log(project.statistic_data);
                 if (project.statistic_data) {
                     this.labelledImage = project.statistic_data[0].labeled_image;
                     this.unLabelledImage = project.statistic_data[0].unlabeled_image;
                     this.labelStats = [];
                     project.statistic_data[0].label_per_class_in_project.forEach((labelMeta: labels_stats) => {
+                        if (labelMeta.count > 0) {
+                            this.noAnnotation = false;
+                        }
                         const meta = {
                             name: labelMeta.label,
                             value: labelMeta.count,
                         };
                         this.labelStats.push(meta);
                     });
+                    if (project.statistic_data[0].label_per_class_in_project.length === 0) {
+                        this.noLabel = true;
+                        this.noAnnotation = false;
+                    }
                     this.isFetching = false;
+                    this._modalService.open(this.modalIdProjectStats);
                 }
             });
     };
