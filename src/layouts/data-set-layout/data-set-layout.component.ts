@@ -7,13 +7,20 @@
 import { cloneDeep } from 'lodash-es';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from './data-set-layout-api.service';
-import { DataSetProps, Project, ProjectRename, ProjectSchema, StarredProps } from '../../shared/types/dataset-layout/data-set-layout.model';
+import {
+    ChartProps,
+    DataSetProps,
+    Project,
+    ProjectRename,
+    ProjectSchema,
+    StarredProps,
+} from '../../shared/types/dataset-layout/data-set-layout.model';
 import { distinctUntilChanged, first, map, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
 import { interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ImageLabellingModeService } from 'components/image-labelling/image-labelling-mode.service';
 import { LanguageService } from 'shared/services/language.service';
-import { MessageUploadStatus, ProjectMessage } from 'shared/types/message/message.model';
+import { labels_stats, MessageUploadStatus, ProjectMessage } from 'shared/types/message/message.model';
 import { ModalBodyStyle } from 'shared/types/modal/modal.model';
 import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
@@ -80,12 +87,18 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     keyToSort: string = 'project_name';
     projectType: string = 'myproject';
     enableSort: boolean = true;
+    labelledImage: number = 0;
+    unLabelledImage: number = 0;
+    labelStats: ChartProps[] = [];
+    noLabel: boolean = true;
+    noAnnotation: boolean = true;
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
     readonly modalIdDeleteProject = 'modal-delete-project';
     readonly modalIdRenameSuccess = 'modal-rename-success';
     readonly modalUnsupportedImage = 'modal-unsupported-image';
+    readonly modalIdProjectStats = 'modal-project-stats';
     createProjectModalBodyStyle: ModalBodyStyle = {
         minHeight: '45vh',
         minWidth: '31vw',
@@ -130,6 +143,13 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         minWidth: '31vw',
         maxWidth: '31vw',
         margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    projectStatsBodyStyle: ModalBodyStyle = {
+        minHeight: '50vh',
+        minWidth: '50vw',
+        maxWidth: '50vw',
+        margin: '7vw 36vh',
         overflow: 'none',
     };
     @ViewChild('refProjectName') _refProjectName!: ElementRef<HTMLInputElement>;
@@ -313,6 +333,36 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         const { shown, projectName } = event;
         shown ? this.openRenameModal() : this._modalService.close(this.modalIdRenameProject);
         this.oldProjectName = projectName;
+    };
+
+    toggleProjectStats = (projectName: string): void => {
+        this.noLabel = false;
+        this.noAnnotation = true;
+        this._dataSetService
+            .getProjectStats(projectName)
+            .pipe()
+            .subscribe((project) => {
+                if (project.statistic_data) {
+                    this.labelledImage = project.statistic_data[0].labeled_image;
+                    this.unLabelledImage = project.statistic_data[0].unlabeled_image;
+                    this.labelStats = [];
+                    project.statistic_data[0].label_per_class_in_project.forEach((labelMeta: labels_stats) => {
+                        if (labelMeta.count > 0) {
+                            this.noAnnotation = false;
+                        }
+                        const meta = {
+                            name: labelMeta.label,
+                            value: labelMeta.count,
+                        };
+                        this.labelStats.push(meta);
+                    });
+                    if (project.statistic_data[0].label_per_class_in_project.length === 0) {
+                        this.noLabel = true;
+                        this.noAnnotation = false;
+                    }
+                    this._modalService.open(this.modalIdProjectStats);
+                }
+            });
     };
 
     openRenameModal() {
@@ -621,29 +671,29 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     deleteProject = (projectName: string): void => {
-      this.isDeleteSuccess = false;
-      this.projectName = projectName;
-      this._languageService._translate.get('deleteSuccess').subscribe((translated) => {
+        this.isDeleteSuccess = false;
         this.projectName = projectName;
-        this._modalService.open(this.modalIdDeleteProject);
-    });
+        this._languageService._translate.get('deleteSuccess').subscribe((translated) => {
+            this.projectName = projectName;
+            this._modalService.open(this.modalIdDeleteProject);
+        });
     };
 
     confirmDeleteProject = (): void => {
-      const deleteProj$ = this._dataSetService.deleteProject(this.projectName);
+        const deleteProj$ = this._dataSetService.deleteProject(this.projectName);
 
-      deleteProj$
-          .pipe(
-              first(),
-              map(({ message }) => message),
-          )
-          .subscribe((message) => {
-              if (message === 1) {
-                  this.isDeleteSuccess = true;
-                  this.showProjectList(this.projectType);
-              }
-          });
-    }
+        deleteProj$
+            .pipe(
+                first(),
+                map(({ message }) => message),
+            )
+            .subscribe((message) => {
+                if (message === 1) {
+                    this.isDeleteSuccess = true;
+                    this.showProjectList(this.projectType);
+                }
+            });
+    };
 
     @HostListener('window:keydown', ['$event'])
     keyDownEvent = ({ key }: KeyboardEvent): void => {

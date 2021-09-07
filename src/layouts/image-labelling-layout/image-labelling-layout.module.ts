@@ -14,6 +14,8 @@ import { ImageLabellingModule } from 'components/image-labelling/image-labelling
 import { ModalModule } from 'shared/components/modal/modal.module';
 import { PageHeaderModule } from 'shared/components/page-header/page-header.module';
 import { SharedModule } from 'shared/shared.module';
+import { BarChartModule } from 'shared/components/charts/bar-chart/bar-chart.module';
+import { PieChartModule } from 'shared/components/charts/pie-chart/pie-chart.module';
 
 @NgModule({
     imports: [
@@ -25,6 +27,8 @@ import { SharedModule } from 'shared/shared.module';
         RouterModule,
         PageHeaderModule,
         ImageLabellingModule,
+        BarChartModule,
+        PieChartModule,
     ],
     declarations: [ImageLabellingLayoutComponent],
 })

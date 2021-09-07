@@ -24,9 +24,9 @@ import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'shared/components/spinner/spinner.service';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
-import { ExportStatus, Message } from 'shared/types/message/message.model';
+import { ExportStatus, labels_stats, Message } from 'shared/types/message/message.model';
 import { ModalBodyStyle } from 'shared/types/modal/modal.model';
-import { ProjectSchema } from 'shared/types/dataset-layout/data-set-layout.model';
+import { ChartProps, ProjectSchema } from 'shared/types/dataset-layout/data-set-layout.model';
 import {
     ImgLabelProps,
     ImageLabelUrl,
@@ -104,6 +104,12 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     selectedUuid: string = '';
     renameImageErrorCode: number = -1;
     dontAskDelete: boolean = false;
+    labelledImage: number = 0;
+    unLabelledImage: number = 0;
+    labelStats: ChartProps[] = [];
+    isFetching: boolean = true;
+    noLabel: boolean = true;
+    noAnnotation: boolean = true;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
@@ -111,6 +117,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     readonly modalExportWarning = 'modalExportWarning';
     readonly modalRenameImage = 'modal-rename-image';
     readonly modalDeleteImage = 'modal-delete-image';
+    readonly modalIdProjectStats = 'modal-project-stats';
     exportModalBodyStyle: ModalBodyStyle = {
         minHeight: '15vh',
         maxHeight: '15vh',
@@ -179,6 +186,13 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         minWidth: '20vw',
         maxWidth: '20vw',
         margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    projectStatsBodyStyle: ModalBodyStyle = {
+        minHeight: '50vh',
+        minWidth: '50vw',
+        maxWidth: '50vw',
+        margin: '7vw 36vh',
         overflow: 'none',
     };
     saveType: ExportSaveType = {
@@ -1022,6 +1036,38 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.labelChoosen = this.tempLabelChoosen.map((x) => Object.assign({}, x));
         this.onCloseModal('modal-adv');
     }
+
+    toggleProjectStats = (): void => {
+        this.noLabel = false;
+        this.noAnnotation = true;
+        this._dataSetService
+            .getProjectStats(this.selectedProjectName)
+            .pipe()
+            .subscribe((project) => {
+                console.log(project.statistic_data);
+                if (project.statistic_data) {
+                    this.labelledImage = project.statistic_data[0].labeled_image;
+                    this.unLabelledImage = project.statistic_data[0].unlabeled_image;
+                    this.labelStats = [];
+                    project.statistic_data[0].label_per_class_in_project.forEach((labelMeta: labels_stats) => {
+                        if (labelMeta.count > 0) {
+                            this.noAnnotation = false;
+                        }
+                        const meta = {
+                            name: labelMeta.label,
+                            value: labelMeta.count,
+                        };
+                        this.labelStats.push(meta);
+                    });
+                    if (project.statistic_data[0].label_per_class_in_project.length === 0) {
+                        this.noLabel = true;
+                        this.noAnnotation = false;
+                    }
+                    this.isFetching = false;
+                    this._modalService.open(this.modalIdProjectStats);
+                }
+            });
+    };
 
     shortcutKeyInfo() {
         return [
