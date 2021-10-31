@@ -38,3 +38,41 @@
         </ng-container>
     </div>
 </modal>
+
+<modal
+    [id]="modalIdVideoLbl"
+    [modalBodyStyle]="modalBodyStyle"
+    [modalTitle]="'videoOpt.selection' | translate"
+    [scrollable]="false"
+>
+    <div class="modal-body-container">
+        <ng-container *ngFor="let field of videoCardSchema.videoFields; index as i">
+            <div
+                class="card-container"
+                [attr.data-index]="i"
+                (mouseover)="mouseEventCapture($event, i)"
+                (mouseleave)="mouseEventCapture($event, i)"
+            >
+                <div
+                    class="img-container"
+                    [ngStyle]="hoverStyling(i, hover, field.enabled)"
+                    (click)="onCloseVideoModal(modalIdVideoLbl, field.enabled, field.urlPath)"
+                >
+                    <img class="card-image" [src]="field.imgPath" [alt]="field.imgAlt" />
+                    <ng-container *ngIf="hover">
+                        <div>
+                            <span [ngClass]="field.title ? null : 'label-hidden'">
+                                {{ conditionalHoverPlaceholder(i, field.title) | translate }}
+                            </span>
+                        </div>
+                        <div class="centered">
+                            <span [ngClass]="field.hoverLabel ? null : 'label-hidden'">
+                                {{ conditionalHoverPlaceholder(i, field.hoverLabel) | translate }}
+                            </span>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</modal>

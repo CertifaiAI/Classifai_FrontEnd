@@ -54,6 +54,10 @@ export type Project = {
     root_path_valid: boolean;
 };
 
+export type VideoProject = Project & {
+    video_length: number;
+};
+
 export type ChartProps = {
     name: string;
     value: number;
@@ -93,4 +97,12 @@ export type StarredProps = {
 export type ProjectRename = {
     shown: boolean;
     projectName: string;
+};
+
+export type Videos = {
+    message: message;
+    window_status: window_status;
+    window_message: string;
+    video_file_path: path;
+    // extraction_frame_interval: number;
 };

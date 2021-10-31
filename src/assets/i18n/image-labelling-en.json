@@ -158,5 +158,11 @@
         "noLabelSelected": "There are no label selected.",
         "noPolygon": "There are no polygon."
     },
-    "projectStats": "Project Statistics"
+    "projectStats": "Project Statistics",
+    "videoTimeLine": {
+        "nextAnnotatedImage": "Next annotated image",
+        "previousAnnotatedImage": "Previous annotated image",
+        "nextUnannotatedImage": "Next unannotated image",
+        "previousUnannotatedImage": "Previous unannotated image"
+    }
 }

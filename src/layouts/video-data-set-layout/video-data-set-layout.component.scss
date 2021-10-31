@@ -1,0 +1,265 @@
+$fontSize: 2vh;
+
+.upper-container {
+    display: flex;
+    margin-top: 5vh;
+}
+
+.new-project-container {
+    display: flex;
+    flex-direction: row;
+    margin: 3vh 0 0 0;
+    align-items: baseline;
+}
+
+.label {
+    color: white;
+    font-size: $fontSize;
+    margin-right: 1vw;
+}
+
+.label-config {
+    color: white;
+    font-size: $fontSize;
+    padding-top: 0.5vh;
+}
+
+.input-style {
+    border-radius: 2vw;
+    border: none;
+    outline: none;
+    background-color: #363636;
+    min-width: 11vw;
+    max-width: 12vw;
+    min-height: 4vh;
+    max-height: 4vh;
+    font-size: $fontSize;
+    color: white;
+    padding: 0 1vw 0 1vw;
+}
+
+.validation {
+    color: red;
+    margin-left: 11vw;
+    margin-top: 1.02vh;
+    margin-bottom: 0.25vh;
+}
+
+.validation-rename {
+    color: red;
+    margin-left: 7.5vw;
+    margin-top: 1.02vh;
+    margin-bottom: 0.25vh;
+}
+
+.validation-error {
+    margin: 1px 1px 1px 1px;
+    color: red;
+}
+
+.validation-success {
+    margin: 1px 1px 1px 1px;
+    color: green;
+}
+
+.error-msg {
+    padding-top: 1vh;
+    font-size: $fontSize;
+}
+
+.error-create-msg {
+    padding-top: 1vh;
+    font-size: $fontSize;
+    padding-left: 1vw;
+}
+
+.select-file-container,
+.select-folder-container {
+    display: flex;
+    flex-direction: row;
+    margin: 0 0 0 0;
+}
+
+.empty-container,
+.folder-name-container,
+.file-name-container {
+    display: flex;
+    flex-direction: row;
+    margin: 1.5vh 0 0 12vw;
+    min-height: 2vh;
+}
+
+.foldername,
+.filename {
+    font-size: 1.8vh;
+    color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.input {
+    color: aquamarine;
+}
+
+.horizontal-line {
+    background-color: white;
+    min-height: 0.3vh;
+    max-height: 0.3vh;
+    margin: 2vh auto;
+}
+
+.model-button-container {
+    display: flex;
+    flex-direction: row-reverse;
+    padding: 0.5vw;
+}
+
+.button-style {
+    padding: 1vh 1.5vw 1vh 1.5vw;
+    border-radius: 1vh;
+    border: none;
+    outline: none;
+    color: white;
+    cursor: pointer;
+    font-size: $fontSize;
+}
+
+.button-file-style {
+    padding: 1vh 1.5vw 1vh 1.5vw;
+    border-radius: 1vh;
+    border: none;
+    outline: none;
+    color: white;
+    cursor: pointer;
+    font-size: $fontSize;
+    max-height: 4vh;
+}
+
+.choose-folder-button,
+.choose-file-button {
+    background-color: #444444;
+}
+
+.create-btn {
+    background-color: #2d8ceb;
+}
+
+.disabled-create-btn {
+    cursor: not-allowed;
+    background-color: #444444 !important;
+    color: #777777 !important;
+}
+
+.choose-file-btn {
+    font-size: $fontSize;
+    text-decoration: none;
+    background-color: #444444;
+    color: white;
+    padding: 0.5vh 1vw;
+    border: none;
+    border-radius: 1vh;
+    margin-right: 1vw;
+    cursor: pointer;
+}
+
+.label-name {
+    width: 9.5vw;
+    padding-top: 0.2vh;
+    padding-right: 1vw;
+}
+
+.help-icon-container {
+    padding-right: 1vw;
+    padding-left: 0.2vw;
+}
+
+.help-icon {
+    height: 3vh;
+}
+
+.label-select-folder {
+    padding-top: 0.7vh;
+    padding-right: 1vw;
+    width: 9.5vw;
+}
+
+.label-select-label {
+    color: white;
+    font-size: $fontSize;
+    padding-top: 0vh;
+    width: 11.5vw;
+}
+
+.input-id {
+    font-size: $fontSize;
+    display: none;
+}
+
+.overlay {
+    z-index: 3000;
+    position: absolute;
+    background-color: rgb(0, 0, 0, 0.9);
+    width: 99.9vw;
+    height: 99.7vh;
+    cursor: not-allowed;
+}
+
+.help-icon-container .tooltiptext {
+    visibility: hidden;
+    width: 10vw;
+    min-width: 200px;
+    background-color: black;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 1vh 0.5vw;
+    position: absolute;
+    top: 60%;
+    margin-left: -60px;
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+.help-icon-container:hover .tooltiptext {
+    visibility: visible;
+}
+
+.labeltooltiptext {
+    width: 13vw;
+    background-color: black;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 1vh 0.5vw;
+    position: absolute;
+    top: 67%;
+    left: 30%;
+    margin-left: -60px;
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+.display-modal-container {
+    padding-left: 1.2vw;
+}
+
+.display-msg {
+    font-size: 2vh;
+    color: white;
+}
+
+.modal-button-container {
+    display: flex;
+    flex-direction: row-reverse;
+    padding: 0.5vw;
+}
+
+.button-style {
+    padding: 1vh 1.5vw 1vh 1.5vw;
+    border-radius: 1vh;
+    border: none;
+    outline: none;
+    color: white;
+    cursor: pointer;
+    font-size: 2vh;
+}

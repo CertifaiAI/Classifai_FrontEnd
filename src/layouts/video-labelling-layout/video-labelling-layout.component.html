@@ -1,0 +1,381 @@
+<div class="layout-container">
+    <div>
+        <page-header [_onChange]="onChangeSchema"></page-header>
+        <video-labelling-info
+            [_totalUuid]="totalUuid"
+            [_onChange]="onChangeSchema"
+            [_tabStatus]="tabStatus"
+            (_onClick)="navigateByAction($event)"
+        ></video-labelling-info>
+    </div>
+
+    <div class="content-container">
+        <video-labelling-left-sidebar
+            [_onChange]="onChangeSchema"
+            [_currentUrl]="currentUrl"
+            [_tabStatus]="tabStatus"
+        ></video-labelling-left-sidebar>
+
+        <ng-container *ngIf="_router.url.includes('videolabel/videobndbox')">
+            <video-labelling-object-detection
+                [_totalUuid]="totalUuid"
+                [_selectMetadata]="selectedMetaData"
+                [_imgSrc]="imgSrc"
+                [_tabStatus]="tabStatus"
+                [_thumbnailIndex]="currentImageDisplayIndex"
+                [_videoLength]="videoLength"
+                (_onChangeMetadata)="onChangeMetadata($event)"
+                (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
+                (_onEnterLabel)="onProcessLabel($event)"
+                (_onClickVideoFrame)="displayImage($event)"
+                (_onSearchAnnotatedImage)="displayImage($event)"
+                (_onChangeTabAnnotation)="onChangeTabAnnotation($event)"
+                (_onTriggerVideoExtraction)="videoExtraction()"
+            ></video-labelling-object-detection>
+        </ng-container>
+        <ng-container *ngIf="_router.url.includes('videolabel/videoseg')">
+            <video-labelling-object-detection
+                [_selectMetadata]="selectedMetaData"
+                [_imgSrc]="imgSrc"
+                [_tabStatus]="tabStatus"
+                (_onChangeMetadata)="onChangeMetadata($event)"
+                (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
+            ></video-labelling-object-detection>
+        </ng-container>
+
+        <video-labelling-project
+            [_onChange]="onChangeSchema"
+            [_selectMetadata]="selectedMetaData"
+            [_totalUuid]="totalUuid"
+            [_thumbnailList]="thumbnailList"
+            [_tabStatus]="tabStatus"
+            (_onClose)="onToggleTab($event)"
+            (_onClickThumbnail)="directToFrameNumber($event); displayImage($event)"
+            (_onClickLabel)="onProcessLabel($event)"
+            (_onEnterLabel)="onProcessLabel($event)"
+            (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
+            (_onDeleteAnnotation)="onDeleteAnnotation($event)"
+            (_loadMoreThumbnails)="onLoadMoreThumbnails()"
+            (_onRenameImage)="onRenameImage($event)"
+            (_onDeleteImage)="onDeleteImage($event)"
+        ></video-labelling-project>
+
+        <video-labelling-right-sidebar
+            [_onChange]="onChangeSchema"
+            (_onExport)="onExport()"
+            (_onClick)="onToggleTab($event)"
+            (_onReload)="onReload()"
+        >
+        </video-labelling-right-sidebar>
+    </div>
+    <video-labelling-footer [_thumbnailInfo]="selectedMetaData" [_imgSrc]="imgSrc"></video-labelling-footer>
+</div>
+
+<modal id="modal-save" [id]="'modal-save'" [modalBodyStyle]="saveModalBodyStyle" [scrollable]="true">
+    <div class="save-format-list">
+        <div class="save-format-content">
+            <ng-container *ngIf="selectedMetaData?.bnd_box">
+                <div class="switch-container">
+                    <label class="switch">
+                        <input
+                            type="checkbox"
+                            [checked]="saveType.saveCurrentImage"
+                            class="checkBox"
+                            (change)="onSwitchSaveType()"
+                        />
+                        <span class="slider round"></span>
+                        <p>{{ 'singleSave' | translate }}</p>
+                    </label>
+                    <span class="space-verticle"></span>
+                    <label class="switch">
+                        <input
+                            type="checkbox"
+                            [checked]="saveType.saveBulk"
+                            class="checkBox"
+                            (change)="onSwitchSaveType()"
+                        />
+                        <span class="slider round"></span>
+                        <p>{{ 'bulkSave' | translate }}</p>
+                    </label>
+                </div>
+                <div class="adv-settings" (click)="showAdvSettings()">{{ 'advModal.title' | translate }}</div>
+                <button class="save-format-btn" (click)="onClickDownload('pascalVoc')">Pascal VOC</button>
+                <br />
+                <button class="save-format-btn" (click)="onClickDownload('yolo')">YOLO</button>
+                <br />
+                <button class="save-format-btn" (click)="onClickDownload('ocr')">Text OCR</button>
+                <br />
+                <button class="save-format-btn" (click)="onClickDownload('label')">Label</button>
+                <br />
+            </ng-container>
+            <ng-container *ngIf="selectedMetaData?.polygons">
+                <button class="save-format-btn" (click)="onClickDownload('coco')">COCO</button>
+                <br />
+                <button class="save-format-btn" (click)="onClickDownload('json')">JSON</button>
+                <br />
+                <button class="save-format-btn" (click)="onClickDownload('label')">Label</button>
+                <br />
+            </ng-container>
+        </div>
+    </div>
+</modal>
+
+<modal
+    id="modal-adv"
+    [id]="'modal-adv'"
+    [modalBodyStyle]="advModalBodyStyle"
+    [modalTitle]="'advModal.title' | translate"
+    [scrollable]="true"
+    [zIndex]="2"
+>
+    <div class="modal-adv-container">
+        <p *ngIf="tempLabelChoosen.length !== 0" class="modal-adv-instruction">
+            {{ 'advModal.instructionText' | translate }}
+        </p>
+        <div *ngFor="let labelC of tempLabelChoosen; let i = index" class="margin-bottom">
+            <label class="switch-2 no-margin-left">
+                <input
+                    type="checkbox"
+                    class="checkBox"
+                    [checked]="labelC.isChoosen"
+                    (change)="labelC.isChoosen = !labelC.isChoosen"
+                />
+                <span class="slider round"></span>
+            </label>
+            <label class="modal-adv-label">{{ labelC.label }}</label>
+        </div>
+        <div *ngIf="tempLabelChoosen.length === 0">
+            {{ 'advModal.noLabel' | translate }}
+        </div>
+
+        <button *ngIf="tempLabelChoosen.length !== 0" class="button-style modal-adv-btn" (click)="saveAdvSettings()">
+            {{ 'advModal.btnSave' | translate }}
+        </button>
+    </div>
+</modal>
+
+<modal id="modal-image-labelling" [id]="'modal-image-labelling'" [scrollable]="true" [showHeader]="false">
+    <button class="modal-button close-button float-right" (click)="onCloseModal()">&#10006;</button>
+    <div>
+        <h2 class="font-title">{{ 'labellingArea.mainLabel' | translate }}</h2>
+        <div class="main-label-container">
+            <label class="font-label">{{ 'labellingArea.label' | translate }}: </label>
+            <select class="static-select" (change)="onChangeLabel($event.target.value)">
+                <ng-container *ngFor="let tab of tabStatus">
+                    <ng-container *ngFor="let label of tab.label_list">
+                        <option [value]="label" [selected]="label === currentAnnotationLabel">
+                            {{ label }}
+                        </option>
+                    </ng-container>
+                </ng-container>
+            </select>
+            <label class="font-label">{{ 'labellingArea.regionInfo' | translate }}: </label>
+            <input
+                class="static-input"
+                type="text"
+                [value]="mainLabelRegionVal"
+                [placeholder]="'labellingArea.mainRegionInfo' | translate"
+                (change)="onChangeInput($event, 'main')"
+            />
+        </div>
+    </div>
+    <hr class="hr-line" />
+    <div>
+        <h2 class="font-title">{{ 'labellingArea.subLabel' | translate }}</h2>
+        <div class="sub-label-container">
+            <label class="font-label">{{ 'labellingArea.label' | translate }}: </label>
+            <select class="static-select" #subLabelSelect>
+                <ng-container *ngFor="let tab of tabStatus">
+                    <ng-container *ngFor="let label of tab.label_list">
+                        <option [value]="label" [selected]="tab.label_list[0].label">
+                            {{ label }}
+                        </option>
+                    </ng-container>
+                </ng-container>
+            </select>
+            <label class="font-label">{{ 'labellingArea.regionInfo' | translate }}: </label>
+            <input
+                class="static-input"
+                type="text"
+                [value]="subLabelRegionVal"
+                [placeholder]="'labellingArea.subRegionInfo' | translate"
+                (change)="onChangeInput($event, 'sub')"
+            />
+            <button class="button-style addsublabel-btn" (click)="onSubmitLabel()">
+                {{ 'labellingArea.add' | translate }}
+            </button>
+        </div>
+        <ng-container *ngIf="subLabelValidateMsg">
+            <div class="validate-msg">
+                {{ subLabelValidateMsg }}
+            </div>
+        </ng-container>
+    </div>
+    <hr class="hr-line" />
+
+    <ng-container *ngFor="let tab of tabStatus">
+        <ng-container *ngFor="let annotation of tab.annotation">
+            <ng-container *ngFor="let pp of annotation?.polygons; index as annotationIndex">
+                <ng-container *ngIf="pp?.subLabel?.length > 0 && annotationIndex === currentAnnotationIndex">
+                    <h2 class="font-title">{{ 'labellingArea.addedSubLabel' | translate }}</h2>
+                    <ng-container *ngFor="let sublabel of pp.subLabel; index as subLabelIndex">
+                        <div class="sub-label-flex-container sub-label-padding">
+                            <label class="font-label flex-first"
+                                >{{ 'labellingArea.label' | translate }}: {{ sublabel.label }}</label
+                            >
+
+                            <label class="font-label flex-second"
+                                >{{ 'labellingArea.regionInfo' | translate }}: {{ sublabel.region }}</label
+                            >
+                            <span class="flex-third"></span>
+                            <button
+                                class="button-style removesublabel-btn"
+                                (click)="onRemoveSubLabel(annotationIndex, subLabelIndex)"
+                            >
+                                X
+                            </button>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </ng-container>
+        </ng-container>
+    </ng-container>
+</modal>
+
+<modal
+    [id]="modalExportOptions"
+    [modalBodyStyle]="exportModalBodyStyle"
+    [modalTitle]="'exportModal.exportOptions' | translate"
+    [scrollable]="false"
+>
+    <div class="export-content-container">
+        <div class="modal-button-container">
+            <button class="button-style confg-btn" (click)="exportProject('cfg')">
+                {{ 'exportModal.configFile' | translate }}
+            </button>
+            <button class="button-style confgdata-btn" (click)="exportProject('cfgdata')">
+                {{ 'exportModal.zipFile' | translate }}
+                <br /><span class="with-data">{{ 'exportModal.withData' | translate }}</span>
+            </button>
+            <div class="help-icon-container">
+                <img class="help-icon" src="assets/icons/help.svg" alt="tips" />
+                <span class="tooltiptext">
+                    <p>{{ 'configFileInfoTitle' | translate }}:</p>
+                    <p>{{ 'configFileInfoDest1' | translate }}</p>
+                    <p>{{ 'configFileInfoDest2' | translate }}</p>
+                </span>
+            </div>
+        </div>
+    </div>
+</modal>
+
+<modal [id]="modalShortcutKeyInfo" [modalBodyStyle]="infoModalBodyStyle" [scrollable]="true">
+    <div class="table-box">
+        <table>
+            <caption class="shortcut-key-info-header">
+                {{
+                    'info.header' | translate
+                }}
+            </caption>
+            <th id="keyInfo"></th>
+            <tr *ngFor="let info of shortcutKeyInfo()">
+                <td innerHTML="{{ info.shortcutKey | translate }}"></td>
+                <td innerHTML="{{ info.functionality | translate }}"></td>
+            </tr>
+        </table>
+    </div>
+</modal>
+
+<modal
+    [id]="modalExportProject"
+    [modalBodyStyle]="exportProjectBodyStyle"
+    [modalTitle]="'exportTitle' | translate"
+    [scrollable]="false"
+>
+    <br />
+    <div class="modal-content-container">
+        <div class="modal-message-container">
+            <p *ngIf="modalSpanLocationPath.trim()" class="message">
+                {{ 'location' | translate }}<br />{{ modalSpanLocationPath }}
+            </p>
+        </div>
+        <div [ngClass]="spanClass">
+            <p class="error-msg" [innerHTML]="modalSpanMessage"></p>
+        </div>
+    </div>
+</modal>
+
+<modal
+    [id]="modalExportWarning"
+    [modalBodyStyle]="exportWarningBodyStyle"
+    [modalTitle]="'exportTitle' | translate"
+    [scrollable]="false"
+    [zIndex]="2"
+>
+    <br />
+    <div class="modal-content-container">
+        <div class="modal-message-container">
+            <p class="message">{{ warningMessage | translate }}</p>
+        </div>
+    </div>
+</modal>
+
+<modal
+    [id]="modalRenameImage"
+    [modalBodyStyle]="renameImageBodyStyle"
+    [modalTitle]="'renameModal.renameImg' | translate"
+    [scrollable]="false"
+>
+    <div class="modal-content-container">
+        <label class="font-label">{{ 'renameModal.imageName' | translate }}: </label>
+        <input
+            class="static-input"
+            type="text"
+            [value]="newImageName"
+            [placeholder]="'renameModal.typeNewName' | translate"
+            (change)="onChangeImageName($event)"
+            (keydown.enter)="onChangeImageName($event); onSubmitRenameImage()"
+            #renameInput
+        />
+        <br /><br />
+        <label class="validate-msg" *ngIf="renameImageErrorCode === 0">{{ 'renameModal.fail' | translate }}</label>
+        <label class="validate-msg" *ngIf="renameImageErrorCode === 1">{{ 'renameModal.nameExist' | translate }}</label>
+        <label class="validate-msg" *ngIf="renameImageErrorCode === 2">{{ 'renameModal.illegal' | translate }}</label>
+        <label class="validate-msg" *ngIf="renameImageErrorCode === 3">{{ 'renameModal.nameEmpty' | translate }}</label>
+        <button class="button-style renameimg-btn" (click)="onSubmitRenameImage()">
+            {{ 'renameModal.submit' | translate }}
+        </button>
+    </div>
+</modal>
+
+<modal
+    [id]="modalDeleteImage"
+    [modalBodyStyle]="deleteImageBodyStyle"
+    [modalTitle]="'deleteModal.deleteImg' | translate"
+    [scrollable]="false"
+>
+    <div class="modal-content-container">
+        <p class="font-delete-img">{{ 'deleteModal.confirmation' | translate }} {{ newImageName }}{{ imageExt }} ?</p>
+        <p class="font-delete-img">
+            <input
+                type="checkbox"
+                [checked]="dontAskDelete"
+                (change)="dontAskDelete = !dontAskDelete"
+                class="checkbox"
+            />
+            {{ 'deleteModal.dontask' | translate }}
+        </p>
+        <button class="button-style deleteimg-btn" (click)="onSubmitDeleteImage()" #deleteBtn>
+            {{ 'deleteModal.confirm' | translate }}
+        </button>
+    </div>
+</modal>
+
+<unsupported-image-modal
+    [_modalUnsupportedImage]="modalUnsupportedImage"
+    [_unsupportedImageBodyStyle]="unsupportedImageBodyStyle"
+    [_unsupportedImageList]="unsupportedImageList"
+></unsupported-image-modal>
+
+<spinner [_loading]="isLoading"></spinner>
+<toastr [_processingNum]="processingNum"></toastr>

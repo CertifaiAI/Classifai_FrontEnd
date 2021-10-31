@@ -14,6 +14,11 @@ const imgLabellingLayout: LoadChildren = () =>
         ({ ImageLabellingLayoutModule }) => ImageLabellingLayoutModule,
     );
 
+const videoLabellingLayout: LoadChildren = () =>
+    import('layouts/video-labelling-layout/video-labelling-layout.module').then(
+        ({ VideoLabellingLayoutModule }) => VideoLabellingLayoutModule,
+    );
+
 const routes: Routes = [
     { path: '', component: HomeLayoutComponent },
     {
@@ -24,12 +29,27 @@ const routes: Routes = [
             ),
     },
     {
+        path: 'videodataset',
+        loadChildren: () =>
+            import('layouts/video-data-set-layout/video-data-set-layout.module').then(
+                ({ VideoDataSetLayoutModule }) => VideoDataSetLayoutModule,
+            ),
+    },
+    {
         path: 'imglabel/bndbox',
         loadChildren: imgLabellingLayout,
     },
     {
         path: 'imglabel/seg',
         loadChildren: imgLabellingLayout,
+    },
+    {
+        path: 'videolabel/videobndbox',
+        loadChildren: videoLabellingLayout,
+    },
+    {
+        path: 'videolabel/videoseg',
+        loadChildren: videoLabellingLayout,
     },
     { path: '**', component: PageNotFoundComponent },
 ];

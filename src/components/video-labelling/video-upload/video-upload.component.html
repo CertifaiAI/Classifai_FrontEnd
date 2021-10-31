@@ -1,0 +1,6 @@
+<label for="file">Choose Video</label>
+<input type="file" id="file" (change)="handleFileInput($event)" />
+<button (click)="doDecode()">Start</button>
+<button (click)="onRedirect()">Next</button>
+<p>{{ statusText }}</p>
+<hr />

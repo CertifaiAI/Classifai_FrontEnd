@@ -4,7 +4,12 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { CardChoiceImgLblUrlPath, CardChoiceSchema } from '../../shared/types/home-layout/home-layout.model';
+import {
+    CardChoiceImgLblUrlPath,
+    CardChoiceSchema,
+    CardChoiceVideoLblUrlPath,
+    CardChoiceVideoSchema,
+} from '../../shared/types/home-layout/home-layout.model';
 import { Component } from '@angular/core';
 import { ModalBodyStyle } from 'shared/types/modal/modal.model';
 import { ModalService } from 'shared/components/modal/modal.service';
@@ -12,6 +17,8 @@ import { Router } from '@angular/router';
 import { LanguageService } from 'shared/services/language.service';
 import { ImageLabellingModeService } from 'components/image-labelling/image-labelling-mode.service';
 import { ImageLabellingMode } from 'shared/types/image-labelling/image-labelling.model';
+import { VideoLabellingModeService } from '../../components/video-labelling/video-labelling-mode.service';
+import { VideoLabellingMode } from '../../shared/types/video-labelling/video-labelling.model';
 
 @Component({
     selector: 'home-layout',
@@ -46,7 +53,26 @@ export class HomeLayoutComponent {
             },
         ],
     };
+    videoCardSchema: CardChoiceVideoSchema = {
+        videoFields: [
+            {
+                enabled: true,
+                title: 'videoOpt.boundingBoxes',
+                urlPath: 'videoboundingbox',
+                imgPath: 'assets/landing-page/Classifai_Thumbnail_Band_Labeling.jpg',
+                imgAlt: 'Video Bounding Box',
+            },
+            {
+                enabled: true,
+                title: 'videoOpt.polygons',
+                urlPath: 'videosegmentation',
+                imgPath: 'assets/landing-page/Classifai_Thumbnail_Band_Segmentation.jpg',
+                imgAlt: 'Video Segmentation',
+            },
+        ],
+    };
     readonly modalIdImgLbl = 'modal-home-image-labelling';
+    readonly modalIdVideoLbl = 'modal-home-video-labelling';
     hover: boolean = false;
     hoverIndex: number = -1;
 
@@ -54,6 +80,7 @@ export class HomeLayoutComponent {
         private _modalService: ModalService,
         private _router: Router,
         private _imgLblMode: ImageLabellingModeService,
+        private _videoLblMode: VideoLabellingModeService,
         private _languageService: LanguageService,
     ) {
         const langsArr: string[] = ['landing-page-en', 'landing-page-cn', 'landing-page-ms'];
@@ -62,7 +89,12 @@ export class HomeLayoutComponent {
 
     navigate(url: string): void {
         this.navigateUrl = url;
-        this.onDisplayModal(this.modalIdImgLbl);
+
+        if (this.navigateUrl === '/dataset') {
+            this.onDisplayModal(this.modalIdImgLbl);
+        } else {
+            this.onDisplayModal(this.modalIdVideoLbl);
+        }
     }
 
     onDisplayModal = (id: string) => {
@@ -74,6 +106,17 @@ export class HomeLayoutComponent {
             if (path) {
                 const chosenMode: ImageLabellingMode = path === 'boundingbox' ? 'bndbox' : 'seg';
                 this._imgLblMode.setState(chosenMode);
+                this._router.navigate([this.navigateUrl]);
+            }
+            this._modalService.close(id);
+        }
+    };
+
+    onCloseVideoModal = (id: string, enabled: boolean, path?: CardChoiceVideoLblUrlPath) => {
+        if (enabled) {
+            if (path) {
+                const chosenMode: VideoLabellingMode = path === 'videoboundingbox' ? 'videobndbox' : 'videoseg';
+                this._videoLblMode.setState(chosenMode);
                 this._router.navigate([this.navigateUrl]);
             }
             this._modalService.close(id);

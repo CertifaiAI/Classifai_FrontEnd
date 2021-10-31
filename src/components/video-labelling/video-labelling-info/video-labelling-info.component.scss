@@ -1,0 +1,115 @@
+@use 'shared/scss/ellipsis' as ellipsis;
+@use 'shared/scss/indicator' as indicator;
+@use 'shared/scss/variables' as color;
+@use 'shared/scss/icon' as icon;
+
+/*-------------------------------------------*\
+    Info Container
+\*-------------------------------------------*/
+
+.info-container {
+    min-width: 100vw;
+    max-width: 100vw;
+    min-height: 4vh;
+    max-height: 4vh;
+    background: #525353;
+    border-bottom: 0.0625vw solid rgb(255, 255, 255, 0.25);
+    display: flex;
+    justify-content: space-between;
+    z-index: 1000;
+    position: absolute;
+}
+
+/*-------------------------------------------*\
+    Icon Style
+\*-------------------------------------------*/
+
+.utility-icon-container {
+    display: flex;
+    min-height: 3.5vh;
+    max-height: 3.5vh;
+    min-width: 2vw;
+    max-width: 2vw;
+}
+
+.utility-icon-light {
+    @include icon.icon-styling(pointer, fixed, 2.2vh);
+}
+
+.utility-icon-light:focus,
+.utility-icon-light:active {
+    background: color.$iconActiveBackgroundColor;
+}
+
+/*-------------------------------------------*\
+    Left Side Info Container
+\*-------------------------------------------*/
+
+.container-flex-start {
+    display: flex;
+    align-items: center;
+    margin-left: 3vw;
+    min-height: inherit;
+    max-height: inherit;
+}
+
+.indicator {
+    @include indicator.indicator-styling(#75fe7c, aboslute);
+}
+
+.no-indicator {
+    @include indicator.indicator-styling(#ffba54, aboslute);
+}
+
+.imageTitle {
+    font-size: 1.7vh;
+    color: white;
+    align-items: center;
+    margin-left: 1vw;
+    max-width: 20vw;
+    min-width: 20vw;
+    position: absolute;
+    @include ellipsis.ellipsis-styling();
+}
+
+/*-------------------------------------------*\
+    Center Side Info Container
+\*-------------------------------------------*/
+
+.container-flex-center {
+    display: flex;
+    margin-left: 8vw;
+    align-items: center;
+    min-height: inherit;
+    max-height: inherit;
+}
+
+.container-flex-center-adjust {
+    display: flex;
+    margin-left: 2vw;
+    align-items: center;
+    min-height: inherit;
+    max-height: inherit;
+}
+
+.totalThumbnail {
+    font-size: 1.7vh;
+    padding: 0.4vw 1vw 0 1vw;
+    display: inline-block;
+    color: white;
+    width: fit-content;
+}
+
+/*-------------------------------------------*\
+    Right Side Info Container
+\*-------------------------------------------*/
+
+.container-flex-end {
+    display: flex;
+    margin-right: 19vw;
+}
+
+.container-flex-end-adjust {
+    display: flex;
+    margin-right: 3vw;
+}

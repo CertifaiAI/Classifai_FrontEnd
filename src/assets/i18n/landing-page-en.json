@@ -8,5 +8,10 @@
         "selection": "Please select one of the below:",
         "boundingBoxes": "Bounding Boxes",
         "polygons": "Polygons"
+    },
+    "videoOpt": {
+        "selection": "Please select one of the below:",
+        "boundingBoxes": "Bounding Boxes",
+        "polygons": "Polygons"
     }
 }

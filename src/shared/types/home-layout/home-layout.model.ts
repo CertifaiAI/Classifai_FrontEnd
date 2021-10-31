@@ -20,12 +20,22 @@ export type CardFieldSchema = {
 };
 
 export type CardChoiceImgLblUrlPath = 'boundingbox' | 'segmentation';
+export type CardChoiceVideoLblUrlPath = 'videoboundingbox' | 'videosegmentation';
 
 type CardChoiceFieldConfigs = Omit<CardFieldConfigs, 'logoPath' | 'logoAlt'>[] &
     {
         urlPath: CardChoiceImgLblUrlPath;
     }[];
 
+type CardChoiceVideoFieldConfigs = Omit<CardFieldConfigs, 'logoPath' | 'logoAlt'>[] &
+    {
+        urlPath: CardChoiceVideoLblUrlPath;
+    }[];
+
 export type CardChoiceSchema = {
     fields: CardChoiceFieldConfigs;
+};
+
+export type CardChoiceVideoSchema = {
+    videoFields: CardChoiceVideoFieldConfigs;
 };

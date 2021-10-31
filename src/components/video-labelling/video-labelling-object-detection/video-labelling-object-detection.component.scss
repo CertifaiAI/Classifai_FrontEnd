@@ -1,0 +1,243 @@
+@use "../../../shared/scss/variables" as color;
+
+.videoTimelineContainer {
+    //position: relative;
+    // background: #121212;
+    // width: 130vh;
+
+    // display: flex;
+    // flex-flow: column;
+    height: 100%;
+    right: 0;
+    z-index: 1000;
+    width: 97.8%;
+    // min-width: 95.5vw;
+    // max-width: 95.5vw;
+    padding-top: 2px;
+    padding-right: 60px;
+    //padding-bottom: 50px;
+    padding-left: 2.2vw;
+}
+
+.canvas-container {
+    height: 76vh;
+}
+
+.active-frame-container {
+    padding: 38px;
+    display: flex;
+    justify-content: center;
+}
+
+.videoTimeline {
+    display: flex;
+    text-align: center;
+    font-size: 12px;
+    height: 17%;
+    bottom: 10px;
+    width: 100%;
+    background-color: (color.$greyColor);
+    position: relative;
+}
+
+.video-tbody {
+    display: flex;
+    overflow-y: hidden;
+    height: 65px;
+    width: 100%;
+    position: relative;
+    box-sizing: content-box;
+    border: 0.0625vw solid rgb(255, 255, 255, 0.25);
+    align-items: center;
+}
+
+.flex-content {
+    display: flex;
+    flex-flow: row;
+    height: 65px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    resize: horizontal;
+}
+
+.table {
+    width: 100%;
+    height: 10%;
+    table-layout: fixed;
+    margin-left: 10px;
+    bottom: 2em;
+    margin-right: 10px;
+}
+
+.activeFrame {
+    width: 960px;
+    height: 480px;
+}
+
+.timelineCell {
+    border-radius: 4px;
+    display: inline-block;
+    width: 28px;
+    height: 20px;
+    box-sizing: border-box;
+    border: 5px solid #121212;
+    line-height: 20px;
+    font-size: 11px;
+    color: #1f2428;
+    position: relative;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.clickable:hover {
+    background-color: #293540;
+}
+
+.figure1 {
+    background: darkcyan;
+    border-width: 0;
+}
+
+.figure2 {
+    background: lightseagreen;
+    border-width: 0;
+}
+
+.cursor {
+    border: 2px solid white;
+}
+
+.active {
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    background: grey;
+}
+
+.row {
+    width: 28px;
+    padding: 0;
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.tableTiming {
+    font-size: 10px;
+    vertical-align: middle;
+    color: snow;
+    height: 28px;
+    width: 28px;
+    justify-content: flex-start;
+}
+
+.control-layout {
+    background-color: (color.$greyColor);
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.control-container {
+    padding: 0.7vh 1vw 0 0.5vw;
+    background-color: (color.$greyColor);
+    border-bottom: 1px solid black;
+    height: 6vh;
+    width: 9.6vw;
+    display: flex;
+}
+
+.control-icon-container {
+    //border: 3px solid black;
+    padding: 0 0.4vw 0;
+    height: 4vh;
+    // width: 1vw;
+}
+
+.control-icon {
+    padding-top: 0.5vh;
+    height: 4vh;
+    cursor: pointer;
+}
+
+.time-container {
+    padding-top: 3px;
+    padding-right: 5vw;
+    height: 5vh;
+}
+
+.time-label {
+    font-size: 1.7vw;
+    color: #768dff;
+}
+
+.label-display {
+    width: 7.5vw;
+    color: white;
+    text-align: left;
+}
+
+.eye-display {
+    width: 50px;
+    color: white;
+    border-right: 2px black solid;
+    padding-right: 1vh;
+}
+
+.canvasstyle {
+    position: fixed;
+    left: 2.2vw;
+    right: auto;
+    top: 8vh;
+    margin: 0px;
+    padding: 0px;
+    outline: none;
+    border: none;
+}
+
+#cross-h {
+    left: 0px;
+    width: 100%;
+    height: 1px;
+    margin-top: -1px;
+    opacity: 0.4;
+}
+
+#cross-v {
+    top: 0px;
+    height: 100%;
+    width: 1px;
+    margin-left: -1px;
+    opacity: 0.4;
+}
+
+.crosses {
+    position: fixed;
+    background-color: #dc1d46;
+    box-shadow: 0 0 5px rgb(100, 100, 100);
+    pointer-events: none;
+    visibility: hidden;
+    z-index: 100;
+}
+
+.video {
+    margin-left: 30px;
+    width: 70vw;
+    height: 78vh;
+    display: block;
+}
+
+.videoTimeLineScrollBar {
+    &::-webkit-scrollbar-track {
+        background-color: #293540;
+        border-radius: 10px;
+    }
+    &::-webkit-scrollbar {
+        width: 0.5vw;
+    }
+    &::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        background-color: slategrey;
+    }
+}

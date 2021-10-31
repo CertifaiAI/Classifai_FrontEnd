@@ -18,5 +18,6 @@ import { PieChartModule } from 'shared/components/charts/pie-chart/pie-chart.mod
 @NgModule({
     imports: [CommonModule, SharedModule, DataSetRoutingModule, BarChartModule, PieChartModule],
     declarations: [DataSetLayoutComponent, DataSetSideMenuComponent, DataSetHeaderComponent, DataSetCardComponent],
+    exports: [DataSetSideMenuComponent, DataSetHeaderComponent, DataSetCardComponent],
 })
 export class DataSetLayoutModule {}
