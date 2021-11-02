@@ -41,6 +41,10 @@ export class PageHeaderComponent implements OnInit {
     private tutorialState!: TutorialState;
     tutorialMenuToggle: boolean = false;
     isToggle: boolean = false;
+    createProjectIntro: boolean = false;
+    bndBoxIntro: boolean = false;
+    polygonIntro: boolean = false;
+    help: string = 'pageHeader.tutorial';
     headerLabels: HeaderLabelSchema[] = [
         {
             name: 'pageHeader.home',
@@ -199,9 +203,17 @@ export class PageHeaderComponent implements OnInit {
     readonly projectStatisticTitle = 'Show Project Statistics';
     readonly projectStatisticTutorial = [
         {
-            imageTutorialPath: 'assets/tutorial/project_statistics/dm_project_statistics_dataset.gif',
+            imageTutorialPath: 'assets/tutorial/project_statistics/dm_project_statistics_initial.gif',
             imageTutorialAlt: 'How to open project statistic in dataset card',
-            imageTutorialDesc: 'Click the three dots of dataset card, and choose project statistic.',
+            imageTutorialDesc:
+                'Click the three dots of dataset card, and choose project statistic. ' +
+                'Initially, if no annotation has been performed, the current project statistics will show as in the diagram',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/project_statistics/dm_project_statistics_dataset.gif',
+            imageTutorialAlt: 'Charts plotted for the selected project',
+            imageTutorialDesc:
+                'When annotation had performed, charts will be plotted for the statistics of selected project',
         },
         {
             imageTutorialPath: 'assets/tutorial/project_statistics/dm_project_statistics_figures.gif',
@@ -213,7 +225,8 @@ export class PageHeaderComponent implements OnInit {
         {
             imageTutorialPath: 'assets/tutorial/project_statistics/dm_project_statistics_workspace.gif',
             imageTutorialAlt: 'How to open project statistic in workspace',
-            imageTutorialDesc: 'Click the statistic icon located at the right side bar to show the project statistics.',
+            imageTutorialDesc:
+                'In the workspace, click the statistic icon located at the right side bar to check the project statistics.',
         },
     ];
 
@@ -248,7 +261,34 @@ export class PageHeaderComponent implements OnInit {
 
     tutorialConfig(ignoreCheckState: boolean, tutorialName: string) {
         const pageURL = this._router.url;
-        if (tutorialName === 'How to Create Project ') {
+        if (pageURL === '/dataset' && !this.createProjectIntro) {
+            if (!this.tutorialState.createProject || ignoreCheckState) {
+                this.createProjectIntro = true;
+                this.modalTitle = this.createProjectTitle;
+                this.modalIdTutorial = this.createProjectId;
+                this.tutorial = this.createProjectTutorial;
+                this._tutorialService.setState({ createProject: true });
+                this.openTutorial(true);
+            }
+        } else if (pageURL === '/imglabel/bndbox' && !this.bndBoxIntro) {
+            if (!this.tutorialState.drawBbox || ignoreCheckState) {
+                this.bndBoxIntro = true;
+                this.modalTitle = this.drawBboxTitle;
+                this.modalIdTutorial = this.drawBboxId;
+                this.tutorial = this.drawBboxTutorial;
+                this._tutorialService.setState({ drawBbox: true });
+                this.openTutorial(true);
+            }
+        } else if (pageURL === '/imglabel/seg' && !this.polygonIntro) {
+            if (!this.tutorialState.drawPolygon || ignoreCheckState) {
+                this.polygonIntro = true;
+                this.modalTitle = this.drawPolygonTitle;
+                this.modalIdTutorial = this.drawPolygonId;
+                this.tutorial = this.drawPolygonTutorial;
+                this._tutorialService.setState({ drawPolygon: true });
+                this.openTutorial(true);
+            }
+        } else if (tutorialName === 'How to Create Project ') {
             this.modalTitle = this.createProjectTitle;
             this.modalIdTutorial = this.createProjectId;
             this.tutorial = this.createProjectTutorial;
@@ -273,39 +313,8 @@ export class PageHeaderComponent implements OnInit {
             this._tutorialService.setState({ projectStatistics: true });
             this.openTutorial(ignoreCheckState);
         }
-        // if (pageURL === '/dataset') {
-        //       if (!this.tutorialState.createProject || ignoreCheckState || tutorialName === 'How to Create Project') {
-        //           this.modalTitle = this.createProjectTitle;
-        //           this.modalIdTutorial = this.createProjectId;
-        //           this.tutorial = this.createProjectTutorial;
-        //           this._tutorialService.setState({ createProject: true });
-        //           this.openTutorial(ignoreCheckState);
-        //       }
-        // } else if (pageURL === '/imglabel/bndbox' || tutorialName === 'How to Draw Bounding Box') {
-        //       if (!this.tutorialState.drawBbox || ignoreCheckState ) {
-        //           this.modalTitle = this.drawBboxTitle;
-        //           this.modalIdTutorial = this.drawBboxId;
-        //           this.tutorial = this.drawBboxTutorial;
-        //           this._tutorialService.setState({ drawBbox: true });
-        //           this.openTutorial(ignoreCheckState);
-        //       }
-        // } else if (pageURL === '/imglabel/seg') {
-        //       if (!this.tutorialState.drawPolygon || ignoreCheckState || tutorialName === 'How to Draw Polygon') {
-        //           this.modalTitle = this.drawPolygonTitle;
-        //           this.modalIdTutorial = this.drawPolygonId;
-        //           this.tutorial = this.drawPolygonTutorial;
-        //           this._tutorialService.setState({ drawPolygon: true });
-        //           this.openTutorial(ignoreCheckState);
-        //       }
-        // }  else if ((pageURL === '/imglabel/bndbox' || pageURL === '/imglabel/seg') || tutorialName === 'Show Project Statistics') {
-        //       if (!this.tutorialState.projectStatistics || ignoreCheckState) {
-        //           this.modalTitle = this.projectStatisticTitle;
-        //           this.modalIdTutorial = this.projectStatisticsId;
-        //           this.tutorial = this.projectStatisticTutorial;
-        //           this._tutorialService.setState({ projectStatistics: true});
-        //           this.openTutorial(ignoreCheckState);
-        //       }
-        // }
+        this.tutorialMenuToggle = false;
+        this.isToggle = false;
     }
 
     openTutorial(ignoreCheckState: boolean) {
