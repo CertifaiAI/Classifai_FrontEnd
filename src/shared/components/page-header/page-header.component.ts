@@ -5,7 +5,7 @@ import { TutorialService, TutorialState } from './../../services/tutorial.servic
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { IconSchema } from 'shared/types/icon/icon.model';
 import { ImgLabelProps } from 'shared/types/image-labelling/image-labelling.model';
@@ -39,6 +39,8 @@ export class PageHeaderComponent implements OnInit {
     jsonSchema!: IconSchema;
     private unsubscribe$: Subject<any> = new Subject();
     private tutorialState!: TutorialState;
+    tutorialMenuToggle: boolean = false;
+    isToggle: boolean = false;
     headerLabels: HeaderLabelSchema[] = [
         {
             name: 'pageHeader.home',
@@ -193,6 +195,28 @@ export class PageHeaderComponent implements OnInit {
         },
     ];
 
+    readonly projectStatisticsId = 'modal-project-statistics-tutorial';
+    readonly projectStatisticTitle = 'Show Project Statistics';
+    readonly projectStatisticTutorial = [
+        {
+            imageTutorialPath: 'assets/tutorial/project_statistics/dm_project_statistics_dataset.gif',
+            imageTutorialAlt: 'How to open project statistic in dataset card',
+            imageTutorialDesc: 'Click the three dots of dataset card, and choose project statistic.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/project_statistics/dm_project_statistics_figures.gif',
+            imageTutorialAlt: 'Check the number of labelled image, unlabelled image and label per class',
+            imageTutorialDesc:
+                'Hover over the pie chart and bar chart to check the numbers of labelled images' +
+                ' unlabelled images and label of each classes.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/project_statistics/dm_project_statistics_workspace.gif',
+            imageTutorialAlt: 'How to open project statistic in workspace',
+            imageTutorialDesc: 'Click the statistic icon located at the right side bar to show the project statistics.',
+        },
+    ];
+
     tutorialIdx: number = 0;
     modalIdTutorial: string = this.createProjectId;
     tutorial: Tutorial[] = this.createProjectTutorial;
@@ -209,6 +233,7 @@ export class PageHeaderComponent implements OnInit {
         private _router: Router,
         private _modalService: ModalService,
         private _tutorialService: TutorialService,
+        private elementRef: ElementRef,
     ) {
         const { url } = _router;
         this.bindImagePath(url);
@@ -218,50 +243,83 @@ export class PageHeaderComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.tutorialConfig(false);
+        this.tutorialConfig(false, '');
     }
 
-    tutorialConfig(ignoreCheckState: boolean) {
-      const pageURL = this._router.url;
-      if (pageURL === '/dataset') {
-          if (!this.tutorialState.createProject || ignoreCheckState) {
-              this.modalTitle = this.createProjectTitle;
-              this.modalIdTutorial = this.createProjectId;
-              this.tutorial = this.createProjectTutorial;
-              this._tutorialService.setState({ createProject: true });
-              this.openTutorial(ignoreCheckState);
-          }
-      } else if (pageURL === '/imglabel/bndbox') {
-          if (!this.tutorialState.drawBbox || ignoreCheckState) {
-              this.modalTitle = this.drawBboxTitle;
-              this.modalIdTutorial = this.drawBboxId;
-              this.tutorial = this.drawBboxTutorial;
-              this._tutorialService.setState({ drawBbox: true });
-              this.openTutorial(ignoreCheckState);
-          }
-      } else if (pageURL === '/imglabel/seg') {
-          if (!this.tutorialState.drawPolygon || ignoreCheckState) {
-              this.modalTitle = this.drawPolygonTitle;
-              this.modalIdTutorial = this.drawPolygonId;
-              this.tutorial = this.drawPolygonTutorial;
-              this._tutorialService.setState({ drawPolygon: true });
-              this.openTutorial(ignoreCheckState);
-          }
-      }
+    tutorialConfig(ignoreCheckState: boolean, tutorialName: string) {
+        const pageURL = this._router.url;
+        if (tutorialName === 'How to Create Project ') {
+            this.modalTitle = this.createProjectTitle;
+            this.modalIdTutorial = this.createProjectId;
+            this.tutorial = this.createProjectTutorial;
+            this._tutorialService.setState({ createProject: true });
+            this.openTutorial(ignoreCheckState);
+        } else if (tutorialName === 'How to Draw Bounding Box ') {
+            this.modalTitle = this.drawBboxTitle;
+            this.modalIdTutorial = this.drawBboxId;
+            this.tutorial = this.drawBboxTutorial;
+            this._tutorialService.setState({ drawBbox: true });
+            this.openTutorial(ignoreCheckState);
+        } else if (tutorialName === 'How to Draw Polygon ') {
+            this.modalTitle = this.drawPolygonTitle;
+            this.modalIdTutorial = this.drawPolygonId;
+            this.tutorial = this.drawPolygonTutorial;
+            this._tutorialService.setState({ drawPolygon: true });
+            this.openTutorial(ignoreCheckState);
+        } else if (tutorialName === 'Show Project Statistics ') {
+            this.modalTitle = this.projectStatisticTitle;
+            this.modalIdTutorial = this.projectStatisticsId;
+            this.tutorial = this.projectStatisticTutorial;
+            this._tutorialService.setState({ projectStatistics: true });
+            this.openTutorial(ignoreCheckState);
+        }
+        // if (pageURL === '/dataset') {
+        //       if (!this.tutorialState.createProject || ignoreCheckState || tutorialName === 'How to Create Project') {
+        //           this.modalTitle = this.createProjectTitle;
+        //           this.modalIdTutorial = this.createProjectId;
+        //           this.tutorial = this.createProjectTutorial;
+        //           this._tutorialService.setState({ createProject: true });
+        //           this.openTutorial(ignoreCheckState);
+        //       }
+        // } else if (pageURL === '/imglabel/bndbox' || tutorialName === 'How to Draw Bounding Box') {
+        //       if (!this.tutorialState.drawBbox || ignoreCheckState ) {
+        //           this.modalTitle = this.drawBboxTitle;
+        //           this.modalIdTutorial = this.drawBboxId;
+        //           this.tutorial = this.drawBboxTutorial;
+        //           this._tutorialService.setState({ drawBbox: true });
+        //           this.openTutorial(ignoreCheckState);
+        //       }
+        // } else if (pageURL === '/imglabel/seg') {
+        //       if (!this.tutorialState.drawPolygon || ignoreCheckState || tutorialName === 'How to Draw Polygon') {
+        //           this.modalTitle = this.drawPolygonTitle;
+        //           this.modalIdTutorial = this.drawPolygonId;
+        //           this.tutorial = this.drawPolygonTutorial;
+        //           this._tutorialService.setState({ drawPolygon: true });
+        //           this.openTutorial(ignoreCheckState);
+        //       }
+        // }  else if ((pageURL === '/imglabel/bndbox' || pageURL === '/imglabel/seg') || tutorialName === 'Show Project Statistics') {
+        //       if (!this.tutorialState.projectStatistics || ignoreCheckState) {
+        //           this.modalTitle = this.projectStatisticTitle;
+        //           this.modalIdTutorial = this.projectStatisticsId;
+        //           this.tutorial = this.projectStatisticTutorial;
+        //           this._tutorialService.setState({ projectStatistics: true});
+        //           this.openTutorial(ignoreCheckState);
+        //       }
+        // }
     }
 
     openTutorial(ignoreCheckState: boolean) {
         if (!ignoreCheckState) {
-          setTimeout(() => {
-              this.tutorialIdx = 0;
-              this._modalService.open(this.modalIdTutorial);
-          }, 1000);
+            setTimeout(() => {
+                this.tutorialIdx = 0;
+                this._modalService.open(this.modalIdTutorial);
+            }, 1000);
         } else {
-          // Must set delay to wait for component to reload
-          setTimeout(() => {
-              this.tutorialIdx = 0;
-              this._modalService.open(this.modalIdTutorial);
-          }, 100);
+            // Must set delay to wait for component to reload
+            setTimeout(() => {
+                this.tutorialIdx = 0;
+                this._modalService.open(this.modalIdTutorial);
+            }, 100);
         }
     }
 
@@ -301,18 +359,30 @@ export class PageHeaderComponent implements OnInit {
                       ]
                     : [
                           {
-                              imgPath: `assets/icons/help.svg`,
-                              hoverLabel: `pageHeader.tutorial`,
-                              alt: `Tutorial`,
-                              onClick: () => this.tutorialConfig(true),
+                              imgPath: `assets/icons/profile.svg`,
+                              hoverLabel: `pageHeader.profile`,
+                              alt: `Profile`,
+                              onClick: () => null,
                           },
-                          {
-                            imgPath: `assets/icons/profile.svg`,
-                            hoverLabel: `pageHeader.profile`,
-                            alt: `Profile`,
-                            onClick: () => null,
-                        }
                       ],
         };
     };
+
+    toggleTutorialMenu() {
+        if (this.isToggle) {
+            this.tutorialMenuToggle = false;
+            this.isToggle = false;
+        } else {
+            this.tutorialMenuToggle = true;
+            this.isToggle = true;
+        }
+    }
+
+    @HostListener('document:click', ['$event.target'])
+    resetSelection(target: EventTarget) {
+        const withinComponent = this.elementRef.nativeElement.contains(target);
+        if (!withinComponent) {
+            this.tutorialMenuToggle = false;
+        }
+    }
 }
