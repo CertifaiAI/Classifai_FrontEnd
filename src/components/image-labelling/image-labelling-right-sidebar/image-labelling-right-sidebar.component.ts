@@ -31,6 +31,9 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
     @Output() _onOpenProjectStats = new EventEmitter();
 
     jsonSchema!: IconSchema;
+    toggleProject: boolean = true;
+    toggleLabel: boolean = true;
+    toggleAnnotation: boolean = true;
 
     ngOnInit(): void {
         this.bindImagePath();
@@ -47,7 +50,13 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     // accept: 'image/x-png,image/jpeg',
                     // onUpload: () => this._onClick.emit(),
                     onClick: () => {
-                        this._onClick.emit({ name: 'labellingProject.project', closed: false });
+                        if (this.toggleProject) {
+                            this._onClick.emit({ name: 'labellingProject.project', closed: true });
+                            this.toggleProject = false;
+                        } else {
+                            this._onClick.emit({ name: 'labellingProject.project', closed: false });
+                            this.toggleProject = true;
+                        }
                     },
                 },
                 {
@@ -55,7 +64,13 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     hoverLabel: `rightSideBar.label`,
                     alt: `Label`,
                     onClick: () => {
-                        this._onClick.emit({ name: 'labellingProject.label', closed: false });
+                        if (this.toggleLabel) {
+                            this._onClick.emit({ name: 'labellingProject.label', closed: true });
+                            this.toggleLabel = false;
+                        } else {
+                            this._onClick.emit({ name: 'labellingProject.label', closed: false });
+                            this.toggleLabel = true;
+                        }
                     },
                 },
                 {
@@ -63,7 +78,13 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     hoverLabel: `rightSideBar.annotation`,
                     alt: `Annotation`,
                     onClick: () => {
-                        this._onClick.emit({ name: 'labellingProject.annotation', closed: false });
+                        if (this.toggleAnnotation) {
+                            this._onClick.emit({ name: 'labellingProject.annotation', closed: true });
+                            this.toggleAnnotation = false;
+                        } else {
+                            this._onClick.emit({ name: 'labellingProject.annotation', closed: false });
+                            this.toggleAnnotation = true;
+                        }
                     },
                 },
                 {

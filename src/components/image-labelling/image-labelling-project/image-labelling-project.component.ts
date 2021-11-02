@@ -38,7 +38,6 @@ import { UndoRedoService } from 'shared/services/undo-redo.service';
 import { HTMLElementEvent } from 'shared/types/field/field.model';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
 
-
 @Component({
     selector: 'image-labelling-project',
     templateUrl: './image-labelling-project.component.html',
@@ -52,7 +51,6 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     @ViewChild('thumbnailList') thumbnailList!: ElementRef<HTMLDivElement>;
     @Input() _thumbnailList: CompleteMetadata[] = [];
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
-    @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
     @Output() _onClickThumbnail: EventEmitter<EventEmitter_ThumbnailDetails> = new EventEmitter();
     @Output() _onClickLabel: EventEmitter<SelectedLabelProps> = new EventEmitter();
     @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
@@ -107,10 +105,6 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
 
     updateLabelList = () => {
         this.labelList = this._tabStatus[1].label_list ? this._tabStatus[1].label_list : [];
-    };
-
-    onClose = (tab: TabsProps): void => {
-        this._onClose.emit({ name: tab.name, closed: true });
     };
 
     onClick = (thumbnail: Omit<BboxMetadata & PolyMetadata, 'img_src'>, thumbnailIndex: number): void => {
