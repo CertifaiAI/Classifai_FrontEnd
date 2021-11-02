@@ -41,25 +41,26 @@
             <img
                 class="img utility-icon-light"
                 src="assets/icons/help.svg"
+                alt="tutorial"
                 [title]="help | translate"
                 (click)="toggleTutorialMenu()"
             />
             <div class="tutorial-dropdown-menu" *ngIf="tutorialMenuToggle === true">
                 <div class="tutorial" #tutorial1 (click)="tutorialConfig(true, tutorial1.innerText.toString())">
                     How to Create Project
-                    <img class="icon" src="assets/icons/project.svg" />
+                    <img class="icon" src="assets/icons/project.svg" alt="project icon" />
                 </div>
                 <div class="tutorial" #tutorial2 (click)="tutorialConfig(true, tutorial2.innerText.toString())">
                     How to Draw Bounding Box
-                    <img class="icon" src="assets/icons/bounding_box.svg" />
+                    <img class="icon" src="assets/icons/bounding_box.svg" alt="bounding box icon" />
                 </div>
                 <div class="tutorial" #tutorial3 (click)="tutorialConfig(true, tutorial3.innerText.toString())">
                     How to Draw Polygon
-                    <img class="icon" src="assets/icons/polygon.svg" />
+                    <img class="icon" src="assets/icons/polygon.svg" alt="polygon icon" />
                 </div>
                 <div class="tutorial" #tutorial4 (click)="tutorialConfig(true, tutorial4.innerText.toString())">
                     Show Project Statistics
-                    <img class="icon" src="assets/icons/statistic.svg" />
+                    <img class="icon" src="assets/icons/statistic.svg" alt="statistic icon" />
                 </div>
             </div>
         </div>
