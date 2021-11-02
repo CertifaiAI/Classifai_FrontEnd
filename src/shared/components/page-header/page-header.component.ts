@@ -5,7 +5,7 @@ import { TutorialService, TutorialState } from './../../services/tutorial.servic
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IconSchema } from 'shared/types/icon/icon.model';
 import { ImgLabelProps } from 'shared/types/image-labelling/image-labelling.model';
@@ -261,33 +261,27 @@ export class PageHeaderComponent implements OnInit {
 
     tutorialConfig(ignoreCheckState: boolean, tutorialName: string) {
         const pageURL = this._router.url;
-        if (pageURL === '/dataset' && !this.createProjectIntro) {
-            if (!this.tutorialState.createProject || ignoreCheckState) {
-                this.createProjectIntro = true;
-                this.modalTitle = this.createProjectTitle;
-                this.modalIdTutorial = this.createProjectId;
-                this.tutorial = this.createProjectTutorial;
-                this._tutorialService.setState({ createProject: true });
-                this.openTutorial(true);
-            }
-        } else if (pageURL === '/imglabel/bndbox' && !this.bndBoxIntro) {
-            if (!this.tutorialState.drawBbox || ignoreCheckState) {
-                this.bndBoxIntro = true;
-                this.modalTitle = this.drawBboxTitle;
-                this.modalIdTutorial = this.drawBboxId;
-                this.tutorial = this.drawBboxTutorial;
-                this._tutorialService.setState({ drawBbox: true });
-                this.openTutorial(true);
-            }
-        } else if (pageURL === '/imglabel/seg' && !this.polygonIntro) {
-            if (!this.tutorialState.drawPolygon || ignoreCheckState) {
-                this.polygonIntro = true;
-                this.modalTitle = this.drawPolygonTitle;
-                this.modalIdTutorial = this.drawPolygonId;
-                this.tutorial = this.drawPolygonTutorial;
-                this._tutorialService.setState({ drawPolygon: true });
-                this.openTutorial(true);
-            }
+        if (pageURL === '/dataset' && !this.createProjectIntro && !this.tutorialState.createProject) {
+            this.createProjectIntro = true;
+            this.modalTitle = this.createProjectTitle;
+            this.modalIdTutorial = this.createProjectId;
+            this.tutorial = this.createProjectTutorial;
+            this._tutorialService.setState({ createProject: true });
+            this.openTutorial(true);
+        } else if (pageURL === '/imglabel/bndbox' && !this.bndBoxIntro && !this.tutorialState.drawBbox) {
+            this.bndBoxIntro = true;
+            this.modalTitle = this.drawBboxTitle;
+            this.modalIdTutorial = this.drawBboxId;
+            this.tutorial = this.drawBboxTutorial;
+            this._tutorialService.setState({ drawBbox: true });
+            this.openTutorial(true);
+        } else if (pageURL === '/imglabel/seg' && !this.polygonIntro && !this.tutorialState.drawPolygon) {
+            this.polygonIntro = true;
+            this.modalTitle = this.drawPolygonTitle;
+            this.modalIdTutorial = this.drawPolygonId;
+            this.tutorial = this.drawPolygonTutorial;
+            this._tutorialService.setState({ drawPolygon: true });
+            this.openTutorial(true);
         } else if (tutorialName === 'How to Create Project ') {
             this.modalTitle = this.createProjectTitle;
             this.modalIdTutorial = this.createProjectId;
