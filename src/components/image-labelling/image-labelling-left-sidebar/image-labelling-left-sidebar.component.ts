@@ -270,12 +270,15 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
             if (key === 'z') {
                 this.resetSelectedAnnotate();
                 this._imgLabelState.setState({ draw: false, drag: true, scroll: true });
+                this.getIndex(1);
             } else if (key === 'a') {
                 this.resetSelectedAnnotate();
                 this._imgLabelState.setState({ draw: true, drag: false, scroll: false, crossLine: this.isCrossLineOn });
+                this.getIndex(2);
             } else if (key === 'x') {
                 this._imgLabelState.setState({ draw: false, drag: false, scroll: false, crossLine: false });
                 this._mouseCursorService.setState({ default: true });
+                this.getIndex(0);
             }
         } catch (err) {
             console.log(err);
