@@ -226,7 +226,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         overflowY: 'none',
     };
     confirmMoveImageBodyStyle: ModalBodyStyle = {
-        height: '33vh',
+        height: '37vh',
         width: '50vw',
         margin: '15vw 71vh',
         overflow: 'none',
@@ -1229,9 +1229,12 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             .moveSelectedImageFileAndFolder(this.selectedProjectName, this.modify, this.replace)
             .subscribe((response) => {
                 if (response.message === 1) {
-                    this.onCloseAddImageModal();
+                    this.onCloseMoveImageModal();
                     this._modalService.close(this.modalConfirmMoveImage);
                     this._modalService.close(this.modalMoveImage);
+                    this.modify = false;
+                    this.replace = false;
+                    this.onReload();
                 }
             });
     }
