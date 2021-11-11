@@ -15,14 +15,17 @@ import {
     ExportResponse,
     ExportStatus,
     Message,
+    MessageAddImage,
     MessageBase64Img,
     MessageDeleteImg,
+    MessageMoveImage,
     MessageProjectProgress,
     MessageReload,
     MessageRenameImg,
     UUID,
 } from 'shared/types/message/message.model';
 import { ImageLabellingModeService } from './image-labelling-mode.service';
+import { ImageList, Labels } from '../../shared/types/dataset-layout/data-set-layout.model';
 
 @Injectable({ providedIn: 'any' })
 export class ImageLabellingApiService {
@@ -124,4 +127,49 @@ export class ImageLabellingApiService {
             options,
         );
     };
+
+    submitSelectedImageFile = (
+        projectName: string,
+        imageNameList: string[],
+        imageBase64List: string[],
+    ): Observable<Message> => {
+        return this.http.put<Message>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/add`, {
+            img_name_list: imageNameList,
+            img_base64_list: imageBase64List,
+        });
+    };
+
+    addImagesStatus = (projectName: string): Observable<MessageAddImage> => {
+        return this.http.get<MessageAddImage>(
+            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/addstatus`,
+        );
+    };
+
+    moveSelectedImageFileAndFolder = (projectName: string, modify: boolean, replace: boolean): Observable<Message> => {
+        return this.http.put<Message>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/move`, {
+            modify_img_name: modify,
+            replace_img_name: replace,
+        });
+    };
+
+    moveImagesStatus = (projectName: string): Observable<MessageMoveImage> => {
+        return this.http.get<MessageMoveImage>(
+            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/movestatus`,
+        );
+    };
+
+    selectImageFile() {
+        return this.http.put<Message>(`${this.hostPort}v2/imagefiles`, {});
+    }
+
+    selectImageFileStatus() {
+        return this.http.get<ImageList>(`${this.hostPort}v2/imagefiles`);
+    }
+
+    deleteMoveImageAndFolder(imagePathList: string[], imageDirectoryList: string[]) {
+        return this.http.put<Message>(`${this.hostPort}v2/deleteimagefiles`, {
+            img_path_list: imagePathList,
+            img_directory_list: imageDirectoryList,
+        });
+    }
 }

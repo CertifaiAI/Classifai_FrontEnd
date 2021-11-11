@@ -4,7 +4,17 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    EventEmitter,
+    HostListener,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output,
+    ViewEncapsulation,
+} from '@angular/core';
 import { ImageLabellingActionService } from 'components/image-labelling/image-labelling-action.service';
 import { ModalBodyStyle } from '../../types/modal/modal.model';
 import { ModalService } from './modal.service';
@@ -22,6 +32,7 @@ export class ModalComponent implements OnInit, OnDestroy {
     @Input() showHeader: boolean = true;
     @Input() scrollable: boolean = true;
     @Input() zIndex: number = 1; // Assign [zIndex]="2" , if it is the second modal show in display at one time.
+    @Output() _close: EventEmitter<any> = new EventEmitter();
     private element: HTMLDivElement;
 
     constructor(
@@ -90,4 +101,9 @@ export class ModalComponent implements OnInit, OnDestroy {
             key === 'Escape' && this.close();
         }
     };
+
+    closeModal() {
+        this._modalService.close(this.id);
+        this._close.emit();
+    }
 }

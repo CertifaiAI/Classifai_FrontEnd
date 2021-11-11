@@ -13,7 +13,7 @@ import {
     SaveFormat,
     ProcessResponse,
 } from 'shared/services/export-save-format.service';
-import { first, mergeMap, takeUntil } from 'rxjs/operators';
+import { first, map, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
 import { HTMLElementEvent } from 'shared/types/field/field.model';
 import { ImageLabellingActionService } from 'components/image-labelling/image-labelling-action.service';
 import { ImageLabellingApiService } from 'components/image-labelling/image-labelling-api.service';
@@ -110,6 +110,14 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     isFetching: boolean = true;
     noLabel: boolean = true;
     noAnnotation: boolean = true;
+    imageNameList: string[] = [];
+    imageBase64List: string[] = [];
+    imagePathList: string[] = [];
+    imageDirectoryList: string[] = [];
+    selectedFiles!: FileList;
+    isSelectedImagesAdding: boolean = false;
+    modify: boolean = false;
+    replace: boolean = false;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
@@ -118,6 +126,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     readonly modalRenameImage = 'modal-rename-image';
     readonly modalDeleteImage = 'modal-delete-image';
     readonly modalIdProjectStats = 'modal-project-stats';
+    readonly modalAddImage = 'modal-add-image';
+    readonly modalSubmitAddedImage = 'modal-submit-added-image';
+    readonly modalMoveImage = 'modal-move-image';
+    readonly modalConfirmMoveImage = 'modal-confirm-move-image';
     exportModalBodyStyle: ModalBodyStyle = {
         minHeight: '15vh',
         maxHeight: '15vh',
@@ -193,6 +205,30 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         minWidth: '50vw',
         maxWidth: '50vw',
         margin: '7vw 36vh',
+        overflow: 'none',
+    };
+    addImageBodyStyle: ModalBodyStyle = {
+        height: '73vh',
+        width: '83vw',
+        margin: '5vw 5vh',
+        overflowY: 'none',
+    };
+    submitAddedImageBodyStyle: ModalBodyStyle = {
+        height: '27vh',
+        width: '30vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    moveImageBodyStyle: ModalBodyStyle = {
+        height: '73vh',
+        width: '83vw',
+        margin: '5vw 5vh',
+        overflowY: 'none',
+    };
+    confirmMoveImageBodyStyle: ModalBodyStyle = {
+        height: '33vh',
+        width: '50vw',
+        margin: '15vw 71vh',
         overflow: 'none',
     };
     saveType: ExportSaveType = {
@@ -1068,6 +1104,137 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 }
             });
     };
+
+    toggleAddImage() {
+        this._modalService.open(this.modalAddImage);
+    }
+
+    toggleSubmitAddedImage() {
+        this._modalService.open(this.modalSubmitAddedImage);
+    }
+
+    onCloseAddImageModal() {
+        this.imageNameList.splice(0, this.imageNameList.length);
+        this.imageBase64List.splice(0, this.imageBase64List.length);
+    }
+
+    addNewImages(event: any) {
+        this.selectedFiles = event.target.files;
+
+        if (this.selectedFiles) {
+            // tslint:disable-next-line:prefer-for-of
+            for (let i = 0; i <= this.selectedFiles.length; i++) {
+                const reader = new FileReader();
+                reader.onload = (event: any) => {
+                    this.imageBase64List.push(event.target.result);
+                };
+                reader.readAsDataURL(this.selectedFiles[i]);
+                this.imageNameList.push(this.selectedFiles[i].name);
+            }
+        }
+    }
+
+    deleteSelectedImage(index: number) {
+        this.imageNameList.splice(index, 1);
+        this.imageBase64List.splice(index, 1);
+    }
+
+    submitAddedImages() {
+        this._imgLblApiService
+            .submitSelectedImageFile(this.selectedProjectName, this.imageNameList, this.imageBase64List)
+            .subscribe((response) => {
+                if (response.message === 1) {
+                    this.onCloseAddImageModal();
+                    this._modalService.close(this.modalSubmitAddedImage);
+                    this._modalService.close(this.modalAddImage);
+                    this.onReload();
+                } else {
+                    this.isSelectedImagesAdding = true;
+                    this.isOverlayOn = true;
+                }
+            });
+    }
+
+    toggleMoveImage() {
+        this._modalService.open(this.modalMoveImage);
+    }
+
+    moveImage() {
+        const selectImageFile$ = this._imgLblApiService.selectImageFile();
+        const selectImageFileStatus$ = this._imgLblApiService.selectImageFileStatus();
+        selectImageFile$
+            .pipe(
+                first(),
+                map(({ message }) => message),
+            )
+            .subscribe(() => {
+                let windowClosed = false;
+                interval(500)
+                    .pipe(
+                        switchMap(() => selectImageFileStatus$),
+                        first((response) => {
+                            this.isOverlayOn = response.window_status === 0 ? true : false;
+                            if (response.window_status === 1 && response.img_path_list !== []) {
+                                response.img_path_list.forEach((file) => {
+                                    if (!this.imagePathList.includes(file)) {
+                                        this.imagePathList.push(file);
+                                    }
+                                });
+                            }
+
+                            if (response.window_status === 1 && response.img_directory_list !== []) {
+                                response.img_directory_list.forEach((folder) => {
+                                    if (!this.imageDirectoryList.includes(folder)) {
+                                        this.imageDirectoryList.push(folder);
+                                    }
+                                });
+                            }
+
+                            if (response.window_status === 1) {
+                                windowClosed = true;
+                            }
+                            return windowClosed;
+                        }),
+                    )
+                    .subscribe(() => {});
+            });
+    }
+
+    onCloseMoveImageModal() {
+        this._imgLblApiService.deleteMoveImageAndFolder(this.imagePathList, this.imageDirectoryList).subscribe();
+        this.imagePathList.splice(0, this.imagePathList.length);
+        this.imageDirectoryList.splice(0, this.imageDirectoryList.length);
+    }
+
+    toggleSubmitMoveImage() {
+        this._modalService.open(this.modalConfirmMoveImage);
+    }
+
+    deleteMoveDirectory(index: number) {
+        this._imgLblApiService.deleteMoveImageAndFolder([], [this.imageDirectoryList[index]]).subscribe();
+        this.imageDirectoryList.splice(index, 1);
+    }
+
+    deleteMoveImage(index: number) {
+        this._imgLblApiService.deleteMoveImageAndFolder([this.imagePathList[index]], []).subscribe();
+        this.imagePathList.splice(index, 1);
+    }
+
+    check(event: any) {
+        return event.target.checked;
+    }
+
+    submitMoveImageAndFolder() {
+        this._imgLblApiService
+            .moveSelectedImageFileAndFolder(this.selectedProjectName, this.modify, this.replace)
+            .subscribe((response) => {
+                if (response.message === 1) {
+                    this.onCloseAddImageModal();
+                    this._modalService.close(this.modalConfirmMoveImage);
+                    this._modalService.close(this.modalMoveImage);
+                }
+            });
+    }
 
     shortcutKeyInfo() {
         return [

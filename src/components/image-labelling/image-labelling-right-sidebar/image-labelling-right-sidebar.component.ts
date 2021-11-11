@@ -29,6 +29,8 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
     @Output() _onExport = new EventEmitter();
     @Output() _onReload = new EventEmitter();
     @Output() _onOpenProjectStats = new EventEmitter();
+    @Output() _onAddImage = new EventEmitter();
+    @Output() _onMoveImage = new EventEmitter();
 
     jsonSchema!: IconSchema;
 
@@ -90,6 +92,24 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     style: 'padding: 1.5vh 0.5vw;',
                     onClick: () => {
                         this._onReload.emit();
+                    },
+                },
+                {
+                    imgPath: `assets/icons/add_image.svg`,
+                    hoverLabel: `rightSideBar.addImageFiles`,
+                    alt: `Add Images`,
+                    style: 'padding: 1.5vh 0.5vw;',
+                    onClick: () => {
+                        this._onAddImage.emit();
+                    },
+                },
+                {
+                    imgPath: `assets/icons/move_image.svg`,
+                    hoverLabel: `rightSideBar.moveImages`,
+                    alt: `Move Images`,
+                    style: 'padding: 1.5vh 0.5vw;',
+                    onClick: () => {
+                        this._onMoveImage.emit();
                     },
                 },
             ],

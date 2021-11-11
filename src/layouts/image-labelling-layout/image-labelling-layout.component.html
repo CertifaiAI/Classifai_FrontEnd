@@ -58,6 +58,8 @@
             (_onExport)="onExport()"
             (_onReload)="onReload()"
             (_onOpenProjectStats)="toggleProjectStats()"
+            (_onAddImage)="toggleAddImage()"
+            (_onMoveImage)="toggleMoveImage()"
         ></image-labelling-right-sidebar>
     </div>
     <image-labelling-footer [_thumbnailInfo]="selectedMetaData" [_imgSrc]="imgSrc"></image-labelling-footer>
@@ -383,6 +385,145 @@
     </div>
 </modal>
 
+<modal
+    [id]="modalAddImage"
+    [modalBodyStyle]="addImageBodyStyle"
+    [modalTitle]="'addImageModal.addImage' | translate"
+    [scrollable]="false"
+    (_close)="onCloseAddImageModal()"
+>
+    <br />
+    <div class="image-container scroll">
+        <div class="note" *ngIf="imageNameList.length === 0">
+            <h3>Select images from source folder to add into current project folder</h3>
+        </div>
+        <div *ngFor="let image of imageBase64List; index as i">
+            <div class="delete-image-container">
+                <div class="file-name">{{ imageNameList[i] }}</div>
+                <span class="delete-image">
+                    <div class="delete-btn" (click)="deleteSelectedImage(i)">&#10006;</div>
+                </span>
+            </div>
+            <img class="image" [src]="image" />
+        </div>
+    </div>
+    <div class="bottom">
+        <button
+            class="button-style deleteimg-btn"
+            (click)="toggleSubmitAddedImage()"
+            [ngClass]="imageBase64List.length === 0 ? 'disabled-create-btn' : null"
+            [disabled]="imageBase64List.length === 0"
+        >
+            {{ 'addImageModal.submit' | translate }}
+        </button>
+
+        <input
+            type="file"
+            id="image"
+            accept=".png, .jpg, .jpeg, .webp, .bmp"
+            multiple
+            (change)="addNewImages($event)"
+        />
+        <label for="image" class="button-style deleteimg-btn">{{ 'addImageModal.addImage' | translate }}</label>
+
+        <input
+            type="file"
+            id="folder"
+            multiple
+            directory=""
+            webkitdirectory=""
+            mozdirectory=""
+            (change)="addNewImages($event)"
+        />
+        <label for="folder" class="button-style deleteimg-btn"> {{ 'addImageModal.addFolder' | translate }}</label>
+    </div>
+</modal>
+
+<modal
+    [id]="modalSubmitAddedImage"
+    [modalBodyStyle]="submitAddedImageBodyStyle"
+    [modalTitle]="'addImageModal.submit' | translate"
+    [scrollable]="false"
+    [zIndex]="2"
+>
+    <div class="modal-content-container">
+        <p class="font-delete-img">{{ 'addImageModal.confirmation' | translate }}</p>
+        <button class="button-style deleteimg-btn" (click)="submitAddedImages()">
+            {{ 'addImageModal.confirm' | translate }}
+        </button>
+    </div>
+</modal>
+
+<modal
+    [id]="modalMoveImage"
+    [modalBodyStyle]="moveImageBodyStyle"
+    [modalTitle]="'moveImageModal.moveImage' | translate"
+    [scrollable]="false"
+    (_close)="onCloseMoveImageModal()"
+>
+    <br />
+    <div class="image-container scroll">
+        <div class="note" *ngIf="imagePathList.length === 0 && imageDirectoryList.length === 0">
+            <h3>Select images or folders to move into current project folder</h3>
+        </div>
+        <div *ngFor="let imagePath of imagePathList; index as i">
+            <div class="delete-image-container">
+                <div class="file-path">{{ imagePath }}</div>
+                <span class="delete-image">
+                    <div class="delete-btn" (click)="deleteMoveImage(i)">&#10006;</div>
+                </span>
+            </div>
+            <img class="image" src="assets/icons/image.svg" />
+        </div>
+        <div *ngFor="let directory of imageDirectoryList; index as i">
+            <div class="delete-image-container">
+                <div class="file-path">{{ directory }}</div>
+                <span class="delete-image">
+                    <div class="delete-btn" (click)="deleteMoveDirectory(i)">&#10006;</div>
+                </span>
+            </div>
+            <img class="image" src="assets/icons/folder.svg" />
+        </div>
+    </div>
+    <div class="bottom">
+        <button
+            class="button-style deleteimg-btn"
+            (click)="toggleSubmitMoveImage()"
+            [ngClass]="imagePathList.length === 0 && imageDirectoryList.length === 0 ? 'disabled-create-btn' : null"
+            [disabled]="imagePathList.length === 0 && imageDirectoryList.length === 0"
+        >
+            {{ 'moveImageModal.submit' | translate }}
+        </button>
+
+        <button class="button-style deleteimg-btn" (click)="moveImage()">
+            {{ 'moveImageModal.moveImageFolder' | translate }}
+        </button>
+    </div>
+</modal>
+
+<modal
+    [id]="modalConfirmMoveImage"
+    [modalBodyStyle]="confirmMoveImageBodyStyle"
+    [modalTitle]="'moveImageModal.submit' | translate"
+    [scrollable]="false"
+    [zIndex]="2"
+>
+    <div class="modal-content-container">
+        <p class="font-delete-img">{{ 'moveImageModal.confirmation' | translate }}</p>
+        <p class="font-delete-img">
+            <input type="checkbox" class="checkbox" (change)="modify = check($event)" [disabled]="replace === true" />
+            {{ 'moveImageModal.modify' | translate }}
+        </p>
+        <p class="font-delete-img">
+            <input type="checkbox" class="checkbox" (change)="replace = check($event)" [disabled]="modify === true" />
+            {{ 'moveImageModal.replace' | translate }}
+        </p>
+        <button class="button-style deleteimg-btn" (click)="submitMoveImageAndFolder()">
+            {{ 'moveImageModal.confirm' | translate }}
+        </button>
+    </div>
+</modal>
+
 <unsupported-image-modal
     [_modalUnsupportedImage]="modalUnsupportedImage"
     [_unsupportedImageBodyStyle]="unsupportedImageBodyStyle"
@@ -391,3 +532,9 @@
 
 <spinner [_loading]="isLoading"></spinner>
 <toastr [_processingNum]="processingNum"></toastr>
+
+<div *ngIf="isOverlayOn" class="overlay">
+    <p style="margin-top: 40vh; color: rgb(255, 255, 255, 0.9); text-align: center; font-size: 3vh">
+        {{ isSelectedImagesAdding ? 'Uploading the Images. Please Wait...' : 'Selection Window was Opened' }}
+    </p>
+</div>

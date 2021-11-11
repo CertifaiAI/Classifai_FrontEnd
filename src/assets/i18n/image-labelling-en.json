@@ -30,7 +30,9 @@
         "annotation": "Annotation",
         "statistic": "Statistic",
         "export": "Export",
-        "reload": "Reload"
+        "reload": "Reload",
+        "addImageFiles": "Add Image File",
+        "moveImages": "Move Images"
     },
     "labellingProject": {
         "project": "Project",
@@ -139,6 +141,22 @@
         "confirmation": "Are you sure you want to delete",
         "dontask": "Don't ask me again",
         "confirm": "Confirm"
+    },
+    "addImageModal": {
+        "addImage": "Add images",
+        "addFolder": "Add folder",
+        "submit": "Submit",
+        "confirm": "Confirm",
+        "confirmation": "Are you sure you want to add the following images to project folder ?"
+    },
+    "moveImageModal": {
+        "replace": "Select this option will replace the image of project folder with same name as the moved image",
+        "modify": "Select this option will add numbering to the end of name of the moved image",
+        "moveImage": "Move Images",
+        "moveImageFolder": "Move Images / Folders",
+        "submit": "Submit",
+        "confirm": "Confirm",
+        "confirmation": "Are you sure you want to move the following images and folders to project folder ?"
     },
     "configFileInfoTitle": "Choosing the Right Export",
     "configFileInfoDest1": "Config File is the configuration file contains of metadata of a project. It is suitable when the data is readily available in the system to be imported to.",
