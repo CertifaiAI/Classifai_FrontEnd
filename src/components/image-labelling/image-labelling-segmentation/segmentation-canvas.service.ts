@@ -18,7 +18,6 @@ import {
     xyCoordinate,
 } from 'shared/types/image-labelling/image-labelling.model';
 import { Utils } from 'util/utils';
-import { AnnotateSelectionService } from '../../../shared/services/annotate-selection.service';
 
 interface ExtendedMouseEvent extends MouseEvent {
     layerX: number;
