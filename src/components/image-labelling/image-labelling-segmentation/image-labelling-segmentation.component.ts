@@ -41,10 +41,11 @@ import { ZoomState, ZoomService, WheelDelta } from 'shared/services/zoom.service
 import { SharedUndoRedoService } from 'shared/services/shared-undo-redo.service';
 import { SegmentationCanvasService } from './segmentation-canvas.service';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
+import { LabelColorServices } from '../../../shared/services/label-color.services';
 
 interface ExtendedMouseEvent extends MouseEvent {
-  layerX: number;
-  layerY: number;
+    layerX: number;
+    layerY: number;
 }
 
 @Component({
@@ -92,6 +93,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         private _mouseCursorService: MousrCursorService,
         private _shortcutKeyService: ShortcutKeyService,
         private _sharedUndoRedoService: SharedUndoRedoService,
+        private _labelColorListService: LabelColorServices,
     ) {}
 
     ngOnInit(): void {
@@ -235,7 +237,13 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             const annotationList = this._tabStatus[2].annotation ? this._tabStatus[2].annotation[0].polygons ?? [] : [];
             this.sortingLabelList(this.labelList, annotationList);
         }
-        this._segCanvasService.drawAllPolygon(this._selectMetadata, this.canvasContext, this.annotateState.annotation);
+        const labelColorList = this._labelColorListService.getLabelColorList();
+        this._segCanvasService.drawAllPolygon(
+            this._selectMetadata,
+            this.canvasContext,
+            this.annotateState.annotation,
+            labelColorList,
+        );
     }
 
     /**
@@ -386,7 +394,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             this._selectMetadata,
             this.canvasContext,
             this.image,
-            this.canvas.nativeElement
+            this.canvas.nativeElement,
         );
         this.redrawImage(this._selectMetadata);
         this.mouseMoveDrawCanvas(this.mouseEvent as ExtendedMouseEvent);
