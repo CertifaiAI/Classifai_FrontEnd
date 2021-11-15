@@ -75,6 +75,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     labelList: LabelInfo[] = [];
     allLabelList: LabelInfo[] = [];
     mouseEvent: MouseEvent | undefined;
+    labelColorList!: Map<string, string>;
     @Input() _selectMetadata!: PolyMetadata;
     @Input() _imgSrc: string = '';
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
@@ -155,6 +156,25 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             this._undoRedoService.clearAllStages();
             this._segCanvasService.setSelectedPolygon(-1);
             this.loadImage(changes._imgSrc.currentValue);
+        }
+
+        if (changes._tabStatus) {
+            let adjustImagePosition = true;
+            for (const { closed } of this._tabStatus) {
+                if (!closed) {
+                    adjustImagePosition = false;
+                    break;
+                }
+            }
+
+            if (this.canvas) {
+                if (adjustImagePosition === true) {
+                    this.initializeCanvas();
+                    this.imgFitToCenter();
+                } else {
+                    this.redrawImage(this._selectMetadata);
+                }
+            }
         }
     }
 
@@ -237,12 +257,12 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             const annotationList = this._tabStatus[2].annotation ? this._tabStatus[2].annotation[0].polygons ?? [] : [];
             this.sortingLabelList(this.labelList, annotationList);
         }
-        const labelColorList = this._labelColorListService.getLabelColorList();
+        this.labelColorList = this._labelColorListService.getLabelColorList();
         this._segCanvasService.drawAllPolygon(
             this._selectMetadata,
             this.canvasContext,
             this.annotateState.annotation,
-            labelColorList,
+            this.labelColorList,
         );
     }
 
