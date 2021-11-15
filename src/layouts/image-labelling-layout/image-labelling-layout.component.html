@@ -404,7 +404,7 @@
                     <div class="delete-btn" (click)="deleteSelectedImage(i)">&#10006;</div>
                 </span>
             </div>
-            <img class="image" [src]="image" />
+            <img class="image" [src]="image" alt="added image" />
         </div>
     </div>
     <div class="bottom">
@@ -474,7 +474,7 @@
                     <div class="delete-btn" (click)="deleteMoveImage(i)">&#10006;</div>
                 </span>
             </div>
-            <img class="image" src="assets/icons/image.svg" />
+            <img class="image" src="assets/icons/image.svg" alt="added image" />
         </div>
         <div *ngFor="let directory of imageDirectoryList; index as i">
             <div class="delete-image-container">
@@ -483,7 +483,7 @@
                     <div class="delete-btn" (click)="deleteMoveDirectory(i)">&#10006;</div>
                 </span>
             </div>
-            <img class="image" src="assets/icons/folder.svg" />
+            <img class="image" src="assets/icons/folder.svg" alt="added folder" />
         </div>
     </div>
     <div class="bottom">
