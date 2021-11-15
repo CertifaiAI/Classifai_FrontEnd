@@ -147,7 +147,8 @@
         "addFolder": "Add folder",
         "submit": "Submit",
         "confirm": "Confirm",
-        "confirmation": "Are you sure you want to add the selected images to project folder ?"
+        "confirmation": "Are you sure you want to add the selected images to project folder ?",
+        "imageAdded": "Total images added : "
     },
     "moveImageModal": {
         "option": "Select either one action or leave it empty : ",
@@ -157,7 +158,9 @@
         "moveImageFolder": "Move Images / Folders",
         "submit": "Submit",
         "confirm": "Confirm",
-        "confirmation": "Are you sure you want to move the selected images and folders to project folder ?"
+        "confirmation": "Are you sure you want to move the selected images and folders to project folder ?",
+        "imageMoved": "Total images moved : ",
+        "folderMoved": "Total folder moved : "
     },
     "configFileInfoTitle": "Choosing the Right Export",
     "configFileInfoDest1": "Config File is the configuration file contains of metadata of a project. It is suitable when the data is readily available in the system to be imported to.",

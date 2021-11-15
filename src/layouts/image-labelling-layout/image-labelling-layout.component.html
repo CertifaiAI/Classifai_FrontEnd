@@ -436,6 +436,7 @@
             (change)="addNewImages($event)"
         />
         <label for="folder" class="button-style deleteimg-btn"> {{ 'addImageModal.addFolder' | translate }}</label>
+        <label class="image-added"> {{ 'addImageModal.imageAdded' | translate }} {{ imageBase64List.length }}</label>
     </div>
 </modal>
 
@@ -498,6 +499,10 @@
         <button class="button-style deleteimg-btn" (click)="moveImage()">
             {{ 'moveImageModal.moveImageFolder' | translate }}
         </button>
+        <label class="image-moved"> {{ 'moveImageModal.imageMoved' | translate }} {{ imagePathList.length }}</label>
+        <label class="folder-moved">
+            {{ 'moveImageModal.folderMoved' | translate }} {{ imageDirectoryList.length }}</label
+        >
     </div>
 </modal>
 

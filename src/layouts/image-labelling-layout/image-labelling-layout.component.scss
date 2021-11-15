@@ -698,3 +698,15 @@ label[for='folder'] {
     overflow-wrap: break-word;
     text-align: center;
 }
+
+.image-moved,
+.image-added {
+    position: absolute;
+    margin: 0.5rem;
+}
+
+.folder-moved {
+    position: absolute;
+    margin-top: 0.5rem;
+    margin-left: 25vw;
+}
