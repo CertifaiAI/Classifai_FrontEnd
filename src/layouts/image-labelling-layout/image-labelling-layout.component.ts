@@ -1127,13 +1127,16 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     addNewImages(event: any) {
         this.selectedFiles = event.target.files;
 
-        if (this.selectedFiles) {
-            // tslint:disable-next-line:prefer-for-of
-            for (let i = 0; i <= this.selectedFiles.length; i++) {
-                const reader = new FileReader();
-                reader.onload = (event: any) => {
-                    this.imageBase64List.push(event.target.result);
-                };
+        // tslint:disable-next-line:prefer-for-of
+        for (let i = 0; i <= this.selectedFiles.length; i++) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                if (event.target) {
+                    this.imageBase64List.push(event.target.result as string);
+                }
+            };
+
+            if (this.selectedFiles[i]) {
                 reader.readAsDataURL(this.selectedFiles[i]);
                 this.imageNameList.push(this.selectedFiles[i].name);
             }
@@ -1188,7 +1191,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
                     if (response.add_image_status === 4) {
                         console.error('Operation add image to project folder failed');
-                        return;
                     }
                 },
                 (error) => {
@@ -1323,7 +1325,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
                     if (response.add_image_status === 4 || response.add_folder_status === 4) {
                         console.error('Operation add image and folder to project folder failed');
-                        return;
                     }
                 },
                 (error) => {
