@@ -719,7 +719,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     getImageNameFromPath(thumbnailInfo: CompleteMetadata) {
         this.imgPath = thumbnailInfo.img_path;
         let separater = '';
-        const platform = window.navigator.platform;
+        const platform = window.navigator.userAgent;
         if (platform.startsWith('Mac') || platform.startsWith('Linux')) {
             separater = '/';
         } else {
@@ -1016,7 +1016,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 if (res.message === 1) {
                     const index = this.thumbnailList.findIndex((t) => t.uuid === this.selectedUuid);
                     let separater = '';
-                    const platform = window.navigator.platform;
+                    const platform = window.navigator.userAgent;
                     if (platform.startsWith('Mac') || platform.startsWith('Linux')) {
                         separater = '/';
                     } else {
@@ -1130,7 +1130,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         // tslint:disable-next-line:prefer-for-of
         for (let i = 0; i <= this.selectedFiles.length; i++) {
             const reader = new FileReader();
-            reader.onload = (event) => {
+            reader.onload = (event: ProgressEvent<FileReader>) => {
                 if (event.target) {
                     this.imageBase64List.push(event.target.result as string);
                 }
