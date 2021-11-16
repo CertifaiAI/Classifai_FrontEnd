@@ -110,25 +110,14 @@ export type MessageDeleteImg = {
     uuid_list: uuid_list;
 };
 
-export type MessageAddImage = {
-    message: message;
-    file_system_status: number;
-    file_system_message: string;
-    uuid_add_list: uuid_add_list;
-};
-
-export type MessageMoveImage = {
-    message: message;
-    file_system_status: number;
-    file_system_message: string;
-    uuid_add_list: uuid_add_list;
-    uuid_delete_list: uuid_delete_list;
-    unsupported_image_list: string[];
+export type MoveImageResponse = {
+    add_image_status: number;
+    add_image_message: string;
+    add_folder_status: number;
+    add_folder_message: string;
 };
 
 export type AddImageResponse = {
-    message: error_code;
-    statistic_data: project_stats[];
-    error_code: number;
-    error_message: string;
+    add_image_status: number;
+    add_image_message: string;
 };

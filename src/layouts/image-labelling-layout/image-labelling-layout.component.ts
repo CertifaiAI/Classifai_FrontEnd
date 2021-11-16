@@ -13,7 +13,7 @@ import {
     SaveFormat,
     ProcessResponse,
 } from 'shared/services/export-save-format.service';
-import { first, map, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
+import { first, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
 import { HTMLElementEvent } from 'shared/types/field/field.model';
 import { ImageLabellingActionService } from 'components/image-labelling/image-labelling-action.service';
 import { ImageLabellingApiService } from 'components/image-labelling/image-labelling-api.service';
@@ -24,7 +24,13 @@ import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'shared/components/spinner/spinner.service';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
-import { ExportStatus, labels_stats, Message } from 'shared/types/message/message.model';
+import {
+    AddImageResponse,
+    ExportStatus,
+    labels_stats,
+    Message,
+    MoveImageResponse,
+} from 'shared/types/message/message.model';
 import { ModalBodyStyle } from 'shared/types/modal/modal.model';
 import { ChartProps, ProjectSchema } from 'shared/types/dataset-layout/data-set-layout.model';
 import {
@@ -1140,19 +1146,60 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     }
 
     submitAddedImages() {
-        this._imgLblApiService
-            .submitSelectedImageFile(this.selectedProjectName, this.imageNameList, this.imageBase64List)
-            .subscribe((response) => {
-                if (response.message === 1) {
-                    this.onCloseAddImageModal();
-                    this._modalService.close(this.modalSubmitAddedImage);
-                    this._modalService.close(this.modalAddImage);
+        const addImage$ = this._imgLblApiService.submitSelectedImageFile(
+            this.selectedProjectName,
+            this.imageNameList,
+            this.imageBase64List,
+        );
+
+        const addImageResponse$ = this._imgLblApiService.addImagesStatus(this.selectedProjectName);
+
+        const returnResponse = ({ message }: Message): Observable<AddImageResponse> => {
+            if (message === 1) {
+                this._modalService.close(this.modalSubmitAddedImage);
+                this._modalService.close(this.modalAddImage);
+            }
+            return message === 1
+                ? interval(500).pipe(
+                      mergeMap(() => addImageResponse$),
+                      first(({ add_image_status }) => {
+                          this.isOverlayOn = add_image_status === 0;
+                          this.isSelectedImagesAdding = add_image_status === 0;
+                          return add_image_status === 2 || add_image_status === 4;
+                      }),
+                  )
+                : throwError((error: any) => {
+                      console.error(error);
+                      return error;
+                  });
+        };
+
+        this.subjectSubscription = this.subject$
+            .pipe(
+                first(),
+                mergeMap(() => addImage$),
+                mergeMap((response) => returnResponse(response)),
+            )
+            .subscribe(
+                (response) => {
+                    if (response.add_image_status === 2) {
+                        this.onCloseAddImageModal();
+                    }
+
+                    if (response.add_image_status === 4) {
+                        console.error('Operation add image to project folder failed');
+                        return;
+                    }
+                },
+                (error) => {
+                    console.error(error);
+                },
+                () => {
                     this.onReload();
-                } else {
-                    this.isSelectedImagesAdding = true;
-                    this.isOverlayOn = true;
-                }
-            });
+                },
+            );
+
+        this.subject$.next();
     }
 
     toggleMoveImage() {
@@ -1162,18 +1209,16 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     moveImage() {
         const selectImageFile$ = this._imgLblApiService.selectImageFile();
         const selectImageFileStatus$ = this._imgLblApiService.selectImageFileStatus();
-        selectImageFile$
+
+        this.subjectSubscription = this.subject$
             .pipe(
                 first(),
-                map(({ message }) => message),
-            )
-            .subscribe(() => {
-                let windowClosed = false;
-                interval(500)
-                    .pipe(
+                mergeMap(() => selectImageFile$),
+                mergeMap(() =>
+                    interval(500).pipe(
                         switchMap(() => selectImageFileStatus$),
                         first((response) => {
-                            this.isOverlayOn = response.window_status === 0 ? true : false;
+                            this.isOverlayOn = response.window_status === 0;
                             if (response.window_status === 1 && response.img_path_list !== []) {
                                 response.img_path_list.forEach((file) => {
                                     if (!this.imagePathList.includes(file)) {
@@ -1189,15 +1234,19 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                                     }
                                 });
                             }
-
-                            if (response.window_status === 1) {
-                                windowClosed = true;
-                            }
-                            return windowClosed;
+                            return response.window_status === 1;
                         }),
-                    )
-                    .subscribe(() => {});
+                    ),
+                ),
+            )
+            .subscribe((response) => {
+                let windowClosed = false;
+                if (response.window_status === 1) {
+                    windowClosed = true;
+                }
+                return windowClosed;
             });
+        this.subject$.next();
     }
 
     onCloseMoveImageModal() {
@@ -1225,18 +1274,67 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     }
 
     submitMoveImageAndFolder() {
-        this._imgLblApiService
-            .moveSelectedImageFileAndFolder(this.selectedProjectName, this.modify, this.replace)
-            .subscribe((response) => {
-                if (response.message === 1) {
-                    this.onCloseMoveImageModal();
-                    this._modalService.close(this.modalConfirmMoveImage);
-                    this._modalService.close(this.modalMoveImage);
-                    this.modify = false;
-                    this.replace = false;
+        const moveImage$ = this._imgLblApiService.moveSelectedImageFileAndFolder(
+            this.selectedProjectName,
+            this.modify,
+            this.replace,
+        );
+
+        const moveImageAndFolderStatus$ = this._imgLblApiService.moveImagesStatus(this.selectedProjectName);
+
+        const returnResponse = ({ message }: Message): Observable<MoveImageResponse> => {
+            if (message === 1) {
+                this._modalService.close(this.modalConfirmMoveImage);
+                this._modalService.close(this.modalMoveImage);
+            }
+            return message === 1
+                ? interval(500).pipe(
+                      mergeMap(() => moveImageAndFolderStatus$),
+                      first(({ add_image_status, add_folder_status }) => {
+                          this.isOverlayOn = add_image_status === 0 && add_folder_status === 1;
+                          this.isSelectedImagesAdding = add_image_status === 0 && add_folder_status === 1;
+                          return (
+                              add_image_status === 2 ||
+                              add_folder_status === 3 ||
+                              add_image_status === 4 ||
+                              add_folder_status === 4
+                          );
+                      }),
+                  )
+                : throwError((error: any) => {
+                      console.error(error);
+                      return error;
+                  });
+        };
+
+        this.subjectSubscription = this.subject$
+            .pipe(
+                first(),
+                mergeMap(() => moveImage$),
+                mergeMap((response) => returnResponse(response)),
+            )
+            .subscribe(
+                (response) => {
+                    if (response.add_image_status === 2 || response.add_folder_status === 2) {
+                        this.onCloseMoveImageModal();
+                        this.modify = false;
+                        this.replace = false;
+                    }
+
+                    if (response.add_image_status === 4 || response.add_folder_status === 4) {
+                        console.error('Operation add image and folder to project folder failed');
+                        return;
+                    }
+                },
+                (error) => {
+                    console.error(error);
+                },
+                () => {
                     this.onReload();
-                }
-            });
+                },
+            );
+
+        this.subject$.next();
     }
 
     shortcutKeyInfo() {

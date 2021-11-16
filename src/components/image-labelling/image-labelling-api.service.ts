@@ -12,20 +12,20 @@ import { distinctUntilChanged } from 'rxjs/operators';
 import { environment } from 'environments/environment.prod';
 import { CompleteMetadata, ImageLabellingMode } from 'shared/types/image-labelling/image-labelling.model';
 import {
+    AddImageResponse,
     ExportResponse,
     ExportStatus,
     Message,
-    MessageAddImage,
     MessageBase64Img,
     MessageDeleteImg,
-    MessageMoveImage,
     MessageProjectProgress,
     MessageReload,
     MessageRenameImg,
+    MoveImageResponse,
     UUID,
 } from 'shared/types/message/message.model';
 import { ImageLabellingModeService } from './image-labelling-mode.service';
-import { ImageList, Labels } from '../../shared/types/dataset-layout/data-set-layout.model';
+import { ImageList } from '../../shared/types/dataset-layout/data-set-layout.model';
 
 @Injectable({ providedIn: 'any' })
 export class ImageLabellingApiService {
@@ -139,8 +139,8 @@ export class ImageLabellingApiService {
         });
     };
 
-    addImagesStatus = (projectName: string): Observable<MessageAddImage> => {
-        return this.http.get<MessageAddImage>(
+    addImagesStatus = (projectName: string): Observable<AddImageResponse> => {
+        return this.http.get<AddImageResponse>(
             `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/addstatus`,
         );
     };
@@ -152,8 +152,8 @@ export class ImageLabellingApiService {
         });
     };
 
-    moveImagesStatus = (projectName: string): Observable<MessageMoveImage> => {
-        return this.http.get<MessageMoveImage>(
+    moveImagesStatus = (projectName: string): Observable<MoveImageResponse> => {
+        return this.http.get<MoveImageResponse>(
             `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/movestatus`,
         );
     };

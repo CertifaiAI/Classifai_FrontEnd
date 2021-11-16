@@ -710,3 +710,12 @@ label[for='folder'] {
     margin-top: 0.5rem;
     margin-left: 25vw;
 }
+
+.overlay {
+    z-index: 1000;
+    position: absolute;
+    background-color: rgb(0, 0, 0, 0.9);
+    width: 99.9vw;
+    height: 99.7vh;
+    cursor: not-allowed;
+}

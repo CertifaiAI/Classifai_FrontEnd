@@ -540,7 +540,11 @@
 <toastr [_processingNum]="processingNum"></toastr>
 
 <div *ngIf="isOverlayOn" class="overlay">
-    <p style="margin-top: 40vh; color: rgb(255, 255, 255, 0.9); text-align: center; font-size: 3vh">
-        {{ isSelectedImagesAdding ? 'Uploading the Images. Please Wait...' : 'Selection Window was Opened' }}
+    <p style="margin-top: 40vh; color: rgba(255, 255, 255, 0.9); text-align: center; font-size: 3vh">
+        {{
+            isSelectedImagesAdding
+                ? 'Adding the images to project folder. Please Wait...'
+                : 'Finished added images to project folder'
+        }}
     </p>
 </div>
