@@ -1130,7 +1130,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         // tslint:disable-next-line:prefer-for-of
         for (let i = 0; i <= this.selectedFiles.length; i++) {
             const reader = new FileReader();
-            reader.onload = (event: ProgressEvent<FileReader>) => {
+            reader.onload = () => {
                 if (event.target) {
                     this.imageBase64List.push(event.target.result as string);
                 }
