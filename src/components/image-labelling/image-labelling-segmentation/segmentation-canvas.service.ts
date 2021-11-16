@@ -568,7 +568,7 @@ export class SegmentationCanvasService {
         try {
             metadata.polygons = metadata.polygons.map((poly, i) => ({
                 ...poly,
-                lineWidth: i === polyIndex ? (poly.lineWidth = 2.5) : (poly.lineWidth = 2),
+                lineWidth: i === polyIndex ? 3 : 2,
             }));
         } catch (err) {
             console.log('setPolygonLineWidth', err);
