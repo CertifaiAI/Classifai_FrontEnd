@@ -680,7 +680,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     getImageNameFromPath(thumbnailInfo: CompleteMetadata) {
         this.imgPath = thumbnailInfo.img_path;
         let separater = '';
-        const platform = window.navigator.platform;
+        const platform = window.navigator.userAgent;
         if (platform.startsWith('Mac') || platform.startsWith('Linux')) {
             separater = '/';
         } else {
@@ -977,7 +977,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 if (res.message === 1) {
                     const index = this.thumbnailList.findIndex((t) => t.uuid === this.selectedUuid);
                     let separater = '';
-                    const platform = window.navigator.platform;
+                    const platform = window.navigator.userAgent;
                     if (platform.startsWith('Mac') || platform.startsWith('Linux')) {
                         separater = '/';
                     } else {
