@@ -51,6 +51,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     @ViewChild('thumbnailList') thumbnailList!: ElementRef<HTMLDivElement>;
     @Input() _thumbnailList: CompleteMetadata[] = [];
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
+    @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
     @Output() _onClickThumbnail: EventEmitter<EventEmitter_ThumbnailDetails> = new EventEmitter();
     @Output() _onClickLabel: EventEmitter<SelectedLabelProps> = new EventEmitter();
     @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
@@ -105,6 +106,10 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
 
     updateLabelList = () => {
         this.labelList = this._tabStatus[1].label_list ? this._tabStatus[1].label_list : [];
+    };
+
+    onClose = (tab: TabsProps): void => {
+        this._onClose.emit({ name: tab.name, closed: true });
     };
 
     onClick = (thumbnail: Omit<BboxMetadata & PolyMetadata, 'img_src'>, thumbnailIndex: number): void => {

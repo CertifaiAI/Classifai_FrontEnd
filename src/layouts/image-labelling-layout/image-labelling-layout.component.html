@@ -42,6 +42,7 @@
             [_totalUuid]="totalUuid"
             [_thumbnailList]="thumbnailList"
             [_tabStatus]="tabStatus"
+            (_onClose)="onToggleTab($event)"
             (_onClickThumbnail)="displayImage($event)"
             (_onClickLabel)="onProcessLabel($event)"
             (_onEnterLabel)="onProcessLabel($event)"
@@ -53,6 +54,7 @@
         ></image-labelling-project>
         <image-labelling-right-sidebar
             [_onChange]="onChangeSchema"
+            [_tabClosedStatus]="tabClosedStatus"
             (_onClick)="onToggleTab($event)"
             (_onExport)="onExport()"
             (_onReload)="onReload()"

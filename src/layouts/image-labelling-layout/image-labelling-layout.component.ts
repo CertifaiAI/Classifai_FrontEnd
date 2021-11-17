@@ -110,6 +110,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     isFetching: boolean = true;
     noLabel: boolean = true;
     noAnnotation: boolean = true;
+    tabClosedStatus!: TabsProps;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
@@ -457,6 +458,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             (this.tabStatus = this.tabStatus.map((tab) =>
                 tab.name.toLowerCase() === name.toLowerCase() ? { ...tab, closed } : { ...tab },
             ));
+
+        this.tabClosedStatus = { name, closed };
     };
 
     onExport = (): void => {

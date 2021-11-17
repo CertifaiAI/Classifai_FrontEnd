@@ -25,6 +25,7 @@ import { IconSchema } from 'shared/types/icon/icon.model';
 })
 export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
     @Input() _onChange!: ImgLabelProps;
+    @Input() _tabClosedStatus!: TabsProps;
     @Output() _onClick: EventEmitter<TabsProps> = new EventEmitter();
     @Output() _onExport = new EventEmitter();
     @Output() _onReload = new EventEmitter();
@@ -119,6 +120,20 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         this.bindImagePath();
+
+        if (this._tabClosedStatus) {
+            if (this._tabClosedStatus.name === 'labellingProject.project') {
+                this.toggleProject = !this._tabClosedStatus.closed;
+            }
+
+            if (this._tabClosedStatus.name === 'labellingProject.label') {
+                this.toggleLabel = !this._tabClosedStatus.closed;
+            }
+
+            if (this._tabClosedStatus.name === 'labellingProject.annotation') {
+                this.toggleAnnotation = !this._tabClosedStatus.closed;
+            }
+        }
     }
 
     conditionalIconTheme = (): string => 'utility-icon-light';

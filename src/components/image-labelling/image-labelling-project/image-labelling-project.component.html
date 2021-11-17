@@ -21,7 +21,7 @@
     <!-------------------------- Tab Header -------------------------->
     <label class="tab-name">{{ tab.name | translate }} ({{ _thumbnailList.length }}/{{ _totalUuid }})</label>
     <div class="flex-tab-icons">
-        <span class="tab-close-thumbnailless"></span>
+        <span class="tab-close-thumbnailless"><div class="div-close" (click)="onClose(tab)">&#10006;</div></span>
     </div>
     <!-------------------------- Project Tab Container -------------------------->
     <div class="utility-inner-container tab-height scroll" id="thumbnailList" #thumbnailList (scroll)="mouseScroll()">
@@ -85,7 +85,7 @@
     <!-------------------------- Tab Header -------------------------->
     <label class="tab-name">{{ tab.name | translate }}</label>
     <div class="flex-tab-icons">
-        <span class="tab-close-thumbnailless"></span>
+        <span class="tab-close-thumbnailless"><div class="div-close" (click)="onClose(tab)">&#10006;</div></span>
     </div>
     <!-------------------------- Label Search Field -------------------------->
     <div class="div-input">
@@ -135,7 +135,7 @@
 <ng-template #annotationTab let-i="i" let-tab="tab">
     <label class="tab-name">{{ tab.name | translate }}</label>
     <div class="flex-tab-icons">
-        <span class="tab-close-thumbnailless"></span>
+        <span class="tab-close-thumbnailless"><div class="div-close" (click)="onClose(tab)">&#10006;</div></span>
     </div>
     <!-------------------------- Annotation Tab Container -------------------------->
     <div class="utility-inner-container scroll tab-smaller-height" id="inner-container">
