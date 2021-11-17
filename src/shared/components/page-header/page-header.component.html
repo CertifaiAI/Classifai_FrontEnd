@@ -45,7 +45,7 @@
                 [title]="help | translate"
                 (click)="toggleTutorialMenu()"
             />
-            <div class="tutorial-dropdown-menu" *ngIf="tutorialMenuToggle === true">
+            <div class="tutorial-dropdown-menu scroll" *ngIf="tutorialMenuToggle === true">
                 <div class="tutorial" #tutorial1 (click)="tutorialConfig(true, tutorial1.innerText.toString())">
                     How to Create Project
                     <img class="icon" src="assets/icons/project.svg" alt="project icon" />

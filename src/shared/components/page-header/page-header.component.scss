@@ -166,8 +166,8 @@
 
 .tutorial {
     box-shadow: 0 2px 7px 0 rgb(0, 0, 0, 0.2);
-    width: 20vw;
-    height: 8vh;
+    min-width: 20vw;
+    min-height: 8vh;
     line-height: 50px;
     padding: 10px;
     text-align: center;
@@ -191,4 +191,6 @@
     transform: translateY(-10px);
     transition: 150ms ease-in-out, transform 150ms ease-in-out;
     z-index: 1000;
+    overflow: hidden auto;
+    max-height: 50vh;
 }
