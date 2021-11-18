@@ -32,7 +32,7 @@ import {
     MoveImageResponse,
 } from 'shared/types/message/message.model';
 import { ModalBodyStyle } from 'shared/types/modal/modal.model';
-import { ChartProps, ProjectSchema } from 'shared/types/dataset-layout/data-set-layout.model';
+import { ChartProps, ImageList, ProjectSchema } from 'shared/types/dataset-layout/data-set-layout.model';
 import {
     ImgLabelProps,
     ImageLabelUrl,
@@ -1212,34 +1212,44 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         const selectImageFile$ = this._imgLblApiService.selectImageFile();
         const selectImageFileStatus$ = this._imgLblApiService.selectImageFileStatus();
 
+        const returnResponse = ({ message }: Message): Observable<ImageList> => {
+            return message === 1
+                ? interval(500).pipe(
+                      mergeMap(() => selectImageFileStatus$),
+                      first(({ window_status, img_path_list, img_directory_list }) => {
+                          this.isOverlayOn = window_status === 0;
+                          this.isSelectedImagesAdding = window_status === 0;
+
+                          if (window_status === 1 && img_path_list !== []) {
+                              img_path_list.forEach((file) => {
+                                  if (!this.imagePathList.includes(file)) {
+                                      this.imagePathList.push(file);
+                                  }
+                              });
+                          }
+
+                          if (window_status === 1 && img_directory_list !== []) {
+                              img_directory_list.forEach((folder) => {
+                                  if (!this.imageDirectoryList.includes(folder)) {
+                                      this.imageDirectoryList.push(folder);
+                                  }
+                              });
+                          }
+
+                          return window_status === 1;
+                      }),
+                  )
+                : throwError((error: any) => {
+                      console.error(error);
+                      return error;
+                  });
+        };
+
         this.subjectSubscription = this.subject$
             .pipe(
                 first(),
                 mergeMap(() => selectImageFile$),
-                mergeMap(() =>
-                    interval(500).pipe(
-                        switchMap(() => selectImageFileStatus$),
-                        first((response) => {
-                            this.isOverlayOn = response.window_status === 0;
-                            if (response.window_status === 1 && response.img_path_list !== []) {
-                                response.img_path_list.forEach((file) => {
-                                    if (!this.imagePathList.includes(file)) {
-                                        this.imagePathList.push(file);
-                                    }
-                                });
-                            }
-
-                            if (response.window_status === 1 && response.img_directory_list !== []) {
-                                response.img_directory_list.forEach((folder) => {
-                                    if (!this.imageDirectoryList.includes(folder)) {
-                                        this.imageDirectoryList.push(folder);
-                                    }
-                                });
-                            }
-                            return response.window_status === 1;
-                        }),
-                    ),
-                ),
+                mergeMap((message) => returnResponse(message)),
             )
             .subscribe((response) => {
                 let windowClosed = false;
