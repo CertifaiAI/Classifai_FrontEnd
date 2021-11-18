@@ -54,6 +54,7 @@
         ></image-labelling-project>
         <image-labelling-right-sidebar
             [_onChange]="onChangeSchema"
+            [_tabClosedStatus]="tabClosedStatus"
             (_onClick)="onToggleTab($event)"
             (_onExport)="onExport()"
             (_onReload)="onReload()"

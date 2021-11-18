@@ -110,6 +110,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     isFetching: boolean = true;
     noLabel: boolean = true;
     noAnnotation: boolean = true;
+    tabClosedStatus!: TabsProps;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
@@ -457,6 +458,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             (this.tabStatus = this.tabStatus.map((tab) =>
                 tab.name.toLowerCase() === name.toLowerCase() ? { ...tab, closed } : { ...tab },
             ));
+
+        this.tabClosedStatus = { name, closed };
     };
 
     onExport = (): void => {
@@ -677,7 +680,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     getImageNameFromPath(thumbnailInfo: CompleteMetadata) {
         this.imgPath = thumbnailInfo.img_path;
         let separater = '';
-        const platform = window.navigator.platform;
+        const platform = window.navigator.userAgent;
         if (platform.startsWith('Mac') || platform.startsWith('Linux')) {
             separater = '/';
         } else {
@@ -974,7 +977,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 if (res.message === 1) {
                     const index = this.thumbnailList.findIndex((t) => t.uuid === this.selectedUuid);
                     let separater = '';
-                    const platform = window.navigator.platform;
+                    const platform = window.navigator.userAgent;
                     if (platform.startsWith('Mac') || platform.startsWith('Linux')) {
                         separater = '/';
                     } else {
@@ -1115,6 +1118,21 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 no: 9,
                 shortcutKey: `info.shortcut.9.key`,
                 functionality: `info.shortcut.9.functionality`,
+            },
+            {
+                no: 10,
+                shortcutKey: `info.shortcut.10.key`,
+                functionality: `info.shortcut.10.functionality`,
+            },
+            {
+                no: 11,
+                shortcutKey: `info.shortcut.11.key`,
+                functionality: `info.shortcut.11.functionality`,
+            },
+            {
+                no: 12,
+                shortcutKey: `info.shortcut.12.key`,
+                functionality: `info.shortcut.12.functionality`,
             },
         ];
     }

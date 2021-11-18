@@ -25,12 +25,16 @@ import { IconSchema } from 'shared/types/icon/icon.model';
 })
 export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
     @Input() _onChange!: ImgLabelProps;
+    @Input() _tabClosedStatus!: TabsProps;
     @Output() _onClick: EventEmitter<TabsProps> = new EventEmitter();
     @Output() _onExport = new EventEmitter();
     @Output() _onReload = new EventEmitter();
     @Output() _onOpenProjectStats = new EventEmitter();
 
     jsonSchema!: IconSchema;
+    toggleProject: boolean = true;
+    toggleLabel: boolean = true;
+    toggleAnnotation: boolean = true;
 
     ngOnInit(): void {
         this.bindImagePath();
@@ -47,7 +51,13 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     // accept: 'image/x-png,image/jpeg',
                     // onUpload: () => this._onClick.emit(),
                     onClick: () => {
-                        this._onClick.emit({ name: 'labellingProject.project', closed: false });
+                        if (this.toggleProject) {
+                            this._onClick.emit({ name: 'labellingProject.project', closed: true });
+                            this.toggleProject = false;
+                        } else {
+                            this._onClick.emit({ name: 'labellingProject.project', closed: false });
+                            this.toggleProject = true;
+                        }
                     },
                 },
                 {
@@ -55,7 +65,13 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     hoverLabel: `rightSideBar.label`,
                     alt: `Label`,
                     onClick: () => {
-                        this._onClick.emit({ name: 'labellingProject.label', closed: false });
+                        if (this.toggleLabel) {
+                            this._onClick.emit({ name: 'labellingProject.label', closed: true });
+                            this.toggleLabel = false;
+                        } else {
+                            this._onClick.emit({ name: 'labellingProject.label', closed: false });
+                            this.toggleLabel = true;
+                        }
                     },
                 },
                 {
@@ -63,7 +79,13 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
                     hoverLabel: `rightSideBar.annotation`,
                     alt: `Annotation`,
                     onClick: () => {
-                        this._onClick.emit({ name: 'labellingProject.annotation', closed: false });
+                        if (this.toggleAnnotation) {
+                            this._onClick.emit({ name: 'labellingProject.annotation', closed: true });
+                            this.toggleAnnotation = false;
+                        } else {
+                            this._onClick.emit({ name: 'labellingProject.annotation', closed: false });
+                            this.toggleAnnotation = true;
+                        }
                     },
                 },
                 {
@@ -98,6 +120,20 @@ export class ImageLabellingRightSidebarComponent implements OnInit, OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         this.bindImagePath();
+
+        if (this._tabClosedStatus) {
+            if (this._tabClosedStatus.name === 'labellingProject.project') {
+                this.toggleProject = !this._tabClosedStatus.closed;
+            }
+
+            if (this._tabClosedStatus.name === 'labellingProject.label') {
+                this.toggleLabel = !this._tabClosedStatus.closed;
+            }
+
+            if (this._tabClosedStatus.name === 'labellingProject.annotation') {
+                this.toggleAnnotation = !this._tabClosedStatus.closed;
+            }
+        }
     }
 
     conditionalIconTheme = (): string => 'utility-icon-light';
