@@ -38,7 +38,6 @@ import { UndoRedoService } from 'shared/services/undo-redo.service';
 import { HTMLElementEvent } from 'shared/types/field/field.model';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
 
-
 @Component({
     selector: 'image-labelling-project',
     templateUrl: './image-labelling-project.component.html',

@@ -14,6 +14,7 @@ export type MouseCursorState = {
     grab: boolean;
     grabbing: boolean;
     crosshair: boolean;
+    default: boolean;
     'zoom-in': boolean;
     'zoom-out': boolean;
     'n-resize': boolean;
@@ -30,6 +31,7 @@ const initialState: MouseCursorState = {
     grab: false,
     grabbing: false,
     crosshair: false,
+    default: false,
     'zoom-in': false,
     'zoom-out': false,
     'n-resize': false,
