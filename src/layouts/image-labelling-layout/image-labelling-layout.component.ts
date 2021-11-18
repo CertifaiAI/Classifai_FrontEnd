@@ -1223,15 +1223,13 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                           this.isOverlayOn = window_status === 0;
                           this.isSelectedImagesAdding = window_status === 0;
 
-                          if (window_status === 1 && img_path_list !== []) {
+                          if (window_status === 1) {
                               img_path_list.forEach((file) => {
                                   if (!this.imagePathList.includes(file)) {
                                       this.imagePathList.push(file);
                                   }
                               });
-                          }
 
-                          if (window_status === 1 && img_directory_list !== []) {
                               img_directory_list.forEach((folder) => {
                                   if (!this.imageDirectoryList.includes(folder)) {
                                       this.imageDirectoryList.push(folder);
