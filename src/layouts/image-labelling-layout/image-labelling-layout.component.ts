@@ -13,7 +13,7 @@ import {
     SaveFormat,
     ProcessResponse,
 } from 'shared/services/export-save-format.service';
-import { first, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
+import { first, mergeMap, takeUntil } from 'rxjs/operators';
 import { HTMLElementEvent } from 'shared/types/field/field.model';
 import { ImageLabellingActionService } from 'components/image-labelling/image-labelling-action.service';
 import { ImageLabellingApiService } from 'components/image-labelling/image-labelling-api.service';
@@ -116,6 +116,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     isFetching: boolean = true;
     noLabel: boolean = true;
     noAnnotation: boolean = true;
+    tabClosedStatus!: TabsProps;
     imageNameList: string[] = [];
     imageBase64List: string[] = [];
     imagePathList: string[] = [];
@@ -499,6 +500,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             (this.tabStatus = this.tabStatus.map((tab) =>
                 tab.name.toLowerCase() === name.toLowerCase() ? { ...tab, closed } : { ...tab },
             ));
+
+        this.tabClosedStatus = { name, closed };
     };
 
     onExport = (): void => {
@@ -1394,6 +1397,21 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 no: 9,
                 shortcutKey: `info.shortcut.9.key`,
                 functionality: `info.shortcut.9.functionality`,
+            },
+            {
+                no: 10,
+                shortcutKey: `info.shortcut.10.key`,
+                functionality: `info.shortcut.10.functionality`,
+            },
+            {
+                no: 11,
+                shortcutKey: `info.shortcut.11.key`,
+                functionality: `info.shortcut.11.functionality`,
+            },
+            {
+                no: 12,
+                shortcutKey: `info.shortcut.12.key`,
+                functionality: `info.shortcut.12.functionality`,
             },
         ];
     }

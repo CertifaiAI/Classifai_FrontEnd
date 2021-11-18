@@ -4,7 +4,6 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-
 import {
     Component,
     OnInit,
@@ -14,12 +13,19 @@ import {
     SimpleChanges,
     OnChanges,
     ChangeDetectionStrategy,
+    HostListener,
 } from '@angular/core';
 import { isEqual } from 'lodash-es';
-import { ImgLabelProps, ImageLabelUrl, TabsProps, CompleteMetadata } from 'shared/types/image-labelling/image-labelling.model';
+import {
+    ImgLabelProps,
+    ImageLabelUrl,
+    TabsProps,
+    CompleteMetadata,
+} from 'shared/types/image-labelling/image-labelling.model';
 import { AnnotateSelectionService } from 'shared/services/annotate-selection.service';
 import { IconSchema } from 'shared/types/icon/icon.model';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
+import { MousrCursorService } from '../../../shared/services/mouse-cursor.service';
 
 @Component({
     selector: 'image-labelling-left-sidebar',
@@ -41,6 +47,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     constructor(
         private _imgLabelState: ImageLabellingActionService,
         private _annotateService: AnnotateSelectionService,
+        private _mouseCursorService: MousrCursorService,
     ) {}
 
     ngOnInit(): void {
@@ -94,7 +101,12 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                           toggleable: true,
                           onClick: () => {
                               this.resetSelectedAnnotate();
-                              this._imgLabelState.setState({ draw: true, drag: false, scroll: false, crossLine: this.isCrossLineOn });
+                              this._imgLabelState.setState({
+                                  draw: true,
+                                  drag: false,
+                                  scroll: false,
+                                  crossLine: this.isCrossLineOn,
+                              });
                           },
                       }
                     : {
@@ -142,11 +154,16 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     alt: `Cross Guiding Line`,
                     toggleable: false,
                     onClick: () => {
-                      this.isCrossLineOn = !this.isCrossLineOn;
-                      this.bindImagePath();
-                      if (this.iconIndex === 2 ) {
-                          this._imgLabelState.setState({ draw: true, drag: false, scroll: false, crossLine: this.isCrossLineOn });
-                      }
+                        this.isCrossLineOn = !this.isCrossLineOn;
+                        this.bindImagePath();
+                        if (this.iconIndex === 2) {
+                            this._imgLabelState.setState({
+                                draw: true,
+                                drag: false,
+                                scroll: false,
+                                crossLine: this.isCrossLineOn,
+                            });
+                        }
                     },
                 },
                 {
@@ -246,4 +263,25 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
 
     conditionalActiveIcon = (index: number): object | null =>
         index === this.iconIndex ? { background: 'rgb(59 59 59)' } : null;
+
+    @HostListener('window:keydown', ['$event'])
+    keyStrokeEvent({ key }: KeyboardEvent) {
+        try {
+            if (key === 'z') {
+                this.resetSelectedAnnotate();
+                this._imgLabelState.setState({ draw: false, drag: true, scroll: true });
+                this.getIndex(1);
+            } else if (key === 'a') {
+                this.resetSelectedAnnotate();
+                this._imgLabelState.setState({ draw: true, drag: false, scroll: false, crossLine: this.isCrossLineOn });
+                this.getIndex(2);
+            } else if (key === 'x') {
+                this._imgLabelState.setState({ draw: false, drag: false, scroll: false, crossLine: false });
+                this._mouseCursorService.setState({ default: true });
+                this.getIndex(0);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
 }
