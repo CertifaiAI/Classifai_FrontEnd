@@ -23,7 +23,7 @@ import { LanguageService } from 'shared/services/language.service';
 import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'shared/components/spinner/spinner.service';
-import { async, forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
+import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import {
     AddImageResponse,
     ExportStatus,
