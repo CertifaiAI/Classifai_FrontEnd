@@ -147,8 +147,8 @@ export class ImageLabellingApiService {
 
     moveSelectedImageFileAndFolder = (projectName: string, modify: boolean, replace: boolean): Observable<Message> => {
         return this.http.put<Message>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/move`, {
-            modify_img_name: modify,
-            replace_img_name: replace,
+            modify_name: modify,
+            replace_name: replace,
         });
     };
 

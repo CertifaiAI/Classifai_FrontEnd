@@ -23,7 +23,7 @@ import { LanguageService } from 'shared/services/language.service';
 import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'shared/components/spinner/spinner.service';
-import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
+import { async, forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
 import {
     AddImageResponse,
     ExportStatus,
@@ -1134,14 +1134,19 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         for (let i = 0; i <= this.selectedFiles.length; i++) {
             const reader = new FileReader();
             reader.onload = () => {
-                if (event.target) {
-                    this.imageBase64List.push(event.target.result as string);
+                if (reader.result) {
+                    if (!this.imageBase64List.includes(reader.result as string)) {
+                        this.imageBase64List.push(reader.result as string);
+                    }
+
+                    if (!this.imageNameList.includes(this.selectedFiles[i].name)) {
+                        this.imageNameList.push(this.selectedFiles[i].name);
+                    }
                 }
             };
 
             if (this.selectedFiles[i]) {
                 reader.readAsDataURL(this.selectedFiles[i]);
-                this.imageNameList.push(this.selectedFiles[i].name);
             }
         }
     }
