@@ -1047,22 +1047,22 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             .getProjectStats(this.selectedProjectName)
             .pipe()
             .subscribe((project) => {
-                console.log(project.statistic_data);
-                if (project.statistic_data) {
-                    this.labelledImage = project.statistic_data[0].labeled_image;
-                    this.unLabelledImage = project.statistic_data[0].unlabeled_image;
+                console.log(project);
+                if (project) {
+                    this.labelledImage = project.labeled_image;
+                    this.unLabelledImage = project.unlabeled_image;
                     this.labelStats = [];
-                    project.statistic_data[0].label_per_class_in_project.forEach((labelMeta: labels_stats) => {
-                        if (labelMeta.count > 0) {
+                    project.label_per_class_in_project.forEach((labelMeta: labels_stats) => {
+                        if (Number(labelMeta.count) > 0) {
                             this.noAnnotation = false;
                         }
                         const meta = {
                             name: labelMeta.label,
-                            value: labelMeta.count,
+                            value: Number(labelMeta.count),
                         };
                         this.labelStats.push(meta);
                     });
-                    if (project.statistic_data[0].label_per_class_in_project.length === 0) {
+                    if (project.label_per_class_in_project.length === 0) {
                         this.noLabel = true;
                         this.noAnnotation = false;
                     }

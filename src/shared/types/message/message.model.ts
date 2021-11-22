@@ -17,7 +17,7 @@ type project_config_path = string;
 
 export type labels_stats = {
     label: string;
-    count: number;
+    count: string;
 };
 
 export type project_stats = {
@@ -65,8 +65,10 @@ export type ImportResponse = {
 
 export type ProjectStatsResponse = {
     message: error_code;
-    statistic_data?: project_stats[];
-    error_code?: number;
+    project_name: string;
+    labeled_image: number;
+    unlabeled_image: number;
+    label_per_class_in_project: labels_stats[];
     error_message?: string;
 };
 
