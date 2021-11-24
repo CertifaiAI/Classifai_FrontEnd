@@ -166,10 +166,9 @@
 
 .tutorial {
     box-shadow: 0 2px 7px 0 rgb(0, 0, 0, 0.2);
-    min-width: 20vw;
-    min-height: 8vh;
     line-height: 50px;
-    padding: 10px;
+    padding-left: 40px;
+    padding-right: 40px;
     text-align: center;
     cursor: pointer;
     &:hover {
