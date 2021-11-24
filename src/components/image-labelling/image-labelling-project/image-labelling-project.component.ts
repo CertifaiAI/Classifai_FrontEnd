@@ -37,6 +37,7 @@ import { LanguageService } from 'shared/services/language.service';
 import { UndoRedoService } from 'shared/services/undo-redo.service';
 import { HTMLElementEvent } from 'shared/types/field/field.model';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
+import { LabelColorServices } from '../../../shared/services/label-color.services';
 
 @Component({
     selector: 'image-labelling-project',
@@ -72,12 +73,15 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     isTabStillOpen: boolean = true;
     tempMax: number = 0;
     max: number = 0;
+    labelColorList: Map<string, string> = new Map<string, string>();
+    index: number = 0;
 
     constructor(
         private _annotateService: AnnotateSelectionService,
         private _imgLblState: ImageLabellingActionService,
         private _languageService: LanguageService,
         private _undoRedoService: UndoRedoService,
+        private _labelColorService: LabelColorServices,
     ) {}
 
     ngOnInit(): void {
@@ -102,6 +106,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
                     })[0];
                     this.selectedLabel = resultLabel?.label ?? '';
                 });
+
+        this.pickRandomColorForLabel();
     }
 
     updateLabelList = () => {
@@ -257,6 +263,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
                     break;
                 }
             }
+            this.pickRandomColorForLabel();
         }
     }
 
@@ -283,6 +290,29 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     deleteImage(thumbnail: Omit<BboxMetadata & PolyMetadata, 'img_src'>, thumbnailIndex: number) {
         this.onClick(thumbnail, thumbnailIndex);
         this._onDeleteImage.emit(thumbnail);
+    }
+
+    pickRandomColorForLabel(): void {
+        const labelColor = (label: string) => {
+            const color = this._labelColorService.getLabelColors(this.index);
+            this.labelColorList.set(label, color);
+            this.index++;
+        };
+
+        if (this.labelColorList.size === 0 && this.labelList.length > 0) {
+            let label: string;
+            for (label of this.labelList) {
+                labelColor(label);
+            }
+        }
+
+        const oldLabels = this.labelList.filter((ele) => this.labelColorList.has(ele));
+
+        if (oldLabels.length !== this.labelList.length) {
+            labelColor(this.labelList[this.index]);
+        }
+
+        this._labelColorService.setLabelColorList(this.labelColorList);
     }
 
     ngOnDestroy(): void {

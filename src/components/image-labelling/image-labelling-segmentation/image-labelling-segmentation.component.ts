@@ -41,10 +41,11 @@ import { ZoomState, ZoomService, WheelDelta } from 'shared/services/zoom.service
 import { SharedUndoRedoService } from 'shared/services/shared-undo-redo.service';
 import { SegmentationCanvasService } from './segmentation-canvas.service';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
+import { LabelColorServices } from '../../../shared/services/label-color.services';
 
 interface ExtendedMouseEvent extends MouseEvent {
-  layerX: number;
-  layerY: number;
+    layerX: number;
+    layerY: number;
 }
 
 @Component({
@@ -74,6 +75,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     labelList: LabelInfo[] = [];
     allLabelList: LabelInfo[] = [];
     mouseEvent: MouseEvent | undefined;
+    labelColorList!: Map<string, string>;
     @Input() _selectMetadata!: PolyMetadata;
     @Input() _imgSrc: string = '';
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
@@ -92,6 +94,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         private _mouseCursorService: MousrCursorService,
         private _shortcutKeyService: ShortcutKeyService,
         private _sharedUndoRedoService: SharedUndoRedoService,
+        private _labelColorListService: LabelColorServices,
     ) {}
 
     ngOnInit(): void {
@@ -153,6 +156,25 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             this._undoRedoService.clearAllStages();
             this._segCanvasService.setSelectedPolygon(-1);
             this.loadImage(changes._imgSrc.currentValue);
+        }
+
+        if (changes._tabStatus) {
+            let adjustImagePosition = true;
+            for (const { closed } of this._tabStatus) {
+                if (!closed) {
+                    adjustImagePosition = false;
+                    break;
+                }
+            }
+
+            if (this.canvas) {
+                if (adjustImagePosition === true) {
+                    this.initializeCanvas();
+                    this.imgFitToCenter();
+                } else {
+                    this.redrawImage(this._selectMetadata);
+                }
+            }
         }
     }
 
@@ -235,7 +257,13 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             const annotationList = this._tabStatus[2].annotation ? this._tabStatus[2].annotation[0].polygons ?? [] : [];
             this.sortingLabelList(this.labelList, annotationList);
         }
-        this._segCanvasService.drawAllPolygon(this._selectMetadata, this.canvasContext, this.annotateState.annotation);
+        this.labelColorList = this._labelColorListService.getLabelColorList();
+        this._segCanvasService.drawAllPolygon(
+            this._selectMetadata,
+            this.canvasContext,
+            this.annotateState.annotation,
+            this.labelColorList,
+        );
     }
 
     /**
@@ -386,7 +414,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             this._selectMetadata,
             this.canvasContext,
             this.image,
-            this.canvas.nativeElement
+            this.canvas.nativeElement,
         );
         this.redrawImage(this._selectMetadata);
         this.mouseMoveDrawCanvas(this.mouseEvent as ExtendedMouseEvent);
