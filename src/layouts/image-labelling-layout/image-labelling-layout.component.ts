@@ -1053,12 +1053,12 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                     this.unLabelledImage = project.unlabeled_image;
                     this.labelStats = [];
                     project.label_per_class_in_project.forEach((labelMeta: labels_stats) => {
-                        if (Number(labelMeta.count) > 0) {
+                        if (labelMeta.count > 0) {
                             this.noAnnotation = false;
                         }
                         const meta = {
                             name: labelMeta.label,
-                            value: Number(labelMeta.count),
+                            value: labelMeta.count,
                         };
                         this.labelStats.push(meta);
                     });

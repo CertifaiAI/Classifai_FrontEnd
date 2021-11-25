@@ -17,7 +17,7 @@ type project_config_path = string;
 
 export type labels_stats = {
     label: string;
-    count: string;
+    count: number;
 };
 
 export type project_stats = {
