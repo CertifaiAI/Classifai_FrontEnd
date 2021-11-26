@@ -11,12 +11,14 @@ export type TutorialState = {
     createProject: boolean;
     drawBbox: boolean;
     drawPolygon: boolean;
+    projectStatistics: boolean;
 };
 
 const initialState: TutorialState = {
     createProject: false,
     drawBbox: false,
-    drawPolygon: false
+    drawPolygon: false,
+    projectStatistics: false,
 };
 
 @Injectable({
@@ -28,13 +30,13 @@ export class TutorialService {
     private dataFromLocalStorage = initialState;
 
     constructor() {
-      const gg = this.getLocalStorage();
-      if (gg === null) {
-        this.setLocalStorage(initialState);
-      } else {
-        this.dataFromLocalStorage = JSON.parse(gg).cache;
-        this.setState(JSON.parse(gg).cache);
-      }
+        const gg = this.getLocalStorage();
+        if (gg === null) {
+            this.setLocalStorage(initialState);
+        } else {
+            this.dataFromLocalStorage = JSON.parse(gg).cache;
+            this.setState(JSON.parse(gg).cache);
+        }
     }
 
     setState = (newZoomState?: Partial<TutorialState>): void => {
@@ -58,5 +60,4 @@ export class TutorialService {
     private getLocalStorage() {
         return localStorage.getItem('tutorial');
     }
-
 }

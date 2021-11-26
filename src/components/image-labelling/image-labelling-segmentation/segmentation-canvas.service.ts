@@ -20,8 +20,8 @@ import {
 import { Utils } from 'util/utils';
 
 interface ExtendedMouseEvent extends MouseEvent {
-  layerX: number;
-  layerY: number;
+    layerX: number;
+    layerY: number;
 }
 
 type ClickPoint = {
@@ -44,6 +44,7 @@ export class SegmentationCanvasService {
     private util: Utils = new Utils();
     private isNewPoly: boolean = false;
     private labelList: LabelInfo[] = [];
+    private labelColorList!: Map<string, string>;
     // private currentSelectedImg = { uid: -1, idx: -1 };
 
     constructor() {}
@@ -312,16 +313,22 @@ export class SegmentationCanvasService {
             context.clip();
             context.beginPath();
             context.drawImage(img, img_x, img_y, img_w, img_h);
-            this.drawAllPolygon(metadata, context, polyIndex);
+            this.drawAllPolygon(metadata, context, polyIndex, this.labelColorList);
         } catch (err) {
             console.log('redraw', err);
         }
     }
 
-    drawAllPolygon(metadata: PolyMetadata, context: CanvasRenderingContext2D, polyIndex: number) {
+    drawAllPolygon(
+        metadata: PolyMetadata,
+        context: CanvasRenderingContext2D,
+        polyIndex: number,
+        labelColorList: Map<string, string>,
+    ) {
         try {
             // if(pol.polygons.length < 1 || selectpolygon === -1){return;}
             // else{
+            this.labelColorList = labelColorList;
             if (this.validatePolygonMetadata(metadata.polygons)) {
                 this.drawAllPolygonLine(metadata, context);
                 this.drawAllPolygonsDots(metadata, context, polyIndex, this.radius);
@@ -339,6 +346,10 @@ export class SegmentationCanvasService {
 
     private drawAllPolygonLine({ polygons }: PolyMetadata, context: CanvasRenderingContext2D) {
         try {
+            for (const [_, content] of polygons.entries()) {
+                content.color = this.labelColorList.get(content.label) as string;
+            }
+
             for (const [_, { lineWidth, color, coorPt }] of polygons.entries()) {
                 context.lineWidth = lineWidth;
                 context.strokeStyle = color || 'white';
@@ -363,10 +374,10 @@ export class SegmentationCanvasService {
         radius: number,
     ) {
         try {
-            for (const [i, { coorPt }] of polygons.entries()) {
+            for (const [i, { coorPt, label }] of polygons.entries()) {
                 if (polygonIndex === i) {
-                    context.strokeStyle = 'green';
-                    context.fillStyle = 'green';
+                    context.strokeStyle = this.labelColorList.get(label) as string;
+                    context.fillStyle = this.labelColorList.get(label) as string;
                     for (const [j] of coorPt.entries()) {
                         context.beginPath();
                         context.arc(coorPt[j].x, coorPt[j].y, radius, 0, 2 * Math.PI);
@@ -557,8 +568,7 @@ export class SegmentationCanvasService {
         try {
             metadata.polygons = metadata.polygons.map((poly, i) => ({
                 ...poly,
-                lineWidth: i === polyIndex ? (poly.lineWidth = 2) : (poly.lineWidth = 1),
-                color: i === polyIndex ? (poly.color = 'rgba(0,255,0,1.0)') : (poly.color = 'rgba(255,255,0,0.8)'),
+                lineWidth: i === polyIndex ? 3 : 2,
             }));
         } catch (err) {
             console.log('setPolygonLineWidth', err);
@@ -617,13 +627,15 @@ export class SegmentationCanvasService {
         }
     }
 
-    private drawfromPreviousPoint({ offsetX, offsetY, layerX, layerY }: ExtendedMouseEvent, context: CanvasRenderingContext2D) {
+    private drawfromPreviousPoint(
+        { offsetX, offsetY, layerX, layerY }: ExtendedMouseEvent,
+        context: CanvasRenderingContext2D,
+    ) {
         try {
             if (this.tmpPolygon?.coorPt) {
                 const { length } = this.tmpPolygon.coorPt;
                 const X = offsetX === 0 ? layerX : offsetX;
                 const Y = offsetY === 0 ? layerY : offsetY;
-                console.log(X, offsetX, layerX);
                 const newLength = length - 1;
                 context.beginPath();
                 context.moveTo(this.tmpPolygon.coorPt[newLength].x, this.tmpPolygon.coorPt[newLength].y);
@@ -772,7 +784,6 @@ export class SegmentationCanvasService {
                     metadata.polygons[i].coorPt[j].distancetoImg.y = metadata.polygons[i].coorPt[j].y - newY;
                 }
             }
-
             this.setPolygonLineWidth(metadata, -1);
             callback && callback(true);
         } catch (err) {

@@ -39,7 +39,7 @@
     height: 100%;
     right: 0;
     position: fixed;
-    z-index: 1000;
+    z-index: 1;
     min-width: 18.5vw;
     max-width: 18.5vw;
 }
@@ -51,7 +51,8 @@
     background: #383535;
     border: 0.0325vw solid rgb(255, 255, 255, 0.25);
     border-top: none;
-    z-index: 1000;
+    position: relative;
+    z-index: 1;
     align-items: stretch;
     &::after {
         position: absolute;
@@ -71,7 +72,7 @@
 }
 
 .tab {
-    position: sticky;
+    position: relative;
     overflow: hidden;
     &::before {
         @include tab-after();
@@ -116,6 +117,8 @@
     @include tab-close-styling();
     flex: 1 0 60%;
     justify-content: right;
+    position: relative;
+    z-index: 1;
 }
 
 .div-close {
@@ -143,9 +146,10 @@
     padding: 2.5vh 0 0 0.2vw;
     scroll-behavior: smooth;
     overflow: hidden auto;
-    z-index: 100;
+    z-index: 1;
     min-width: 15.5vw;
     max-width: 15.5vw;
+    position: relative;
 }
 
 .scroll {

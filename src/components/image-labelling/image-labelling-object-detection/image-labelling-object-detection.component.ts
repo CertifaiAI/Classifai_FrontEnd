@@ -44,6 +44,7 @@ import { ShortcutKeyService } from 'shared/services/shortcut-key.service';
 import { HTMLElementEvent } from 'shared/types/field/field.model';
 import { BoundingBoxCanvasService } from './bounding-box-canvas.service';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
+import { LabelColorServices } from '../../../shared/services/label-color.services';
 
 @Component({
     selector: 'image-labelling-object-detection',
@@ -71,6 +72,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     showDropdownLabelBox: boolean = false;
     invalidInput: boolean = false;
     closeEnough: number = 5;
+    labelColorList!: Map<string, string>;
     private mouseCursor!: MouseCursorState;
     private zoom!: ZoomState;
     @Input() _selectMetadata!: BboxMetadata;
@@ -90,7 +92,8 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         private _zoomService: ZoomService,
         private _mouseCursorService: MousrCursorService,
         private _shortcutKeyService: ShortcutKeyService,
-        private _sharedUndoRedoService: SharedUndoRedoService
+        private _sharedUndoRedoService: SharedUndoRedoService,
+        private _labelColorService: LabelColorServices,
     ) {}
 
     ngOnInit() {
@@ -137,12 +140,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
         this._sharedUndoRedoService.action.subscribe((message) => {
             switch (message) {
-              case 'BBOX_UNDO':
-                this.undoAction();
-                break;
-              case 'BBOX_REDO':
-                this.redoAction();
-                break;
+                case 'BBOX_UNDO':
+                    this.undoAction();
+                    break;
+                case 'BBOX_REDO':
+                    this.redoAction();
+                    break;
             }
         });
     }
@@ -450,7 +453,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this._selectMetadata,
                     event,
                 );
-                if (mouseWithinPointPath && !this.showDropdownLabelBox && this.boundingBoxState.draw && this.boundingBoxState.crossLine) {
+                if (
+                    mouseWithinPointPath &&
+                    !this.showDropdownLabelBox &&
+                    this.boundingBoxState.draw &&
+                    this.boundingBoxState.crossLine
+                ) {
                     this.crossH.nativeElement.style.visibility = 'visible';
                     this.crossV.nativeElement.style.visibility = 'visible';
                     this.crossH.nativeElement.style.top = event.pageY.toString() + 'px';
@@ -686,7 +694,13 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             }
             this.sortingLabelList(this.labelList, annotationList);
         }
-        this._boundingBoxCanvas.drawAllBoxOn(this.labelList, this._selectMetadata.bnd_box, this.canvasContext);
+        this.labelColorList = this._labelColorService.getLabelColorList();
+        this._boundingBoxCanvas.drawAllBoxOn(
+            this.labelList,
+            this._selectMetadata.bnd_box,
+            this.canvasContext,
+            this.labelColorList,
+        );
     }
 
     clearCanvas() {
