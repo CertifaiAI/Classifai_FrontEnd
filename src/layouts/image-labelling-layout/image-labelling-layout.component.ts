@@ -1200,11 +1200,11 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
                     if (response.add_image_status === 1) {
                         this.onCloseAddImageModal();
-                        console.error('Operation add image to project folder failed');
+                        console.log('Operation add image to project folder failed');
                     }
                 },
-                (error) => {
-                    console.error(error);
+                () => {
+                    console.error('Error happened in add image operation, check log for information');
                 },
                 () => {
                     this.isOverlayOn = false;
