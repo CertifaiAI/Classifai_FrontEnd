@@ -112,13 +112,6 @@ export type MessageDeleteImg = {
     uuid_list: uuid_list;
 };
 
-export type MoveImageResponse = {
-    add_image_status: number;
-    add_image_message: string;
-    add_folder_status: number;
-    add_folder_message: string;
-};
-
 export type AddImageResponse = {
     add_image_status: number;
     add_image_message: string;

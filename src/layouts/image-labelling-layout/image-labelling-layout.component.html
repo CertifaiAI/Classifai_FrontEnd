@@ -60,7 +60,6 @@
             (_onReload)="onReload()"
             (_onOpenProjectStats)="toggleProjectStats()"
             (_onAddImage)="toggleAddImage()"
-            (_onMoveImage)="toggleMoveImage()"
         ></image-labelling-right-sidebar>
     </div>
     <image-labelling-footer [_thumbnailInfo]="selectedMetaData" [_imgSrc]="imgSrc"></image-labelling-footer>
@@ -457,77 +456,16 @@
 </modal>
 
 <modal
-    [id]="modalMoveImage"
-    [modalBodyStyle]="moveImageBodyStyle"
-    [modalTitle]="'moveImageModal.moveImage' | translate"
+    [id]="modalImageLoadingProgress"
+    [modalBodyStyle]="imageLoadingProgressBodyStyle"
+    [modalTitle]="'imageLoadingProgressModal.title' | translate"
     [scrollable]="false"
-    (_close)="onCloseMoveImageModal()"
+    [showHeader]="false"
+    [zIndex]="3"
 >
-    <br />
-    <div class="image-container scroll">
-        <div class="note" *ngIf="imagePathList.length === 0 && imageDirectoryList.length === 0">
-            <h3>Select images or folders to move into current project folder</h3>
-        </div>
-        <div *ngFor="let imagePath of imagePathList; index as i">
-            <div class="delete-image-container">
-                <div class="file-path">{{ imagePath }}</div>
-                <span class="delete-image">
-                    <div class="delete-btn" (click)="deleteMoveImage(i)">&#10006;</div>
-                </span>
-            </div>
-            <img class="image" src="assets/icons/image.svg" alt="added image" />
-        </div>
-        <div *ngFor="let directory of imageDirectoryList; index as i">
-            <div class="delete-image-container">
-                <div class="file-path">{{ directory }}</div>
-                <span class="delete-image">
-                    <div class="delete-btn" (click)="deleteMoveDirectory(i)">&#10006;</div>
-                </span>
-            </div>
-            <img class="image" src="assets/icons/folder.svg" alt="added folder" />
-        </div>
-    </div>
-    <div class="bottom">
-        <button
-            class="button-style deleteimg-btn"
-            (click)="toggleSubmitMoveImage()"
-            [ngClass]="imagePathList.length === 0 && imageDirectoryList.length === 0 ? 'disabled-create-btn' : null"
-            [disabled]="imagePathList.length === 0 && imageDirectoryList.length === 0"
-        >
-            {{ 'moveImageModal.submit' | translate }}
-        </button>
-
-        <button class="button-style deleteimg-btn" (click)="moveImage()">
-            {{ 'moveImageModal.moveImageFolder' | translate }}
-        </button>
-        <label class="image-moved"> {{ 'moveImageModal.imageMoved' | translate }} {{ imagePathList.length }}</label>
-        <label class="folder-moved">
-            {{ 'moveImageModal.folderMoved' | translate }} {{ imageDirectoryList.length }}</label
-        >
-    </div>
-</modal>
-
-<modal
-    [id]="modalConfirmMoveImage"
-    [modalBodyStyle]="confirmMoveImageBodyStyle"
-    [modalTitle]="'moveImageModal.submit' | translate"
-    [scrollable]="false"
-    [zIndex]="2"
->
-    <div class="modal-content-container">
-        <p class="font-delete-img">{{ 'moveImageModal.confirmation' | translate }}</p>
-        <p class="font-delete-img">{{ 'moveImageModal.option' | translate }}</p>
-        <p class="font-delete-img">
-            <input type="checkbox" class="checkbox" (change)="modify = check($event)" [disabled]="replace === true" />
-            {{ 'moveImageModal.modify' | translate }}
-        </p>
-        <p class="font-delete-img">
-            <input type="checkbox" class="checkbox" (change)="replace = check($event)" [disabled]="modify === true" />
-            {{ 'moveImageModal.replace' | translate }}
-        </p>
-        <button class="button-style deleteimg-btn" (click)="submitMoveImageAndFolder()">
-            {{ 'moveImageModal.confirm' | translate }}
-        </button>
+    <div class="center">
+        <div class="circle"></div>
+        <div class="progress">{{ progress }}</div>
     </div>
 </modal>
 

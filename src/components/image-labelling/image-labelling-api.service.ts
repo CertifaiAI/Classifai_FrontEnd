@@ -21,11 +21,9 @@ import {
     MessageProjectProgress,
     MessageReload,
     MessageRenameImg,
-    MoveImageResponse,
     UUID,
 } from 'shared/types/message/message.model';
 import { ImageLabellingModeService } from './image-labelling-mode.service';
-import { ImageList } from '../../shared/types/dataset-layout/data-set-layout.model';
 
 @Injectable({ providedIn: 'any' })
 export class ImageLabellingApiService {
@@ -144,32 +142,4 @@ export class ImageLabellingApiService {
             `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/addstatus`,
         );
     };
-
-    moveSelectedImageFileAndFolder = (projectName: string, modify: boolean, replace: boolean): Observable<Message> => {
-        return this.http.put<Message>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/move`, {
-            modify_name: modify,
-            replace_name: replace,
-        });
-    };
-
-    moveImagesStatus = (projectName: string): Observable<MoveImageResponse> => {
-        return this.http.get<MoveImageResponse>(
-            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/movestatus`,
-        );
-    };
-
-    selectImageFile() {
-        return this.http.put<Message>(`${this.hostPort}v2/imagefiles`, {});
-    }
-
-    selectImageFileStatus() {
-        return this.http.get<ImageList>(`${this.hostPort}v2/imagefiles`);
-    }
-
-    deleteMoveImageAndFolder(imagePathList: string[], imageDirectoryList: string[]) {
-        return this.http.put<Message>(`${this.hostPort}v2/deleteimagefiles`, {
-            img_path_list: imagePathList,
-            img_directory_list: imageDirectoryList,
-        });
-    }
 }

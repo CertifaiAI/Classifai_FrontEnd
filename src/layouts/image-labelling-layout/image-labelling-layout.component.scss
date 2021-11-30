@@ -719,3 +719,54 @@ label[for='folder'] {
     height: 99.7vh;
     cursor: not-allowed;
 }
+
+.center {
+    position: relative;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+.circle {
+    position: absolute;
+    margin-left: 30px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    animation: loop 2s linear infinite;
+    cursor: progress;
+}
+
+@keyframes loop {
+    0% {
+        transform: rotate(0deg);
+        box-shadow: 2px 5px 1px #076aff;
+    }
+    50% {
+        transform: rotate(180deg);
+        box-shadow: 2px 5px 1px #076aff;
+    }
+    100% {
+        transform: rotate(360deg);
+        box-shadow: 2px 5px 1px #076aff;
+    }
+}
+
+.circle:before {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    border-radius: 70%;
+    box-shadow: 0 0 5px rgba(255, 255, 255);
+}
+
+.progress {
+    position: absolute;
+    margin-top: 80px;
+    margin-left: 90px;
+    color: white;
+    font-size: 40px;
+    font-family: Arial, Helvetica, sans-serif;
+}
