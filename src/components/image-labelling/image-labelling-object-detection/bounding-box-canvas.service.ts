@@ -485,7 +485,7 @@ export class BoundingBoxCanvasService {
         this.drawEachBoxOn(labelList, boundingBox, context, selected ? true : false);
     }
 
-    changeColorAccordingToLabel(
+    private changeColorAccordingToLabel(
         labelList: LabelInfo[],
         boundingBoxes: Boundingbox[],
         context: CanvasRenderingContext2D | null,
