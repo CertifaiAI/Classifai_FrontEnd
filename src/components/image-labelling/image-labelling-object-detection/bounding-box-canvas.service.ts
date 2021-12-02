@@ -453,13 +453,22 @@ export class BoundingBoxCanvasService {
                 }
             }
             if (this.currentClickedBox.box === -1 && this.currentSelectedBndBox === -1) {
-                for (const boundingBox of boundingBoxes) {
-                    boundingBox.color = labelColorList.get(boundingBox.label) as string;
-                    this.drawEachBoxOn(labelList, boundingBox, context, false);
-                }
                 const { x1, x2, y1, y2 } = this.currentDrawing;
                 this.tmpbox = this.generateNewBox(x1, x2, y1, y2);
                 this.tmpbox && this.drawEachBoxOn(labelList, this.tmpbox, context, true);
+
+                for (const [i, boundingBox] of boundingBoxes.entries()) {
+                    if (boundingBox.color === 'rgba(0,255,0,1.0)') {
+                        const color = labelColorList.get(boundingBox.label) as string;
+                        this.setEachBboxInitial(
+                            i === this.currentClickedBox.box || i === this.currentSelectedBndBox ? true : false,
+                            labelList,
+                            boundingBox,
+                            context,
+                            color,
+                        );
+                    }
+                }
             }
         } catch (err) {
             console.log('redraw(boundbox) ----> ', err.name + ': ', err.message);
@@ -472,6 +481,18 @@ export class BoundingBoxCanvasService {
         boundingBox: Boundingbox,
         context: CanvasRenderingContext2D | null,
     ) {
+        boundingBox.lineWidth = selected ? 3 : 2;
+        this.drawEachBoxOn(labelList, boundingBox, context, selected ? true : false);
+    }
+
+    private setEachBboxInitial(
+        selected: boolean,
+        labelList: LabelInfo[],
+        boundingBox: Boundingbox,
+        context: CanvasRenderingContext2D | null,
+        color: string,
+    ) {
+        boundingBox.color = color;
         boundingBox.lineWidth = selected ? 3 : 2;
         this.drawEachBoxOn(labelList, boundingBox, context, selected ? true : false);
     }
