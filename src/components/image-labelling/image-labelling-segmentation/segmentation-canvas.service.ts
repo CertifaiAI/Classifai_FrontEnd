@@ -330,9 +330,19 @@ export class SegmentationCanvasService {
             // else{
             this.labelColorList = labelColorList;
             if (this.validatePolygonMetadata(metadata.polygons)) {
-                this.drawAllPolygonLine(metadata, context);
-                this.drawAllPolygonsDots(metadata, context, polyIndex, this.radius);
-                this.plotAllFloatLabel(metadata, context);
+                if (this.selectedPolygonIndex === -1) {
+                    this.drawAllPolygonLine(metadata, context);
+                    this.drawAllPolygonsDots(metadata, context, polyIndex, this.radius);
+                    this.plotAllFloatLabel(metadata, context);
+                } else {
+                    metadata.polygons = metadata.polygons.map((poly, i) => ({
+                        ...poly,
+                        color: this.labelColorList.get(poly.label) as string,
+                    }));
+                    this.drawAllPolygonLine(metadata, context);
+                    this.drawAllPolygonsDots(metadata, context, polyIndex, this.radius);
+                    this.plotAllFloatLabel(metadata, context);
+                }
             }
             // }
         } catch (err) {
@@ -564,7 +574,6 @@ export class SegmentationCanvasService {
         try {
             metadata.polygons = metadata.polygons.map((poly, i) => ({
                 ...poly,
-                color: this.labelColorList.get(poly.label) as string,
                 lineWidth: i === polyIndex ? 3 : 2,
             }));
         } catch (err) {
