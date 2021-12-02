@@ -456,19 +456,7 @@ export class BoundingBoxCanvasService {
                 const { x1, x2, y1, y2 } = this.currentDrawing;
                 this.tmpbox = this.generateNewBox(x1, x2, y1, y2);
                 this.tmpbox && this.drawEachBoxOn(labelList, this.tmpbox, context, true);
-
-                for (const [i, boundingBox] of boundingBoxes.entries()) {
-                    if (boundingBox.color === 'rgba(0,255,0,1.0)') {
-                        const color = labelColorList.get(boundingBox.label) as string;
-                        this.setEachBboxInitial(
-                            i === this.currentClickedBox.box || i === this.currentSelectedBndBox ? true : false,
-                            labelList,
-                            boundingBox,
-                            context,
-                            color,
-                        );
-                    }
-                }
+                this.changeColorAccordingToLabel(labelList, boundingBoxes, context, labelColorList);
             }
         } catch (err) {
             console.log('redraw(boundbox) ----> ', err.name + ': ', err.message);
@@ -495,6 +483,26 @@ export class BoundingBoxCanvasService {
         boundingBox.color = color;
         boundingBox.lineWidth = selected ? 3 : 2;
         this.drawEachBoxOn(labelList, boundingBox, context, selected ? true : false);
+    }
+
+    changeColorAccordingToLabel(
+        labelList: LabelInfo[],
+        boundingBoxes: Boundingbox[],
+        context: CanvasRenderingContext2D | null,
+        labelColorList: Map<string, string>,
+    ) {
+        for (const [i, boundingBox] of boundingBoxes.entries()) {
+            if (boundingBox.color === 'rgba(0,255,0,1.0)') {
+                const color = labelColorList.get(boundingBox.label) as string;
+                this.setEachBboxInitial(
+                    i === this.currentClickedBox.box || i === this.currentSelectedBndBox ? true : false,
+                    labelList,
+                    boundingBox,
+                    context,
+                    color,
+                );
+            }
+        }
     }
 
     private drawEachBoxOn(
