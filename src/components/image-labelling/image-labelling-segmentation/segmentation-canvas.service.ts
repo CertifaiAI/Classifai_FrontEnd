@@ -328,11 +328,6 @@ export class SegmentationCanvasService {
         try {
             // if(pol.polygons.length < 1 || selectpolygon === -1){return;}
             // else{
-            for (const [_, content] of metadata.polygons.entries()) {
-                if (content.color === 'rgba(0,255,0,1.0)') {
-                    content.color = this.labelColorList.get(content.label) as string;
-                }
-            }
             this.labelColorList = labelColorList;
             if (this.validatePolygonMetadata(metadata.polygons)) {
                 this.drawAllPolygonLine(metadata, context);
