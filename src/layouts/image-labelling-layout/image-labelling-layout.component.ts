@@ -24,7 +24,7 @@ import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'shared/components/spinner/spinner.service';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
-import { ExportStatus, labels_stats, Message } from 'shared/types/message/message.model';
+import { AddImageResponse, ExportStatus, labels_stats, Message } from 'shared/types/message/message.model';
 import { ModalBodyStyle } from 'shared/types/modal/modal.model';
 import { ChartProps, ProjectSchema } from 'shared/types/dataset-layout/data-set-layout.model';
 import {
@@ -111,6 +111,13 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     noLabel: boolean = true;
     noAnnotation: boolean = true;
     tabClosedStatus!: TabsProps;
+    imageNameList: string[] = [];
+    imageBase64List: string[] = [];
+    selectedFiles!: FileList;
+    isSelectedImagesAdding: boolean = false;
+    imageLoading: boolean = false;
+    totalImage!: number;
+    progress: string = '';
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
@@ -119,6 +126,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     readonly modalRenameImage = 'modal-rename-image';
     readonly modalDeleteImage = 'modal-delete-image';
     readonly modalIdProjectStats = 'modal-project-stats';
+    readonly modalAddImage = 'modal-add-image';
+    readonly modalSubmitAddedImage = 'modal-submit-added-image';
+    readonly modalImageLoadingProgress = 'modal-image-loading-progress';
     exportModalBodyStyle: ModalBodyStyle = {
         minHeight: '15vh',
         maxHeight: '15vh',
@@ -195,6 +205,27 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         maxWidth: '50vw',
         margin: '7vw 36vh',
         overflow: 'none',
+    };
+    addImageBodyStyle: ModalBodyStyle = {
+        height: '73vh',
+        width: '83vw',
+        margin: '5vw 5vh',
+        overflowY: 'none',
+    };
+    submitAddedImageBodyStyle: ModalBodyStyle = {
+        height: '27vh',
+        width: '30vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    imageLoadingProgressBodyStyle: ModalBodyStyle = {
+        minHeight: '18vh',
+        maxHeight: '30vh',
+        minWidth: '20vw',
+        maxWidth: '20vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+        background: 'none',
     };
     saveType: ExportSaveType = {
         saveCurrentImage: true,
@@ -1071,6 +1102,119 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 }
             });
     };
+
+    toggleAddImage() {
+        this._modalService.open(this.modalAddImage);
+    }
+
+    toggleSubmitAddedImage() {
+        this._modalService.open(this.modalSubmitAddedImage);
+    }
+
+    onCloseAddImageModal() {
+        this.imageNameList.splice(0, this.imageNameList.length);
+        this.imageBase64List.splice(0, this.imageBase64List.length);
+    }
+
+    addNewImages(event: any) {
+        this.selectedFiles = event.target.files;
+        this.totalImage = this.selectedFiles.length;
+        // tslint:disable-next-line:prefer-for-of
+        for (let i = 0; i <= this.selectedFiles.length; i++) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                if (reader.result) {
+                    if (!this.imageBase64List.includes(reader.result as string)) {
+                        this.imageBase64List.push(reader.result as string);
+                    }
+
+                    if (!this.imageNameList.includes(this.selectedFiles[i].name)) {
+                        this.imageNameList.push(this.selectedFiles[i].name);
+                    }
+                    this.imageLoadingProgress(this.imageBase64List.length, this.totalImage);
+                }
+            };
+
+            if (this.selectedFiles[i]) {
+                reader.readAsDataURL(this.selectedFiles[i]);
+            }
+        }
+    }
+
+    imageLoadingProgress(currentIndex: number, totalImage: number) {
+        this._modalService.open(this.modalImageLoadingProgress);
+
+        this.progress = ((currentIndex / totalImage) * 100).toFixed(0).trim() + '%';
+        this.imageLoading = currentIndex < this.totalImage;
+
+        if (currentIndex === this.totalImage) {
+            this.totalImage = 0;
+            this._modalService.close(this.modalImageLoadingProgress);
+        }
+    }
+
+    deleteSelectedImage(index: number) {
+        this.imageNameList.splice(index, 1);
+        this.imageBase64List.splice(index, 1);
+    }
+
+    submitAddedImages() {
+        this._modalService.close(this.modalSubmitAddedImage);
+        this._modalService.close(this.modalAddImage);
+        this.isOverlayOn = true;
+        this.isSelectedImagesAdding = true;
+
+        const addImage$ = this._imgLblApiService.submitSelectedImageFile(
+            this.selectedProjectName,
+            this.imageNameList,
+            this.imageBase64List,
+        );
+
+        const addImageResponse$ = this._imgLblApiService.addImagesStatus(this.selectedProjectName);
+
+        const returnResponse = ({ message }: Message): Observable<AddImageResponse> => {
+            return message === 1
+                ? interval(500).pipe(
+                      mergeMap(() => addImageResponse$),
+                      first(({ add_image_status }) => {
+                          return add_image_status === 0 || add_image_status === 1;
+                      }),
+                  )
+                : throwError((error: any) => {
+                      console.error(error);
+                      return error;
+                  });
+        };
+
+        this.subjectSubscription = this.subject$
+            .pipe(
+                first(),
+                mergeMap(() => addImage$),
+                mergeMap((response) => returnResponse(response)),
+            )
+            .subscribe(
+                (response) => {
+                    if (response.add_image_status === 0) {
+                        this.onCloseAddImageModal();
+                    }
+
+                    if (response.add_image_status === 1) {
+                        this.onCloseAddImageModal();
+                        console.log('Operation add image to project folder failed');
+                    }
+                },
+                () => {
+                    console.error('Error happened in add image operation, check log for information');
+                },
+                () => {
+                    this.isOverlayOn = false;
+                    this.isSelectedImagesAdding = false;
+                    this.onReload();
+                },
+            );
+
+        this.subject$.next();
+    }
 
     shortcutKeyInfo() {
         return [

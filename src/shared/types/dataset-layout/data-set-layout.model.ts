@@ -94,3 +94,11 @@ export type ProjectRename = {
     shown: boolean;
     projectName: string;
 };
+
+export type ImageList = {
+    message: message;
+    window_status: window_status;
+    window_message: string;
+    img_path_list: string[];
+    img_directory_list: string[];
+};
