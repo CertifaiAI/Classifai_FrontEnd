@@ -1,4 +1,6 @@
 @use 'shared/scss/ellipsis' as ellipsis;
+@use 'shared/scss/scrollbar' as scrollbar;
+@use 'shared/scss/variables' as color;
 $fontSize: 2vh;
 
 .layout-container {
@@ -593,4 +595,178 @@ tr th:nth-child(1) {
 .chart-container {
     display: flex;
     width: 100%;
+}
+
+.image-container {
+    height: 57vh;
+    width: 80vw;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(5, max-content);
+    grid-gap: 7px;
+    overflow: auto;
+}
+
+.image {
+    height: 25vh;
+    width: 14.5vw;
+    justify-content: center;
+    margin-left: 2px;
+    border-width: 0 2px 2px 2px;
+    border: solid darkgrey;
+}
+
+.scroll {
+    &::-webkit-scrollbar-track {
+        @include scrollbar.scrollbar-track(color.$blackColor);
+    }
+    &::-webkit-scrollbar {
+        width: 1.2vw;
+    }
+    &::-webkit-scrollbar-thumb {
+        @include scrollbar.scrollbar-thumb(color.$greyColor);
+    }
+}
+
+.bottom {
+    margin: 10px;
+}
+
+.delete-image-container {
+    height: 4.3vh;
+    width: 14.5vw;
+    position: relative;
+    margin-left: 2px;
+    border: solid darkgrey;
+    border-width: 3px 3px 0 3px;
+}
+
+.delete-image {
+    float: right;
+    margin-right: 0.8rem;
+    margin-bottom: 5px;
+}
+
+.delete-btn {
+    font-size: 12px;
+    position: absolute;
+    margin-bottom: 2px;
+    cursor: pointer;
+}
+
+.file-name {
+    position: absolute;
+    font-size: 1.7vh;
+    margin: 3px;
+    inline-size: 175px;
+    overflow-wrap: break-word;
+    text-align: center;
+}
+
+.note {
+    position: absolute;
+    margin: 20vh 20vw;
+}
+
+input[type='file'] {
+    width: 0;
+    height: 0;
+    z-index: -1;
+    position: absolute;
+    overflow: hidden;
+    opacity: 0;
+}
+
+label[for='image'],
+label[for='folder'] {
+    text-align: center;
+}
+
+.disabled-create-btn {
+    cursor: not-allowed;
+    background-color: #444444 !important;
+    color: #777777 !important;
+}
+
+.file-path {
+    position: absolute;
+    font-size: 1.4vh;
+    margin: 3px;
+    inline-size: 175px;
+    overflow-wrap: break-word;
+    text-align: center;
+}
+
+.image-moved,
+.image-added {
+    position: absolute;
+    margin: 0.5rem;
+}
+
+.folder-moved {
+    position: absolute;
+    margin-top: 0.5rem;
+    margin-left: 25vw;
+}
+
+.overlay {
+    z-index: 1000;
+    position: absolute;
+    background-color: rgb(0, 0, 0, 0.9);
+    width: 99.9vw;
+    height: 99.7vh;
+    cursor: not-allowed;
+}
+
+.center {
+    position: relative;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+.circle {
+    position: absolute;
+    margin-left: 30px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    animation: loop 2s linear infinite;
+    cursor: progress;
+}
+
+@keyframes loop {
+    0% {
+        transform: rotate(0deg);
+        box-shadow: 2px 5px 1px #076aff;
+    }
+    50% {
+        transform: rotate(180deg);
+        box-shadow: 2px 5px 1px #076aff;
+    }
+    100% {
+        transform: rotate(360deg);
+        box-shadow: 2px 5px 1px #076aff;
+    }
+}
+
+.circle:before {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    border-radius: 70%;
+    box-shadow: 0 0 5px rgba(255, 255, 255);
+}
+
+.progress {
+    position: absolute;
+    margin-top: 80px;
+    margin-left: 90px;
+    color: white;
+    font-size: 40px;
+    font-family: Arial, Helvetica, sans-serif;
 }

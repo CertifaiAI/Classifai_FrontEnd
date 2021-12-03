@@ -3,12 +3,10 @@
 <div class="modal">
     <div [ngStyle]="modalBodyStyle" [ngClass]="applyStyling()" class="modal-body">
         <div class="modal-header-container" *ngIf="showHeader">
-            <label
-                class="modal-title"
-                [ngStyle]="{ 'font-size': modalTitle.length > 20 ? '2.2vh' : '3vh' }"
-                >{{ modalTitle }}</label
-            >
-            <button class="modal-button close-button float-right" (click)="close()">&#10006;</button>
+            <label class="modal-title" [ngStyle]="{ 'font-size': modalTitle.length > 20 ? '2.2vh' : '3vh' }">{{
+                modalTitle
+            }}</label>
+            <button class="modal-button close-button float-right" (click)="close(); closeModal()">&#10006;</button>
         </div>
         <ng-content></ng-content>
     </div>

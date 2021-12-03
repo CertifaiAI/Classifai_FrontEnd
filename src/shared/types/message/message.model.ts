@@ -111,3 +111,8 @@ export type MessageDeleteImg = {
     message: message;
     uuid_list: uuid_list;
 };
+
+export type AddImageResponse = {
+    add_image_status: number;
+    add_image_message: string;
+};
