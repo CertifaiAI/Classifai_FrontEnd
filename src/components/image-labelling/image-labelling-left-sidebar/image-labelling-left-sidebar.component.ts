@@ -276,6 +276,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                 this._imgLabelState.setState({ draw: true, drag: false, scroll: false, crossLine: this.isCrossLineOn });
                 this.getIndex(2);
             } else if (key === 'x') {
+                this.resetSelectedAnnotate();
                 this._imgLabelState.setState({ draw: false, drag: false, scroll: false, crossLine: false });
                 this._mouseCursorService.setState({ default: true });
                 this.getIndex(0);

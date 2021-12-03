@@ -330,9 +330,19 @@ export class SegmentationCanvasService {
             // else{
             this.labelColorList = labelColorList;
             if (this.validatePolygonMetadata(metadata.polygons)) {
-                this.drawAllPolygonLine(metadata, context);
-                this.drawAllPolygonsDots(metadata, context, polyIndex, this.radius);
-                this.plotAllFloatLabel(metadata, context);
+                if (this.selectedPolygonIndex === -1) {
+                    this.drawAllPolygonLine(metadata, context);
+                    this.drawAllPolygonsDots(metadata, context, polyIndex, this.radius);
+                    this.plotAllFloatLabel(metadata, context);
+                } else {
+                    metadata.polygons = metadata.polygons.map((poly, i) => ({
+                        ...poly,
+                        color: this.labelColorList.get(poly.label) as string,
+                    }));
+                    this.drawAllPolygonLine(metadata, context);
+                    this.drawAllPolygonsDots(metadata, context, polyIndex, this.radius);
+                    this.plotAllFloatLabel(metadata, context);
+                }
             }
             // }
         } catch (err) {
@@ -346,10 +356,6 @@ export class SegmentationCanvasService {
 
     private drawAllPolygonLine({ polygons }: PolyMetadata, context: CanvasRenderingContext2D) {
         try {
-            for (const [_, content] of polygons.entries()) {
-                content.color = this.labelColorList.get(content.label) as string;
-            }
-
             for (const [_, { lineWidth, color, coorPt }] of polygons.entries()) {
                 context.lineWidth = lineWidth;
                 context.strokeStyle = color || 'white';
@@ -374,10 +380,10 @@ export class SegmentationCanvasService {
         radius: number,
     ) {
         try {
-            for (const [i, { coorPt, label }] of polygons.entries()) {
+            for (const [i, { coorPt, color }] of polygons.entries()) {
                 if (polygonIndex === i) {
-                    context.strokeStyle = this.labelColorList.get(label) as string;
-                    context.fillStyle = this.labelColorList.get(label) as string;
+                    context.strokeStyle = color;
+                    context.fillStyle = color;
                     for (const [j] of coorPt.entries()) {
                         context.beginPath();
                         context.arc(coorPt[j].x, coorPt[j].y, radius, 0, 2 * Math.PI);
