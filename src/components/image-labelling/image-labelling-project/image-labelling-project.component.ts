@@ -73,8 +73,6 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     isTabStillOpen: boolean = true;
     tempMax: number = 0;
     max: number = 0;
-    labelColorList: Map<string, string> = new Map<string, string>();
-    index: number = 0;
 
     constructor(
         private _annotateService: AnnotateSelectionService,
@@ -191,6 +189,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
                 action: 0,
             });
         }
+
+        this._labelColorService.resetLabelColorList();
     };
 
     onClickLabel = (label: string) => {
@@ -293,26 +293,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     }
 
     pickRandomColorForLabel(): void {
-        const labelColor = (label: string) => {
-            const color = this._labelColorService.getLabelColors(this.index);
-            this.labelColorList.set(label, color);
-            this.index++;
-        };
-
-        if (this.labelColorList.size === 0 && this.labelList.length > 0) {
-            let label: string;
-            for (label of this.labelList) {
-                labelColor(label);
-            }
-        }
-
-        const oldLabels = this.labelList.filter((ele) => this.labelColorList.has(ele));
-
-        if (oldLabels.length !== this.labelList.length) {
-            labelColor(this.labelList[this.index]);
-        }
-
-        this._labelColorService.setLabelColorList(this.labelColorList);
+        this._labelColorService.setLabelColors(this.labelList);
     }
 
     ngOnDestroy(): void {
