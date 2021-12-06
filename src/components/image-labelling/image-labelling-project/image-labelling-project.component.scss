@@ -266,6 +266,10 @@
 .thumbnail-actions-icon {
     border-radius: 50%;
     padding: 0.2vh;
+    min-height: 3vh;
+    max-height: 3vh;
+    min-width: 1.5vw;
+    max-width: 1.5vw;
 }
 
 .thumbnail-actions-icon:hover {
