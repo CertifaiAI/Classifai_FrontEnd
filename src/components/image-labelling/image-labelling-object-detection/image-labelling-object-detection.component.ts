@@ -81,6 +81,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @Output() _onChangeMetadata: EventEmitter<BboxMetadata> = new EventEmitter();
     @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
     @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
+    @Output() _clickAbilityToggle: EventEmitter<boolean> = new EventEmitter<boolean>();
 
     constructor(
         private _ref: ChangeDetectorRef,
@@ -785,6 +786,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         meta: this._selectMetadata,
                         method: 'draw',
                     });
+                const label_lists = this._tabStatus
+                    .map(({ label_list }) => (label_list ? label_list : []))
+                    .filter((tab) => tab.length > 0)[0];
+                this._onEnterLabel.emit({ action: 1, label_list: label_lists ? [...label_lists, value] : [value] });
                 this.labelSearch = '';
             } else {
                 this.invalidInput = true;
@@ -792,6 +797,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             }
         }
     };
+
+    cancelClickAbilityToggleStatus() {
+        this._clickAbilityToggle.emit(false);
+    }
 
     ngOnDestroy(): void {
         this._annotateSelectState.setState();
