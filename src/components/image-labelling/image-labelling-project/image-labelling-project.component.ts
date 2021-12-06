@@ -17,7 +17,7 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { cloneDeep, isEqual } from 'lodash-es';
+import { isEqual } from 'lodash-es';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import {

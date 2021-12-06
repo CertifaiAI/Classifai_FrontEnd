@@ -84,9 +84,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     onClick: () => {
                         this.resetSelectedAnnotate();
                         this._imgLabelState.setState({ draw: false, drag: true, scroll: true });
-                        if (this._clickAbilityToggleStatus) {
-                            this._clickAbilityToggle.emit(false); // Emit this is to deselect the selected label in the column
-                        }
+                        this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus); // To deselect the selected label in the column
                     },
                 },
                 // {
@@ -186,9 +184,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                             clear: true,
                         });
                         this._imgLabelState.setState(null);
-                        if (this._clickAbilityToggleStatus) {
-                            this._clickAbilityToggle.emit(false);
-                        }
+                        this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus);
                     },
                 },
                 {
@@ -200,9 +196,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                         this.resetSelectedAnnotate();
                         this._imgLabelState.setState({ draw: false, drag: false, fitCenter: true, scroll: false });
                         this._imgLabelState.setState(null);
-                        if (this._clickAbilityToggleStatus) {
-                            this._clickAbilityToggle.emit(false);
-                        }
+                        this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus);
                     },
                 },
                 {
@@ -221,9 +215,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                             save: true,
                             keyInfo: false,
                         });
-                        if (this._clickAbilityToggleStatus) {
-                            this._clickAbilityToggle.emit(false);
-                        }
+                        this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus);
                     },
                 },
                 {
@@ -242,9 +234,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                             save: false,
                             keyInfo: true,
                         });
-                        if (this._clickAbilityToggleStatus) {
-                            this._clickAbilityToggle.emit(false);
-                        }
+                        this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus);
                     },
                 },
             ],
@@ -288,9 +278,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                 this.resetSelectedAnnotate();
                 this._imgLabelState.setState({ draw: false, drag: true, scroll: true });
                 this.getIndex(1);
-                if (this._clickAbilityToggleStatus) {
-                    this._clickAbilityToggle.emit(false);
-                }
+                this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus);
             } else if (altKey && (key === 'a' || key === 'A')) {
                 this.resetSelectedAnnotate();
                 this._imgLabelState.setState({ draw: true, drag: false, scroll: false, crossLine: this.isCrossLineOn });
@@ -300,12 +288,16 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                 this._imgLabelState.setState({ draw: false, drag: false, scroll: false, crossLine: false });
                 this._mouseCursorService.setState({ default: true });
                 this.getIndex(0);
-                if (this._clickAbilityToggleStatus) {
-                    this._clickAbilityToggle.emit(false);
-                }
+                this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus);
             }
         } catch (err) {
             console.log(err);
+        }
+    }
+
+    emitClickAbilityToggleStatus(status: boolean) {
+        if (status) {
+            this._clickAbilityToggle.emit(false);
         }
     }
 }
