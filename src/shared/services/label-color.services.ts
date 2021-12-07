@@ -5,8 +5,8 @@ import { Injectable } from '@angular/core';
 })
 export class LabelColorServices {
     private readonly fixedColors: string[];
-    index!: number;
-    labelColorList!: Map<string, string>;
+    index: number = 0;
+    labelColorList: Map<string, string> = new Map<string, string>();
 
     constructor() {
         this.fixedColors = [
@@ -47,11 +47,19 @@ export class LabelColorServices {
         }
     }
 
-    setLabelColorList(labelColorList: Map<string, string>) {
-        this.labelColorList = labelColorList;
-    }
-
     getLabelColorList() {
         return this.labelColorList;
+    }
+
+    setLabelColors(labelList: string[]) {
+        const labels = labelList.filter((label) => !this.labelColorList.has(label));
+        for (const label of labels) {
+            this.labelColorList.set(label, this.getLabelColors(this.index));
+        }
+    }
+
+    resetLabelColorList() {
+        this.labelColorList.clear();
+        this.index = 0;
     }
 }
