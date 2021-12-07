@@ -118,6 +118,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     imageLoading: boolean = false;
     totalImage!: number;
     progress: string = '';
+    clickAbilityToggle!: boolean;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
@@ -1214,6 +1215,10 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             );
 
         this.subject$.next();
+    }
+
+    changeClickAbilityToggleStatus(status: boolean) {
+        this.clickAbilityToggle = status;
     }
 
     shortcutKeyInfo() {

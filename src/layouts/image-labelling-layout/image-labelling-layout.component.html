@@ -14,6 +14,8 @@
             [_onChange]="onChangeSchema"
             [_currentUrl]="currentUrl"
             [_tabStatus]="tabStatus"
+            [_clickAbilityToggleStatus]="clickAbilityToggle"
+            (_clickAbilityToggle)="changeClickAbilityToggleStatus($event)"
         ></image-labelling-left-sidebar>
 
         <ng-container *ngIf="_router.url.includes('imglabel/bndbox')">
@@ -24,6 +26,7 @@
                 (_onChangeMetadata)="onChangeMetadata($event)"
                 (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
                 (_onEnterLabel)="onProcessLabel($event)"
+                (_clickAbilityToggle)="changeClickAbilityToggleStatus($event)"
             ></image-labelling-object-detection>
         </ng-container>
         <ng-container *ngIf="_router.url.includes('imglabel/seg')">
@@ -33,6 +36,8 @@
                 [_tabStatus]="tabStatus"
                 (_onChangeMetadata)="onChangeMetadata($event)"
                 (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
+                (_clickAbilityToggle)="changeClickAbilityToggleStatus($event)"
+                (_onEnterLabel)="onProcessLabel($event)"
             ></image-labelling-segmentation>
         </ng-container>
 
@@ -42,6 +47,7 @@
             [_totalUuid]="totalUuid"
             [_thumbnailList]="thumbnailList"
             [_tabStatus]="tabStatus"
+            [_changeClickAbilityToggleStatus]="clickAbilityToggle"
             (_onClose)="onToggleTab($event)"
             (_onClickThumbnail)="displayImage($event)"
             (_onClickLabel)="onProcessLabel($event)"
@@ -51,6 +57,7 @@
             (_loadMoreThumbnails)="onLoadMoreThumbnails()"
             (_onRenameImage)="onRenameImage($event)"
             (_onDeleteImage)="onDeleteImage($event)"
+            (_clickAbilityToggleStatus)="changeClickAbilityToggleStatus($event)"
         ></image-labelling-project>
         <image-labelling-right-sidebar
             [_onChange]="onChangeSchema"
@@ -395,7 +402,7 @@
     <br />
     <div class="image-container scroll">
         <div class="note" *ngIf="imageNameList.length === 0">
-            <h3>Select images from source folder to add into current project folder</h3>
+            <h3>{{ 'addImageModal.notification' | translate }}</h3>
         </div>
         <div *ngFor="let image of imageBase64List; index as i">
             <div class="delete-image-container">

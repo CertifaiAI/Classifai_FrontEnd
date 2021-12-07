@@ -116,15 +116,15 @@
                             {{ label }}
                         </div>
                     </label>
-                    <label
-                        ><ng-container *ngIf="label === selectedLabel"
-                            ><span
+                    <label>
+                        <ng-container *ngIf="label === selectedLabel">
+                            <span
                                 [ngClass]="clickAbilityToggle ? 'pointer' : null"
                                 class="delete-label"
                                 (click)="onDeleteLabel(label)"
-                                >-</span
-                            ></ng-container
-                        ></label
+                                >x</span
+                            >
+                        </ng-container></label
                     >
                 </div>
             </ng-container>
@@ -170,14 +170,6 @@
             (click)="clickAbilityToggle ? onClickAnnotation(j, boundingBox) : null"
         >
             <div [ngClass]="clickAbilityToggle ? 'pointer' : null">{{ boundingBox.label }} : {{ boundingBox.id }}</div>
-            <div
-                [ngClass]="clickAbilityToggle ? 'pointer' : null"
-                *ngIf="j === selectedIndexAnnotation"
-                (click)="onDeleteAnnotation()"
-                class="delete-annotation"
-            >
-                -
-            </div>
         </label>
     </ng-container>
 </ng-template>
