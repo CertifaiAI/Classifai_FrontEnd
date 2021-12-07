@@ -209,23 +209,6 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         this._annotateService.setState({ annotation: index });
     };
 
-    // onDeleteAnnotation = () => {
-    //     if (this.selectedIndexAnnotation > -1) {
-    //         this._onDeleteAnnotation.emit(this.selectedIndexAnnotation);
-    //         this._selectMetadata.bnd_box.splice(this.selectedIndexAnnotation, 1) &&
-    //             this._undoRedoService.appendStages({
-    //                 meta: cloneDeep(this._selectMetadata),
-    //                 method: 'draw',
-    //             });
-    //     }
-    // };
-
-    // onClickAnnotation = <T extends BboxMetadata>({ bnd_box }: T) => {
-    //     // this._onClickThumbnail.emit(thumbnail);
-    //     const bbLabel = bnd_box.map(({ label }) => label);
-    //     console.log(bbLabel);
-    // };
-
     checkCloseToggle = (tab: TabsProps): string | null => {
         let classes = '';
         if (
