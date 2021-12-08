@@ -744,6 +744,11 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 meta: this._selectMetadata,
                 method: 'draw',
             });
+        this._selectMetadata.bnd_box = this._selectMetadata.bnd_box.map((box) => ({
+            ...box,
+            color: this.labelColorList.get(box.label) as string,
+        }));
+        this.emitMetadata();
     }
 
     sortingLabelList(labelList: LabelInfo[], annotationList: Boundingbox[]) {
