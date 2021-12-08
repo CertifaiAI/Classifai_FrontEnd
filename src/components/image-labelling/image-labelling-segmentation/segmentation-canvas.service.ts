@@ -330,7 +330,9 @@ export class SegmentationCanvasService {
             if (this.validatePolygonMetadata(metadata.polygons)) {
                 if (this.selectedPolygonIndex === -1) {
                     this.assignLabelColorAndDrawPolygon(metadata, context, polyIndex);
-                } else {
+                }
+
+                if (this.selectedPolygonIndex !== -1) {
                     this.assignLabelColorAndDrawPolygon(metadata, context, polyIndex);
                 }
             }
