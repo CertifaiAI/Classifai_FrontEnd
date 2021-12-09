@@ -443,6 +443,10 @@ export class BoundingBoxCanvasService {
     ) {
         try {
             if (boundingBoxes.length > 0) {
+                boundingBoxes = boundingBoxes.map((box) => ({
+                    ...box,
+                    color: labelColorList.get(box.label) as string,
+                }));
                 for (const [i, boundingBox] of boundingBoxes.entries()) {
                     this.setEachBbox(
                         i === this.currentClickedBox.box || i === this.currentSelectedBndBox ? true : false,
@@ -453,8 +457,11 @@ export class BoundingBoxCanvasService {
                 }
             }
             if (this.currentClickedBox.box === -1 && this.currentSelectedBndBox === -1) {
+                boundingBoxes = boundingBoxes.map((box) => ({
+                    ...box,
+                    color: labelColorList.get(box.label) as string,
+                }));
                 for (const boundingBox of boundingBoxes) {
-                    boundingBox.color = labelColorList.get(boundingBox.label) as string;
                     this.drawEachBoxOn(labelList, boundingBox, context, false);
                 }
                 const { x1, x2, y1, y2 } = this.currentDrawing;

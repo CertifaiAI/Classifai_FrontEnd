@@ -37,8 +37,10 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     @Input() _onChange!: ImgLabelProps;
     @Input() _currentUrl: ImageLabelUrl = '';
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
+    @Input() _clickAbilityToggleStatus: boolean = false;
     @Output() _navigate: EventEmitter<any> = new EventEmitter();
     @Output() _modalNoLabel = new EventEmitter();
+    @Output() _clickAbilityToggle: EventEmitter<boolean> = new EventEmitter<boolean>();
     jsonSchema!: IconSchema;
     iconIndex!: number;
     labelList: string[] = [];
@@ -82,6 +84,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     onClick: () => {
                         this.resetSelectedAnnotate();
                         this._imgLabelState.setState({ draw: false, drag: true, scroll: true });
+                        this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus); // To deselect the selected label in the column
                     },
                 },
                 // {
@@ -181,6 +184,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                             clear: true,
                         });
                         this._imgLabelState.setState(null);
+                        this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus);
                     },
                 },
                 {
@@ -192,6 +196,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                         this.resetSelectedAnnotate();
                         this._imgLabelState.setState({ draw: false, drag: false, fitCenter: true, scroll: false });
                         this._imgLabelState.setState(null);
+                        this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus);
                     },
                 },
                 {
@@ -210,6 +215,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                             save: true,
                             keyInfo: false,
                         });
+                        this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus);
                     },
                 },
                 {
@@ -228,6 +234,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                             save: false,
                             keyInfo: true,
                         });
+                        this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus);
                     },
                 },
             ],
@@ -265,23 +272,32 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
         index === this.iconIndex ? { background: 'rgb(59 59 59)' } : null;
 
     @HostListener('window:keydown', ['$event'])
-    keyStrokeEvent({ key }: KeyboardEvent) {
+    keyStrokeEvent({ altKey, key }: KeyboardEvent) {
         try {
-            if (key === 'z') {
+            if (altKey && (key === 'z' || key === 'Z')) {
                 this.resetSelectedAnnotate();
                 this._imgLabelState.setState({ draw: false, drag: true, scroll: true });
                 this.getIndex(1);
-            } else if (key === 'a') {
+                this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus);
+            } else if (altKey && (key === 'a' || key === 'A')) {
                 this.resetSelectedAnnotate();
                 this._imgLabelState.setState({ draw: true, drag: false, scroll: false, crossLine: this.isCrossLineOn });
                 this.getIndex(2);
-            } else if (key === 'x') {
+            } else if (altKey && (key === 'x' || key === 'X')) {
+                this.resetSelectedAnnotate();
                 this._imgLabelState.setState({ draw: false, drag: false, scroll: false, crossLine: false });
                 this._mouseCursorService.setState({ default: true });
                 this.getIndex(0);
+                this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus);
             }
         } catch (err) {
             console.log(err);
+        }
+    }
+
+    emitClickAbilityToggleStatus(status: boolean) {
+        if (status) {
+            this._clickAbilityToggle.emit(false);
         }
     }
 }

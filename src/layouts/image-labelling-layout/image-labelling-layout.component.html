@@ -14,6 +14,8 @@
             [_onChange]="onChangeSchema"
             [_currentUrl]="currentUrl"
             [_tabStatus]="tabStatus"
+            [_clickAbilityToggleStatus]="clickAbilityToggle"
+            (_clickAbilityToggle)="changeClickAbilityToggleStatus($event)"
         ></image-labelling-left-sidebar>
 
         <ng-container *ngIf="_router.url.includes('imglabel/bndbox')">
@@ -24,6 +26,7 @@
                 (_onChangeMetadata)="onChangeMetadata($event)"
                 (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
                 (_onEnterLabel)="onProcessLabel($event)"
+                (_clickAbilityToggle)="changeClickAbilityToggleStatus($event)"
             ></image-labelling-object-detection>
         </ng-container>
         <ng-container *ngIf="_router.url.includes('imglabel/seg')">
@@ -33,6 +36,8 @@
                 [_tabStatus]="tabStatus"
                 (_onChangeMetadata)="onChangeMetadata($event)"
                 (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
+                (_clickAbilityToggle)="changeClickAbilityToggleStatus($event)"
+                (_onEnterLabel)="onProcessLabel($event)"
             ></image-labelling-segmentation>
         </ng-container>
 
@@ -42,6 +47,7 @@
             [_totalUuid]="totalUuid"
             [_thumbnailList]="thumbnailList"
             [_tabStatus]="tabStatus"
+            [_changeClickAbilityToggleStatus]="clickAbilityToggle"
             (_onClose)="onToggleTab($event)"
             (_onClickThumbnail)="displayImage($event)"
             (_onClickLabel)="onProcessLabel($event)"
@@ -51,6 +57,7 @@
             (_loadMoreThumbnails)="onLoadMoreThumbnails()"
             (_onRenameImage)="onRenameImage($event)"
             (_onDeleteImage)="onDeleteImage($event)"
+            (_clickAbilityToggleStatus)="changeClickAbilityToggleStatus($event)"
         ></image-labelling-project>
         <image-labelling-right-sidebar
             [_onChange]="onChangeSchema"
@@ -59,6 +66,7 @@
             (_onExport)="onExport()"
             (_onReload)="onReload()"
             (_onOpenProjectStats)="toggleProjectStats()"
+            (_onAddImage)="toggleAddImage()"
         ></image-labelling-right-sidebar>
     </div>
     <image-labelling-footer [_thumbnailInfo]="selectedMetaData" [_imgSrc]="imgSrc"></image-labelling-footer>
@@ -384,6 +392,90 @@
     </div>
 </modal>
 
+<modal
+    [id]="modalAddImage"
+    [modalBodyStyle]="addImageBodyStyle"
+    [modalTitle]="'addImageModal.addImage' | translate"
+    [scrollable]="false"
+    (_close)="onCloseAddImageModal()"
+>
+    <br />
+    <div class="image-container scroll">
+        <div class="note" *ngIf="imageNameList.length === 0">
+            <h3>{{ 'addImageModal.notification' | translate }}</h3>
+        </div>
+        <div *ngFor="let image of imageBase64List; index as i">
+            <div class="delete-image-container">
+                <div class="file-name">{{ imageNameList[i] }}</div>
+                <span class="delete-image">
+                    <div class="delete-btn" (click)="deleteSelectedImage(i)">&#10006;</div>
+                </span>
+            </div>
+            <img class="image" [src]="image" alt="added image" />
+        </div>
+    </div>
+    <div class="bottom">
+        <button
+            class="button-style deleteimg-btn"
+            (click)="toggleSubmitAddedImage()"
+            [ngClass]="imageBase64List.length === 0 ? 'disabled-create-btn' : null"
+            [disabled]="imageBase64List.length === 0"
+        >
+            {{ 'addImageModal.submit' | translate }}
+        </button>
+
+        <input
+            type="file"
+            id="image"
+            accept=".png, .jpg, .jpeg, .webp, .bmp"
+            multiple
+            (change)="addNewImages($event)"
+        />
+        <label for="image" class="button-style deleteimg-btn">{{ 'addImageModal.addImage' | translate }}</label>
+
+        <input
+            type="file"
+            id="folder"
+            multiple
+            directory=""
+            webkitdirectory=""
+            mozdirectory=""
+            (change)="addNewImages($event)"
+        />
+        <label for="folder" class="button-style deleteimg-btn"> {{ 'addImageModal.addFolder' | translate }}</label>
+        <label class="image-added"> {{ 'addImageModal.imageAdded' | translate }} {{ imageBase64List.length }}</label>
+    </div>
+</modal>
+
+<modal
+    [id]="modalSubmitAddedImage"
+    [modalBodyStyle]="submitAddedImageBodyStyle"
+    [modalTitle]="'addImageModal.submit' | translate"
+    [scrollable]="false"
+    [zIndex]="2"
+>
+    <div class="modal-content-container">
+        <p class="font-delete-img">{{ 'addImageModal.confirmation' | translate }}</p>
+        <button class="button-style deleteimg-btn" (click)="submitAddedImages()">
+            {{ 'addImageModal.confirm' | translate }}
+        </button>
+    </div>
+</modal>
+
+<modal
+    [id]="modalImageLoadingProgress"
+    [modalBodyStyle]="imageLoadingProgressBodyStyle"
+    [modalTitle]="'imageLoadingProgressModal.title' | translate"
+    [scrollable]="false"
+    [showHeader]="false"
+    [zIndex]="3"
+>
+    <div class="center">
+        <div class="circle"></div>
+        <div class="progress">{{ progress }}</div>
+    </div>
+</modal>
+
 <unsupported-image-modal
     [_modalUnsupportedImage]="modalUnsupportedImage"
     [_unsupportedImageBodyStyle]="unsupportedImageBodyStyle"
@@ -392,3 +484,13 @@
 
 <spinner [_loading]="isLoading"></spinner>
 <toastr [_processingNum]="processingNum"></toastr>
+
+<div *ngIf="isOverlayOn" class="overlay">
+    <p style="margin-top: 40vh; color: rgba(255, 255, 255, 0.9); text-align: center; font-size: 3vh">
+        {{
+            isSelectedImagesAdding
+                ? 'Adding the images to project folder. Please Wait...'
+                : 'Finished added images to project folder'
+        }}
+    </p>
+</div>

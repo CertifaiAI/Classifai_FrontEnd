@@ -38,13 +38,15 @@
     <!-------------------------- Right Side Page Header -------------------------->
     <div class="container-flex-end">
         <div>
-            <img
-                class="img utility-icon-light"
-                src="assets/icons/help.svg"
-                alt="tutorial"
-                [title]="help | translate"
-                (click)="toggleTutorialMenu()"
-            />
+            <div class="utility-icon-container">
+                <img
+                    class="img utility-icon-light"
+                    src="assets/icons/help.svg"
+                    alt="tutorial"
+                    [title]="help | translate"
+                    (click)="toggleTutorialMenu()"
+                />
+            </div>
             <div class="tutorial-dropdown-menu scroll" *ngIf="tutorialMenuToggle === true">
                 <div class="tutorial" #tutorial1 (click)="tutorialConfig(true, tutorial1.innerText.toString())">
                     How to Create Project

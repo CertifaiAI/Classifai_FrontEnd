@@ -17,7 +17,7 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { cloneDeep, isEqual } from 'lodash-es';
+import { isEqual } from 'lodash-es';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import {
@@ -52,6 +52,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     @ViewChild('thumbnailList') thumbnailList!: ElementRef<HTMLDivElement>;
     @Input() _thumbnailList: CompleteMetadata[] = [];
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
+    @Input() _changeClickAbilityToggleStatus!: boolean;
     @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
     @Output() _onClickThumbnail: EventEmitter<EventEmitter_ThumbnailDetails> = new EventEmitter();
     @Output() _onClickLabel: EventEmitter<SelectedLabelProps> = new EventEmitter();
@@ -61,6 +62,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     @Output() _loadMoreThumbnails: EventEmitter<void> = new EventEmitter();
     @Output() _onRenameImage: EventEmitter<CompleteMetadata> = new EventEmitter();
     @Output() _onDeleteImage: EventEmitter<CompleteMetadata> = new EventEmitter();
+    @Output() _clickAbilityToggleStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
     action: number = -1;
     displayInputLabel: boolean = false;
     inputLabel: string = '';
@@ -73,8 +75,6 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     isTabStillOpen: boolean = true;
     tempMax: number = 0;
     max: number = 0;
-    labelColorList: Map<string, string> = new Map<string, string>();
-    index: number = 0;
 
     constructor(
         private _annotateService: AnnotateSelectionService,
@@ -191,6 +191,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
                 action: 0,
             });
         }
+
+        this._labelColorService.resetLabelColorList();
     };
 
     onClickLabel = (label: string) => {
@@ -206,23 +208,6 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         this.selectedLabel = label;
         this._annotateService.setState({ annotation: index });
     };
-
-    onDeleteAnnotation = () => {
-        if (this.selectedIndexAnnotation > -1) {
-            this._onDeleteAnnotation.emit(this.selectedIndexAnnotation);
-            this._selectMetadata.bnd_box.splice(this.selectedIndexAnnotation, 1) &&
-                this._undoRedoService.appendStages({
-                    meta: cloneDeep(this._selectMetadata),
-                    method: 'draw',
-                });
-        }
-    };
-
-    // onClickAnnotation = <T extends BboxMetadata>({ bnd_box }: T) => {
-    //     // this._onClickThumbnail.emit(thumbnail);
-    //     const bbLabel = bnd_box.map(({ label }) => label);
-    //     console.log(bbLabel);
-    // };
 
     checkCloseToggle = (tab: TabsProps): string | null => {
         let classes = '';
@@ -265,6 +250,22 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
             }
             this.pickRandomColorForLabel();
         }
+
+        if (changes._changeClickAbilityToggleStatus) {
+            this.clickAbilityToggle = this._changeClickAbilityToggleStatus;
+            if (!this.clickAbilityToggle) {
+                this.selectedIndexAnnotation = -1;
+                this.selectedLabel = '';
+            }
+        }
+
+        if (this.clickAbilityToggle) {
+            setTimeout(() => this._clickAbilityToggleStatus.emit(true));
+        }
+
+        if (changes.selectedIndexAnnotation) {
+            console.log(this.selectedIndexAnnotation);
+        }
     }
 
     openAllTab() {
@@ -293,26 +294,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     }
 
     pickRandomColorForLabel(): void {
-        const labelColor = (label: string) => {
-            const color = this._labelColorService.getLabelColors(this.index);
-            this.labelColorList.set(label, color);
-            this.index++;
-        };
-
-        if (this.labelColorList.size === 0 && this.labelList.length > 0) {
-            let label: string;
-            for (label of this.labelList) {
-                labelColor(label);
-            }
-        }
-
-        const oldLabels = this.labelList.filter((ele) => this.labelColorList.has(ele));
-
-        if (oldLabels.length !== this.labelList.length) {
-            labelColor(this.labelList[this.index]);
-        }
-
-        this._labelColorService.setLabelColorList(this.labelColorList);
+        this._labelColorService.setLabelColors(this.labelList);
     }
 
     ngOnDestroy(): void {
