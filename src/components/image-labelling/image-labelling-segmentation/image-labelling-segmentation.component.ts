@@ -861,6 +861,11 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 meta: this._selectMetadata,
                 method: 'draw',
             });
+        this._selectMetadata.polygons = this._selectMetadata.polygons.map((poly) => ({
+            ...poly,
+            color: this.labelColorList.get(poly.label) as string,
+        }));
+        this.emitMetadata();
     }
 
     labelTypeTextChange(event: string) {
