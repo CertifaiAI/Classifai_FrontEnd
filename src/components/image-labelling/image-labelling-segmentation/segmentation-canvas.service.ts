@@ -326,28 +326,34 @@ export class SegmentationCanvasService {
         labelColorList: Map<string, string>,
     ) {
         try {
-            // if(pol.polygons.length < 1 || selectpolygon === -1){return;}
-            // else{
             this.labelColorList = labelColorList;
             if (this.validatePolygonMetadata(metadata.polygons)) {
                 if (this.selectedPolygonIndex === -1) {
-                    this.drawAllPolygonLine(metadata, context);
-                    this.drawAllPolygonsDots(metadata, context, polyIndex, this.radius);
-                    this.plotAllFloatLabel(metadata, context);
-                } else {
-                    metadata.polygons = metadata.polygons.map((poly, i) => ({
-                        ...poly,
-                        color: this.labelColorList.get(poly.label) as string,
-                    }));
-                    this.drawAllPolygonLine(metadata, context);
-                    this.drawAllPolygonsDots(metadata, context, polyIndex, this.radius);
-                    this.plotAllFloatLabel(metadata, context);
+                    this.assignLabelColorAndDrawPolygon(metadata, context, polyIndex);
+                }
+
+                if (this.selectedPolygonIndex !== -1) {
+                    this.assignLabelColorAndDrawPolygon(metadata, context, polyIndex);
                 }
             }
-            // }
         } catch (err) {
             console.log('drawAllPolygon', err);
         }
+    }
+
+    private assignLabelColorAndDrawPolygon(
+        metadata: PolyMetadata,
+        context: CanvasRenderingContext2D,
+        polyIndex: number,
+    ) {
+        // For assign color according to label
+        metadata.polygons = metadata.polygons.map((poly) => ({
+            ...poly,
+            color: this.labelColorList.get(poly.label) as string,
+        }));
+        this.drawAllPolygonLine(metadata, context);
+        this.drawAllPolygonsDots(metadata, context, polyIndex, this.radius);
+        this.plotAllFloatLabel(metadata, context);
     }
 
     private validatePolygonMetadata(polygons: Polygons[]) {
