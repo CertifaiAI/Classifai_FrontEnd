@@ -79,6 +79,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     mouseEvent: MouseEvent | undefined;
     labelColorList!: Map<string, string>;
     invalidInput: boolean = false;
+    intervalId!: NodeJS.Timeout;
     @Input() _selectMetadata!: PolyMetadata;
     @Input() _imgSrc: string = '';
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
@@ -367,6 +368,28 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 this.movePolygon(key);
             }
 
+            if (ctrlKey) {
+                this._imgLblStateService.setState({ draw: false, drag: true, scroll: true });
+                this.intervalId = setInterval(() => {
+                    this._segCanvasService.panPolygons(this._selectMetadata, true, () => {
+                        /** This is intentional */
+                    });
+                    this._segCanvasService.drawNewPolygon(
+                        this._selectMetadata,
+                        this.image,
+                        this.canvasContext,
+                        this.canvas.nativeElement,
+                        false,
+                    );
+                }, 100);
+            }
+
+            if (key === 'x' || key === 'X') {
+                clearInterval(this.intervalId);
+                this._segCanvasService.setGlobalXY(this.mouseEvent as ExtendedMouseEvent);
+                this._imgLblStateService.setState({ draw: true, drag: false, scroll: false });
+            }
+
             if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'copy')) {
                 this.copyPolygon();
             } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'paste')) {
@@ -380,7 +403,6 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                     this.undoAction();
                 }
             }
-            // }
         } catch (err) {
             console.log('canvasKeyDownEvent', err);
         }
