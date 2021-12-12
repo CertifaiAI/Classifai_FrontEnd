@@ -387,7 +387,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                         });
                     this.navigateByAction({ thumbnailAction: 1 });
                     this._spinnerService.hideSpinner();
-                    console.log(this.thumbnailList);
                 },
             );
         // make initial call
@@ -812,10 +811,20 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onChangeAnnotationLabel = (changeAnnoLabel: ChangeAnnotationLabel): void => {
         changeAnnoLabel.index = this.currentAnnotationIndex;
+        const labelColorList = this._labelColorService.getLabelColorList(this.selectedProjectName);
         if (this.selectedMetaData) {
             if (this.selectedMetaData.polygons) {
                 this.selectedMetaData.polygons[changeAnnoLabel.index].label = changeAnnoLabel.label;
+                this.selectedMetaData.polygons[changeAnnoLabel.index].color = labelColorList.get(
+                    changeAnnoLabel.label,
+                ) as string;
                 this.currentAnnotationLabel = changeAnnoLabel.label;
+            }
+
+            if (this.selectedMetaData.bnd_box) {
+                this.selectedMetaData.bnd_box[changeAnnoLabel.index].color = labelColorList.get(
+                    changeAnnoLabel.label,
+                ) as string;
             }
         }
         this.tabStatus = this._imgLblLayoutService.changeAnnotationLabel(this.tabStatus, changeAnnoLabel);
