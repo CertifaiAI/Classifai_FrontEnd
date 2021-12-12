@@ -5,7 +5,7 @@
  */
 
 import { AnnotateSelectionService } from 'shared/services/annotate-selection.service';
-import { Component, ElementRef, EventEmitter, HostListener, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from 'layouts/data-set-layout/data-set-layout-api.service';
 import {
     ExportSaveFormatService,
@@ -1245,8 +1245,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         const labelColorList = this._labelColorService.getLabelColorList(this.selectedProjectName);
 
         for (const [i, { polygons }] of this.thumbnailList.entries()) {
-            let idList: number[] = [];
             if (polygons !== undefined) {
+                let idList: number[] = [];
                 for (const [_, { id }] of polygons.entries()) {
                     idList.push(id);
                 }
@@ -1254,12 +1254,11 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 idList = [];
             }
         }
-
-        for (let [j, { polygons }] of this.thumbnailList.entries()) {
+        for (const [j, { polygons }] of this.thumbnailList.entries()) {
             if (polygons !== undefined) {
                 const idList = idMap.get(j);
                 if (idList !== undefined) {
-                    polygons = polygons.map((poly) => ({
+                    this.thumbnailList[j].polygons = polygons.map((poly) => ({
                         ...poly,
                         color: labelColorList.get(poly.label) as string,
                         region: String(idList.indexOf(poly.id) + 1),
@@ -1267,8 +1266,6 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 }
             }
         }
-
-        console.log(this.thumbnailList);
     }
 
     shortcutKeyInfo() {

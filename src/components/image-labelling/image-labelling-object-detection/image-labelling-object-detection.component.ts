@@ -183,8 +183,6 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this.redrawImage(this._selectMetadata);
                 }
             }
-
-            this.labelColorList = this._labelColorService.getLabelColorList(this._projectName);
         }
 
         if (changes._refreshAllLabelColor) {
