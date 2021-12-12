@@ -329,7 +329,9 @@ export class SegmentationCanvasService {
             this.labelColorList = labelColorList;
             if (this.validatePolygonMetadata(metadata.polygons)) {
                 if (this.selectedPolygonIndex === -1) {
-                    this.assignLabelColorAndDrawPolygon(metadata, context, polyIndex);
+                    this.drawAllPolygonLine(metadata, context);
+                    this.drawAllPolygonsDots(metadata, context, polyIndex, this.radius);
+                    this.plotAllFloatLabel(metadata, context);
                 }
 
                 if (this.selectedPolygonIndex !== -1) {

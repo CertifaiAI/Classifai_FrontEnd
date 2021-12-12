@@ -457,13 +457,6 @@ export class BoundingBoxCanvasService {
                 }
             }
             if (this.currentClickedBox.box === -1 && this.currentSelectedBndBox === -1) {
-                boundingBoxes = boundingBoxes.map((box) => ({
-                    ...box,
-                    color: labelColorList.get(box.label) as string,
-                }));
-                for (const boundingBox of boundingBoxes) {
-                    this.drawEachBoxOn(labelList, boundingBox, context, false);
-                }
                 const { x1, x2, y1, y2 } = this.currentDrawing;
                 this.tmpbox = this.generateNewBox(x1, x2, y1, y2);
                 this.tmpbox && this.drawEachBoxOn(labelList, this.tmpbox, context, true);

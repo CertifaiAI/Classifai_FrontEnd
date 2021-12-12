@@ -5,7 +5,7 @@
  */
 
 import { AnnotateSelectionService } from 'shared/services/annotate-selection.service';
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from 'layouts/data-set-layout/data-set-layout-api.service';
 import {
     ExportSaveFormatService,
@@ -42,6 +42,7 @@ import {
     SelectedLabelProps,
     ChangeAnnotationLabel,
 } from 'shared/types/image-labelling/image-labelling.model';
+import { LabelColorServices } from '../../shared/services/label-color.services';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -119,6 +120,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     totalImage!: number;
     progress: string = '';
     clickAbilityToggle!: boolean;
+    refreshAllLabelColor: boolean = false;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
@@ -254,6 +256,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         public _languageService: LanguageService,
         private _spinnerService: SpinnerService,
         private _exportSaveFormatService: ExportSaveFormatService,
+        private _labelColorService: LabelColorServices,
     ) {
         const langsArr: string[] = ['image-labelling-en', 'image-labelling-cn', 'image-labelling-ms'];
         this._languageService.initializeLanguage(`image-labelling`, langsArr);
@@ -384,6 +387,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                         });
                     this.navigateByAction({ thumbnailAction: 1 });
                     this._spinnerService.hideSpinner();
+                    console.log(this.thumbnailList);
                 },
             );
         // make initial call
@@ -777,6 +781,13 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 () => (this.showLoading = false),
             );
         }
+        // if (this.selectedMetaData?.polygons !== undefined) {
+        //     const labelColorList = this._labelColorService.getLabelColorList(this.selectedProjectName);
+        //     this.selectedMetaData.polygons = this.selectedMetaData.polygons.map((poly) => ({
+        //         ...poly,
+        //         color: labelColorList.get(poly.label) as string
+        //     }));
+        // }
     };
 
     onProcessLabel = ({ selectedLabel, label_list, action }: SelectedLabelProps) => {
@@ -1219,6 +1230,45 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     changeClickAbilityToggleStatus(status: boolean) {
         this.clickAbilityToggle = status;
+    }
+
+    refreshLabelColor() {
+        this.refreshAllLabelColor = true;
+    }
+
+    completeRefreshLabelColor() {
+        this.refreshAllLabelColor = false;
+    }
+
+    refreshAllLabelColorAndRegion() {
+        const idMap = new Map<number, number[]>();
+        const labelColorList = this._labelColorService.getLabelColorList(this.selectedProjectName);
+
+        for (const [i, { polygons }] of this.thumbnailList.entries()) {
+            let idList: number[] = [];
+            if (polygons !== undefined) {
+                for (const [_, { id }] of polygons.entries()) {
+                    idList.push(id);
+                }
+                idMap.set(i, idList);
+                idList = [];
+            }
+        }
+
+        for (let [j, { polygons }] of this.thumbnailList.entries()) {
+            if (polygons !== undefined) {
+                const idList = idMap.get(j);
+                if (idList !== undefined) {
+                    polygons = polygons.map((poly) => ({
+                        ...poly,
+                        color: labelColorList.get(poly.label) as string,
+                        region: String(idList.indexOf(poly.id) + 1),
+                    }));
+                }
+            }
+        }
+
+        console.log(this.thumbnailList);
     }
 
     shortcutKeyInfo() {

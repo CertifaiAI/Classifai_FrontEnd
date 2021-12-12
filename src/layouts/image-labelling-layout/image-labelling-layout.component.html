@@ -23,10 +23,13 @@
                 [_selectMetadata]="selectedMetaData"
                 [_imgSrc]="imgSrc"
                 [_tabStatus]="tabStatus"
+                [_projectName]="selectedProjectName"
+                [_refreshAllLabelColor]="refreshAllLabelColor"
                 (_onChangeMetadata)="onChangeMetadata($event)"
                 (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
                 (_onEnterLabel)="onProcessLabel($event)"
                 (_clickAbilityToggle)="changeClickAbilityToggleStatus($event)"
+                (_onRefresh)="completeRefreshLabelColor()"
             ></image-labelling-object-detection>
         </ng-container>
         <ng-container *ngIf="_router.url.includes('imglabel/seg')">
@@ -34,10 +37,13 @@
                 [_selectMetadata]="selectedMetaData"
                 [_imgSrc]="imgSrc"
                 [_tabStatus]="tabStatus"
+                [_projectName]="selectedProjectName"
+                [_refreshAllLabelColor]="refreshAllLabelColor"
                 (_onChangeMetadata)="onChangeMetadata($event)"
                 (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
-                (_clickAbilityToggle)="changeClickAbilityToggleStatus($event)"
                 (_onEnterLabel)="onProcessLabel($event)"
+                (_clickAbilityToggle)="changeClickAbilityToggleStatus($event)"
+                (_onCompleteRefresh)="completeRefreshLabelColor(); refreshAllLabelColorAndRegion()"
             ></image-labelling-segmentation>
         </ng-container>
 
@@ -48,6 +54,7 @@
             [_thumbnailList]="thumbnailList"
             [_tabStatus]="tabStatus"
             [_changeClickAbilityToggleStatus]="clickAbilityToggle"
+            [_projectName]="selectedProjectName"
             (_onClose)="onToggleTab($event)"
             (_onClickThumbnail)="displayImage($event)"
             (_onClickLabel)="onProcessLabel($event)"
@@ -58,6 +65,7 @@
             (_onRenameImage)="onRenameImage($event)"
             (_onDeleteImage)="onDeleteImage($event)"
             (_clickAbilityToggleStatus)="changeClickAbilityToggleStatus($event)"
+            (_refreshLabelColor)="refreshLabelColor()"
         ></image-labelling-project>
         <image-labelling-right-sidebar
             [_onChange]="onChangeSchema"
