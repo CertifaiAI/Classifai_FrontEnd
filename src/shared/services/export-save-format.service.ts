@@ -634,13 +634,13 @@ export class ExportSaveFormatService {
                 if (x < axis.x1) {
                     axis.x1 = x;
                 }
-                if (x < axis.x2) {
+                if (x > axis.x2) {
                     axis.x2 = x;
                 }
                 if (y < axis.y1) {
                     axis.y1 = y;
                 }
-                if (y < axis.y2) {
+                if (y > axis.y2) {
                     axis.y2 = y;
                 }
             }
