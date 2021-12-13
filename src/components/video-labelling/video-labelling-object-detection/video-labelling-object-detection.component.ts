@@ -70,7 +70,7 @@ type JsonSchema = {
     styleUrls: ['./video-labelling-object-detection.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
+export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges, OnDestroy {
     constructor(
         private _ref: ChangeDetectorRef,
         private _videoLblStateService: VideoLabellingActionService,
@@ -138,9 +138,11 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     };
     jsonSchema!: JsonSchema;
     iconIndex!: number;
+    selectedVideoPath: string = '';
 
     @Input() _totalUuid!: number;
     @Input() _videoLength!: number;
+    @Input() _videoPath!: string;
     @Input() _selectMetadata!: BboxMetadata;
     @Input() _imgSrc: string = '';
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
@@ -188,9 +190,11 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
         // retrieving all the uuid from database to establish time line, we can directly get from _thumbnailList
         // if we want first 20 uuid, else have to get all from observable below
-        // const { projectName } = this._videoLblLayoutService.getRouteState(history);
-        // this.selectedProjectName = projectName;
-        // setTimeout(() => this.retrieveAllVideoFrame(this.selectedProjectName), 4000);
+        const { projectName, videoPath } = this._videoLblLayoutService.getRouteState(history);
+        this.selectedProjectName = projectName;
+        this.selectedVideoPath = videoPath;
+        this.videoExtraction(this.selectedVideoPath, this.selectedProjectName);
+        setTimeout(() => this.retrieveAllVideoFrame(this.selectedProjectName), 4000);
 
         this._mouseCursorService.mouseCursor$
             .pipe(takeUntil(this.unsubscribe$))
@@ -221,14 +225,14 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         });
     }
 
-    ngAfterViewInit() {
-        if (this.thumbnailList.length === 0) {
-            this.videoExtract = setInterval(() => this.videoExtraction(), 3000);
-            const { projectName } = this._videoLblLayoutService.getRouteState(history);
-            this.selectedProjectName = projectName;
-            this.frameRetrieve = setInterval(() => this.retrieveAllVideoFrame(this.selectedProjectName), 6000);
-        }
-    }
+    // ngAfterViewInit() {
+    //     if (this.thumbnailList.length === 0) {
+    //         this.videoExtract = setInterval(() => this.videoExtraction(), 3000);
+    //         const { projectName } = this._videoLblLayoutService.getRouteState(history);
+    //         this.selectedProjectName = projectName;
+    //         this.frameRetrieve = setInterval(() => this.retrieveAllVideoFrame(this.selectedProjectName), 6000);
+    //     }
+    // }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes._selectMetadata?.previousValue && changes._selectMetadata?.currentValue) {
@@ -269,17 +273,11 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
         this.bindImagePath();
 
-        if (this.thumbnailList.length >= this._videoLength) {
-            clearInterval(this.videoExtract);
-            clearInterval(this.frameRetrieve);
-        }
-
         // if (this.thumbnailList.length < this._videoLength){
-        //     const { projectName } = this._videoLblLayoutService.getRouteState(history);
-        //     this.videoExtract = setTimeout(() => this.videoExtraction(), 5000);
-        //     this.frameRetrieve = setTimeout(() => this.retrieveAllVideoFrame(projectName), 10000);
+        //     this.videoExtract = setTimeout(() => this.videoExtraction(this.selectedVideoPath, this.selectedProjectName), 5000);
+        //     this.frameRetrieve = setTimeout(() => this.retrieveAllVideoFrame(this.selectedProjectName), 10000);
         // } else {
-        //     console.log(this._totalUuid);
+        //     console.log(this.thumbnailList.length );
         //     console.log(this._videoLength);
         //     clearTimeout(this.videoExtract);
         //     clearTimeout(this.frameRetrieve);
@@ -323,22 +321,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this._onTriggerVideoExtraction.emit();
     }
 
-    videoExtraction(): void {
-        const { videoPath, projectName } = this._videoLblLayoutService.getRouteState(history);
-        this._videoDataSetService.initiateVideoExtraction(videoPath, projectName).subscribe();
-    }
-
-    videoExtractionPromise() {
-        return new Promise(async (resolve, reject) => {
-            const { videoPath, projectName } = this._videoLblLayoutService.getRouteState(history);
-            const extract$ = await this._videoDataSetService
-                .initiateVideoExtraction(videoPath, projectName)
-                .subscribe();
-            if (extract$) {
-                resolve('success');
-            } else {
-                reject('error');
-            }
+    videoExtraction(videoPath: string, projectName: string): void {
+        this._videoDataSetService.initiateVideoExtraction(videoPath, projectName).subscribe(() => {
+            /*This is intentional*/
         });
     }
 

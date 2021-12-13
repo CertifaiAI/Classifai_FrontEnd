@@ -115,6 +115,7 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
     renameImageErrorCode: number = -1;
     dontAskDelete: boolean = false;
     videoLength: number = 0;
+    videoPath: string = '';
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
@@ -251,6 +252,7 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
                 first(([{ message, content }]) => {
                     this.totalUuid = content[0].total_uuid;
                     this.videoLength = content[0].video_length;
+                    this.videoPath = content[0].video_path;
                     this.projectList = {
                         isUploading: this.projectList.isUploading,
                         isFetching: this.projectList.isFetching,
@@ -472,7 +474,6 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
         if (this.selectedMetaData?.uuid !== thumbnail.uuid) {
             this.showLoading = true;
             const getImage$ = this._videoLblApiService.getBase64Thumbnail(projectName, thumbnail.uuid);
-            console.log(projectName);
             getImage$.pipe(first()).subscribe(
                 ({ message, img_src }) => {
                     if (message === 1) {

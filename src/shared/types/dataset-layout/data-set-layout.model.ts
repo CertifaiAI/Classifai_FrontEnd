@@ -56,6 +56,7 @@ export type Project = {
 
 export type VideoProject = Project & {
     video_length: number;
+    video_path: string;
 };
 
 export type ChartProps = {

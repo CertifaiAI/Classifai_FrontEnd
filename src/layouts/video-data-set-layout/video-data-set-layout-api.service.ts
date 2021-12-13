@@ -187,7 +187,7 @@ export class VideoDataSetLayoutApiService {
     initiateVideoExtraction(videoFilePath: string, projectName: string) {
         const annotationType = this.videoLabellingMode === 'videobndbox' ? 'videoboundingbox' : 'videosegmentation';
 
-        return this.http.post<Videos>(`${this.hostPort}v2/extract`, {
+        return this.http.post<Videos>(`${this.hostPort}v2/${this.videoLabellingMode}/projects/${projectName}/extract`, {
             video_file_path: videoFilePath,
             project_name: projectName,
             annotation_type: annotationType,

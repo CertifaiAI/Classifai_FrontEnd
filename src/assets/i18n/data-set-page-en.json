@@ -12,6 +12,7 @@
     "createButton": "Create",
     "updateButton": "Proceed",
     "cancelButton": "Cancel",
+    "videoFile": "Video File",
     "menuName": {
         "newProject": "New Project",
         "importProject": "Import Project",
