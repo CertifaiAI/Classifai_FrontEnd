@@ -16,7 +16,7 @@ import { LanguageService } from 'shared/services/language.service';
 export class HomeHeaderComponent {
     languageArr: (string | null)[] = [];
     // headerImage: string = `assets/landing-page/Classifai_PoweredBy_Horizontal_light.png`;
-    headerImage: string = `assets/landing-page/Classifai_Community_Logo.png`;
+    headerImage: string = `assets/landing-page/CS.DataLabel_logo.png`;
     @ViewChildren('languages') languages!: QueryList<ElementRef>;
 
     constructor(public _translate: TranslateService, private _languageService: LanguageService) {
