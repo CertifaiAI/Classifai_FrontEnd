@@ -78,10 +78,13 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     @Input() _selectMetadata!: BboxMetadata;
     @Input() _imgSrc: string = '';
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
+    @Input() _refreshAllLabelColor!: boolean;
+    @Input() _projectName!: string;
     @Output() _onChangeMetadata: EventEmitter<BboxMetadata> = new EventEmitter();
     @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
     @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
     @Output() _clickAbilityToggle: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() _onRefresh: EventEmitter<void> = new EventEmitter();
 
     constructor(
         private _ref: ChangeDetectorRef,
@@ -179,6 +182,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 } else {
                     this.redrawImage(this._selectMetadata);
                 }
+            }
+        }
+
+        if (changes._refreshAllLabelColor) {
+            if (this._refreshAllLabelColor) {
+                setTimeout(() => this.updateColor());
             }
         }
     }
@@ -433,6 +442,11 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         try {
             if (this.boundingBoxState.draw && this.mousedown) {
                 this.finishDrawBoundingBox(event);
+                this._selectMetadata.bnd_box = this._selectMetadata.bnd_box.map((box) => ({
+                    ...box,
+                    color: this.labelColorList.get(box.label) as string,
+                }));
+                this.emitMetadata();
             }
             if (this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event)) {
                 if (this.boundingBoxState.drag && this.mousedown) {
@@ -614,6 +628,11 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             this.crossV.nativeElement.style.visibility = 'hidden';
             if (this.boundingBoxState.draw && this.mousedown) {
                 this.finishDrawBoundingBox(event);
+                this._selectMetadata.bnd_box = this._selectMetadata.bnd_box.map((box) => ({
+                    ...box,
+                    color: this.labelColorList.get(box.label) as string,
+                }));
+                this.emitMetadata();
             }
             if (
                 ((event.target as Element).className === 'canvasstyle' ||
@@ -695,7 +714,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             }
             this.sortingLabelList(this.labelList, annotationList);
         }
-        this.labelColorList = this._labelColorService.getLabelColorList();
+        this.labelColorList = this._labelColorService.getLabelColorList(this._projectName);
         this._boundingBoxCanvas.drawAllBoxOn(
             this.labelList,
             this._selectMetadata.bnd_box,
@@ -805,6 +824,16 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     cancelClickAbilityToggleStatus() {
         this._clickAbilityToggle.emit(false);
+    }
+
+    updateColor() {
+        this._selectMetadata.bnd_box = this._selectMetadata.bnd_box.map((box) => ({
+            ...box,
+            color: this.labelColorList.get(box.label) as string,
+        }));
+        this.redrawImage(this._selectMetadata);
+        this.emitMetadata();
+        this._onRefresh.emit();
     }
 
     ngOnDestroy(): void {

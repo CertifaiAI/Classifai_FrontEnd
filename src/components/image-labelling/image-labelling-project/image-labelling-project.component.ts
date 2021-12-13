@@ -53,6 +53,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     @Input() _thumbnailList: CompleteMetadata[] = [];
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Input() _changeClickAbilityToggleStatus!: boolean;
+    @Input() _projectName!: string;
     @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
     @Output() _onClickThumbnail: EventEmitter<EventEmitter_ThumbnailDetails> = new EventEmitter();
     @Output() _onClickLabel: EventEmitter<SelectedLabelProps> = new EventEmitter();
@@ -63,6 +64,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     @Output() _onRenameImage: EventEmitter<CompleteMetadata> = new EventEmitter();
     @Output() _onDeleteImage: EventEmitter<CompleteMetadata> = new EventEmitter();
     @Output() _clickAbilityToggleStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() _refreshLabelColor: EventEmitter<void> = new EventEmitter();
     action: number = -1;
     displayInputLabel: boolean = false;
     inputLabel: string = '';
@@ -106,12 +108,11 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
                     })[0];
                     this.selectedLabel = resultLabel?.label ?? '';
                 });
-
-        this.pickRandomColorForLabel();
     }
 
     updateLabelList = () => {
         this.labelList = this._tabStatus[1].label_list ? this._tabStatus[1].label_list : [];
+        this.pickRandomColorForLabel();
     };
 
     onClose = (tab: TabsProps): void => {
@@ -191,8 +192,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
                 action: 0,
             });
         }
-
-        this._labelColorService.resetLabelColorList();
+        this._refreshLabelColor.emit();
     };
 
     onClickLabel = (label: string) => {
@@ -294,7 +294,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     }
 
     pickRandomColorForLabel(): void {
-        this._labelColorService.setLabelColors(this.labelList);
+        this._labelColorService.setLabelColors(this.labelList, this._projectName);
     }
 
     ngOnDestroy(): void {

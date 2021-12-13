@@ -42,6 +42,7 @@ import {
     SelectedLabelProps,
     ChangeAnnotationLabel,
 } from 'shared/types/image-labelling/image-labelling.model';
+import { LabelColorServices } from '../../shared/services/label-color.services';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -119,6 +120,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     totalImage!: number;
     progress: string = '';
     clickAbilityToggle!: boolean;
+    refreshAllLabelColor: boolean = false;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
@@ -254,6 +256,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         public _languageService: LanguageService,
         private _spinnerService: SpinnerService,
         private _exportSaveFormatService: ExportSaveFormatService,
+        private _labelColorService: LabelColorServices,
     ) {
         const langsArr: string[] = ['image-labelling-en', 'image-labelling-cn', 'image-labelling-ms'];
         this._languageService.initializeLanguage(`image-labelling`, langsArr);
@@ -777,6 +780,13 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 () => (this.showLoading = false),
             );
         }
+        // if (this.selectedMetaData?.polygons !== undefined) {
+        //     const labelColorList = this._labelColorService.getLabelColorList(this.selectedProjectName);
+        //     this.selectedMetaData.polygons = this.selectedMetaData.polygons.map((poly) => ({
+        //         ...poly,
+        //         color: labelColorList.get(poly.label) as string
+        //     }));
+        // }
     };
 
     onProcessLabel = ({ selectedLabel, label_list, action }: SelectedLabelProps) => {
@@ -801,10 +811,20 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onChangeAnnotationLabel = (changeAnnoLabel: ChangeAnnotationLabel): void => {
         changeAnnoLabel.index = this.currentAnnotationIndex;
+        const labelColorList = this._labelColorService.getLabelColorList(this.selectedProjectName);
         if (this.selectedMetaData) {
             if (this.selectedMetaData.polygons) {
                 this.selectedMetaData.polygons[changeAnnoLabel.index].label = changeAnnoLabel.label;
+                this.selectedMetaData.polygons[changeAnnoLabel.index].color = labelColorList.get(
+                    changeAnnoLabel.label,
+                ) as string;
                 this.currentAnnotationLabel = changeAnnoLabel.label;
+            }
+
+            if (this.selectedMetaData.bnd_box) {
+                this.selectedMetaData.bnd_box[changeAnnoLabel.index].color = labelColorList.get(
+                    changeAnnoLabel.label,
+                ) as string;
             }
         }
         this.tabStatus = this._imgLblLayoutService.changeAnnotationLabel(this.tabStatus, changeAnnoLabel);
@@ -1219,6 +1239,55 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     changeClickAbilityToggleStatus(status: boolean) {
         this.clickAbilityToggle = status;
+    }
+
+    refreshLabelColor() {
+        this.refreshAllLabelColor = true;
+    }
+
+    completeRefreshLabelColor() {
+        this.refreshAllLabelColor = false;
+    }
+
+    refreshAllPolygonsLabelColorAndRegion() {
+        const idMap = new Map<number, number[]>();
+        const labelColorList = this._labelColorService.getLabelColorList(this.selectedProjectName);
+
+        for (const [i, { polygons }] of this.thumbnailList.entries()) {
+            if (polygons !== undefined) {
+                let idList: number[] = [];
+                for (const [_, { id }] of polygons.entries()) {
+                    idList.push(id);
+                }
+                idMap.set(i, idList);
+                idList = [];
+            }
+        }
+        for (const [j, { polygons }] of this.thumbnailList.entries()) {
+            if (polygons !== undefined) {
+                const idList = idMap.get(j);
+                if (idList !== undefined) {
+                    this.thumbnailList[j].polygons = polygons.map((poly) => ({
+                        ...poly,
+                        color: labelColorList.get(poly.label) as string,
+                        region: String(idList.indexOf(poly.id) + 1),
+                    }));
+                }
+            }
+        }
+    }
+
+    refreshAllBndBoxLabelColor() {
+        const labelColorList = this._labelColorService.getLabelColorList(this.selectedProjectName);
+
+        for (const [i, { bnd_box }] of this.thumbnailList.entries()) {
+            if (bnd_box !== undefined) {
+                this.thumbnailList[i].bnd_box = bnd_box.map((box) => ({
+                    ...box,
+                    color: labelColorList.get(box.label) as string,
+                }));
+            }
+        }
     }
 
     shortcutKeyInfo() {

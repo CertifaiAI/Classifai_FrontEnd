@@ -83,9 +83,12 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     @Input() _selectMetadata!: PolyMetadata;
     @Input() _imgSrc: string = '';
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
+    @Input() _projectName!: string;
+    @Input() _refreshAllLabelColor!: boolean;
     @Output() _onChangeMetadata: EventEmitter<PolyMetadata> = new EventEmitter();
     @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
     @Output() _clickAbilityToggle: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() _onCompleteRefresh: EventEmitter<boolean> = new EventEmitter();
     @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
     @ViewChild('crossH') crossH!: ElementRef<HTMLDivElement>;
     @ViewChild('crossV') crossV!: ElementRef<HTMLDivElement>;
@@ -182,6 +185,12 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 }
             }
         }
+
+        if (changes._refreshAllLabelColor) {
+            if (this._refreshAllLabelColor) {
+                setTimeout(() => this.updateLabelColor());
+            }
+        }
     }
 
     initializeCanvas() {
@@ -263,7 +272,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             const annotationList = this._tabStatus[2].annotation ? this._tabStatus[2].annotation[0].polygons ?? [] : [];
             this.sortingLabelList(this.labelList, annotationList);
         }
-        this.labelColorList = this._labelColorListService.getLabelColorList();
+        this.labelColorList = this._labelColorListService.getLabelColorList(this._projectName);
         this._segCanvasService.drawAllPolygon(
             this._selectMetadata,
             this.canvasContext,
@@ -903,6 +912,21 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
 
     cancelClickAbilityToggleStatus() {
         this._clickAbilityToggle.emit(false);
+    }
+
+    updateLabelColor() {
+        const labelsId: number[] = [];
+        for (const [_, { id }] of this._selectMetadata.polygons.entries()) {
+            labelsId.push(id);
+        }
+        this._selectMetadata.polygons = this._selectMetadata.polygons.map((poly) => ({
+            ...poly,
+            color: this.labelColorList.get(poly.label) as string,
+            region: String(labelsId.indexOf(poly.id) + 1),
+        }));
+        this.redrawImage(this._selectMetadata);
+        this.emitMetadata();
+        this._onCompleteRefresh.emit();
     }
 
     ngOnDestroy(): void {

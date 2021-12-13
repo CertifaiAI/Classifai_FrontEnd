@@ -5,8 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class LabelColorServices {
     private readonly fixedColors: string[];
-    index: number = 0;
-    labelColorList: Map<string, string> = new Map<string, string>();
+    private projectLabelColorListMap: Map<string, Map<string, string>> = new Map<string, Map<string, string>>();
 
     constructor() {
         this.fixedColors = [
@@ -33,33 +32,31 @@ export class LabelColorServices {
         ];
     }
 
-    getLabelColors(currentIndex: number): string {
+    private getLabelColors(currentIndex: number): string {
         if (currentIndex <= this.fixedColors.length - 1) {
-            this.index = currentIndex;
-            const labelColor = this.fixedColors[this.index];
-            this.index++;
-            return labelColor;
+            return this.fixedColors[currentIndex];
         } else {
-            if (this.index !== 0) {
-                this.index = 0;
-            }
             return `hsl(${Math.floor(Math.random() * 360)}deg, ${Math.random() * 100}%, ${70}%`;
         }
     }
 
-    getLabelColorList() {
-        return this.labelColorList;
+    getLabelColorList(projectName: string) {
+        return this.projectLabelColorListMap.get(projectName) as Map<string, string>;
     }
 
-    setLabelColors(labelList: string[]) {
-        const labels = labelList.filter((label) => !this.labelColorList.has(label));
-        for (const label of labels) {
-            this.labelColorList.set(label, this.getLabelColors(this.index));
+    setLabelColors(labelList: string[], projectName: string) {
+        let index: number = 0;
+        const labelColorList: Map<string, string> = new Map<string, string>();
+
+        for (const label of labelList) {
+            labelColorList.set(label, this.getLabelColors(index));
+            index++;
         }
+
+        this.setProjectLabelColorListMap(projectName, labelColorList);
     }
 
-    resetLabelColorList() {
-        this.labelColorList.clear();
-        this.index = 0;
+    private setProjectLabelColorListMap(projectName: string, labelColorList: Map<string, string>) {
+        this.projectLabelColorListMap.set(projectName, labelColorList);
     }
 }
