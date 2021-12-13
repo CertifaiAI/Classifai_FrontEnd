@@ -827,14 +827,9 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     updateColor() {
-        const labelsId: number[] = [];
-        for (const [_, { id }] of this._selectMetadata.bnd_box.entries()) {
-            labelsId.push(id);
-        }
         this._selectMetadata.bnd_box = this._selectMetadata.bnd_box.map((box) => ({
             ...box,
             color: this.labelColorList.get(box.label) as string,
-            region: String(labelsId.indexOf(box.id) + 1),
         }));
         this.redrawImage(this._selectMetadata);
         this.emitMetadata();

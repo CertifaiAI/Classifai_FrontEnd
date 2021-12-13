@@ -29,7 +29,7 @@
                 (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
                 (_onEnterLabel)="onProcessLabel($event)"
                 (_clickAbilityToggle)="changeClickAbilityToggleStatus($event)"
-                (_onRefresh)="completeRefreshLabelColor()"
+                (_onRefresh)="completeRefreshLabelColor(); refreshAllBndBoxLabelColor()"
             ></image-labelling-object-detection>
         </ng-container>
         <ng-container *ngIf="_router.url.includes('imglabel/seg')">
@@ -43,7 +43,7 @@
                 (_onChangeAnnotationLabel)="onChangeAnnotationLabel($event)"
                 (_onEnterLabel)="onProcessLabel($event)"
                 (_clickAbilityToggle)="changeClickAbilityToggleStatus($event)"
-                (_onCompleteRefresh)="completeRefreshLabelColor(); refreshAllLabelColorAndRegion()"
+                (_onCompleteRefresh)="completeRefreshLabelColor(); refreshAllPolygonsLabelColorAndRegion()"
             ></image-labelling-segmentation>
         </ng-container>
 

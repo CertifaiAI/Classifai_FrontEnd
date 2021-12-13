@@ -1249,7 +1249,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.refreshAllLabelColor = false;
     }
 
-    refreshAllLabelColorAndRegion() {
+    refreshAllPolygonsLabelColorAndRegion() {
         const idMap = new Map<number, number[]>();
         const labelColorList = this._labelColorService.getLabelColorList(this.selectedProjectName);
 
@@ -1273,6 +1273,19 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                         region: String(idList.indexOf(poly.id) + 1),
                     }));
                 }
+            }
+        }
+    }
+
+    refreshAllBndBoxLabelColor() {
+        const labelColorList = this._labelColorService.getLabelColorList(this.selectedProjectName);
+
+        for (const [i, { bnd_box }] of this.thumbnailList.entries()) {
+            if (bnd_box !== undefined) {
+                this.thumbnailList[i].bnd_box = bnd_box.map((box) => ({
+                    ...box,
+                    color: labelColorList.get(box.label) as string,
+                }));
             }
         }
     }
