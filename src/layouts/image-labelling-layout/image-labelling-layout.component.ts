@@ -1352,6 +1352,21 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 shortcutKey: `info.shortcut.12.key`,
                 functionality: `info.shortcut.12.functionality`,
             },
+            {
+                no: 13,
+                shortcutKey: `info.shortcut.13.key`,
+                functionality: `info.shortcut.13.functionality`,
+            },
+            {
+                no: 14,
+                shortcutKey: `info.shortcut.14.key`,
+                functionality: `info.shortcut.14.functionality`,
+            },
+            {
+                no: 15,
+                shortcutKey: `info.shortcut.15.key`,
+                functionality: `info.shortcut.15.functionality`,
+            },
         ];
     }
 
