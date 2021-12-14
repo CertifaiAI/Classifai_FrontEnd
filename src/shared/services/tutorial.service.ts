@@ -12,6 +12,8 @@ export type TutorialState = {
     drawBbox: boolean;
     drawPolygon: boolean;
     projectStatistics: boolean;
+    addImage: boolean;
+    shiftImage: boolean;
 };
 
 const initialState: TutorialState = {
@@ -19,6 +21,8 @@ const initialState: TutorialState = {
     drawBbox: false,
     drawPolygon: false,
     projectStatistics: false,
+    addImage: false,
+    shiftImage: false,
 };
 
 @Injectable({
