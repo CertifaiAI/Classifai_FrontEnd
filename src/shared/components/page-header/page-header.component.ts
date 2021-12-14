@@ -289,7 +289,7 @@ export class PageHeaderComponent implements OnInit {
                 ' Navigate different area of image by dragging the image on the canvas. ',
         },
         {
-            imageTutorialPath: 'assets/tutorial/shift_image/cancelshift.gif',
+            imageTutorialPath: 'assets/tutorial/shift_image/cancelandannotate.gif',
             imageTutorialAlt: 'Cancel shift function',
             imageTutorialDesc:
                 'Press x key to cancel the shift image function, and continue annotate the polygon points',
