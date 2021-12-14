@@ -230,6 +230,72 @@ export class PageHeaderComponent implements OnInit {
         },
     ];
 
+    readonly addImageId = 'modal-add-image-tutorial';
+    readonly addImageTitle = 'Add Image to Project';
+    readonly addImageTutorial = [
+        {
+            imageTutorialPath: 'assets/tutorial/add_images/addImageTool.gif',
+            imageTutorialAlt: 'How to open add image window',
+            imageTutorialDesc: 'Click the add image icon at the right side bar to open the window.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/add_images/addimagewindow.png',
+            imageTutorialAlt: 'add images and folder',
+            imageTutorialDesc:
+                'Two options are available, one is add selected images and the other is add images from selected folder.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/add_images/addImages.gif',
+            imageTutorialAlt: 'Add images',
+            imageTutorialDesc:
+                'Select add images and select images from the pop up window to add into the project folder.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/add_images/addfolder.gif',
+            imageTutorialAlt: 'Add folder',
+            imageTutorialDesc:
+                'Select add folder and select folder from the pop up window to add all the images from that ' +
+                'folder into the project folder.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/add_images/addtoproject.gif',
+            imageTutorialAlt: 'Images added to project',
+            imageTutorialDesc:
+                'Lastly, click submit and confirm to add images. The process will take awhile to complete. Once refresh, ' +
+                'all the selected images are successfully added to the project folder.',
+        },
+    ];
+
+    readonly shiftImageId = 'modal-shift-image-tutorial';
+    readonly shiftImageTitle = 'Shift Image In Zoom Mode';
+    readonly shiftImageTutorial = [
+        {
+            imageTutorialPath: 'assets/tutorial/shift_image/zoomin.gif',
+            imageTutorialAlt: 'Zoom in',
+            imageTutorialDesc:
+                'Use shortcut key Alt + z to activate pointer tool and scroll the mouse wheel to zoom into the image.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/shift_image/drawpolygons.gif',
+            imageTutorialAlt: 'Draw polygons',
+            imageTutorialDesc:
+                'Use shortcut key Alt + a to select annotation tool and draw polygons to the region of interest.',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/shift_image/shiftimage.gif',
+            imageTutorialAlt: 'Shift image',
+            imageTutorialDesc:
+                'If the region of interest is blocked, press the Ctrl/Command key once to active the shift image function.' +
+                ' Navigate different area of image by dragging the image on the canvas. ',
+        },
+        {
+            imageTutorialPath: 'assets/tutorial/shift_image/cancelshift.gif',
+            imageTutorialAlt: 'Cancel shift function',
+            imageTutorialDesc:
+                'Press x key to cancel the shift image function, and continue annotate the polygon points',
+        },
+    ];
+
     tutorialIdx: number = 0;
     modalIdTutorial: string = this.createProjectId;
     tutorial: Tutorial[] = this.createProjectTutorial;
@@ -305,6 +371,18 @@ export class PageHeaderComponent implements OnInit {
             this.modalIdTutorial = this.projectStatisticsId;
             this.tutorial = this.projectStatisticTutorial;
             this._tutorialService.setState({ projectStatistics: true });
+            this.openTutorial(ignoreCheckState);
+        } else if (tutorialName === 'Add Image To Project ') {
+            this.modalTitle = this.addImageTitle;
+            this.modalIdTutorial = this.addImageId;
+            this.tutorial = this.addImageTutorial;
+            this._tutorialService.setState({ addImage: true });
+            this.openTutorial(ignoreCheckState);
+        } else if (tutorialName === 'Shift Image in Zoom Mode ') {
+            this.modalTitle = this.shiftImageTitle;
+            this.modalIdTutorial = this.shiftImageId;
+            this.tutorial = this.shiftImageTutorial;
+            this._tutorialService.setState({ shiftImage: true });
             this.openTutorial(ignoreCheckState);
         }
         this.tutorialMenuToggle = false;
