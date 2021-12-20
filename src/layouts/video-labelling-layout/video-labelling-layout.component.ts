@@ -233,10 +233,10 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
         setTimeout(() => this.startProject(this.selectedProjectName), 5000);
     }
 
-    videoExtraction(): void {
-        const { videoPath } = this._videoLblLayoutService.getRouteState(history);
-        this._videoDataSetService.initiateVideoExtraction(videoPath, this.selectedProjectName).subscribe();
-    }
+    // videoExtraction(): void {
+    //     const { videoPath } = this._videoLblLayoutService.getRouteState(history);
+    //     this._videoDataSetService.initiateVideoExtraction(videoPath, this.selectedProjectName).subscribe();
+    // }
 
     startProject = (projectName: string): void => {
         this.isLoading = true;

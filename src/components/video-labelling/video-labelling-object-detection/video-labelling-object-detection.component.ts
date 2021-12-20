@@ -139,6 +139,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     jsonSchema!: JsonSchema;
     iconIndex!: number;
     selectedVideoPath: string = '';
+    currentTimeStamp: number = 0;
 
     @Input() _totalUuid!: number;
     @Input() _videoLength!: number;
@@ -193,7 +194,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         const { projectName, videoPath } = this._videoLblLayoutService.getRouteState(history);
         this.selectedProjectName = projectName;
         this.selectedVideoPath = videoPath;
-        this.videoExtraction(this.selectedVideoPath, this.selectedProjectName);
+        this.videoExtraction(this.selectedVideoPath, this.selectedProjectName, this.currentTimeStamp);
         setTimeout(() => this.retrieveAllVideoFrame(this.selectedProjectName), 4000);
 
         this._mouseCursorService.mouseCursor$
@@ -224,15 +225,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             }
         });
     }
-
-    // ngAfterViewInit() {
-    //     if (this.thumbnailList.length === 0) {
-    //         this.videoExtract = setInterval(() => this.videoExtraction(), 3000);
-    //         const { projectName } = this._videoLblLayoutService.getRouteState(history);
-    //         this.selectedProjectName = projectName;
-    //         this.frameRetrieve = setInterval(() => this.retrieveAllVideoFrame(this.selectedProjectName), 6000);
-    //     }
-    // }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes._selectMetadata?.previousValue && changes._selectMetadata?.currentValue) {
@@ -297,32 +289,10 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         //     const { projectName } = this._videoLblLayoutService.getRouteState(history);
         //     this.retrieveAllVideoFrame(projectName);
         // }
-
-        // if (!this._totalUuid) {
-        //     if (this.thumbnailList.length > this._videoLength) {
-        //         console.log(this.thumbnailList.length);
-        //         console.log(this._videoLength);
-        //         console.log('finish');
-        //         return;
-        //     } else {
-        //         console.log(this.thumbnailList.length);
-        //         console.log(this._videoLength);
-        //         console.log('Loading...');
-        //         const { projectName } = this._videoLblLayoutService.getRouteState(history);
-        //         this.videoExtractionPromise()
-        //             .then((status) => console.log(status))
-        //             .then(() => this.retrieveAllVideoFrame(projectName))
-        //             .catch((error) => console.error(error));
-        //     }
-        // }
     }
 
-    triggerVideoExtraction() {
-        this._onTriggerVideoExtraction.emit();
-    }
-
-    videoExtraction(videoPath: string, projectName: string): void {
-        this._videoDataSetService.initiateVideoExtraction(videoPath, projectName).subscribe(() => {
+    videoExtraction(videoPath: string, projectName: string, currentTimeStamp: number): void {
+        this._videoDataSetService.initiateVideoExtraction(videoPath, projectName, currentTimeStamp).subscribe(() => {
             /*This is intentional*/
         });
     }

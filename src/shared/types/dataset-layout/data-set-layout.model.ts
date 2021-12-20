@@ -107,3 +107,8 @@ export type Videos = {
     video_file_path: path;
     // extraction_frame_interval: number;
 };
+
+export type VideoExtractionStatus = {
+    message: message;
+    current_time_stamp: number;
+};

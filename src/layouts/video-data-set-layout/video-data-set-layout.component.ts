@@ -742,8 +742,8 @@ export class VideoDataSetLayoutComponent implements OnInit, OnDestroy {
     //     this._dataSetService.initiateVideoExtraction(this.videoPath, this.inputFrameInterval).subscribe();
     // }
 
-    videoExtraction(): void {
-        this.inputProjectName = this.form.get('projectName')?.value;
-        this._dataSetService.initiateVideoExtraction(this.videoPath, this.inputProjectName).subscribe();
-    }
+    // videoExtraction(): void {
+    //     this.inputProjectName = this.form.get('projectName')?.value;
+    //     this._dataSetService.initiateVideoExtraction(this.videoPath, this.inputProjectName).subscribe();
+    // }
 }

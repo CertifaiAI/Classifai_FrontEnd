@@ -12,6 +12,7 @@ import {
     Folder,
     Videos,
     VideoProject,
+    VideoExtractionStatus,
 } from '../../shared/types/dataset-layout/data-set-layout.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { VideoLabellingModeService } from 'components/video-labelling/video-labelling-mode.service';
@@ -184,13 +185,20 @@ export class VideoDataSetLayoutApiService {
             { video_file_path: videoFilePath, extraction_frame_interval: frameInterval });
     }*/
 
-    initiateVideoExtraction(videoFilePath: string, projectName: string) {
+    initiateVideoExtraction(videoFilePath: string, projectName: string, currentTimeStamp: number) {
         const annotationType = this.videoLabellingMode === 'videobndbox' ? 'videoboundingbox' : 'videosegmentation';
 
         return this.http.post<Videos>(`${this.hostPort}v2/${this.videoLabellingMode}/projects/${projectName}/extract`, {
             video_file_path: videoFilePath,
             project_name: projectName,
             annotation_type: annotationType,
+            current_time_stamp: currentTimeStamp,
         });
+    }
+
+    videoExtractionStatus(projectName: string) {
+        return this.http.get<VideoExtractionStatus>(
+            `${this.hostPort}v2/${this.videoLabellingMode}/projects/${projectName}/extractstatus`,
+        );
     }
 }
