@@ -110,5 +110,7 @@ export type Videos = {
 
 export type VideoExtractionStatus = {
     message: message;
+    video_extraction_status: number;
+    video_extraction_message: string;
     current_time_stamp: number;
 };

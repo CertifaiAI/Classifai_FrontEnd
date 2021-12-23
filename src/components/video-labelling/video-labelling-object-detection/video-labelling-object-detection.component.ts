@@ -21,8 +21,8 @@ import {
     ViewChild,
 } from '@angular/core';
 import { cloneDeep } from 'lodash-es';
-import { forkJoin, interval, Subject, Subscription } from 'rxjs';
-import { concatMap, first, takeUntil } from 'rxjs/operators';
+import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
+import { concatMap, first, mergeMap, takeUntil } from 'rxjs/operators';
 import { AnnotateActionState, AnnotateSelectionService } from 'shared/services/annotate-selection.service';
 import { MouseCursorState, MousrCursorService } from 'shared/services/mouse-cursor.service';
 import { VideoLabellingActionService } from '../video-labelling-action.service';
@@ -52,6 +52,7 @@ import { ShortcutKeyService } from '../../../shared/services/shortcut-key.servic
 import { Direction, UndoState } from '../../../shared/types/image-labelling/image-labelling.model';
 import { HTMLElementEvent } from '../../../shared/types/field/field.model';
 import { VideoLabellingApiService } from '../video-labelling-api.service';
+import { Message } from '../../../shared/types/message/message.model';
 
 type iconConfigs = {
     imgPath: string;
@@ -156,7 +157,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @Output() _onSearchAnnotatedImage: EventEmitter<EventEmitter_ThumbnailDetails> = new EventEmitter();
     @Output() _onChangeTabAnnotation: EventEmitter<CompleteMetadata> = new EventEmitter();
     @Output() _onScrollTimeline: EventEmitter<void> = new EventEmitter();
-    @Output() _onTriggerVideoExtraction: EventEmitter<void> = new EventEmitter();
     @ViewChild('videoTimelineRef') _videoTimelineRef!: ElementRef<HTMLDivElement>;
     @ViewChild('canvasdrawing') canvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('floatdiv') floatdiv!: ElementRef<HTMLDivElement>;
@@ -292,9 +292,23 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     videoExtraction(videoPath: string, projectName: string, currentTimeStamp: number): void {
-        this._videoDataSetService.initiateVideoExtraction(videoPath, projectName, currentTimeStamp).subscribe(() => {
-            /*This is intentional*/
-        });
+        const videoExtraction$ = this._videoDataSetService.initiateVideoExtraction(
+            videoPath,
+            projectName,
+            currentTimeStamp,
+        );
+        const videoExtractStatus$ = this._videoDataSetService.videoExtractionStatus(projectName);
+
+        videoExtraction$
+            .pipe(
+                first(),
+                mergeMap(() => videoExtractStatus$),
+            )
+            .subscribe((response) => {
+                if (response.video_extraction_status === 0) {
+                    this.currentTimeStamp = response.current_time_stamp;
+                }
+            });
     }
 
     retrieveAllVideoFrame(projectName: string) {
