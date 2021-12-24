@@ -195,7 +195,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this.selectedProjectName = projectName;
         this.selectedVideoPath = videoPath;
         this.videoExtraction(this.selectedVideoPath, this.selectedProjectName, this.currentTimeStamp);
-        setTimeout(() => this.retrieveAllVideoFrame(this.selectedProjectName), 4000);
 
         this._mouseCursorService.mouseCursor$
             .pipe(takeUntil(this.unsubscribe$))
@@ -265,18 +264,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
         this.bindImagePath();
 
-        // if (this.thumbnailList.length < this._videoLength){
-        //     this.videoExtract = setTimeout(() => this.videoExtraction(this.selectedVideoPath, this.selectedProjectName), 5000);
-        //     this.frameRetrieve = setTimeout(() => this.retrieveAllVideoFrame(this.selectedProjectName), 10000);
-        // } else {
-        //     console.log(this.thumbnailList.length );
-        //     console.log(this._videoLength);
-        //     clearTimeout(this.videoExtract);
-        //     clearTimeout(this.frameRetrieve);
-        //     console.log('video frame retrieve completed');
-        //     return;
-        // }
-
         // if (this.videoTimelineScroll()){
         //     if (this._totalUuid >= this._videoLength) {
         //         console.log(this._totalUuid);
@@ -304,11 +291,19 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 first(),
                 mergeMap(() => videoExtractStatus$),
             )
-            .subscribe((response) => {
-                if (response.video_extraction_status === 0) {
-                    this.currentTimeStamp = response.current_time_stamp;
-                }
-            });
+            .subscribe(
+                (response) => {
+                    if (response.video_extraction_status === 0) {
+                        this.currentTimeStamp = response.current_time_stamp;
+                    }
+                },
+                (error) => {
+                    console.error(error);
+                },
+                () => {
+                    this.retrieveAllVideoFrame(this.selectedProjectName);
+                },
+            );
     }
 
     retrieveAllVideoFrame(projectName: string) {
@@ -317,28 +312,19 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
         this.subscription = this.subject$
             .pipe(
+                first(),
                 concatMap(() => projLoadingStatus$),
-                concatMap(({ message: loadProjStatus, uuid_list, label_list }) => {
-                    if (loadProjStatus === 2) {
-                        return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
-                    } else {
-                        return interval(1000).pipe(
-                            concatMap(() => projLoadingStatus$),
-                            first(({ message }) => message === 2),
-                            concatMap((labelList) => {
-                                return labelList.uuid_list.length > 0
-                                    ? labelList.uuid_list.map((uuid) => thumbnail$(projectName, uuid))
-                                    : [];
-                            }),
-                        );
-                    }
+                concatMap(({ uuid_list }) => {
+                    return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
                 }),
                 concatMap((data) => data),
             )
             .subscribe(
                 (res) => {
                     // this.thumbnailList = [...this.thumbnailList, res];
-                    this.thumbnailList.push(res);
+                    if (!this.thumbnailList.includes(res)) {
+                        this.thumbnailList.push(res);
+                    }
 
                     // this.tempList = [res];
                     // this.thumbnailList.push.apply(this.thumbnailList, this.tempList);
@@ -351,17 +337,25 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     // };
                     // this.totalFrameArr.push(this.frame);
                 },
-                (error: Error) => {
+                () => {
                     /** This is intentional */
                 },
                 () => {
                     // for (let i = 0; i < this.thumbnailList.length; i++) {
                     //     this.getImageSource({ i, ...this.thumbnailList[i] });
                     // }
+                    console.log(this.thumbnailList.length);
+                    console.log(this._videoLength);
                     console.log('thumbnail List loading complete');
                 },
             );
         this.subject$.next();
+
+        // if (this.thumbnailList.length < this._videoLength) {
+        //     console.log(this.thumbnailList.length);
+        //     console.log(this._videoLength);
+        //     this.videoExtraction(this.selectedVideoPath, this.selectedProjectName, this.currentTimeStamp);
+        // }
     }
 
     bindImagePath = () => {
