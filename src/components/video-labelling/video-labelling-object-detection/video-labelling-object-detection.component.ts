@@ -322,9 +322,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             .subscribe(
                 (res) => {
                     // this.thumbnailList = [...this.thumbnailList, res];
-                    if (!this.thumbnailList.includes(res)) {
-                        this.thumbnailList.push(res);
-                    }
+                    this.tempList.push(res);
 
                     // this.tempList = [res];
                     // this.thumbnailList.push.apply(this.thumbnailList, this.tempList);
@@ -344,18 +342,34 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     // for (let i = 0; i < this.thumbnailList.length; i++) {
                     //     this.getImageSource({ i, ...this.thumbnailList[i] });
                     // }
+                    if (this.thumbnailList.length === 0) {
+                        this.thumbnailList.push(...this.tempList);
+                    } else {
+                        console.log('before', this.tempList);
+                        this.tempList = this.tempList.slice(this.thumbnailList.length, this.tempList.length);
+                        console.log('after', this.tempList);
+                        this.thumbnailList.push(...this.tempList);
+                    }
+
+                    // for (const ele of this.tempList) {
+                    //     // if (this.thumbnailList.filter(thumbnail => thumbnail !== ele).length !== 0) {
+                    //     //     this.thumbnailList.push(ele);
+                    //     // }
+                    //     console.log(this.thumbnailList.includes(ele));
+                    //     this.thumbnailList.push(ele);
+                    // }
+
+                    this.tempList = [];
                     console.log(this.thumbnailList.length);
                     console.log(this._videoLength);
                     console.log('thumbnail List loading complete');
+                    if (this.thumbnailList.length < this._videoLength) {
+                        this.videoExtraction(this.selectedVideoPath, this.selectedProjectName, this.currentTimeStamp);
+                    }
+                    console.log(this.thumbnailList);
                 },
             );
         this.subject$.next();
-
-        // if (this.thumbnailList.length < this._videoLength) {
-        //     console.log(this.thumbnailList.length);
-        //     console.log(this._videoLength);
-        //     this.videoExtraction(this.selectedVideoPath, this.selectedProjectName, this.currentTimeStamp);
-        // }
     }
 
     bindImagePath = () => {
