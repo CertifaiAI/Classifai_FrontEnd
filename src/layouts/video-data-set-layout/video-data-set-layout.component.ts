@@ -112,7 +112,7 @@ export class VideoDataSetLayoutComponent implements OnInit, OnDestroy {
         minHeight: '45vh',
         minWidth: '31vw',
         maxWidth: '31vw',
-        margin: '12vw 71vh',
+        margin: '5vw 5vh',
         overflow: 'none',
     };
     renameProjectModalBodyStyle: ModalBodyStyle = {
@@ -741,6 +741,6 @@ export class VideoDataSetLayoutComponent implements OnInit, OnDestroy {
 
     selectPartition() {
         this.partition = Number(this._selectedPartition.nativeElement.value);
-        this._partitionValue.nativeElement.innerHTML = this._selectedPartition.nativeElement.value;
+        this._partitionValue.nativeElement.innerHTML = this._selectedPartition.nativeElement.value + ' frame interval';
     }
 }
