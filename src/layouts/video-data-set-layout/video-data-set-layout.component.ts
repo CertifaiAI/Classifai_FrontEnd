@@ -101,6 +101,7 @@ export class VideoDataSetLayoutComponent implements OnInit, OnDestroy {
     keyToSort: string = 'project_name';
     projectType: string = 'myproject';
     enableSort: boolean = true;
+    partition: number = 1;
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
@@ -154,7 +155,6 @@ export class VideoDataSetLayoutComponent implements OnInit, OnDestroy {
         overflow: 'none',
     };
 
-    @Output() _emitVideoPath: EventEmitter<string> = new EventEmitter<string>();
     @ViewChild('refProjectName') _refProjectName!: ElementRef<HTMLInputElement>;
     @ViewChild('projectfoldername') _projectFoldername!: ElementRef<HTMLLabelElement>;
     @ViewChild('labeltextfilename') _labelTextFilename!: ElementRef<HTMLLabelElement>;
@@ -163,6 +163,8 @@ export class VideoDataSetLayoutComponent implements OnInit, OnDestroy {
     @ViewChild('jsonImportProjectFile') _jsonImportProjectFile!: ElementRef<HTMLInputElement>;
     @ViewChild('jsonImportProjectFilename') _jsonImportProjectFilename!: ElementRef<HTMLLabelElement>;
     @ViewChild('refFrameInterval') _refFrameInterval!: ElementRef<HTMLInputElement>;
+    @ViewChild('selectedPartition') _selectedPartition!: ElementRef<HTMLInputElement>;
+    @ViewChild('partitionValue') _partitionValue!: ElementRef<HTMLLabelElement>;
 
     constructor(
         private _fb: FormBuilder,
@@ -737,13 +739,8 @@ export class VideoDataSetLayoutComponent implements OnInit, OnDestroy {
         this.unsubscribe$.complete();
     }
 
-    // videoExtraction(): void {
-    //     this.inputFrameInterval = this.form.get('frameInterval')?.value;
-    //     this._dataSetService.initiateVideoExtraction(this.videoPath, this.inputFrameInterval).subscribe();
-    // }
-
-    // videoExtraction(): void {
-    //     this.inputProjectName = this.form.get('projectName')?.value;
-    //     this._dataSetService.initiateVideoExtraction(this.videoPath, this.inputProjectName).subscribe();
-    // }
+    selectPartition() {
+        this.partition = Number(this._selectedPartition.nativeElement.value);
+        this._partitionValue.nativeElement.innerHTML = this._selectedPartition.nativeElement.value;
+    }
 }

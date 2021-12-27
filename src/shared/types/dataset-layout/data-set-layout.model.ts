@@ -57,6 +57,7 @@ export type Project = {
 export type VideoProject = Project & {
     video_length: number;
     video_path: string;
+    is_video_frames_extraction_completed: boolean;
 };
 
 export type ChartProps = {
@@ -108,9 +109,9 @@ export type Videos = {
     // extraction_frame_interval: number;
 };
 
-export type VideoExtractionStatus = {
+export type VideoFramesExtractionStatus = {
     message: message;
-    video_extraction_status: number;
-    video_extraction_message: string;
+    video_frames_extraction_status: number;
+    video_frames_extraction_message: string;
     current_time_stamp: number;
 };

@@ -128,8 +128,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     unAnnotatedImage: CompleteMetadata[] = [];
     selectedMetaData!: BboxMetadata;
     thumbnail!: Omit<BboxMetadata & PolyMetadata, 'img_src'>;
-    videoExtract!: any;
-    frameRetrieve!: any;
     id!: number;
     totalUuid: number = 0;
     uuid: string = '';
@@ -149,6 +147,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @Input() _imgSrc: string = '';
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Input() _thumbnailIndex!: number;
+    @Input() _isVideoFramesExtractionCompleted!: boolean;
     @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
     @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
     @Output() _onHide: EventEmitter<LabelledFrame> = new EventEmitter();
@@ -189,12 +188,16 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 }
             });
 
-        // retrieving all the uuid from database to establish time line, we can directly get from _thumbnailList
-        // if we want first 20 uuid, else have to get all from observable below
-        const { projectName, videoPath } = this._videoLblLayoutService.getRouteState(history);
-        this.selectedProjectName = projectName;
-        this.selectedVideoPath = videoPath;
-        this.videoExtraction(this.selectedVideoPath, this.selectedProjectName, this.currentTimeStamp);
+        if (!this._isVideoFramesExtractionCompleted) {
+            const { projectName, videoPath } = this._videoLblLayoutService.getRouteState(history);
+            this.selectedProjectName = projectName;
+            this.selectedVideoPath = videoPath;
+            this.videoExtraction(this.selectedVideoPath, this.selectedProjectName, this.currentTimeStamp);
+        } else {
+            const { projectName } = this._videoLblLayoutService.getRouteState(history);
+            this.selectedProjectName = projectName;
+            this.retrieveAllVideoFrames(this.selectedProjectName);
+        }
 
         this._mouseCursorService.mouseCursor$
             .pipe(takeUntil(this.unsubscribe$))
@@ -293,7 +296,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             )
             .subscribe(
                 (response) => {
-                    if (response.video_extraction_status === 0) {
+                    if (response.video_frames_extraction_status === 0) {
                         this.currentTimeStamp = response.current_time_stamp;
                     }
                 },
@@ -301,12 +304,12 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     console.error(error);
                 },
                 () => {
-                    this.retrieveAllVideoFrame(this.selectedProjectName);
+                    this.retrieveExtractedVideoFrames(this.selectedProjectName);
                 },
             );
     }
 
-    retrieveAllVideoFrame(projectName: string) {
+    retrieveExtractedVideoFrames(projectName: string) {
         const projLoadingStatus$ = this._videoDataSetService.checkExistProjectStatus(projectName);
         const thumbnail$ = this._videoDataSetService.getThumbnailList;
 
@@ -342,23 +345,14 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     // for (let i = 0; i < this.thumbnailList.length; i++) {
                     //     this.getImageSource({ i, ...this.thumbnailList[i] });
                     // }
+                    this.tempList.sort((a, b) => a.video_frame_index - b.video_frame_index);
                     if (this.thumbnailList.length === 0) {
                         this.thumbnailList.push(...this.tempList);
                     } else {
-                        console.log('before', this.tempList);
-                        this.tempList = this.tempList.slice(this.thumbnailList.length, this.tempList.length);
-                        console.log('after', this.tempList);
-                        this.thumbnailList.push(...this.tempList);
+                        this.thumbnailList.push(
+                            ...this.tempList.slice(this.thumbnailList.length, this.tempList.length),
+                        );
                     }
-
-                    // for (const ele of this.tempList) {
-                    //     // if (this.thumbnailList.filter(thumbnail => thumbnail !== ele).length !== 0) {
-                    //     //     this.thumbnailList.push(ele);
-                    //     // }
-                    //     console.log(this.thumbnailList.includes(ele));
-                    //     this.thumbnailList.push(ele);
-                    // }
-
                     this.tempList = [];
                     console.log(this.thumbnailList.length);
                     console.log(this._videoLength);
@@ -367,6 +361,33 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                         this.videoExtraction(this.selectedVideoPath, this.selectedProjectName, this.currentTimeStamp);
                     }
                     console.log(this.thumbnailList);
+                },
+            );
+        this.subject$.next();
+    }
+
+    retrieveAllVideoFrames(projectName: string) {
+        const projLoadingStatus$ = this._videoDataSetService.checkExistProjectStatus(projectName);
+        const thumbnail$ = this._videoDataSetService.getThumbnailList;
+
+        this.subscription = this.subject$
+            .pipe(
+                first(),
+                concatMap(() => projLoadingStatus$),
+                concatMap(({ uuid_list }) => {
+                    return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
+                }),
+                concatMap((data) => data),
+            )
+            .subscribe(
+                (res) => {
+                    this.thumbnailList.push(res);
+                },
+                () => {
+                    /** This is intentional */
+                },
+                () => {
+                    console.log('thumbnail List loading complete');
                 },
             );
         this.subject$.next();

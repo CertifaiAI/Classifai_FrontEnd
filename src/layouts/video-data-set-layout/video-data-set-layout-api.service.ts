@@ -12,7 +12,7 @@ import {
     Folder,
     Videos,
     VideoProject,
-    VideoExtractionStatus,
+    VideoFramesExtractionStatus,
 } from '../../shared/types/dataset-layout/data-set-layout.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { VideoLabellingModeService } from 'components/video-labelling/video-labelling-mode.service';
@@ -197,7 +197,7 @@ export class VideoDataSetLayoutApiService {
     }
 
     videoExtractionStatus(projectName: string) {
-        return this.http.get<VideoExtractionStatus>(
+        return this.http.get<VideoFramesExtractionStatus>(
             `${this.hostPort}v2/${this.videoLabellingMode}/projects/${projectName}/extractstatus`,
         );
     }

@@ -116,6 +116,8 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
     dontAskDelete: boolean = false;
     videoLength: number = 0;
     videoPath: string = '';
+    isVideoFramesExtractionCompleted!: boolean;
+    partition: number = 1;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
@@ -253,6 +255,7 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
                     this.totalUuid = content[0].total_uuid;
                     this.videoLength = content[0].video_length;
                     this.videoPath = content[0].video_path;
+                    this.isVideoFramesExtractionCompleted = content[0].is_video_frames_extraction_completed;
                     this.projectList = {
                         isUploading: this.projectList.isUploading,
                         isFetching: this.projectList.isFetching,

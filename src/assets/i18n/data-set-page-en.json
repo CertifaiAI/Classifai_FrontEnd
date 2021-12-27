@@ -12,7 +12,8 @@
     "createButton": "Create",
     "updateButton": "Proceed",
     "cancelButton": "Cancel",
-    "videoFile": "Video File",
+    "videoFile": "Video File:",
+    "partition": "Partition: ",
     "menuName": {
         "newProject": "New Project",
         "importProject": "Import Project",
