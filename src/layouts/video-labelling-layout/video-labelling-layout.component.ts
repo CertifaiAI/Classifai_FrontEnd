@@ -232,13 +232,8 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
         this.selectedProjectName = projectName;
         this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: this.thumbnailList.length };
 
-        setTimeout(() => this.startProject(this.selectedProjectName), 5000);
+        // setTimeout(() => this.startProject(this.selectedProjectName), 5000);
     }
-
-    // videoExtraction(): void {
-    //     const { videoPath } = this._videoLblLayoutService.getRouteState(history);
-    //     this._videoDataSetService.initiateVideoExtraction(videoPath, this.selectedProjectName).subscribe();
-    // }
 
     startProject = (projectName: string): void => {
         this.isLoading = true;
@@ -252,6 +247,7 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
             .pipe(
                 concatMap(() => forkJoin([projMetaStatus$])),
                 first(([{ message, content }]) => {
+                    console.log(content);
                     this.totalUuid = content[0].total_uuid;
                     this.videoLength = content[0].video_length;
                     this.videoPath = content[0].video_path;

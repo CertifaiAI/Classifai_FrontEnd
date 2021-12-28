@@ -500,7 +500,7 @@ export class VideoDataSetLayoutComponent implements OnInit, OnDestroy {
 
     startProject = (projectName: string): void => {
         this._router.navigate([`videolabel/${this.videoLblMode}`], {
-            state: { projectName, videoPath: this.videoPath },
+            state: { projectName, videoPath: this.videoPath, partition: this.partition },
         });
     };
 

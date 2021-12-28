@@ -106,7 +106,7 @@ export type Videos = {
     window_status: window_status;
     window_message: string;
     video_file_path: path;
-    // extraction_frame_interval: number;
+    extraction_partition: number;
 };
 
 export type VideoFramesExtractionStatus = {
@@ -114,4 +114,5 @@ export type VideoFramesExtractionStatus = {
     video_frames_extraction_status: number;
     video_frames_extraction_message: string;
     current_time_stamp: number;
+    is_video_frames_extraction_completed: boolean;
 };

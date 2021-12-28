@@ -139,6 +139,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     iconIndex!: number;
     selectedVideoPath: string = '';
     currentTimeStamp: number = 0;
+    selectedPartition: number = 1;
+    isProjectStarted: boolean = false;
 
     @Input() _totalUuid!: number;
     @Input() _videoLength!: number;
@@ -156,6 +158,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @Output() _onSearchAnnotatedImage: EventEmitter<EventEmitter_ThumbnailDetails> = new EventEmitter();
     @Output() _onChangeTabAnnotation: EventEmitter<CompleteMetadata> = new EventEmitter();
     @Output() _onScrollTimeline: EventEmitter<void> = new EventEmitter();
+    @Output() _onFinishExtraction: EventEmitter<string> = new EventEmitter<string>();
     @ViewChild('videoTimelineRef') _videoTimelineRef!: ElementRef<HTMLDivElement>;
     @ViewChild('canvasdrawing') canvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('floatdiv') floatdiv!: ElementRef<HTMLDivElement>;
@@ -189,10 +192,11 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             });
 
         if (!this._isVideoFramesExtractionCompleted) {
-            const { projectName, videoPath } = this._videoLblLayoutService.getRouteState(history);
+            const { projectName, videoPath, partition } = this._videoLblLayoutService.getRouteState(history);
             this.selectedProjectName = projectName;
             this.selectedVideoPath = videoPath;
-            this.videoExtraction(this.selectedVideoPath, this.selectedProjectName, this.currentTimeStamp);
+            this.selectedPartition = partition;
+            this.videoExtraction(this.selectedVideoPath, this.selectedProjectName, this.selectedPartition);
         } else {
             const { projectName } = this._videoLblLayoutService.getRouteState(history);
             this.selectedProjectName = projectName;
@@ -281,12 +285,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         // }
     }
 
-    videoExtraction(videoPath: string, projectName: string, currentTimeStamp: number): void {
-        const videoExtraction$ = this._videoDataSetService.initiateVideoExtraction(
-            videoPath,
-            projectName,
-            currentTimeStamp,
-        );
+    videoExtraction(videoPath: string, projectName: string, partition: number): void {
+        const videoExtraction$ = this._videoDataSetService.initiateVideoExtraction(videoPath, projectName, partition);
         const videoExtractStatus$ = this._videoDataSetService.videoExtractionStatus(projectName);
 
         videoExtraction$
@@ -299,11 +299,17 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     if (response.video_frames_extraction_status === 0) {
                         this.currentTimeStamp = response.current_time_stamp;
                     }
+
+                    this._isVideoFramesExtractionCompleted = response.is_video_frames_extraction_completed;
                 },
                 (error) => {
                     console.error(error);
                 },
                 () => {
+                    if (!this.isProjectStarted) {
+                        this._onFinishExtraction.emit(this.selectedProjectName);
+                        this.isProjectStarted = true;
+                    }
                     this.retrieveExtractedVideoFrames(this.selectedProjectName);
                 },
             );
@@ -357,8 +363,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     console.log(this.thumbnailList.length);
                     console.log(this._videoLength);
                     console.log('thumbnail List loading complete');
-                    if (this.thumbnailList.length < this._videoLength) {
-                        this.videoExtraction(this.selectedVideoPath, this.selectedProjectName, this.currentTimeStamp);
+                    if (!this._isVideoFramesExtractionCompleted) {
+                        this.videoExtraction(this.selectedVideoPath, this.selectedProjectName, this.selectedPartition);
                     }
                     console.log(this.thumbnailList);
                 },
