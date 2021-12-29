@@ -117,6 +117,7 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
     videoLength: number = 0;
     videoPath: string = '';
     isVideoFramesExtractionCompleted!: boolean;
+    extractedFrameIndex!: number;
     partition: number = 1;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
@@ -230,9 +231,21 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
         this.currentUrl = this._router.url as VideoLabelUrl;
         const { projectName } = this._videoLblLayoutService.getRouteState(history);
         this.selectedProjectName = projectName;
+        this.getSelectedProjectMeta(this.selectedProjectName);
         this.onChangeSchema = { ...this.onChangeSchema, totalNumThumbnail: this.thumbnailList.length };
+    }
 
-        // setTimeout(() => this.startProject(this.selectedProjectName), 5000);
+    getSelectedProjectMeta(projectName: string): void {
+        const projMetaStatus$ = this._videoDataSetService.checkProjectStatus(projectName);
+        projMetaStatus$.pipe(first()).subscribe((response) => {
+            this.isVideoFramesExtractionCompleted = response.content[0].is_video_frames_extraction_completed;
+            this.extractedFrameIndex = response.content[0].extracted_frame_index;
+            console.log(this.isVideoFramesExtractionCompleted, this.extractedFrameIndex);
+            this._videoLblLayoutService.setVideoFramesExtractionState(
+                this.isVideoFramesExtractionCompleted,
+                this.extractedFrameIndex,
+            );
+        });
     }
 
     startProject = (projectName: string): void => {
@@ -247,11 +260,11 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
             .pipe(
                 concatMap(() => forkJoin([projMetaStatus$])),
                 first(([{ message, content }]) => {
-                    console.log(content);
                     this.totalUuid = content[0].total_uuid;
                     this.videoLength = content[0].video_length;
                     this.videoPath = content[0].video_path;
                     this.isVideoFramesExtractionCompleted = content[0].is_video_frames_extraction_completed;
+                    this.extractedFrameIndex = content[0].extracted_frame_index;
                     this.projectList = {
                         isUploading: this.projectList.isUploading,
                         isFetching: this.projectList.isFetching,

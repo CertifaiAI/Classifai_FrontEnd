@@ -36,10 +36,17 @@ type AnnotationIndex = {
     selectedSubLabelIndex: number;
 };
 
+type videoFramesExtractionState = {
+    extractedFrameIndex: number;
+    isVideoFramesExtractionCompleted: boolean;
+};
+
 @Injectable({
     providedIn: 'any',
 })
 export class VideoLabellingLayoutService {
+    videoExtractionState!: videoFramesExtractionState;
+
     constructor(private _videoLblApiService: VideoLabellingApiService) {}
 
     getRouteState = (history: CustomHistory) => {
@@ -237,4 +244,15 @@ export class VideoLabellingLayoutService {
             }
         });
     };
+
+    setVideoFramesExtractionState(isComplete: boolean, videoFrameIndex: number) {
+        this.videoExtractionState = {
+            isVideoFramesExtractionCompleted: isComplete,
+            extractedFrameIndex: videoFrameIndex,
+        };
+    }
+
+    getVideoFramesExtractionState(): videoFramesExtractionState {
+        return this.videoExtractionState;
+    }
 }

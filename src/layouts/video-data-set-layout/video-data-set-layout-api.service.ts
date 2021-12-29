@@ -185,7 +185,12 @@ export class VideoDataSetLayoutApiService {
             { video_file_path: videoFilePath, extraction_frame_interval: frameInterval });
     }*/
 
-    initiateVideoExtraction(videoFilePath: string, projectName: string, partition: number) {
+    initiateVideoExtraction(
+        videoFilePath: string,
+        projectName: string,
+        partition: number,
+        extractedFrameIndex: number,
+    ) {
         const annotationType = this.videoLabellingMode === 'videobndbox' ? 'videoboundingbox' : 'videosegmentation';
 
         return this.http.post<Videos>(`${this.hostPort}v2/${this.videoLabellingMode}/projects/${projectName}/extract`, {
@@ -193,6 +198,7 @@ export class VideoDataSetLayoutApiService {
             project_name: projectName,
             annotation_type: annotationType,
             extraction_partition: partition,
+            extracted_frame_index: extractedFrameIndex,
         });
     }
 
