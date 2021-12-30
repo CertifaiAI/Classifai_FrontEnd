@@ -46,6 +46,7 @@ import {
     CompleteMetadata,
     PolyMetadata,
     TabsProps,
+    projectNameUUIDList,
 } from 'shared/types/video-labelling/video-labelling.model';
 import { ModalBodyStyle } from 'shared/types/modal/modal.model';
 import { ProjectSchema } from 'shared/types/dataset-layout/data-set-layout.model';
@@ -119,6 +120,8 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
     isVideoFramesExtractionCompleted!: boolean;
     extractedFrameIndex!: number;
     partition: number = 1;
+    retrievedUUIDList: string[] = [];
+    filterUUIDList: string[] = [];
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
@@ -240,20 +243,30 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
         projMetaStatus$.pipe(first()).subscribe((response) => {
             this.isVideoFramesExtractionCompleted = response.content[0].is_video_frames_extraction_completed;
             this.extractedFrameIndex = response.content[0].extracted_frame_index;
-            console.log(this.isVideoFramesExtractionCompleted, this.extractedFrameIndex);
+            this.videoPath = response.content[0].video_file_path;
             this._videoLblLayoutService.setVideoFramesExtractionState(
                 this.isVideoFramesExtractionCompleted,
                 this.extractedFrameIndex,
+                this.videoPath,
             );
         });
     }
 
-    startProject = (projectName: string): void => {
-        this.isLoading = true;
-        this.selectedProjectName = projectName;
-        const projMetaStatus$ = this._videoDataSetService.checkProjectStatus(projectName);
-        const updateProjLoadStatus$ = this._videoDataSetService.updateProjectLoadStatus(projectName);
-        const projLoadingStatus$ = this._videoDataSetService.checkExistProjectStatus(projectName);
+    onExtractingFrames(loading: boolean) {
+        this.isLoading = loading;
+    }
+
+    onRetrievedUUIDList(uuidList: string[]) {
+        this.retrievedUUIDList = uuidList;
+    }
+
+    startProject = (projectNameUUIDList: projectNameUUIDList): void => {
+        // this.isLoading = true;
+        this.selectedProjectName = projectNameUUIDList.projectName;
+        this.retrievedUUIDList = projectNameUUIDList.uuidList;
+        const projMetaStatus$ = this._videoDataSetService.checkProjectStatus(this.selectedProjectName);
+        const updateProjLoadStatus$ = this._videoDataSetService.updateProjectLoadStatus(this.selectedProjectName);
+        const projLoadingStatus$ = this._videoDataSetService.checkExistProjectStatus(this.selectedProjectName);
         const thumbnail$ = this._videoDataSetService.getThumbnailList;
 
         this.subjectSubscription = this.subject$
@@ -262,7 +275,7 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
                 first(([{ message, content }]) => {
                     this.totalUuid = content[0].total_uuid;
                     this.videoLength = content[0].video_length;
-                    this.videoPath = content[0].video_path;
+                    this.videoPath = content[0].video_file_path;
                     this.isVideoFramesExtractionCompleted = content[0].is_video_frames_extraction_completed;
                     this.extractedFrameIndex = content[0].extracted_frame_index;
                     this.projectList = {
@@ -282,7 +295,9 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
                     if (loadProjStatus === 2) {
                         this.labelList = [...label_list];
                         this.tabStatus[1].label_list = this.labelList;
-                        return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
+                        return uuid_list.length > 0
+                            ? uuid_list.map((uuid) => thumbnail$(this.selectedProjectName, uuid))
+                            : [];
                     } else {
                         return interval(500).pipe(
                             concatMap(() => projLoadingStatus$),
@@ -292,7 +307,7 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
                                 return labelList.uuid_list.length > 0
                                     ? labelList.uuid_list
                                           .slice(this.sliceNum, (this.sliceNum += 20))
-                                          .map((uuid) => thumbnail$(projectName, uuid))
+                                          .map((uuid) => thumbnail$(this.selectedProjectName, uuid))
                                     : [];
                             }),
                         );

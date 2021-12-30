@@ -14,6 +14,7 @@ import {
     CompleteMetadata,
     EventEmitter_Action,
     TabsProps,
+    videoFramesExtractionState,
 } from 'shared/types/video-labelling/video-labelling.model';
 
 type CustomHistory = Omit<History, 'state'> & {
@@ -34,11 +35,6 @@ type LabelRegion = {
 type AnnotationIndex = {
     selectedAnnoIndex: number;
     selectedSubLabelIndex: number;
-};
-
-type videoFramesExtractionState = {
-    extractedFrameIndex: number;
-    isVideoFramesExtractionCompleted: boolean;
 };
 
 @Injectable({
@@ -245,10 +241,11 @@ export class VideoLabellingLayoutService {
         });
     };
 
-    setVideoFramesExtractionState(isComplete: boolean, videoFrameIndex: number) {
+    setVideoFramesExtractionState(isComplete: boolean, videoFrameIndex: number, selectedVideoPath: string) {
         this.videoExtractionState = {
             isVideoFramesExtractionCompleted: isComplete,
             extractedFrameIndex: videoFrameIndex,
+            videoPath: selectedVideoPath,
         };
     }
 

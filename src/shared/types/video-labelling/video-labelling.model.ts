@@ -208,3 +208,14 @@ export type VideoDuration = {
     minute: number;
     second: number;
 };
+
+export type projectNameUUIDList = {
+    projectName: string;
+    uuidList: string[];
+};
+
+export type videoFramesExtractionState = {
+    extractedFrameIndex: number;
+    isVideoFramesExtractionCompleted: boolean;
+    videoPath: string;
+};

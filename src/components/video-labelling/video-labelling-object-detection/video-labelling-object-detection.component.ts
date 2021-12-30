@@ -35,8 +35,10 @@ import {
     LabelInfo,
     LabelledFrame,
     PolyMetadata,
+    projectNameUUIDList,
     SelectedLabelProps,
     TabsProps,
+    videoFramesExtractionState,
     VideoLabelProps,
 } from 'shared/types/video-labelling/video-labelling.model';
 import { BoundingBoxCanvasService } from './bounding-box-canvas.service';
@@ -61,11 +63,6 @@ type iconConfigs = {
 
 type JsonSchema = {
     [key: string]: Array<iconConfigs>;
-};
-
-type videoFramesExtractionState = {
-    extractedFrameIndex: number;
-    isVideoFramesExtractionCompleted: boolean;
 };
 
 @Component({
@@ -127,6 +124,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     onChangeSchema!: VideoLabelProps;
     thumbnailList: CompleteMetadata[] = [];
     tempList: CompleteMetadata[] = [];
+    retrievedUUIDList: string[] = [];
     annotatedImage: CompleteMetadata[] = [];
     unAnnotatedImage: CompleteMetadata[] = [];
     selectedMetaData!: BboxMetadata;
@@ -148,6 +146,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     extractedFrameIndex: number = 0;
     state!: videoFramesExtractionState;
     interval!: any;
+    projectNameUUIDList!: projectNameUUIDList;
 
     @Input() _totalUuid!: number;
     @Input() _videoLength!: number;
@@ -163,7 +162,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @Output() _onSearchAnnotatedImage: EventEmitter<EventEmitter_ThumbnailDetails> = new EventEmitter();
     @Output() _onChangeTabAnnotation: EventEmitter<CompleteMetadata> = new EventEmitter();
     @Output() _onScrollTimeline: EventEmitter<void> = new EventEmitter();
-    @Output() _onFinishExtraction: EventEmitter<string> = new EventEmitter<string>();
+    @Output() _onFinishExtraction: EventEmitter<projectNameUUIDList> = new EventEmitter();
+    @Output() _onRetrievedUUIDList: EventEmitter<string[]> = new EventEmitter();
+    @Output() _onExtraction: EventEmitter<boolean> = new EventEmitter();
     @ViewChild('videoTimelineRef') _videoTimelineRef!: ElementRef<HTMLDivElement>;
     @ViewChild('canvasdrawing') canvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('floatdiv') floatdiv!: ElementRef<HTMLDivElement>;
@@ -276,9 +277,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     onRetrieveVideoExtractionState(state: videoFramesExtractionState) {
         console.log(state);
         if (!state.isVideoFramesExtractionCompleted) {
-            const { projectName, videoPath, partition } = this._videoLblLayoutService.getRouteState(history);
+            const { projectName, partition } = this._videoLblLayoutService.getRouteState(history);
             this.selectedProjectName = projectName;
-            this.selectedVideoPath = videoPath;
+            this.selectedVideoPath = state.videoPath;
             this.selectedPartition = partition;
             this.extractedFrameIndex = state.extractedFrameIndex;
             this.videoExtraction(
@@ -290,7 +291,11 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         } else {
             const { projectName } = this._videoLblLayoutService.getRouteState(history);
             this.selectedProjectName = projectName;
-            this._onFinishExtraction.emit(this.selectedProjectName);
+            const projectNameUUIDList: projectNameUUIDList = {
+                projectName: this.selectedProjectName,
+                uuidList: this.retrievedUUIDList,
+            };
+            this._onFinishExtraction.emit(projectNameUUIDList);
             this.retrieveAllVideoFrames(this.selectedProjectName);
         }
     }
@@ -303,6 +308,10 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             extractedFrameIndex,
         );
         const videoExtractStatus$ = this._videoDataSetService.videoExtractionStatus(projectName);
+
+        if (!this.isProjectStarted) {
+            this._onExtraction.emit(true);
+        }
 
         videoExtraction$
             .pipe(
@@ -321,10 +330,14 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 },
                 () => {
                     if (!this.isProjectStarted) {
-                        this._onFinishExtraction.emit(this.selectedProjectName);
+                        this.projectNameUUIDList = {
+                            projectName: this.selectedProjectName,
+                            uuidList: this.retrievedUUIDList,
+                        };
+
+                        this._onFinishExtraction.emit(this.projectNameUUIDList);
                         this.isProjectStarted = true;
                     }
-
                     this.retrieveExtractedVideoFrames(this.selectedProjectName);
                 },
             );
@@ -339,6 +352,11 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 first(),
                 concatMap(() => projLoadingStatus$),
                 concatMap(({ uuid_list }) => {
+                    for (const uuid of uuid_list) {
+                        if (!this.retrievedUUIDList.includes(uuid)) {
+                            this.retrievedUUIDList.push(uuid);
+                        }
+                    }
                     return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
                 }),
                 concatMap((data) => data),
@@ -363,6 +381,12 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     console.log(this.thumbnailList.length);
                     console.log(this._videoLength);
                     console.log('thumbnail List loading complete');
+
+                    this.projectNameUUIDList = {
+                        projectName: this.selectedProjectName,
+                        uuidList: this.retrievedUUIDList,
+                    };
+
                     if (!this.isVideoFramesExtractionCompleted) {
                         this.videoExtraction(
                             this.selectedVideoPath,
@@ -390,17 +414,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 }),
                 concatMap((data) => data),
             )
-            .subscribe(
-                (res) => {
-                    this.thumbnailList.push(res);
-                },
-                () => {
-                    /** This is intentional */
-                },
-                () => {
-                    console.log('thumbnail List loading complete');
-                },
-            );
+            .subscribe((res) => {
+                this.thumbnailList.push(res);
+            });
         this.subject$.next();
     }
 
