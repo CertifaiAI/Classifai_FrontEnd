@@ -147,6 +147,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     state!: videoFramesExtractionState;
     interval!: any;
     projectNameUUIDList!: projectNameUUIDList;
+    projectNameFrameIndexMap!: Map<string, number>;
 
     @Input() _totalUuid!: number;
     @Input() _videoLength!: number;
@@ -282,6 +283,10 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             this.selectedVideoPath = state.videoPath;
             this.selectedPartition = partition;
             this.extractedFrameIndex = state.extractedFrameIndex;
+
+            // this.projectNameFrameIndexMap.set(this.selectedProjectName, state.extractedFrameIndex);
+            // console.log(this.projectNameFrameIndexMap);
+
             this.videoExtraction(
                 this.selectedVideoPath,
                 this.selectedProjectName,
@@ -322,8 +327,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 (response) => {
                     if (response.video_frames_extraction_status === 0) {
                         this.currentTimeStamp = response.current_time_stamp;
+                        this.isVideoFramesExtractionCompleted = response.is_video_frames_extraction_completed;
+                        this.extractedFrameIndex = response.extracted_frame_index;
                     }
-                    this.isVideoFramesExtractionCompleted = response.is_video_frames_extraction_completed;
                 },
                 (error) => {
                     console.error(error);

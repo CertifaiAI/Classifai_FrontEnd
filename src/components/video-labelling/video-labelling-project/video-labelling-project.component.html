@@ -26,51 +26,7 @@
         </span>
     </div>
     <!-------------------------- Project Tab Container -------------------------->
-    <div class="utility-inner-container tab-height scroll" id="thumbnailList" #thumbnailList (scroll)="mouseScroll()">
-        <ng-container *ngFor="let thumbnail of _thumbnailList; index as i">
-            <div
-                class="img-container"
-                [ngClass]="{ 'img-selected': i === _onChange.currentThumbnailIndex - 1 }"
-                (click)="onClick(thumbnail, i)"
-            >
-                <div class="img-skeleton">
-                    <img imgLazyLoad class="img" [src]="thumbnail.img_thumbnail" alt="thumbnail" />
-                </div>
-                <div class="img-name">
-                    <label class="img-path">{{ thumbnail.img_path | fileNameSlice }}</label>
-                </div>
-                <div class="thumbnail-actions">
-                    <img
-                        src="assets/icons/last_modify.svg"
-                        alt="edit"
-                        height="20vh"
-                        width="20vw"
-                        class="thumbnail-actions-icon"
-                        (click)="renameImage(thumbnail)"
-                        [title]="'renameModal.renameImg' | translate"
-                    />
-                    <img
-                        src="assets/icons/trash.svg"
-                        alt="edit"
-                        height="20vh"
-                        width="20vw"
-                        class="thumbnail-actions-icon"
-                        (click)="deleteImage(thumbnail, i)"
-                        [title]="'Delete Image' | translate"
-                    />
-                </div>
-                <div>
-                    <div
-                        [ngClass]="
-                            thumbnail.bnd_box?.length > 0 || thumbnail.polygons?.length > 0
-                                ? 'indicator'
-                                : 'no-indicator'
-                        "
-                    ></div>
-                </div>
-            </div>
-        </ng-container>
-    </div>
+    <div class="utility-inner-container tab-height scroll" id="thumbnailList" #thumbnailList></div>
 </ng-template>
 
 <!-------------------------- Tabs Container: Non-project Tab -------------------------->

@@ -116,4 +116,5 @@ export type VideoFramesExtractionStatus = {
     video_frames_extraction_message: string;
     current_time_stamp: number;
     is_video_frames_extraction_completed: boolean;
+    extracted_frame_index: number;
 };

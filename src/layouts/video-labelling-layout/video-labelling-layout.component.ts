@@ -278,6 +278,7 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
                     this.videoPath = content[0].video_file_path;
                     this.isVideoFramesExtractionCompleted = content[0].is_video_frames_extraction_completed;
                     this.extractedFrameIndex = content[0].extracted_frame_index;
+
                     this.projectList = {
                         isUploading: this.projectList.isUploading,
                         isFetching: this.projectList.isFetching,
