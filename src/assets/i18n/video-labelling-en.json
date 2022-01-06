@@ -1,0 +1,8 @@
+{
+    "videoInfo": {
+        "videoDuration": "Video Duration: ",
+        "videoPath": "Video Path: "
+    },
+
+    "AITracking": "AI Tracking: "
+}

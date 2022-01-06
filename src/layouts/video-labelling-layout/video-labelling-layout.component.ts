@@ -63,16 +63,16 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
     tabStatus: TabsProps<CompleteMetadata>[] = [
         {
             name: 'labellingProject.project',
-            closed: false,
+            closed: true,
         },
         {
             name: 'labellingProject.label',
-            closed: false,
+            closed: true,
             label_list: [],
         },
         {
             name: 'labellingProject.annotation',
-            closed: false,
+            closed: true,
             annotation: [],
         },
     ];
@@ -117,6 +117,7 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
     dontAskDelete: boolean = false;
     videoLength: number = 0;
     videoPath: string = '';
+    videoDuration: string = '';
     isVideoFramesExtractionCompleted!: boolean;
     extractedFrameIndex!: number;
     partition: number = 1;
@@ -256,12 +257,7 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
         this.isLoading = loading;
     }
 
-    onRetrievedUUIDList(uuidList: string[]) {
-        this.retrievedUUIDList = uuidList;
-    }
-
     startProject = (projectNameUUIDList: projectNameUUIDList): void => {
-        // this.isLoading = true;
         this.selectedProjectName = projectNameUUIDList.projectName;
         this.retrievedUUIDList = projectNameUUIDList.uuidList;
         const projMetaStatus$ = this._videoDataSetService.checkProjectStatus(this.selectedProjectName);
@@ -278,6 +274,7 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
                     this.videoPath = content[0].video_file_path;
                     this.isVideoFramesExtractionCompleted = content[0].is_video_frames_extraction_completed;
                     this.extractedFrameIndex = content[0].extracted_frame_index;
+                    this.videoDuration = content[0].video_duration;
 
                     this.projectList = {
                         isUploading: this.projectList.isUploading,
@@ -293,26 +290,18 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
                 }),
                 concatMap(([{ message }]) => (!message ? [] : forkJoin([updateProjLoadStatus$, projLoadingStatus$]))),
                 concatMap(([{ message: updateProjStatus }, { message: loadProjStatus, uuid_list, label_list }]) => {
-                    if (loadProjStatus === 2) {
-                        this.labelList = [...label_list];
-                        this.tabStatus[1].label_list = this.labelList;
-                        return uuid_list.length > 0
-                            ? uuid_list.map((uuid) => thumbnail$(this.selectedProjectName, uuid))
-                            : [];
-                    } else {
-                        return interval(500).pipe(
-                            concatMap(() => projLoadingStatus$),
-                            first(({ message }) => message === 2),
-                            concatMap((labelList) => {
-                                this.tabStatus[1].label_list = labelList.label_list;
-                                return labelList.uuid_list.length > 0
-                                    ? labelList.uuid_list
-                                          .slice(this.sliceNum, (this.sliceNum += 20))
-                                          .map((uuid) => thumbnail$(this.selectedProjectName, uuid))
-                                    : [];
-                            }),
-                        );
-                    }
+                    return interval(500).pipe(
+                        concatMap(() => projLoadingStatus$),
+                        first(({ message }) => message === 2),
+                        concatMap((labelList) => {
+                            this.tabStatus[1].label_list = labelList.label_list;
+                            return labelList.uuid_list.length > 0
+                                ? labelList.uuid_list
+                                      .slice(this.sliceNum, (this.sliceNum += 20))
+                                      .map((uuid) => thumbnail$(this.selectedProjectName, uuid))
+                                : [];
+                        }),
+                    );
                 }),
                 // * this mergeMap responsible for flaten all observable into one layer
                 concatMap((data) => data),

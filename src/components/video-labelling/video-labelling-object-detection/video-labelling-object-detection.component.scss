@@ -187,10 +187,10 @@
 
 .canvasstyle {
     position: fixed;
-    left: 2.2vw;
+    left: 45vw;
     right: auto;
-    top: 8vh;
-    margin: 0px;
+    //top: 8vh;
+    margin: 3px;
     padding: 0px;
     outline: none;
     border: none;
@@ -246,3 +246,13 @@
 //    transform: rotate(90deg);
 //    transform-origin: right top;
 //}
+
+.video-player:-webkit-full-screen {
+    display: none !important;
+}
+
+.video-player {
+    margin-left: 5px;
+    width: 600px;
+    height: 500px;
+}

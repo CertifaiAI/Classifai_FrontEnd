@@ -19,12 +19,32 @@
 
 <ng-template #thumbnailTab let-i="i" let-tab="tab">
     <!-------------------------- Tab Header -------------------------->
-    <label class="tab-name">{{ tab.name | translate }} ({{ _thumbnailList.length }}/{{ _totalUuid }})</label>
+    <label class="tab-name">{{ tab.name | translate }}</label>
     <div class="flex-tab-icons">
         <span class="tab-close-thumbnailless">
             <div class="div-close" (click)="onClose(tab)">&#10006;</div>
         </span>
     </div>
+
+    <div class="video-info-container">
+        <label class="video-info"> {{ 'videoInfo.videoDuration' | translate }} {{ _videoDuration }}</label>
+    </div>
+
+    <div class="video-info-container">
+        <label class="video-info"> {{ 'videoInfo.videoPath' | translate }} {{ _videoPath }}</label>
+    </div>
+
+    <div class="video-info-container">
+        <label class="video-info">
+            {{ 'AITracking' | translate }}
+            <select>
+                <option value="method1">Method1</option>
+                <option value="method2">Method2</option>
+                <option value="method3">Method3</option>
+            </select>
+        </label>
+    </div>
+
     <!-------------------------- Project Tab Container -------------------------->
     <div class="utility-inner-container tab-height scroll" id="thumbnailList" #thumbnailList></div>
 </ng-template>

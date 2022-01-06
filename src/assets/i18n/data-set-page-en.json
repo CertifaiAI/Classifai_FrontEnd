@@ -52,7 +52,8 @@
         "createNew": "Gear up and start creating new project!",
         "noStarred": "No starred projects",
         "starIt": "Working on a high priority project? Star it so you can access it quickly!",
-        "projectPath": "Project Path"
+        "projectPath": "Project Path",
+        "totalFrames": "Total Frames: "
     },
     "deleteMsg": "deleted ",
     "deleteConfirmation": "Are you sure you want to delete",

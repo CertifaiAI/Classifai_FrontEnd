@@ -180,11 +180,6 @@ export class VideoDataSetLayoutApiService {
         return this._unsupportedImageService.downloadUnsupportedImageList(projectName, unsupportedImageList);
     }
 
-    /*    initiateVideoExtraction(videoFilePath: string, frameInterval: number) {
-        return this.http.post<Videos>(`${this.hostPort}v2/extract`,
-            { video_file_path: videoFilePath, extraction_frame_interval: frameInterval });
-    }*/
-
     initiateVideoExtraction(
         videoFilePath: string,
         projectName: string,

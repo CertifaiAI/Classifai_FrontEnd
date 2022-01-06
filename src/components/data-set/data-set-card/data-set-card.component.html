@@ -83,11 +83,11 @@
 
                     <div class="total-photo-style">
                         <label
-                            [title]="'Total Photo: ' + project.total_uuid"
+                            [title]="'Total Extracted Frames: ' + project.total_uuid"
                             [ngClass]="{ disabled: !project.root_path_valid }"
                         >
-                            <div class="total-photo-text" *ngIf="project.total_uuid.valueOf > 0">
-                                {{ 'datasetCard.totalPhoto' | translate }} {{ project.total_uuid }}
+                            <div class="total-photo-text">
+                                {{ 'datasetCard.totalFrames' | translate }} {{ project.total_uuid }}
                             </div>
                         </label>
                     </div>

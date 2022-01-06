@@ -57,6 +57,7 @@ export type Project = {
 export type VideoProject = Project & {
     video_length: number;
     video_file_path: string;
+    video_duration: string;
     is_video_frames_extraction_completed: boolean;
     extracted_frame_index: number;
 };

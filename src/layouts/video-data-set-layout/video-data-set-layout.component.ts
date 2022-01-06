@@ -5,18 +5,7 @@
  */
 
 import { cloneDeep } from 'lodash-es';
-import {
-    Component,
-    ElementRef,
-    EventEmitter,
-    HostListener,
-    OnChanges,
-    OnDestroy,
-    OnInit,
-    Output,
-    SimpleChanges,
-    ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { VideoDataSetLayoutApiService } from './video-data-set-layout-api.service';
 import {
     DataSetProps,
@@ -179,10 +168,10 @@ export class VideoDataSetLayoutComponent implements OnInit, OnDestroy {
             .pipe(distinctUntilChanged())
             .subscribe((modeVal) => (this.videoLblMode = modeVal));
 
-        this._spinnerService
-            .returnAsObservable()
-            .pipe(takeUntil(this.unsubscribe$))
-            .subscribe((loading) => (this.isLoading = loading));
+        // this._spinnerService
+        //     .returnAsObservable()
+        //     .pipe(takeUntil(this.unsubscribe$))
+        //     .subscribe((loading) => (this.isLoading = loading));
 
         this.createFormControls();
         this.renameFormControls();

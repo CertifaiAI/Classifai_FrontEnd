@@ -318,10 +318,11 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             this._onExtraction.emit(true);
         }
 
-        videoExtraction$
+        this.subscription = videoExtraction$
             .pipe(
                 first(),
                 mergeMap(() => videoExtractStatus$),
+                takeUntil(this.unsubscribe$),
             )
             .subscribe(
                 (response) => {
@@ -366,6 +367,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     return uuid_list.length > 0 ? uuid_list.map((uuid) => thumbnail$(projectName, uuid)) : [];
                 }),
                 concatMap((data) => data),
+                takeUntil(this.unsubscribe$),
             )
             .subscribe(
                 (res) => {
@@ -656,9 +658,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         );
     };
 
-    initializeCanvas(width: string = '80%') {
+    initializeCanvas(width: string = '54%') {
         this.canvas.nativeElement.style.width = width;
-        this.canvas.nativeElement.style.height = '74%';
+        this.canvas.nativeElement.style.height = '75%';
         this.canvas.nativeElement.width = this.canvas.nativeElement.offsetWidth;
         this.canvas.nativeElement.height = this.canvas.nativeElement.offsetHeight;
         this.canvasContext = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;

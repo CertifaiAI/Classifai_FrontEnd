@@ -40,6 +40,8 @@ export class VideoLabellingProjectComponent implements OnInit, OnChanges {
     @Input() _onChange!: VideoLabelProps;
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
     @Input() _selectMetadata!: BboxMetadata & PolyMetadata;
+    @Input() _videoDuration: string = '';
+    @Input() _videoPath: string = '';
     @Output() _onClickLabel: EventEmitter<SelectedLabelProps> = new EventEmitter();
     @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
     @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
@@ -69,7 +71,10 @@ export class VideoLabellingProjectComponent implements OnInit, OnChanges {
         private _videoLblState: VideoLabellingActionService,
         private _languageService: LanguageService,
         private _undoRedoService: UndoRedoService,
-    ) {}
+    ) {
+        const langsArr: string[] = ['video-labelling-en'];
+        this._languageService.initializeLanguage(`video-labelling`, langsArr);
+    }
 
     ngOnInit(): void {
         this.updateLabelList();
