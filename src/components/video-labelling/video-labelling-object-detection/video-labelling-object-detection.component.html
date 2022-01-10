@@ -1,101 +1,131 @@
 <div class="videoTimelineContainer">
     <div class="canvas-container">
-        <!-------------------------- Label List Popup Container -------------------------->
-        <div #floatdiv class="floatdiv unclosedOut" [hidden]="!showDropdownLabelBox">
-            <!-------------------------- Label Search/ OCR Input -------------------------->
-            <form autocomplete="off" spellcheck="false" class="unclosedOut">
-                <input
-                    #lbltypetxt
-                    type="text"
-                    class="lbltypetxt unclosedOut"
-                    [ngClass]="invalidInput ? 'invalidInput' : 'validInput'"
-                    [(ngModel)]="labelSearch"
-                    (ngModelChange)="labelTypeTextChange($event)"
-                    (keydown.enter)="validateInputLabel($event)"
-                    [ngModelOptions]="{ standalone: true }"
-                />
-            </form>
-            <!-------------------------- Label List -------------------------->
-            <div #availablelbl class="availablelbl unclosedOut">
-                <ul class="lblList unclosedOut">
-                    <li
-                        *ngFor="let label of labelList"
-                        class="lblElement unclosedOut"
-                        (click)="labelNameClicked(label.name)"
-                    >
-                        <span class="lblName unclosedOut">{{ label.name }}</span>
-                        <span class="lblCount unclosedOut">{{ label.count }}</span>
-                    </li>
-                    <li *ngIf="labelList.length === 0" class="unclosedOut notExist">
-                        <div class="unclosedOut">{{ 'searchLabel.labelNotExist' | translate }}</div>
-                        <div class="unclosedOut">{{ 'searchLabel.enterToAdd' | translate }}</div>
-                    </li>
-                </ul>
+        <div class="video-player-container">
+            <video
+                #videoPlayer
+                width="600"
+                height="400"
+                controls
+                controlslist="nofullscreen"
+                (seeked)="getVideoCurrentTime()"
+                (timeupdate)="videoTimeIndicator()"
+                (play)="drawingVideoFrame()"
+                (pause)="stopDrawingVideoFrame()"
+            >
+                <source src="./assets/test.mp4" type="video/mp4" />
+            </video>
+            <canvas
+                #canvasdrawing
+                class="canvasstyle"
+                width="600"
+                height="500"
+                [ngStyle]="{ cursor: currentCursor() }"
+            ></canvas>
+
+            <div class="video-player-control">
+                <button #videoPlayButton class="canvas-btn" (click)="videoPlayerButtonClick()">&#9658;</button>
+            </div>
+
+            <div class="timer">
+                <span #currentPlayingTime class="current-Time">0:00</span> /
+                <span #videoDuration class="video-duration">0:00</span>
             </div>
         </div>
-        <video class="video-player" controls>
-            <source src="./assets/test.mp4" type="video/mp4" />
-        </video>
-        <canvas #canvasdrawing class="canvasstyle" [ngStyle]="{ cursor: currentCursor() }"></canvas>
+        <!--        &lt;!&ndash;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; Label List Popup Container &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
+        <!--        <div #floatdiv class="floatdiv unclosedOut" [hidden]="!showDropdownLabelBox">-->
+        <!--            &lt;!&ndash;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; Label Search/ OCR Input &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
+        <!--            <form autocomplete="off" spellcheck="false" class="unclosedOut">-->
+        <!--                <input-->
+        <!--                    #lbltypetxt-->
+        <!--                    type="text"-->
+        <!--                    class="lbltypetxt unclosedOut"-->
+        <!--                    [ngClass]="invalidInput ? 'invalidInput' : 'validInput'"-->
+        <!--                    [(ngModel)]="labelSearch"-->
+        <!--                    (ngModelChange)="labelTypeTextChange($event)"-->
+        <!--                    (keydown.enter)="validateInputLabel($event)"-->
+        <!--                    [ngModelOptions]="{ standalone: true }"-->
+        <!--                />-->
+        <!--            </form>-->
+        <!--            &lt;!&ndash;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; Label List &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
+        <!--            <div #availablelbl class="availablelbl unclosedOut">-->
+        <!--                <ul class="lblList unclosedOut">-->
+        <!--                    <li-->
+        <!--                        *ngFor="let label of labelList"-->
+        <!--                        class="lblElement unclosedOut"-->
+        <!--                        (click)="labelNameClicked(label.name)"-->
+        <!--                    >-->
+        <!--                        <span class="lblName unclosedOut">{{ label.name }}</span>-->
+        <!--                        <span class="lblCount unclosedOut">{{ label.count }}</span>-->
+        <!--                    </li>-->
+        <!--                    <li *ngIf="labelList.length === 0" class="unclosedOut notExist">-->
+        <!--                        <div class="unclosedOut">{{ 'searchLabel.labelNotExist' | translate }}</div>-->
+        <!--                        <div class="unclosedOut">{{ 'searchLabel.enterToAdd' | translate }}</div>-->
+        <!--                    </li>-->
+        <!--                </ul>-->
+        <!--            </div>-->
+        <!--        </div>-->
+        <!--        <canvas #canvasdrawing class="canvasstyle" width="500" height="500" [ngStyle]="{ cursor: currentCursor() }">-->
+        <!--            <button class="canvas-btn">click</button>-->
+        <!--        </canvas>-->
         <!-------------------------- Yellow Guideline Cross -------------------------->
-        <div #crossH id="cross-h" class="crosses"></div>
-        <div #crossV id="cross-v" class="crosses"></div>
+        <!--        <div #crossH id="cross-h" class="crosses"></div>-->
+        <!--        <div #crossV id="cross-v" class="crosses"></div>-->
     </div>
 
-    <div class="control-layout">
-        <div class="control-container">
-            <ng-container *ngFor="let logo of jsonSchema.logos; index as i">
-                <div class="control-icon-container">
-                    <img
-                        (click)="getIndex(i); logo.onClick()"
-                        [attr.data-index]="i"
-                        [src]="logo.imgPath"
-                        [alt]="logo.alt"
-                        [title]="logo.hoverLabel | translate"
-                        class="control-icon"
-                    />
-                </div>
-            </ng-container>
-            <div class="control-icon-container">
-                <img
-                    *ngIf="!isPlayingFrame"
-                    class="control-icon"
-                    src="assets/icons/Play.svg"
-                    alt="Play"
-                    (click)="clickPlay()"
-                />
-                <img
-                    *ngIf="isPlayingFrame"
-                    class="control-icon"
-                    src="assets/icons/Pause.svg"
-                    alt="Pause"
-                    (click)="clickPause()"
-                />
-            </div>
-            <div class="time-container">
-                <label class="time-label">
-                    {{ timeIndicator() }}
-                </label>
-            </div>
-        </div>
-    </div>
-    <div class="videoTimeline" id="videoTimeline">
-        <table class="table">
-            <tbody class="video-tbody videoTimeLineScrollBar" #videoTimelineRef (scroll)="videoTimelineScroll()">
-                <tr>
-                    <ng-container *ngFor="let frame of thumbnailList; index as i">
-                        <td class="tableTiming">
-                            <div [ngClass]="activeFrame === i ? 'active row' : null">
-                                {{ i }}
-                            </div>
-                            <div
-                                [ngClass]="displayFrameIndicator(i, frame.bnd_box)"
-                                (click)="onClickVideoTimeLine(i)"
-                            ></div>
-                        </td>
-                    </ng-container>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <!--    <div class="control-layout">-->
+    <!--        <div class="control-container">-->
+    <!--            <ng-container *ngFor="let logo of jsonSchema.logos; index as i">-->
+    <!--                <div class="control-icon-container">-->
+    <!--                    <img-->
+    <!--                        (click)="getIndex(i); logo.onClick()"-->
+    <!--                        [attr.data-index]="i"-->
+    <!--                        [src]="logo.imgPath"-->
+    <!--                        [alt]="logo.alt"-->
+    <!--                        [title]="logo.hoverLabel | translate"-->
+    <!--                        class="control-icon"-->
+    <!--                    />-->
+    <!--                </div>-->
+    <!--            </ng-container>-->
+    <!--            <div class="control-icon-container">-->
+    <!--                <img-->
+    <!--                    *ngIf="!isPlayingFrame"-->
+    <!--                    class="control-icon"-->
+    <!--                    src="assets/icons/Play.svg"-->
+    <!--                    alt="Play"-->
+    <!--                    (click)="clickPlay()"-->
+    <!--                />-->
+    <!--                <img-->
+    <!--                    *ngIf="isPlayingFrame"-->
+    <!--                    class="control-icon"-->
+    <!--                    src="assets/icons/Pause.svg"-->
+    <!--                    alt="Pause"-->
+    <!--                    (click)="clickPause()"-->
+    <!--                />-->
+    <!--            </div>-->
+    <!--            <div class="time-container">-->
+    <!--                <label class="time-label">-->
+    <!--                    {{ timeIndicator() }}-->
+    <!--                </label>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--    </div>-->
+    <!--    <div class="videoTimeline" id="videoTimeline">-->
+    <!--        <table class="table">-->
+    <!--            <tbody class="video-tbody videoTimeLineScrollBar" #videoTimelineRef (scroll)="videoTimelineScroll()">-->
+    <!--                <tr>-->
+    <!--                    <ng-container *ngFor="let frame of thumbnailList; index as i">-->
+    <!--                        <td class="tableTiming">-->
+    <!--                            <div [ngClass]="activeFrame === i ? 'active row' : null">-->
+    <!--                                {{ i }}-->
+    <!--                            </div>-->
+    <!--                            <div-->
+    <!--                                [ngClass]="displayFrameIndicator(i, frame.bnd_box)"-->
+    <!--                                (click)="onClickVideoTimeLine(i)"-->
+    <!--                            ></div>-->
+    <!--                        </td>-->
+    <!--                    </ng-container>-->
+    <!--                </tr>-->
+    <!--            </tbody>-->
+    <!--        </table>-->
+    <!--    </div>-->
 </div>

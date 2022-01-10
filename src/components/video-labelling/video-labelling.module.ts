@@ -13,7 +13,7 @@ import { VideoLabellingRightSidebarComponent } from './video-labelling-right-sid
 import { VideoLabellingObjectDetectionComponent } from './video-labelling-object-detection/video-labelling-object-detection.component';
 import { VideoLabellingProjectComponent } from './video-labelling-project/video-labelling-project.component';
 import { VideoLabellingInfoComponent } from './video-labelling-info/video-labelling-info.component';
-import { VideoLabellingFooterComponent } from './video-labelling-footer/video-labelling-footer.component';
+// import { VideoLabellingFooterComponent } from './video-labelling-footer/video-labelling-footer.component';
 
 @NgModule({
     imports: [CommonModule, SharedModule, TranslateModule],
@@ -23,7 +23,7 @@ import { VideoLabellingFooterComponent } from './video-labelling-footer/video-la
         VideoLabellingObjectDetectionComponent,
         VideoLabellingProjectComponent,
         VideoLabellingInfoComponent,
-        VideoLabellingFooterComponent,
+        // VideoLabellingFooterComponent,
     ],
     exports: [
         VideoLabellingLeftSidebarComponent,
@@ -31,7 +31,7 @@ import { VideoLabellingFooterComponent } from './video-labelling-footer/video-la
         VideoLabellingObjectDetectionComponent,
         VideoLabellingProjectComponent,
         VideoLabellingInfoComponent,
-        VideoLabellingFooterComponent,
+        // VideoLabellingFooterComponent,
     ],
 })
 export class VideoLabellingModule {}

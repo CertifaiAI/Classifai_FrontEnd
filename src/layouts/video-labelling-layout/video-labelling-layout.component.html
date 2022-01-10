@@ -1,12 +1,12 @@
 <div class="layout-container">
     <div>
         <page-header [_onChange]="onChangeSchema"></page-header>
-        <video-labelling-info
-            [_totalUuid]="totalUuid"
-            [_onChange]="onChangeSchema"
-            [_tabStatus]="tabStatus"
-            (_onClick)="navigateByAction($event)"
-        ></video-labelling-info>
+        <!--        <video-labelling-info-->
+        <!--            [_totalUuid]="totalUuid"-->
+        <!--            [_onChange]="onChangeSchema"-->
+        <!--            [_tabStatus]="tabStatus"-->
+        <!--            (_onClick)="navigateByAction($event)"-->
+        <!--        ></video-labelling-info>-->
     </div>
 
     <div class="content-container">
@@ -71,7 +71,7 @@
         >
         </video-labelling-right-sidebar>
     </div>
-    <video-labelling-footer [_thumbnailInfo]="selectedMetaData" [_imgSrc]="imgSrc"></video-labelling-footer>
+    <!--    <video-labelling-footer [_thumbnailInfo]="selectedMetaData" [_imgSrc]="imgSrc"></video-labelling-footer>-->
 </div>
 
 <modal id="modal-save" [id]="'modal-save'" [modalBodyStyle]="saveModalBodyStyle" [scrollable]="true">

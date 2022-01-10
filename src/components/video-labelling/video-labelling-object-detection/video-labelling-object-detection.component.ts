@@ -146,8 +146,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     extractedFrameIndex: number = 0;
     state!: videoFramesExtractionState;
     interval!: any;
-    projectNameUUIDList!: projectNameUUIDList;
-    projectNameFrameIndexMap!: Map<string, number>;
 
     @Input() _totalUuid!: number;
     @Input() _videoLength!: number;
@@ -173,6 +171,10 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @ViewChild('availablelbl') availablelbl!: ElementRef<HTMLDivElement>;
     @ViewChild('crossH') crossH!: ElementRef<HTMLDivElement>;
     @ViewChild('crossV') crossV!: ElementRef<HTMLDivElement>;
+    @ViewChild('videoPlayer') video!: ElementRef<HTMLVideoElement>;
+    @ViewChild('videoPlayButton') playButton!: ElementRef<HTMLButtonElement>;
+    @ViewChild('currentPlayingTime') currentPlayingTime!: ElementRef<HTMLSpanElement>;
+    @ViewChild('videoDuration') videoDuration!: ElementRef<HTMLSpanElement>;
 
     ngOnInit() {
         this.getLabelList();
@@ -198,13 +200,13 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 }
             });
 
-        this.interval = setInterval(() => {
-            this.state = this._videoLblLayoutService.getVideoFramesExtractionState();
-            if (this.state !== undefined) {
-                this.onRetrieveVideoExtractionState(this.state);
-                clearInterval(this.interval);
-            }
-        }, 1000);
+        // this.interval = setInterval(() => {
+        //     this.state = this._videoLblLayoutService.getVideoFramesExtractionState();
+        //     if (this.state !== undefined) {
+        //         this.onRetrieveVideoExtractionState(this.state);
+        //         clearInterval(this.interval);
+        //     }
+        // }, 1000);
 
         this._mouseCursorService.mouseCursor$
             .pipe(takeUntil(this.unsubscribe$))
@@ -284,9 +286,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             this.selectedPartition = partition;
             this.extractedFrameIndex = state.extractedFrameIndex;
 
-            // this.projectNameFrameIndexMap.set(this.selectedProjectName, state.extractedFrameIndex);
-            // console.log(this.projectNameFrameIndexMap);
-
             this.videoExtraction(
                 this.selectedVideoPath,
                 this.selectedProjectName,
@@ -296,11 +295,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         } else {
             const { projectName } = this._videoLblLayoutService.getRouteState(history);
             this.selectedProjectName = projectName;
-            const projectNameUUIDList: projectNameUUIDList = {
-                projectName: this.selectedProjectName,
-                uuidList: this.retrievedUUIDList,
-            };
-            this._onFinishExtraction.emit(projectNameUUIDList);
             this.retrieveAllVideoFrames(this.selectedProjectName);
         }
     }
@@ -337,12 +331,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 },
                 () => {
                     if (!this.isProjectStarted) {
-                        this.projectNameUUIDList = {
-                            projectName: this.selectedProjectName,
-                            uuidList: this.retrievedUUIDList,
-                        };
-
-                        this._onFinishExtraction.emit(this.projectNameUUIDList);
                         this.isProjectStarted = true;
                     }
                     this.retrieveExtractedVideoFrames(this.selectedProjectName);
@@ -390,11 +378,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     console.log(this._videoLength);
                     console.log('thumbnail List loading complete');
 
-                    this.projectNameUUIDList = {
-                        projectName: this.selectedProjectName,
-                        uuidList: this.retrievedUUIDList,
-                    };
-
                     if (!this.isVideoFramesExtractionCompleted) {
                         this.videoExtraction(
                             this.selectedVideoPath,
@@ -426,6 +409,51 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 this.thumbnailList.push(res);
             });
         this.subject$.next();
+    }
+
+    drawingVideoFrame() {
+        this.id = setInterval(this.drawVideoFrame);
+    }
+
+    stopDrawingVideoFrame() {
+        clearInterval(this.id);
+    }
+
+    drawVideoFrame = () => {
+        // @ts-ignore
+        this.canvas.nativeElement
+            .getContext('2d')
+            .drawImage(this.video.nativeElement, 0, 0, this.video.nativeElement.width, this.video.nativeElement.height);
+    };
+
+    getVideoCurrentTime() {
+        console.log(this.video.nativeElement.currentTime);
+        console.log(this.video.nativeElement.duration);
+    }
+
+    videoPlayerButtonClick() {
+        if (!this.isPlayingFrame) {
+            this.playButton.nativeElement.innerHTML = '&#9658;';
+            this.video.nativeElement.play().then(() => (this.isPlayingFrame = true));
+        } else {
+            this.isPlayingFrame = false;
+            this.playButton.nativeElement.innerHTML = '&#9616; &#9616;';
+            this.video.nativeElement.pause();
+        }
+    }
+
+    videoTimeIndicator() {
+        const currentPlayingTimeMinutes = Math.floor(this.video.nativeElement.currentTime / 60);
+        const currentPlayingTimeSeconds = Math.floor(
+            this.video.nativeElement.currentTime - currentPlayingTimeMinutes * 60,
+        );
+        const videoDurationMinutes = Math.floor(this.video.nativeElement.duration / 60);
+        const videoDurationSeconds = Math.floor(this.video.nativeElement.duration - videoDurationMinutes * 60);
+
+        this.currentPlayingTime.nativeElement.innerHTML = `${currentPlayingTimeMinutes}:${
+            currentPlayingTimeSeconds < 10 ? '0' + currentPlayingTimeSeconds : currentPlayingTimeSeconds
+        }`;
+        this.videoDuration.nativeElement.innerHTML = `${videoDurationMinutes}:${videoDurationSeconds}`;
     }
 
     bindImagePath = () => {
@@ -658,7 +686,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         );
     };
 
-    initializeCanvas(width: string = '54%') {
+    initializeCanvas(width: string = '60%') {
         this.canvas.nativeElement.style.width = width;
         this.canvas.nativeElement.style.height = '75%';
         this.canvas.nativeElement.width = this.canvas.nativeElement.offsetWidth;
