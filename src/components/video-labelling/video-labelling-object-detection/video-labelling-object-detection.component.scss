@@ -21,8 +21,9 @@
 
 .canvas-container {
     height: 76vh;
-    justify-content: space-between;
-    width: 90vw;
+    width: 80%;
+    margin-left: 2vw;
+    display: flex;
 }
 
 .active-frame-container {
@@ -159,7 +160,8 @@
 
 .control-icon {
     padding-top: 0.5vh;
-    height: 4vh;
+    height: 2.1vh;
+    width: 2.1vw;
     cursor: pointer;
 }
 
@@ -189,7 +191,7 @@
 
 .canvasstyle {
     position: fixed;
-    left: 48vw;
+    //left: 48vw;
     right: auto;
     //top: 8vh;
     margin: 3px;
@@ -253,27 +255,24 @@
     position: absolute;
 }
 
-.canvas-btn {
-    position: absolute;
-}
-
 .video-player-container {
-    float: left;
-    justify-content: space-between;
+    position: absolute;
+    display: flex;
 }
 
-//.current-Time .video-duration {
-//    font-family: Arial, sans-serif;
-//    font-size: 12px;
-//    color: white;
-//}
+.video-player-control {
+    background: grey;
+}
 
 .timer {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 1rem;
     color: white;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
+    padding-left: 0.5vw;
+    padding-top: 0.5vh;
+}
+
+.canvas-video-player {
+    float: right;
     display: flex;
 }

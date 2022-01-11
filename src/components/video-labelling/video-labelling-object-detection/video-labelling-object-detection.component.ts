@@ -433,11 +433,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     videoPlayerButtonClick() {
         if (!this.isPlayingFrame) {
-            this.playButton.nativeElement.innerHTML = '&#9658;';
             this.video.nativeElement.play().then(() => (this.isPlayingFrame = true));
         } else {
             this.isPlayingFrame = false;
-            this.playButton.nativeElement.innerHTML = '&#9616; &#9616;';
             this.video.nativeElement.pause();
         }
     }
@@ -453,7 +451,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this.currentPlayingTime.nativeElement.innerHTML = `${currentPlayingTimeMinutes}:${
             currentPlayingTimeSeconds < 10 ? '0' + currentPlayingTimeSeconds : currentPlayingTimeSeconds
         }`;
-        this.videoDuration.nativeElement.innerHTML = `${videoDurationMinutes}:${videoDurationSeconds}`;
+        this.videoDuration.nativeElement.innerHTML = `${videoDurationMinutes}:${
+            videoDurationSeconds < 10 ? '0' + videoDurationSeconds : videoDurationSeconds
+        }`;
     }
 
     bindImagePath = () => {
