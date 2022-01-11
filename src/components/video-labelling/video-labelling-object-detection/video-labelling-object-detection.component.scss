@@ -1,7 +1,7 @@
 @use "../../../shared/scss/variables" as color;
 
 .videoTimelineContainer {
-    //position: relative;
+    position: absolute;
     // background: #121212;
     // width: 130vh;
 
@@ -20,9 +20,8 @@
 }
 
 .canvas-container {
-    height: 76vh;
-    width: 80%;
-    margin-left: 2vw;
+    height: 63vh;
+    width: 60vw;
     display: flex;
 }
 
@@ -191,13 +190,7 @@
 
 .canvasstyle {
     position: fixed;
-    //left: 48vw;
-    right: auto;
-    //top: 8vh;
-    margin: 3px;
-    padding: 0px;
-    outline: none;
-    border: none;
+    padding: 5px;
 }
 
 #cross-h {
@@ -225,13 +218,6 @@
     z-index: 100;
 }
 
-.video {
-    margin-left: 30px;
-    width: 70vw;
-    height: 78vh;
-    display: block;
-}
-
 .videoTimeLineScrollBar {
     &::-webkit-scrollbar-track {
         background-color: #293540;
@@ -251,28 +237,55 @@
 //    transform-origin: right top;
 //}
 
-.video-player {
-    position: absolute;
-}
-
 .video-player-container {
-    position: absolute;
+    position: relative;
     display: flex;
+    width: 60%;
+    padding: 5px;
 }
 
 .video-player-control {
     background: grey;
+    position: relative;
+    height: 3.3vh;
 }
 
 .timer {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 1rem;
+    font-size: 0.7rem;
     color: white;
-    padding-left: 0.5vw;
-    padding-top: 0.5vh;
+    margin-top: 0.5vh;
+}
+
+.timer-container {
+    height: 3.3vh;
+    width: 7vw;
+    background: grey;
+    align-items: center;
+    justify-content: center;
+    padding-left: 0.5rem;
+    vertical-align: center;
 }
 
 .canvas-video-player {
-    float: right;
+    position: relative;
+}
+
+.video-Progress-track {
+    position: relative;
+    height: 3.3vh;
+    width: 100%;
+    background: rgba(149, 165, 166, 0.7);
+}
+
+.video-progress-bar {
+    background: darkcyan;
+    cursor: pointer;
+    height: 3.3vh;
+    position: relative;
+}
+
+.canvas-video-container {
+    position: relative;
     display: flex;
 }
