@@ -111,6 +111,14 @@ export type Videos = {
     extraction_partition: number;
 };
 
+export type VideoInfo = {
+    message: message;
+    window_status: window_status;
+    window_message: string;
+    video_file_path: path;
+    current_time: number;
+};
+
 export type VideoFramesExtractionStatus = {
     message: message;
     video_frames_extraction_status: number;

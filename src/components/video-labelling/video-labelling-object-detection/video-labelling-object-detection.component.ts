@@ -175,8 +175,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @ViewChild('videoPlayButton') playButton!: ElementRef<HTMLButtonElement>;
     @ViewChild('currentPlayingTime') currentPlayingTime!: ElementRef<HTMLSpanElement>;
     @ViewChild('videoDuration') videoDuration!: ElementRef<HTMLSpanElement>;
+    @ViewChild('videoProgressBar') videoProgressBar!: ElementRef<HTMLDivElement>;
     @ViewChild('videoProgress') videoProgress!: ElementRef<HTMLDivElement>;
-    @ViewChild('videoProgressTrack') videoProgressTrack!: ElementRef<HTMLDivElement>;
 
     ngOnInit() {
         this.getLabelList();
@@ -460,12 +460,16 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     currentVideoTime() {
         const percentage = (this.video.nativeElement.currentTime / this.video.nativeElement.duration) * 100;
-        this.videoProgress.nativeElement.style.width = `${percentage}`;
+        this.videoProgressBar.nativeElement.style.width = `${percentage}%`;
     }
 
     videoProgressTrackClick(event: MouseEvent) {
         this.video.nativeElement.currentTime =
             (event.offsetX / this.videoProgress.nativeElement.offsetWidth) * this.video.nativeElement.duration;
+    }
+
+    extractCurrentTimeFrame(videoFilePath: string, projectName: string, currentTime: number) {
+        this._videoDataSetService.extractSpecificFrame(videoFilePath, projectName, currentTime);
     }
 
     bindImagePath = () => {

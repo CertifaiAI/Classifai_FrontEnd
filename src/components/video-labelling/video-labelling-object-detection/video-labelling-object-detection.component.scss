@@ -21,7 +21,7 @@
 
 .canvas-container {
     height: 63vh;
-    width: 60vw;
+    width: 90vw;
     display: flex;
 }
 
@@ -190,7 +190,9 @@
 
 .canvasstyle {
     position: fixed;
-    padding: 5px;
+    padding-left: 20px;
+    margin: 5px;
+    box-shadow: 2px 2px 5px 2px;
 }
 
 #cross-h {
@@ -240,7 +242,7 @@
 .video-player-container {
     position: relative;
     display: flex;
-    width: 60%;
+    width: 40vw;
     padding: 5px;
 }
 
@@ -271,21 +273,29 @@
     position: relative;
 }
 
-.video-Progress-track {
+.video-Progress {
     position: relative;
     height: 3.3vh;
     width: 100%;
     background: rgba(149, 165, 166, 0.7);
+    cursor: pointer;
 }
 
 .video-progress-bar {
-    background: darkcyan;
+    background: red;
     cursor: pointer;
     height: 3.3vh;
     position: relative;
+    width: 0%;
+}
+
+.video-container {
+    position: relative;
+    margin: 10px;
+    justify-content: center;
 }
 
 .canvas-video-container {
     position: relative;
-    display: flex;
+    margin: 10px;
 }

@@ -1,24 +1,23 @@
 <div class="videoTimelineContainer">
     <div class="canvas-container">
-        <video
-            #videoPlayer
-            width="700px"
-            height="400px"
-            controls
-            controlslist="nofullscreen"
-            (seeked)="getVideoCurrentTime()"
-            (timeupdate)="videoTimeIndicator()"
-            (play)="drawingVideoFrame()"
-            (pause)="stopDrawingVideoFrame()"
-            hidden
-        >
-            <source src="./assets/test.mp4" type="video/mp4" />
-        </video>
+        <div class="video-container">
+            <video
+                #videoPlayer
+                width="500px"
+                height="400px"
+                (seeked)="getVideoCurrentTime()"
+                (timeupdate)="videoTimeIndicator(); currentVideoTime()"
+                (play)="drawingVideoFrame()"
+                (pause)="stopDrawingVideoFrame()"
+            >
+                <source src="./assets/test.mp4" type="video/mp4" />
+            </video>
+        </div>
 
         <div class="canvas-video-container">
             <canvas
                 #canvasdrawing
-                width="700px"
+                width="500px"
                 height="400px"
                 class="canvasstyle"
                 [ngStyle]="{ cursor: currentCursor() }"
@@ -44,13 +43,8 @@
             />
         </div>
 
-        <div #videoProgressTrack class="video-Progress-track">
-            <div
-                #videoProgress
-                class="video-progress-bar"
-                (timeupdate)="currentVideoTime()"
-                (click)="videoProgressTrackClick($event)"
-            ></div>
+        <div #videoProgress class="video-Progress" (click)="videoProgressTrackClick($event)">
+            <div #videoProgressBar class="video-progress-bar"></div>
         </div>
         <div class="timer-container">
             <div class="timer">
