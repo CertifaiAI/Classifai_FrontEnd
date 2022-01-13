@@ -60,6 +60,7 @@ export type VideoProject = Project & {
     video_duration: string;
     is_video_frames_extraction_completed: boolean;
     extracted_frame_index: number;
+    frames_per_second: number;
 };
 
 export type ChartProps = {

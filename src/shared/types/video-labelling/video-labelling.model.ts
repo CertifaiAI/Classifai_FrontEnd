@@ -218,4 +218,5 @@ export type videoFramesExtractionState = {
     extractedFrameIndex: number;
     isVideoFramesExtractionCompleted: boolean;
     videoPath: string;
+    framesPerSecond: number;
 };

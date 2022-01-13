@@ -241,11 +241,17 @@ export class VideoLabellingLayoutService {
         });
     };
 
-    setVideoFramesExtractionState(isComplete: boolean, videoFrameIndex: number, selectedVideoPath: string) {
+    setVideoFramesExtractionState(
+        isComplete: boolean,
+        videoFrameIndex: number,
+        selectedVideoPath: string,
+        videoFramesPerSecond: number,
+    ) {
         this.videoExtractionState = {
             isVideoFramesExtractionCompleted: isComplete,
             extractedFrameIndex: videoFrameIndex,
             videoPath: selectedVideoPath,
+            framesPerSecond: videoFramesPerSecond,
         };
     }
 

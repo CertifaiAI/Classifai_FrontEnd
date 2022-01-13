@@ -118,6 +118,7 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
     videoLength: number = 0;
     videoPath: string = '';
     videoDuration: string = '';
+    framesPerSecond: number = 0;
     isVideoFramesExtractionCompleted!: boolean;
     extractedFrameIndex!: number;
     partition: number = 1;
@@ -242,13 +243,11 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
     getSelectedProjectMeta(projectName: string): void {
         const projMetaStatus$ = this._videoDataSetService.checkProjectStatus(projectName);
         projMetaStatus$.pipe(first()).subscribe((response) => {
-            this.isVideoFramesExtractionCompleted = response.content[0].is_video_frames_extraction_completed;
-            this.extractedFrameIndex = response.content[0].extracted_frame_index;
-            this.videoPath = response.content[0].video_file_path;
             this._videoLblLayoutService.setVideoFramesExtractionState(
-                this.isVideoFramesExtractionCompleted,
-                this.extractedFrameIndex,
-                this.videoPath,
+                response.content[0].is_video_frames_extraction_completed,
+                response.content[0].extracted_frame_index,
+                response.content[0].video_file_path,
+                response.content[0].frames_per_second,
             );
         });
     }
@@ -257,9 +256,7 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
         this.isLoading = loading;
     }
 
-    startProject = (projectNameUUIDList: projectNameUUIDList): void => {
-        this.selectedProjectName = projectNameUUIDList.projectName;
-        this.retrievedUUIDList = projectNameUUIDList.uuidList;
+    startProject = (): void => {
         const projMetaStatus$ = this._videoDataSetService.checkProjectStatus(this.selectedProjectName);
         const updateProjLoadStatus$ = this._videoDataSetService.updateProjectLoadStatus(this.selectedProjectName);
         const projLoadingStatus$ = this._videoDataSetService.checkExistProjectStatus(this.selectedProjectName);
@@ -270,12 +267,6 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
                 concatMap(() => forkJoin([projMetaStatus$])),
                 first(([{ message, content }]) => {
                     this.totalUuid = content[0].total_uuid;
-                    this.videoLength = content[0].video_length;
-                    this.videoPath = content[0].video_file_path;
-                    this.isVideoFramesExtractionCompleted = content[0].is_video_frames_extraction_completed;
-                    this.extractedFrameIndex = content[0].extracted_frame_index;
-                    this.videoDuration = content[0].video_duration;
-
                     this.projectList = {
                         isUploading: this.projectList.isUploading,
                         isFetching: this.projectList.isFetching,

@@ -1,15 +1,16 @@
 <div class="videoTimelineContainer">
     <div class="canvas-container">
         <div class="video-container">
-            <video
-                #videoPlayer
-                width="500px"
-                height="400px"
-                (seeked)="getVideoCurrentTime()"
-                (timeupdate)="videoTimeIndicator(); currentVideoTime()"
-                (play)="drawingVideoFrame()"
-                (pause)="stopDrawingVideoFrame()"
-            >
+            <!--            <video-->
+            <!--                #videoPlayer-->
+            <!--                width="500px"-->
+            <!--                height="400px"-->
+            <!--                (seeked)="getVideoCurrentTime()"-->
+            <!--                (timeupdate)="videoTimeIndicator(); currentVideoTime()"-->
+            <!--                (play)="drawingVideoFrame()"-->
+            <!--                (pause)="stopDrawingVideoFrame()"-->
+            <!--            >-->
+            <video #videoPlayer width="500px" height="400px" (timeupdate)="videoTimeIndicator(); currentVideoTime()">
                 <source src="./assets/test.mp4" type="video/mp4" />
             </video>
         </div>
@@ -23,36 +24,104 @@
                 [ngStyle]="{ cursor: currentCursor() }"
             ></canvas>
         </div>
-    </div>
 
-    <div class="video-player-container">
-        <div class="video-player-control">
-            <img
-                *ngIf="!isPlayingFrame"
-                class="control-icon"
-                src="assets/icons/Play.svg"
-                alt="Play"
-                (click)="videoPlayerButtonClick()"
-            />
-            <img
-                *ngIf="isPlayingFrame"
-                class="control-icon"
-                src="assets/icons/Pause.svg"
-                alt="Pause"
-                (click)="videoPlayerButtonClick()"
-            />
-        </div>
+        <div class="video-player-container">
+            <div class="video-player-control">
+                <img
+                    *ngIf="!isPlayingFrame"
+                    class="control-icon"
+                    src="assets/icons/Play.svg"
+                    alt="Play"
+                    (click)="videoPlayerButtonClick()"
+                />
+                <img
+                    *ngIf="isPlayingFrame"
+                    class="control-icon"
+                    src="assets/icons/Pause.svg"
+                    alt="Pause"
+                    (click)="videoPlayerButtonClick()"
+                />
+            </div>
 
-        <div #videoProgress class="video-Progress" (click)="videoProgressTrackClick($event)">
-            <div #videoProgressBar class="video-progress-bar"></div>
-        </div>
-        <div class="timer-container">
-            <div class="timer">
-                <span #currentPlayingTime class="current-Time">0:00</span> /
-                <span #videoDuration class="video-duration">0:00</span>
+            <div #videoProgress class="video-Progress" (click)="videoProgressTrackClick($event)">
+                <div #videoProgressBar class="video-progress-bar" (contextmenu)="extractFrame($event)"></div>
+            </div>
+            <div class="timer-container">
+                <div class="timer">
+                    <span #currentPlayingTime class="current-Time">0:00</span> /
+                    <span #videoDuration class="video-duration">0:00</span>
+                </div>
+            </div>
+            <div class="video-player-control">
+                <img
+                    class="control-icon"
+                    src="assets/icons/left_double_arrow.svg"
+                    alt="Play"
+                    (click)="returnToPreviousSkippedVideoFrame()"
+                />
+            </div>
+            <div class="video-player-control">
+                <img class="control-icon" src="assets/icons/previous.svg" alt="Pause" (click)="previousVideoFrame()" />
+            </div>
+            <div class="video-player-control">
+                <img class="control-icon" src="assets/icons/next.svg" alt="Play" (click)="nextVideoFrame()" />
+            </div>
+            <div class="video-player-control">
+                <img
+                    class="control-icon"
+                    src="assets/icons/right_double_arrow.svg"
+                    alt="Pause"
+                    (click)="skipToNextFifthVideoFrame()"
+                />
             </div>
         </div>
     </div>
+
+    <!--    <div class="video-player-container">-->
+    <!--        <div class="video-player-control">-->
+    <!--            <img-->
+    <!--                *ngIf="!isPlayingFrame"-->
+    <!--                class="control-icon"-->
+    <!--                src="assets/icons/Play.svg"-->
+    <!--                alt="Play"-->
+    <!--                (click)="videoPlayerButtonClick()"-->
+    <!--            />-->
+    <!--            <img-->
+    <!--                *ngIf="isPlayingFrame"-->
+    <!--                class="control-icon"-->
+    <!--                src="assets/icons/Pause.svg"-->
+    <!--                alt="Pause"-->
+    <!--                (click)="videoPlayerButtonClick()"-->
+    <!--            />-->
+    <!--        </div>-->
+
+    <!--        <div #videoProgress class="video-Progress" (click)="videoProgressTrackClick($event)">-->
+    <!--            <div #videoProgressBar-->
+    <!--                 class="video-progress-bar"-->
+    <!--                 (contextmenu)="extractFrame($event)"-->
+    <!--            ></div>-->
+    <!--        </div>-->
+    <!--        <div class="timer-container">-->
+    <!--            <div class="timer">-->
+    <!--                <span #currentPlayingTime class="current-Time">0:00</span> /-->
+    <!--                <span #videoDuration class="video-duration">0:00</span>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--        <div class="video-player-control">-->
+    <!--            <img-->
+    <!--                class="control-icon"-->
+    <!--                src="assets/icons/Play.svg"-->
+    <!--                alt="Play"-->
+    <!--                (click)="videoPlayerButtonClick()"-->
+    <!--            />-->
+    <!--            <img-->
+    <!--                class="control-icon"-->
+    <!--                src="assets/icons/Pause.svg"-->
+    <!--                alt="Pause"-->
+    <!--                (click)="videoPlayerButtonClick()"-->
+    <!--            />-->
+    <!--        </div>-->
+    <!--    </div>-->
 
     <!--        &lt;!&ndash;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; Label List Popup Container &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
     <!--        <div #floatdiv class="floatdiv unclosedOut" [hidden]="!showDropdownLabelBox">-->
@@ -132,23 +201,23 @@
     <!--                </div>-->
     <!--            </div>-->
     <!--        </div>-->
-    <!--        <div class="videoTimeline" id="videoTimeline">-->
-    <!--            <table class="table">-->
-    <!--                <tbody class="video-tbody videoTimeLineScrollBar" #videoTimelineRef (scroll)="videoTimelineScroll()">-->
-    <!--                    <tr>-->
-    <!--                        <ng-container *ngFor="let frame of thumbnailList; index as i">-->
-    <!--                            <td class="tableTiming">-->
-    <!--                                <div [ngClass]="activeFrame === i ? 'active row' : null">-->
-    <!--                                    {{ i }}-->
-    <!--                                </div>-->
-    <!--                                <div-->
-    <!--                                    [ngClass]="displayFrameIndicator(i, frame.bnd_box)"-->
-    <!--                                    (click)="onClickVideoTimeLine(i)"-->
-    <!--                                ></div>-->
-    <!--                            </td>-->
-    <!--                        </ng-container>-->
-    <!--                    </tr>-->
-    <!--                </tbody>-->
-    <!--            </table>-->
-    <!--        </div>-->
+    <div class="videoTimeline" id="videoTimeline">
+        <table class="table">
+            <tbody class="video-tbody videoTimeLineScrollBar" #videoTimelineRef (scroll)="videoTimelineScroll()">
+                <tr>
+                    <ng-container *ngFor="let frame of thumbnailList; index as i">
+                        <td class="tableTiming">
+                            <div [ngClass]="activeFrame === i ? 'active row' : null">
+                                {{ i }}
+                            </div>
+                            <div
+                                [ngClass]="displayFrameIndicator(i, frame.bnd_box)"
+                                (click)="onClickVideoTimeLine(i)"
+                            ></div>
+                        </td>
+                    </ng-container>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

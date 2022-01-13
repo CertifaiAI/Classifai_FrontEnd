@@ -203,25 +203,25 @@
                     <label class="foldername" #projectfoldername></label>
                 </div>
                 <br />
-                <div class="select-folder-container">
-                    <label class="label label-select-folder">{{ 'partition' | translate }}</label>
-                    <input
-                        #selectedPartition
-                        value="1"
-                        type="range"
-                        min="1"
-                        max="100"
-                        style="width: 48%"
-                        (change)="selectPartition()"
-                        (mousemove)="selectPartition()"
-                    />
-                </div>
-                <div class="folder-name-container">
-                    <label class="foldername" #partitionValue style="margin-left: 3rem">
-                        {{ partition + ' frame interval' }}
-                    </label>
-                </div>
-                <br />
+                <!--                <div class="select-folder-container">-->
+                <!--                    <label class="label label-select-folder">{{ 'partition' | translate }}</label>-->
+                <!--                    <input-->
+                <!--                        #selectedPartition-->
+                <!--                        value="1"-->
+                <!--                        type="range"-->
+                <!--                        min="1"-->
+                <!--                        max="100"-->
+                <!--                        style="width: 48%"-->
+                <!--                        (change)="selectPartition()"-->
+                <!--                        (mousemove)="selectPartition()"-->
+                <!--                    />-->
+                <!--                </div>-->
+                <!--                <div class="folder-name-container">-->
+                <!--                    <label class="foldername" #partitionValue style="margin-left: 3rem">-->
+                <!--                        {{ partition + ' frame interval' }}-->
+                <!--                    </label>-->
+                <!--                </div>-->
+                <!--                <br />-->
                 <div class="select-file-container">
                     <label class="label-select-label">
                         {{ 'labelListFile' | translate }}<br />
