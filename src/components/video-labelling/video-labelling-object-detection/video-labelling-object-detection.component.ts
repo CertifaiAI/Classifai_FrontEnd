@@ -284,29 +284,11 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     onRetrieveVideoExtractionState(state: videoFramesExtractionState) {
         console.log(state);
-        // if (!state.isVideoFramesExtractionCompleted) {
-        //     const { projectName, partition } = this._videoLblLayoutService.getRouteState(history);
-        //     this.selectedProjectName = projectName;
-        //     this.selectedVideoPath = state.videoPath;
-        //     this.selectedPartition = partition;
-        //     this.extractedFrameIndex = state.extractedFrameIndex;
-        //
-        //     this.videoExtraction(
-        //         this.selectedVideoPath,
-        //         this.selectedProjectName,
-        //         this.selectedPartition,
-        //         this.extractedFrameIndex,
-        //     );
-        // } else {
-        //     const { projectName } = this._videoLblLayoutService.getRouteState(history);
-        //     this.selectedProjectName = projectName;
-        //     this.retrieveAllVideoFrames(this.selectedProjectName);
-        // }
-
         const { projectName } = this._videoLblLayoutService.getRouteState(history);
         this.selectedProjectName = projectName;
         this.selectedVideoPath = state.videoPath;
         this.framesPerSecond = state.framesPerSecond;
+        this.retrieveAllVideoFrames(this.selectedProjectName);
     }
 
     videoExtraction(videoPath: string, projectName: string, partition: number, extractedFrameIndex: number): void {
@@ -404,9 +386,20 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 }),
                 concatMap((data) => data),
             )
-            .subscribe((res) => {
-                this.thumbnailList.push(res);
-            });
+            .subscribe(
+                (res) => {
+                    this.thumbnailList.push(res);
+                },
+                (err) => {
+                    console.error(err);
+                },
+                () => {
+                    this._onClickVideoFrame.emit({
+                        ...this.thumbnailList[0],
+                        thumbnailIndex: 0,
+                    });
+                },
+            );
         this.subject$.next();
     }
 
