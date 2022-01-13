@@ -179,6 +179,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @ViewChild('videoDuration') videoDuration!: ElementRef<HTMLSpanElement>;
     @ViewChild('videoProgressBar') videoProgressBar!: ElementRef<HTMLDivElement>;
     @ViewChild('videoProgress') videoProgress!: ElementRef<HTMLDivElement>;
+    @ViewChild('volume') volume!: ElementRef<HTMLInputElement>;
 
     ngOnInit() {
         this.getLabelList();
@@ -462,20 +463,28 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             this.video.nativeElement.currentTime - Number(timeStampPerFrame.toFixed(6));
     }
 
+    changeVolume() {
+        this.video.nativeElement.volume = Number(this.volume.nativeElement.value);
+    }
+
     videoTimeIndicator() {
+        const currentPlayingTimeHours = Math.floor(this.video.nativeElement.currentTime / 3600);
         const currentPlayingTimeMinutes = Math.floor(this.video.nativeElement.currentTime / 60);
         const currentPlayingTimeSeconds = Math.floor(
             this.video.nativeElement.currentTime - currentPlayingTimeMinutes * 60,
         );
+
+        const videoDurationHours = Math.floor(this.video.nativeElement.duration / 3600);
         const videoDurationMinutes = Math.floor(this.video.nativeElement.duration / 60);
         const videoDurationSeconds = Math.floor(this.video.nativeElement.duration - videoDurationMinutes * 60);
 
-        this.currentPlayingTime.nativeElement.innerHTML = `${currentPlayingTimeMinutes}:${
-            currentPlayingTimeSeconds < 10 ? '0' + currentPlayingTimeSeconds : currentPlayingTimeSeconds
-        }`;
-        this.videoDuration.nativeElement.innerHTML = `${videoDurationMinutes}:${
-            videoDurationSeconds < 10 ? '0' + videoDurationSeconds : videoDurationSeconds
-        }`;
+        this.currentPlayingTime.nativeElement.innerHTML = `${currentPlayingTimeHours.toString().padStart(2, '0')}:
+        ${currentPlayingTimeMinutes.toString().padStart(2, '0')}:${currentPlayingTimeSeconds
+            .toString()
+            .padStart(2, '0')}`;
+
+        this.videoDuration.nativeElement.innerHTML = `${videoDurationHours.toString().padStart(2, '0')}:
+        ${videoDurationMinutes.toString().padStart(2, '0')}:${videoDurationSeconds.toString().padStart(2, '0')}`;
     }
 
     currentVideoTime() {
@@ -763,7 +772,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     initializeCanvas(width: string = '50%') {
         this.canvas.nativeElement.style.width = width;
-        this.canvas.nativeElement.style.height = '50%';
+        this.canvas.nativeElement.style.height = '62%';
         this.canvas.nativeElement.width = this.canvas.nativeElement.offsetWidth;
         this.canvas.nativeElement.height = this.canvas.nativeElement.offsetHeight;
         this.canvasContext = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;

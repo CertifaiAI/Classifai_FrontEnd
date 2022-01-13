@@ -20,7 +20,7 @@
 }
 
 .canvas-container {
-    height: 82vh;
+    height: 60vh;
     width: 90vw;
     display: flex;
 }
@@ -35,18 +35,19 @@
     display: flex;
     text-align: center;
     font-size: 12px;
-    height: 17%;
+    height: 40%;
     bottom: 10px;
     width: 100%;
     background-color: (color.$greyColor);
     position: relative;
+    margin-top: 10px;
 }
 
 .video-tbody {
     display: flex;
     overflow-y: hidden;
     height: 65px;
-    width: 100%;
+    width: 60%;
     position: relative;
     box-sizing: content-box;
     border: 0.0625vw solid rgb(255, 255, 255, 0.25);
@@ -190,9 +191,7 @@
 
 .canvasstyle {
     position: fixed;
-    padding-left: 20px;
-    margin: 5px;
-    box-shadow: 2px 2px 5px 2px;
+    padding-left: 5px;
 }
 
 #cross-h {
@@ -242,7 +241,7 @@
 .video-player-container {
     position: relative;
     display: flex;
-    width: 40vw;
+    width: 45vw;
     padding: 5px;
 }
 
@@ -252,16 +251,24 @@
     height: 3.3vh;
 }
 
+.volume-control {
+    background: grey;
+    position: relative;
+    height: 3.3vh;
+    width: 10vw;
+}
+
 .timer {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 0.7rem;
     color: white;
     margin-top: 0.5vh;
+    width: 8vw;
 }
 
 .timer-container {
     height: 3.3vh;
-    width: 7vw;
+    width: 10vw;
     background: grey;
     align-items: center;
     justify-content: center;
@@ -286,16 +293,16 @@
     cursor: pointer;
     height: 3.3vh;
     position: relative;
-    width: 0%;
+    width: 0;
 }
 
 .video-container {
     position: relative;
-    margin: 10px;
+    margin: 5px 0 10px 18px;
     justify-content: center;
+    height: 350px;
 }
 
 .canvas-video-container {
     position: relative;
-    margin: 10px;
 }
