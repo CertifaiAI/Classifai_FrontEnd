@@ -53,7 +53,6 @@ import { ShortcutKeyService } from '../../../shared/services/shortcut-key.servic
 import { Direction, UndoState } from '../../../shared/types/image-labelling/image-labelling.model';
 import { HTMLElementEvent } from '../../../shared/types/field/field.model';
 import { VideoLabellingApiService } from '../video-labelling-api.service';
-import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
 
 type iconConfigs = {
     imgPath: string;
@@ -87,7 +86,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         private _zoomService: ZoomService,
         private _shortcutKeyService: ShortcutKeyService,
         private _videoLblApiService: VideoLabellingApiService,
-        private _sanitization: DomSanitizer,
     ) {}
     private canvasContext!: CanvasRenderingContext2D;
     private unsubscribe$: Subject<any> = new Subject();
@@ -143,7 +141,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     selectedVideoPath!: string;
     framesPerSecond!: number;
     currentTimeStamp: number = 0;
-    videoUrl!: SafeUrl;
+    selectedPartition: number = 1;
     isProjectStarted: boolean = false;
     isVideoFramesExtractionCompleted: boolean = false;
     extractedFrameIndex: number = 0;
@@ -287,13 +285,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         const { projectName } = this._videoLblLayoutService.getRouteState(history);
         this.selectedProjectName = projectName;
         this.selectedVideoPath = state.videoPath;
-        this.sanitizeURL(this.selectedVideoPath);
         this.framesPerSecond = state.framesPerSecond;
         this.retrieveAllVideoFrames(this.selectedProjectName);
-    }
-
-    sanitizeURL(videoPath: string) {
-        this.videoUrl = this._sanitization.bypassSecurityTrustResourceUrl(videoPath);
     }
 
     videoExtraction(videoPath: string, projectName: string, partition: number, extractedFrameIndex: number): void {
