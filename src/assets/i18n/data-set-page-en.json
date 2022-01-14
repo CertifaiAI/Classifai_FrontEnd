@@ -13,7 +13,7 @@
     "updateButton": "Proceed",
     "cancelButton": "Cancel",
     "videoFile": "Video File:",
-    "partition": "Partition: ",
+    "uploadVideo": "Upload Video: ",
     "menuName": {
         "newProject": "New Project",
         "importProject": "Import Project",

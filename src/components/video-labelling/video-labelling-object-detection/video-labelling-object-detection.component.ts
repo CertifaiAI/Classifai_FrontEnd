@@ -53,6 +53,7 @@ import { ShortcutKeyService } from '../../../shared/services/shortcut-key.servic
 import { Direction, UndoState } from '../../../shared/types/image-labelling/image-labelling.model';
 import { HTMLElementEvent } from '../../../shared/types/field/field.model';
 import { VideoLabellingApiService } from '../video-labelling-api.service';
+import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
 
 type iconConfigs = {
     imgPath: string;
@@ -86,6 +87,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         private _zoomService: ZoomService,
         private _shortcutKeyService: ShortcutKeyService,
         private _videoLblApiService: VideoLabellingApiService,
+        private _sanitization: DomSanitizer,
     ) {}
     private canvasContext!: CanvasRenderingContext2D;
     private unsubscribe$: Subject<any> = new Subject();
@@ -141,7 +143,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     selectedVideoPath!: string;
     framesPerSecond!: number;
     currentTimeStamp: number = 0;
-    selectedPartition: number = 1;
+    videoUrl!: SafeUrl;
     isProjectStarted: boolean = false;
     isVideoFramesExtractionCompleted: boolean = false;
     extractedFrameIndex: number = 0;
@@ -150,8 +152,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     currentIndex: number = 0;
 
     @Input() _totalUuid!: number;
-    @Input() _videoLength!: number;
-    @Input() _framesPerSecond!: number;
     @Input() _selectMetadata!: BboxMetadata;
     @Input() _imgSrc: string = '';
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
@@ -284,29 +284,16 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     onRetrieveVideoExtractionState(state: videoFramesExtractionState) {
         console.log(state);
-        // if (!state.isVideoFramesExtractionCompleted) {
-        //     const { projectName, partition } = this._videoLblLayoutService.getRouteState(history);
-        //     this.selectedProjectName = projectName;
-        //     this.selectedVideoPath = state.videoPath;
-        //     this.selectedPartition = partition;
-        //     this.extractedFrameIndex = state.extractedFrameIndex;
-        //
-        //     this.videoExtraction(
-        //         this.selectedVideoPath,
-        //         this.selectedProjectName,
-        //         this.selectedPartition,
-        //         this.extractedFrameIndex,
-        //     );
-        // } else {
-        //     const { projectName } = this._videoLblLayoutService.getRouteState(history);
-        //     this.selectedProjectName = projectName;
-        //     this.retrieveAllVideoFrames(this.selectedProjectName);
-        // }
-
         const { projectName } = this._videoLblLayoutService.getRouteState(history);
         this.selectedProjectName = projectName;
         this.selectedVideoPath = state.videoPath;
+        this.sanitizeURL(this.selectedVideoPath);
         this.framesPerSecond = state.framesPerSecond;
+        this.retrieveAllVideoFrames(this.selectedProjectName);
+    }
+
+    sanitizeURL(videoPath: string) {
+        this.videoUrl = this._sanitization.bypassSecurityTrustResourceUrl(videoPath);
     }
 
     videoExtraction(videoPath: string, projectName: string, partition: number, extractedFrameIndex: number): void {
@@ -377,8 +364,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                         );
                     }
                     this.tempList = [];
-                    console.log(this.thumbnailList.length);
-                    console.log(this._videoLength);
                     console.log('Retrieve frame complete');
                     console.log(this.thumbnailList);
                     this._onClickVideoFrame.emit({
@@ -404,9 +389,20 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 }),
                 concatMap((data) => data),
             )
-            .subscribe((res) => {
-                this.thumbnailList.push(res);
-            });
+            .subscribe(
+                (res) => {
+                    this.thumbnailList.push(res);
+                },
+                (err) => {
+                    console.error(err);
+                },
+                () => {
+                    this._onClickVideoFrame.emit({
+                        ...this.thumbnailList[0],
+                        thumbnailIndex: 0,
+                    });
+                },
+            );
         this.subject$.next();
     }
 
@@ -1282,6 +1278,30 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 } else {
                     this.moveBbox(key);
                 }
+            }
+
+            // for video extraction usage
+            switch (key) {
+                case 'F4':
+                    console.log('extract frame at', this.video.nativeElement.currentTime);
+                    this.extractCurrentTimeFrame(
+                        this.selectedVideoPath,
+                        this.selectedProjectName,
+                        this.video.nativeElement.currentTime,
+                    );
+                    break;
+                case '1':
+                    this.returnToPreviousSkippedVideoFrame();
+                    break;
+                case '2':
+                    this.previousVideoFrame();
+                    break;
+                case '3':
+                    this.nextVideoFrame();
+                    break;
+                case '4':
+                    this.skipToNextFifthVideoFrame();
+                    break;
             }
         } catch (err) {
             console.log(err);

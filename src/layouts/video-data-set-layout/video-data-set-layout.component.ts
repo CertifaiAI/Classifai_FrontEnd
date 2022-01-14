@@ -84,13 +84,13 @@ export class VideoDataSetLayoutComponent implements OnInit, OnDestroy {
     spanClass: string = '';
     labelPath: string = '';
     videoPath: string = '';
+    videoFile!: File;
     projectFolderPath: string = '';
     showLabelTooltip: boolean = false;
     unsupportedImageList: string[] = [];
     keyToSort: string = 'project_name';
     projectType: string = 'myproject';
     enableSort: boolean = true;
-    partition: number = 1;
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
@@ -151,9 +151,7 @@ export class VideoDataSetLayoutComponent implements OnInit, OnDestroy {
     @ViewChild('refNewProjectName') _refNewProjectName!: ElementRef<HTMLInputElement>;
     @ViewChild('jsonImportProjectFile') _jsonImportProjectFile!: ElementRef<HTMLInputElement>;
     @ViewChild('jsonImportProjectFilename') _jsonImportProjectFilename!: ElementRef<HTMLLabelElement>;
-    @ViewChild('refFrameInterval') _refFrameInterval!: ElementRef<HTMLInputElement>;
-    @ViewChild('selectedPartition') _selectedPartition!: ElementRef<HTMLInputElement>;
-    @ViewChild('partitionValue') _partitionValue!: ElementRef<HTMLLabelElement>;
+    @ViewChild('uploadVideo') _uploadVideo!: ElementRef<HTMLInputElement>;
 
     constructor(
         private _fb: FormBuilder,
@@ -489,7 +487,7 @@ export class VideoDataSetLayoutComponent implements OnInit, OnDestroy {
 
     startProject = (projectName: string): void => {
         this._router.navigate([`videolabel/${this.videoLblMode}`], {
-            state: { projectName, videoPath: this.videoPath, partition: this.partition },
+            state: { projectName, videoPath: this.videoPath, videoFile: this.videoFile },
         });
     };
 
@@ -723,13 +721,14 @@ export class VideoDataSetLayoutComponent implements OnInit, OnDestroy {
         }
     }
 
+    uploadVideoFile() {
+        if (this._uploadVideo.nativeElement.files !== null) {
+            this.videoFile = this._uploadVideo.nativeElement.files[0];
+        }
+    }
+
     ngOnDestroy(): void {
         this.unsubscribe$.next();
         this.unsubscribe$.complete();
-    }
-
-    selectPartition() {
-        this.partition = Number(this._selectedPartition.nativeElement.value);
-        this._partitionValue.nativeElement.innerHTML = this._selectedPartition.nativeElement.value + ' frame interval';
     }
 }

@@ -23,7 +23,7 @@ type CustomHistory = Omit<History, 'state'> & {
         labelList: string[];
         projectName: string;
         videoPath: string;
-        partition: number;
+        videoFile: string;
     };
 };
 
