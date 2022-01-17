@@ -59,6 +59,7 @@ type iconConfigs = {
     hoverLabel: string;
     alt: string;
     onClick: (arg: any) => void;
+    style?: string;
 };
 
 type JsonSchema = {
@@ -140,6 +141,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     iconIndex!: number;
     selectedVideoPath!: string;
     framesPerSecond!: number;
+    selectedVideoDuration!: string;
     currentTimeStamp: number = 0;
     selectedPartition: number = 1;
     isProjectStarted: boolean = false;
@@ -149,6 +151,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     interval!: any;
     currentIndex: number = 0;
     isPlaying: boolean = false;
+    isProjectTabToggle: boolean = true;
+    isLabelTabToggle: boolean = false;
+    isAnnotationTabToggle: boolean = false;
 
     @Input() _totalUuid!: number;
     @Input() _selectMetadata!: BboxMetadata;
@@ -165,6 +170,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @Output() _onScrollTimeline: EventEmitter<void> = new EventEmitter();
     @Output() _onFinishExtraction: EventEmitter<void> = new EventEmitter();
     @Output() _onExtraction: EventEmitter<boolean> = new EventEmitter();
+    @Output() _onClick: EventEmitter<TabsProps> = new EventEmitter();
+    @Output() _onExport = new EventEmitter();
+    @Output() _onReload = new EventEmitter();
     @ViewChild('videoTimelineRef') _videoTimelineRef!: ElementRef<HTMLDivElement>;
     @ViewChild('canvasdrawing') canvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('floatdiv') floatdiv!: ElementRef<HTMLDivElement>;
@@ -287,6 +295,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this.selectedProjectName = projectName;
         this.selectedVideoPath = state.videoPath;
         this.framesPerSecond = state.framesPerSecond;
+        this.selectedVideoDuration = state.videoDuration;
         this.retrieveAllVideoFrames(this.selectedProjectName);
     }
 
@@ -511,39 +520,42 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             );
     }
 
+    toggleProjectTab() {
+        this.isProjectTabToggle = !this.isProjectTabToggle;
+    }
+
+    toggleLabelTab() {
+        this.isLabelTabToggle = !this.isLabelTabToggle;
+    }
+    toggleAnnotationTab() {
+        this.isAnnotationTabToggle = !this.isAnnotationTabToggle;
+    }
+
     bindImagePath = () => {
         this.jsonSchema = {
             logos: [
                 {
-                    imgPath: `assets/icons/previous.svg`,
-                    hoverLabel: `videoTimeLine.previousAnnotatedImage`,
-                    alt: `previous arrow`,
+                    imgPath: `assets/icons/statistic.svg`,
+                    hoverLabel: `rightSideBar.statistic`,
+                    alt: `Statistic`,
+                    onClick: () => null,
+                },
+                {
+                    imgPath: `assets/icons/export.svg`,
+                    hoverLabel: `rightSideBar.export`,
+                    alt: `Export`,
+                    style: 'padding-left: 4px;',
                     onClick: () => {
-                        this.previousAnnotatedImage();
+                        this._onExport.emit();
                     },
                 },
                 {
-                    imgPath: `assets/icons/next.svg`,
-                    hoverLabel: 'videoTimeLine.nextAnnotatedImage',
-                    alt: `next arrow`,
+                    imgPath: `assets/icons/reload.svg`,
+                    hoverLabel: `rightSideBar.reload`,
+                    alt: `Reload`,
+                    style: 'padding-left: 4px;',
                     onClick: () => {
-                        this.nextAnnotatedImage();
-                    },
-                },
-                {
-                    imgPath: `assets/icons/left_double_arrow.svg`,
-                    hoverLabel: `videoTimeLine.previousUnannotatedImage`,
-                    alt: `left double arrow`,
-                    onClick: () => {
-                        this.previousUnannotatedImage();
-                    },
-                },
-                {
-                    imgPath: `assets/icons/right_double_arrow.svg`,
-                    hoverLabel: 'videoTimeLine.nextUnannotatedImage',
-                    alt: `right double arrow`,
-                    onClick: () => {
-                        this.nextUnannotatedImage();
+                        this._onReload.emit();
                     },
                 },
             ],
@@ -623,6 +635,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     onClickVideoTimeLine = (thumbnailIndex: number) => {
+        this.frameNumber = thumbnailIndex;
         this.thumbnailIndex = thumbnailIndex;
         this.clearCanvas();
         this._onClickVideoFrame.emit({ ...this.thumbnailList[thumbnailIndex], thumbnailIndex });
@@ -1357,7 +1370,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             this.activeFrame = this.unAnnotatedImageIndex;
         } else {
             this.unAnnotatedImageIndex = this.thumbnailList.indexOf(this.unAnnotatedImage[this.nextIndexUnAnnotate]);
-            console.log(this.unAnnotatedImageIndex);
             this.emitImageAnnotation(this.unAnnotatedImageIndex);
             this.previousIndexUnAnnotate = this.nextIndexUnAnnotate - 1;
             this.activeFrame = this.unAnnotatedImageIndex;

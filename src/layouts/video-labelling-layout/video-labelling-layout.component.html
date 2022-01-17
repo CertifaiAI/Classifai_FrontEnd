@@ -31,6 +31,9 @@
                 (_onChangeTabAnnotation)="onChangeTabAnnotation($event)"
                 (_onFinishExtraction)="startProject()"
                 (_onExtraction)="onExtractingFrames($event)"
+                (_onExport)="onExport()"
+                (_onClick)="onToggleTab($event)"
+                (_onReload)="onReload()"
             ></video-labelling-object-detection>
         </ng-container>
         <ng-container *ngIf="_router.url.includes('videolabel/videoseg')">

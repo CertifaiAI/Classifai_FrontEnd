@@ -387,3 +387,75 @@
     position: relative;
     height: 3.5vh;
 }
+
+.annotation-info-container {
+    position: relative;
+    width: 40vw;
+    margin: 2px 2px 0 2px;
+}
+
+.annotation-info-control {
+    position: relative;
+    height: 3.5vh;
+    width: 100%;
+    border: 0.0625vw solid rgb(255, 255, 255, 0.25);
+    color: white;
+    display: flex;
+    justify-content: center;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.annotation-info-icon {
+    height: 3vh;
+    width: 3vw;
+    cursor: pointer;
+}
+
+.tab-text {
+    padding-top: 5px;
+}
+
+.bottom-utility-container {
+    position: relative;
+    min-width: 2.2vw;
+    max-width: 2.2vw;
+    min-height: 40vh;
+    max-height: 40vh;
+    background: #525353;
+    border: 0.0625vw solid rgb(255, 255, 255, 0.25);
+    z-index: 1000;
+}
+
+.bottom-utility-inner-container {
+    min-height: 3vh;
+    max-height: 3vh;
+    min-width: 1.5vw;
+    max-width: 1.5vw;
+    position: relative;
+}
+
+.bottom-utility-icon-container {
+    min-height: 3vh;
+    max-height: 3vh;
+    margin: 5px 0 5px 5px;
+    cursor: pointer;
+}
+
+.bottom-utility-icon-container img {
+    width: 3vh;
+    height: 3vh;
+}
+
+.project-tab {
+    position: absolute;
+    min-height: 15vh;
+    max-height: 20vh;
+    margin: 4vh 0 2vh 0;
+    overflow: hidden auto;
+    min-width: 37.5vw;
+    max-width: 37.5vw;
+    background: #3c4044;
+    display: flex;
+    flex-direction: column;
+}

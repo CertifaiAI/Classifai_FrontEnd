@@ -114,43 +114,6 @@
         </div>
     </div>
 
-    <!--        <div class="control-layout">-->
-    <!--            <div class="control-container">-->
-    <!--                <ng-container *ngFor="let logo of jsonSchema.logos; index as i">-->
-    <!--                    <div class="control-icon-container">-->
-    <!--                        <img-->
-    <!--                            (click)="getIndex(i); logo.onClick()"-->
-    <!--                            [attr.data-index]="i"-->
-    <!--                            [src]="logo.imgPath"-->
-    <!--                            [alt]="logo.alt"-->
-    <!--                            [title]="logo.hoverLabel | translate"-->
-    <!--                            class="control-icon"-->
-    <!--                        />-->
-    <!--                    </div>-->
-    <!--                </ng-container>-->
-    <!--                <div class="control-icon-container">-->
-    <!--                    <img-->
-    <!--                        *ngIf="!isPlayingFrame"-->
-    <!--                        class="control-icon"-->
-    <!--                        src="assets/icons/Play.svg"-->
-    <!--                        alt="Play"-->
-    <!--                        (click)="clickPlay()"-->
-    <!--                    />-->
-    <!--                    <img-->
-    <!--                        *ngIf="isPlayingFrame"-->
-    <!--                        class="control-icon"-->
-    <!--                        src="assets/icons/Pause.svg"-->
-    <!--                        alt="Pause"-->
-    <!--                        (click)="clickPause()"-->
-    <!--                    />-->
-    <!--                </div>-->
-    <!--                <div class="time-container">-->
-    <!--                    <label class="time-label">-->
-    <!--                        {{ timeIndicator() }}-->
-    <!--                    </label>-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!--        </div>-->
     <div class="videoTimeline">
         <table class="table">
             <tbody class="video-tbody" #videoTimelineRef (scroll)="videoTimelineScroll()">
@@ -201,6 +164,118 @@
                     alt="previous video frame"
                     (click)="previousUnannotatedImage()"
                 />
+            </div>
+        </div>
+
+        <div class="annotation-info-container">
+            <div class="annotation-info-control" (click)="toggleProjectTab()">
+                <span class="tab-text">Project</span>
+                <img class="annotation-info-icon" src="assets/icons/folder.svg" alt="project" />
+                <ng-container *ngIf="isProjectTabToggle">
+                    <div class="project-tab">
+                        <div class="video-info-container">
+                            <label class="video-info">
+                                {{ 'videoInfo.videoDuration' | translate }} {{ selectedVideoDuration }}</label
+                            >
+                        </div>
+
+                        <div class="video-info-container">
+                            <label class="video-info">
+                                {{ 'videoInfo.videoPath' | translate }} {{ selectedVideoPath }}</label
+                            >
+                        </div>
+
+                        <div class="video-info-container">
+                            <label class="video-info">
+                                {{ 'Tracking' | translate }}
+                                <select>
+                                    <option value="method1">Method1</option>
+                                    <option value="method2">Method2</option>
+                                    <option value="method3">Method3</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+
+            <div class="annotation-info-control" (click)="toggleLabelTab()">
+                <span class="tab-text">Label</span>
+                <img class="annotation-info-icon" src="assets/icons/tag.svg" alt="label" />
+                <ng-container *ngIf="isLabelTabToggle">
+                    <div class="project-tab">
+                        <div class="video-info-container">
+                            <label class="video-info">
+                                {{ 'videoInfo.videoDuration' | translate }} {{ selectedVideoDuration }}</label
+                            >
+                        </div>
+
+                        <div class="video-info-container">
+                            <label class="video-info">
+                                {{ 'videoInfo.videoPath' | translate }} {{ selectedVideoPath }}</label
+                            >
+                        </div>
+
+                        <div class="video-info-container">
+                            <label class="video-info">
+                                {{ 'AITracking' | translate }}
+                                <select>
+                                    <option value="method1">Method1</option>
+                                    <option value="method2">Method2</option>
+                                    <option value="method3">Method3</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+
+            <div class="annotation-info-control" (click)="toggleAnnotationTab()">
+                <span class="tab-text">Annotation</span>
+                <img class="annotation-info-icon" src="assets/icons/bounding_box.svg" alt="annotation" />
+                <ng-container *ngIf="isAnnotationTabToggle">
+                    <div class="project-tab">
+                        <div class="video-info-container">
+                            <label class="video-info">
+                                {{ 'videoInfo.videoDuration' | translate }} {{ selectedVideoDuration }}</label
+                            >
+                        </div>
+
+                        <div class="video-info-container">
+                            <label class="video-info">
+                                {{ 'videoInfo.videoPath' | translate }} {{ selectedVideoPath }}</label
+                            >
+                        </div>
+
+                        <div class="video-info-container">
+                            <label class="video-info">
+                                {{ 'AITracking' | translate }}
+                                <select>
+                                    <option value="method1">Method1</option>
+                                    <option value="method2">Method2</option>
+                                    <option value="method3">Method3</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+
+        <div class="bottom-utility-container">
+            <div class="bottom-utility-inner-container">
+                <ng-container *ngFor="let logo of jsonSchema.logos; index as i">
+                    <div class="bottom-utility-icon-container">
+                        <img
+                            [attr.data-index]="i"
+                            [src]="logo.imgPath"
+                            [alt]="logo.alt"
+                            [title]="logo.hoverLabel | translate"
+                            (click)="logo.onClick()"
+                            [style]="logo.style"
+                        />
+                    </div>
+                </ng-container>
             </div>
         </div>
     </div>

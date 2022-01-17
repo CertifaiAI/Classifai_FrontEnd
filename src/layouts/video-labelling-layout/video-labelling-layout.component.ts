@@ -248,6 +248,7 @@ export class VideoLabellingLayoutComponent implements OnInit, OnDestroy {
                 response.content[0].extracted_frame_index,
                 response.content[0].video_file_path,
                 response.content[0].frames_per_second,
+                response.content[0].video_duration,
             );
         });
     }

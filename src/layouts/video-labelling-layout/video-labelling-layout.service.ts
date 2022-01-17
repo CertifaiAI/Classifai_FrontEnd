@@ -245,13 +245,15 @@ export class VideoLabellingLayoutService {
         isComplete: boolean,
         videoFrameIndex: number,
         selectedVideoPath: string,
-        videoFramesPerSecond: number,
+        framesPerSecond: number,
+        videoDuration: string,
     ) {
         this.videoExtractionState = {
             isVideoFramesExtractionCompleted: isComplete,
             extractedFrameIndex: videoFrameIndex,
             videoPath: selectedVideoPath,
-            framesPerSecond: videoFramesPerSecond,
+            framesPerSecond,
+            videoDuration,
         };
     }
 
