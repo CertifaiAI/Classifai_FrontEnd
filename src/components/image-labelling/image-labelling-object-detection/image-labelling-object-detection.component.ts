@@ -90,7 +90,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         private _zoomService: ZoomService,
         private _mouseCursorService: MousrCursorService,
         private _shortcutKeyService: ShortcutKeyService,
-        private _sharedUndoRedoService: SharedUndoRedoService
+        private _sharedUndoRedoService: SharedUndoRedoService,
     ) {}
 
     ngOnInit() {
@@ -137,12 +137,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
 
         this._sharedUndoRedoService.action.subscribe((message) => {
             switch (message) {
-              case 'BBOX_UNDO':
-                this.undoAction();
-                break;
-              case 'BBOX_REDO':
-                this.redoAction();
-                break;
+                case 'BBOX_UNDO':
+                    this.undoAction();
+                    break;
+                case 'BBOX_REDO':
+                    this.redoAction();
+                    break;
             }
         });
     }
@@ -450,7 +450,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this._selectMetadata,
                     event,
                 );
-                if (mouseWithinPointPath && !this.showDropdownLabelBox && this.boundingBoxState.draw && this.boundingBoxState.crossLine) {
+                if (
+                    mouseWithinPointPath &&
+                    !this.showDropdownLabelBox &&
+                    this.boundingBoxState.draw &&
+                    this.boundingBoxState.crossLine
+                ) {
                     this.crossH.nativeElement.style.visibility = 'visible';
                     this.crossV.nativeElement.style.visibility = 'visible';
                     this.crossH.nativeElement.style.top = event.pageY.toString() + 'px';
@@ -568,14 +573,14 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             let posFromTop = event.offsetY * (100 / document.documentElement.clientHeight) + 8.5;
             let posFromLeft = event.offsetX * (100 / document.documentElement.clientWidth) + 2.5;
             // Re-adjustment of floating div position if it is outside of the canvas
-            if (posFromTop < 9) {
-                posFromTop = 9;
+            if (posFromTop < 20) {
+                posFromTop = 20;
             }
             if (posFromTop > 76) {
                 posFromTop = 76;
             }
-            if (posFromLeft < 2.5) {
-                posFromLeft = 2.5;
+            if (posFromLeft < 32) {
+                posFromLeft = 32;
             }
             if (posFromLeft > 66) {
                 posFromLeft = 66;

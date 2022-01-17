@@ -203,17 +203,17 @@
                     <label class="foldername" #projectfoldername></label>
                 </div>
                 <br />
-                <!--                <div class="select-folder-container">-->
-                <!--                    <label class="label label-select-folder">{{ 'uploadVideo' | translate }}</label>-->
-                <!--                    <input #uploadVideo type="file" accept="video/mp4" (change)="uploadVideoFile()"/>-->
-                <!--                    <button class="button-style choose-folder-button" type="button" (click)="selectProjectFolder()">-->
-                <!--                        {{ 'upload' | translate }}-->
-                <!--                    </button>-->
-                <!--                </div>-->
-                <!--                <div class="folder-name-container">-->
-                <!--                    <label class="foldername">Upload video</label>-->
-                <!--                </div>-->
-                <!--                <br />-->
+                <div class="select-folder-container">
+                    <label class="label label-select-folder">{{ 'uploadVideo' | translate }}</label>
+                    <input #uploadVideo type="file" accept="video/mp4" (change)="uploadVideoFile()" />
+                    <button class="button-style choose-folder-button" type="button" (click)="selectProjectFolder()">
+                        {{ 'upload' | translate }}
+                    </button>
+                </div>
+                <div class="folder-name-container">
+                    <label class="foldername">Upload video</label>
+                </div>
+                <br />
                 <div class="select-file-container">
                     <label class="label-select-label">
                         {{ 'labelListFile' | translate }}<br />

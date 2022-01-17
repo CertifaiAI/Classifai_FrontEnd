@@ -9,7 +9,7 @@ import { NgModule } from '@angular/core';
 import { SharedModule } from '../../shared/shared.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { VideoLabellingLeftSidebarComponent } from './video-labelling-left-sidebar/video-labelling-left-sidebar.component';
-import { VideoLabellingRightSidebarComponent } from './video-labelling-right-sidebar/video-labelling-right-sidebar.component';
+// import { VideoLabellingRightSidebarComponent } from './video-labelling-right-sidebar/video-labelling-right-sidebar.component';
 import { VideoLabellingObjectDetectionComponent } from './video-labelling-object-detection/video-labelling-object-detection.component';
 import { VideoLabellingProjectComponent } from './video-labelling-project/video-labelling-project.component';
 import { VideoLabellingInfoComponent } from './video-labelling-info/video-labelling-info.component';
@@ -19,7 +19,7 @@ import { VideoLabellingInfoComponent } from './video-labelling-info/video-labell
     imports: [CommonModule, SharedModule, TranslateModule],
     declarations: [
         VideoLabellingLeftSidebarComponent,
-        VideoLabellingRightSidebarComponent,
+        // VideoLabellingRightSidebarComponent,
         VideoLabellingObjectDetectionComponent,
         VideoLabellingProjectComponent,
         VideoLabellingInfoComponent,
@@ -27,7 +27,7 @@ import { VideoLabellingInfoComponent } from './video-labelling-info/video-labell
     ],
     exports: [
         VideoLabellingLeftSidebarComponent,
-        VideoLabellingRightSidebarComponent,
+        // VideoLabellingRightSidebarComponent,
         VideoLabellingObjectDetectionComponent,
         VideoLabellingProjectComponent,
         VideoLabellingInfoComponent,

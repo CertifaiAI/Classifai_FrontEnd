@@ -45,13 +45,18 @@
 
 .video-tbody {
     display: flex;
-    overflow-y: hidden;
+    overflow-x: auto;
     height: 65px;
-    width: 60%;
+    width: 100%;
     position: relative;
     box-sizing: content-box;
     border: 0.0625vw solid rgb(255, 255, 255, 0.25);
     align-items: center;
+    flex-direction: row;
+}
+
+.video-tbody::-webkit-scrollbar {
+    width: 0;
 }
 
 .flex-content {
@@ -64,12 +69,9 @@
 }
 
 .table {
-    width: 100%;
+    width: 60%;
     height: 10%;
     table-layout: fixed;
-    margin-left: 10px;
-    bottom: 2em;
-    margin-right: 10px;
 }
 
 .activeFrame {
@@ -196,7 +198,7 @@
 
 #cross-h {
     left: 0px;
-    width: 100%;
+    width: 50%;
     height: 1px;
     margin-top: -1px;
     opacity: 0.4;
@@ -204,7 +206,7 @@
 
 #cross-v {
     top: 0px;
-    height: 100%;
+    height: 50%;
     width: 1px;
     margin-left: -1px;
     opacity: 0.4;
@@ -232,11 +234,6 @@
         background-color: slategrey;
     }
 }
-
-//.video-tbody > .tableTiming {
-//    transform: rotate(90deg);
-//    transform-origin: right top;
-//}
 
 .video-player-container {
     position: relative;
@@ -305,4 +302,88 @@
 
 .canvas-video-container {
     position: relative;
+}
+
+.lbltypetxt {
+    width: 11vw;
+    height: 4vh;
+    color: snow;
+    font-size: 2vh;
+    border: 0.2vw solid gray;
+    background-color: black;
+    outline: none;
+    border-radius: 0.2vh;
+    border-bottom: none;
+    padding: 0;
+    text-indent: 0.4vw;
+}
+
+.availablelbl {
+    background-color: black;
+    width: 11vw;
+    height: 15vh;
+    color: snow;
+    font-size: 2vh;
+    font-weight: bold;
+    border: 0.2vw solid gray;
+    outline: none;
+    border-radius: 0.2vh;
+    border-top: 0.1vh dotted snow;
+    overflow: auto;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.lblList {
+    padding: 0 0.2vw;
+}
+
+.lblElement {
+    list-style-type: none;
+    margin: 0.3vh 0;
+    padding: 0;
+    justify-content: space-between;
+    display: flex;
+    &:hover {
+        background-color: #111;
+    }
+}
+
+.lblName {
+    margin-left: 0.2vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lblCount {
+    background-color: #222;
+    margin-right: 0.2vw;
+    padding: 0.1vh 0.2vw;
+    border-radius: 0.2vw;
+}
+
+.floatdiv {
+    position: fixed;
+    z-index: 10000;
+}
+
+.canvas-control {
+    position: absolute;
+    z-index: 0;
+    height: 400px;
+    width: 700px;
+    justify-content: center;
+}
+
+.annotation-control-container {
+    position: relative;
+    margin-top: 2px;
+}
+
+.annotation-control {
+    background: grey;
+    position: relative;
+    height: 3.5vh;
 }

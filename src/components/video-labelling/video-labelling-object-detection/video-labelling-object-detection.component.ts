@@ -394,6 +394,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                         ...this.thumbnailList[0],
                         thumbnailIndex: 0,
                     });
+
+                    this.currentIndex = this.thumbnailList.length;
                 },
             );
         this.subject$.next();
@@ -488,7 +490,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     extractFrame(event: MouseEvent) {
         event.preventDefault();
-        console.log('extract frame at', this.video.nativeElement.currentTime);
         this.extractCurrentTimeFrame(
             this.selectedVideoPath,
             this.selectedProjectName,
@@ -692,7 +693,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
         if (this.frameNumber < this.thumbnailList.length) {
             this.id = window.requestAnimationFrame(this.step);
-        } else if (this.frameNumber === this.thumbnailList.length - 1) {
+        } else if (this.frameNumber === this.thumbnailList.length) {
             this.isPlayingFrame = false;
             this.activeFrame = 0;
         } else {
@@ -736,7 +737,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             this.timeWhenLastUpdate = startTime;
             this.frameNumber = this.frameNumber + 1;
 
-            if (this.frameNumber === this.thumbnailList.length - 1) {
+            if (this.frameNumber === this.thumbnailList.length) {
                 this.frameNumber = 0;
             }
         }
@@ -895,14 +896,14 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             let posFromTop = event.offsetY * (100 / document.documentElement.clientHeight) + 8.5;
             let posFromLeft = event.offsetX * (100 / document.documentElement.clientWidth) + 2.5;
             // Re-adjustment of floating div position if it is outside of the canvas
-            if (posFromTop < 9) {
-                posFromTop = 9;
+            if (posFromTop < 7) {
+                posFromTop = 7;
             }
-            if (posFromTop > 76) {
-                posFromTop = 76;
+            if (posFromTop > 44) {
+                posFromTop = 44;
             }
-            if (posFromLeft < 2.5) {
-                posFromLeft = 2.5;
+            if (posFromLeft < 50) {
+                posFromLeft = 50;
             }
             if (posFromLeft > 66) {
                 posFromLeft = 66;
@@ -1276,7 +1277,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             // for video extraction usage
             switch (key) {
                 case 'F4':
-                    console.log('extract frame at', this.video.nativeElement.currentTime);
                     this.extractCurrentTimeFrame(
                         this.selectedVideoPath,
                         this.selectedProjectName,
