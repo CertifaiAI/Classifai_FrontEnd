@@ -148,6 +148,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     state!: videoFramesExtractionState;
     interval!: any;
     currentIndex: number = 0;
+    isPlaying: boolean = false;
 
     @Input() _totalUuid!: number;
     @Input() _selectMetadata!: BboxMetadata;
@@ -401,31 +402,11 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this.subject$.next();
     }
 
-    drawingVideoFrame() {
-        this.id = setInterval(this.drawVideoFrame);
-    }
-
-    stopDrawingVideoFrame() {
-        clearInterval(this.id);
-    }
-
-    drawVideoFrame = () => {
-        // @ts-ignore
-        this.canvas.nativeElement
-            .getContext('2d')
-            .drawImage(this.video.nativeElement, 0, 0, this.video.nativeElement.width, this.video.nativeElement.height);
-    };
-
-    getVideoCurrentTime() {
-        console.log(this.video.nativeElement.currentTime);
-        console.log(this.video.nativeElement.duration);
-    }
-
     videoPlayerButtonClick() {
-        if (!this.isPlayingFrame) {
-            this.video.nativeElement.play().then(() => (this.isPlayingFrame = true));
+        if (!this.isPlaying) {
+            this.video.nativeElement.play().then(() => (this.isPlaying = true));
         } else {
-            this.isPlayingFrame = false;
+            this.isPlaying = false;
             this.video.nativeElement.pause();
         }
     }

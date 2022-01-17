@@ -45,8 +45,8 @@
 
 .video-tbody {
     display: flex;
-    overflow-x: auto;
-    height: 65px;
+    overflow-x: scroll;
+    height: 63px;
     width: 100%;
     position: relative;
     box-sizing: content-box;
@@ -70,7 +70,7 @@
 
 .table {
     width: 60%;
-    height: 10%;
+    height: 9%;
     table-layout: fixed;
 }
 

@@ -51,14 +51,14 @@
     <div class="video-player-container">
         <div class="video-player-control">
             <img
-                *ngIf="!isPlayingFrame"
+                *ngIf="!isPlaying"
                 class="control-icon"
                 src="assets/icons/Play.svg"
                 alt="Play"
                 (click)="videoPlayerButtonClick()"
             />
             <img
-                *ngIf="isPlayingFrame"
+                *ngIf="isPlaying"
                 class="control-icon"
                 src="assets/icons/Pause.svg"
                 alt="Pause"
