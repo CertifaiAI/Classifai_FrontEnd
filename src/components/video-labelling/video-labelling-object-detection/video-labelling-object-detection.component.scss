@@ -40,6 +40,7 @@
     background-color: (color.$greyColor);
     position: relative;
     margin-top: 10px;
+    justify-content: space-between;
 }
 
 .video-tbody {
@@ -68,8 +69,8 @@
 }
 
 .table {
-    width: 60%;
-    height: 9%;
+    width: 53.5vw;
+    height: 8vh;
     table-layout: fixed;
 }
 
@@ -390,7 +391,6 @@
 .annotation-info-container {
     position: relative;
     width: 40vw;
-    margin: 2px 2px 0 2px;
 }
 
 .annotation-info-control {
@@ -464,8 +464,8 @@
     height: 0;
     margin-top: 3.7vh;
     overflow: hidden;
-    min-width: 37.5vw;
-    max-width: 37.5vw;
+    min-width: 40vw;
+    max-width: 40vw;
     background: #3c4044;
     z-index: 2;
     transition: 0.3s ease-out;
@@ -473,7 +473,7 @@
 
 .toggle-down {
     position: relative;
-    height: 18vh;
+    height: 18.5vh;
 }
 
 .annotation-content-container {
@@ -501,4 +501,25 @@
 .select-option {
     background-color: #1f1f1f;
     margin: 5px;
+}
+
+.time-line-div {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.time-line-editor {
+    width: 53vw;
+    height: 18.5vh;
+    margin: 2px 0 0 2px;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.time-line {
+    width: 53vw;
+    height: 18.5vh;
+    color: red;
+    position: absolute;
 }

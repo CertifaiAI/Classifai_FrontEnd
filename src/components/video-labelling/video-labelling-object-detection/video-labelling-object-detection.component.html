@@ -115,23 +115,30 @@
     </div>
 
     <div class="videoTimeline">
-        <table class="table">
-            <tbody class="video-tbody" #videoTimelineRef (scroll)="videoTimelineScroll()">
-                <tr>
-                    <ng-container *ngFor="let frame of thumbnailList; index as i">
-                        <td class="tableTiming">
-                            <div [ngClass]="activeFrame === i ? 'active row' : null">
-                                {{ i }}
-                            </div>
-                            <div
-                                [ngClass]="displayFrameIndicator(i, frame.bnd_box)"
-                                (click)="onClickVideoTimeLine(i)"
-                            ></div>
-                        </td>
-                    </ng-container>
-                </tr>
-            </tbody>
-        </table>
+        <div class="time-line-div">
+            <table class="table">
+                <tbody class="video-tbody" #videoTimelineRef (scroll)="videoTimelineScroll()">
+                    <tr>
+                        <ng-container *ngFor="let frame of thumbnailList; index as i">
+                            <td class="tableTiming">
+                                <div [ngClass]="activeFrame === i ? 'active row' : null">
+                                    {{ i }}
+                                </div>
+                                <div
+                                    [ngClass]="displayFrameIndicator(i, frame.bnd_box)"
+                                    (click)="onClickVideoTimeLine(i)"
+                                ></div>
+                            </td>
+                        </ng-container>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="time-line-editor">
+                <div class="time-line"></div>
+            </div>
+        </div>
+
         <div class="annotation-control-container">
             <div class="annotation-control">
                 <img
