@@ -521,14 +521,20 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     toggleProjectTab() {
-        this.isProjectTabToggle = !this.isProjectTabToggle;
+        this.isProjectTabToggle = true;
+        this.isLabelTabToggle = false;
+        this.isAnnotationTabToggle = false;
     }
 
     toggleLabelTab() {
-        this.isLabelTabToggle = !this.isLabelTabToggle;
+        this.isLabelTabToggle = true;
+        this.isProjectTabToggle = false;
+        this.isAnnotationTabToggle = false;
     }
     toggleAnnotationTab() {
-        this.isAnnotationTabToggle = !this.isAnnotationTabToggle;
+        this.isAnnotationTabToggle = true;
+        this.isProjectTabToggle = false;
+        this.isLabelTabToggle = false;
     }
 
     bindImagePath = () => {

@@ -743,13 +743,14 @@
 }
 
 .video-info {
-    font-size: 0.6rem;
-    color: white;
+    position: absolute;
     margin-left: 10px;
+    color: white;
 }
 
 .video-info-container {
-    padding: 3px;
+    position: relative;
+    justify-content: left;
 }
 
 .plugin-container {

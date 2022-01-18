@@ -168,11 +168,14 @@
         </div>
 
         <div class="annotation-info-container">
-            <div class="annotation-info-control" (click)="toggleProjectTab()">
-                <span class="tab-text">Project</span>
-                <img class="annotation-info-icon" src="assets/icons/folder.svg" alt="project" />
-                <ng-container *ngIf="isProjectTabToggle">
-                    <div class="project-tab">
+            <div class="annotation-info-control">
+                <div class="icon-text-container" (click)="toggleProjectTab()">
+                    <span class="tab-text">Project</span>
+                    <img class="annotation-info-icon" src="assets/icons/folder.svg" alt="project" />
+                </div>
+
+                <div class="info-tab" [ngClass]="{ 'toggle-down': isProjectTabToggle }">
+                    <div class="annotation-content-container">
                         <div class="video-info-container">
                             <label class="video-info">
                                 {{ 'videoInfo.videoDuration' | translate }} {{ selectedVideoDuration }}</label
@@ -196,14 +199,17 @@
                             </label>
                         </div>
                     </div>
-                </ng-container>
+                </div>
             </div>
 
-            <div class="annotation-info-control" (click)="toggleLabelTab()">
-                <span class="tab-text">Label</span>
-                <img class="annotation-info-icon" src="assets/icons/tag.svg" alt="label" />
-                <ng-container *ngIf="isLabelTabToggle">
-                    <div class="project-tab">
+            <div class="annotation-info-control">
+                <div class="icon-text-container" (click)="toggleLabelTab()">
+                    <span class="tab-text">Label</span>
+                    <img class="annotation-info-icon" src="assets/icons/tag.svg" alt="label" />
+                </div>
+
+                <div class="info-tab" [ngClass]="{ 'toggle-down': isLabelTabToggle }">
+                    <div class="annotation-content-container">
                         <div class="video-info-container">
                             <label class="video-info">
                                 {{ 'videoInfo.videoDuration' | translate }} {{ selectedVideoDuration }}</label
@@ -227,14 +233,17 @@
                             </label>
                         </div>
                     </div>
-                </ng-container>
+                </div>
             </div>
 
-            <div class="annotation-info-control" (click)="toggleAnnotationTab()">
-                <span class="tab-text">Annotation</span>
-                <img class="annotation-info-icon" src="assets/icons/bounding_box.svg" alt="annotation" />
-                <ng-container *ngIf="isAnnotationTabToggle">
-                    <div class="project-tab">
+            <div class="annotation-info-control">
+                <div class="icon-text-container" (click)="toggleAnnotationTab()">
+                    <span class="tab-text">Annotation</span>
+                    <img class="annotation-info-icon" src="assets/icons/bounding_box.svg" alt="annotation" />
+                </div>
+
+                <div class="info-tab" [ngClass]="{ 'toggle-down': isAnnotationTabToggle }">
+                    <div class="annotation-content-container">
                         <div class="video-info-container">
                             <label class="video-info">
                                 {{ 'videoInfo.videoDuration' | translate }} {{ selectedVideoDuration }}</label
@@ -258,7 +267,7 @@
                             </label>
                         </div>
                     </div>
-                </ng-container>
+                </div>
             </div>
         </div>
 

@@ -33,7 +33,6 @@
 
 .videoTimeline {
     display: flex;
-    text-align: center;
     font-size: 12px;
     height: 40%;
     bottom: 10px;
@@ -396,24 +395,37 @@
 
 .annotation-info-control {
     position: relative;
-    height: 3.5vh;
+    max-height: 22vh;
     width: 100%;
+    max-width: 40vw;
     border: 0.0625vw solid rgb(255, 255, 255, 0.25);
     color: white;
     display: flex;
     justify-content: center;
     border-radius: 5px;
-    cursor: pointer;
+    vertical-align: center;
 }
 
 .annotation-info-icon {
+    position: relative;
     height: 3vh;
     width: 3vw;
     cursor: pointer;
+    margin-top: 2px;
 }
 
 .tab-text {
-    padding-top: 5px;
+    position: relative;
+    line-height: 25px;
+    text-align: center;
+}
+
+.icon-text-container {
+    position: absolute;
+    width: 8vw;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
 }
 
 .bottom-utility-container {
@@ -447,15 +459,24 @@
     height: 3vh;
 }
 
-.project-tab {
-    position: absolute;
-    min-height: 15vh;
-    max-height: 20vh;
-    margin: 4vh 0 2vh 0;
-    overflow: hidden auto;
+.info-tab {
+    position: relative;
+    height: 0;
+    margin-top: 3.7vh;
+    overflow: hidden;
     min-width: 37.5vw;
     max-width: 37.5vw;
     background: #3c4044;
-    display: flex;
-    flex-direction: column;
+    z-index: 2;
+    transition: 0.3s ease-out;
+}
+
+.toggle-down {
+    position: relative;
+    height: 18vh;
+}
+
+.annotation-content-container {
+    margin-top: 5px;
+    margin-left: 10px;
 }
