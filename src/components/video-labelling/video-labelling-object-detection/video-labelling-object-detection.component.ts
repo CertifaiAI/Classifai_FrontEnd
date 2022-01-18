@@ -187,6 +187,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @ViewChild('videoProgressBar') videoProgressBar!: ElementRef<HTMLDivElement>;
     @ViewChild('videoProgress') videoProgress!: ElementRef<HTMLDivElement>;
     @ViewChild('volume') volume!: ElementRef<HTMLInputElement>;
+    @ViewChild('videoTimeEditor') videoTimeEditor!: ElementRef<HTMLDivElement>;
 
     ngOnInit() {
         this.getLabelList();

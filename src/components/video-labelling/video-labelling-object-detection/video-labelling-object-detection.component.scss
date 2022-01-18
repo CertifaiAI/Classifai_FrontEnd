@@ -46,7 +46,7 @@
 .video-tbody {
     display: flex;
     overflow-x: scroll;
-    height: 63px;
+    height: 65px;
     width: 100%;
     position: relative;
     box-sizing: content-box;
@@ -69,7 +69,7 @@
 }
 
 .table {
-    width: 53.5vw;
+    width: 54.3vw;
     height: 8vh;
     table-layout: fixed;
 }
@@ -503,6 +503,17 @@
     margin: 5px;
 }
 
+.annotation-player-control {
+    position: relative;
+    border: 0.05px solid rgb(255, 255, 255, 0.5);
+}
+
+.time-line-control {
+    position: relative;
+    margin-top: 4px;
+    border: 0.05px solid rgb(255, 255, 255, 0.5);
+}
+
 .time-line-div {
     position: relative;
     display: flex;
@@ -510,16 +521,26 @@
 }
 
 .time-line-editor {
-    width: 53vw;
+    width: 54vw;
     height: 18.5vh;
     margin: 2px 0 0 2px;
     position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll;
+    border: 0.0625vw solid rgb(255, 255, 255, 0.25);
 }
 
-.time-line {
-    width: 53vw;
-    height: 18.5vh;
-    color: red;
+.time-line-editor::-webkit-scrollbar {
+    width: 0;
+}
+
+.time-line-unit {
     position: absolute;
+    background-color: #262a2e;
+    height: 8vh;
+    width: 100%;
+    justify-content: flex-start;
+    border: 0.0625vw solid rgb(255, 255, 255, 0.25);
+    margin-top: 4vh;
 }

@@ -135,42 +135,64 @@
             </table>
 
             <div class="time-line-editor">
-                <div class="time-line"></div>
+                <div class="time-line-unit"></div>
             </div>
         </div>
 
         <div class="annotation-control-container">
-            <div class="annotation-control">
-                <img
-                    *ngIf="!isPlayingFrame"
-                    class="control-icon"
-                    src="assets/icons/Play.svg"
-                    alt="Play"
-                    (click)="clickPlay()"
-                />
-                <img
-                    *ngIf="isPlayingFrame"
-                    class="control-icon"
-                    src="assets/icons/Pause.svg"
-                    alt="Pause"
-                    (click)="clickPause()"
-                />
+            <div class="annotation-player-control">
+                <div class="annotation-control">
+                    <img
+                        *ngIf="!isPlayingFrame"
+                        class="control-icon"
+                        src="assets/icons/Play.svg"
+                        alt="Play"
+                        (click)="clickPlay()"
+                    />
+                    <img
+                        *ngIf="isPlayingFrame"
+                        class="control-icon"
+                        src="assets/icons/Pause.svg"
+                        alt="Pause"
+                        (click)="clickPause()"
+                    />
+                </div>
+                <div class="annotation-control">
+                    <img
+                        class="control-icon"
+                        src="assets/icons/next.svg"
+                        alt="next video frame"
+                        (click)="nextUnannotatedImage()"
+                    />
+                </div>
+                <div class="annotation-control">
+                    <img
+                        class="control-icon"
+                        src="assets/icons/previous.svg"
+                        alt="previous video frame"
+                        (click)="previousUnannotatedImage()"
+                    />
+                </div>
             </div>
-            <div class="annotation-control">
-                <img
-                    class="control-icon"
-                    src="assets/icons/next.svg"
-                    alt="next video frame"
-                    (click)="nextUnannotatedImage()"
-                />
-            </div>
-            <div class="annotation-control">
-                <img
-                    class="control-icon"
-                    src="assets/icons/previous.svg"
-                    alt="previous video frame"
-                    (click)="previousUnannotatedImage()"
-                />
+
+            <div class="time-line-control">
+                <div class="annotation-control">
+                    <img
+                        class="control-icon"
+                        src="assets/icons/crop.svg"
+                        alt="crop time line"
+                        (click)="nextUnannotatedImage()"
+                    />
+                </div>
+                <div class="annotation-control">
+                    <img
+                        class="control-icon"
+                        src="assets/icons/key_frame.svg"
+                        alt="pinpoint key frame"
+                        (click)="previousUnannotatedImage()"
+                    />
+                </div>
+                <div class="annotation-control"></div>
             </div>
         </div>
 
