@@ -1,29 +1,20 @@
 @use "../../../shared/scss/variables" as color;
 
 .videoTimelineContainer {
-    position: absolute;
-    // background: #121212;
-    // width: 130vh;
-
-    // display: flex;
-    // flex-flow: column;
+    position: relative;
     height: 100%;
     right: 0;
-    z-index: 1000;
+    z-index: 0;
     width: 97.8%;
-    // min-width: 95.5vw;
-    // max-width: 95.5vw;
-    //padding-top: 2px;
-    //padding-right: 60px;
-    //padding-bottom: 50px;
-    //padding-left: 2.2vw;
+    margin-left: 2.2vw;
 }
 
 .canvas-container {
-    height: 57vh;
+    height: 61.2vh;
     width: 90vw;
     display: flex;
     background-color: #3c4044;
+    flex-direction: row;
 }
 
 .active-frame-container {
@@ -194,7 +185,6 @@
 
 .canvasstyle {
     position: fixed;
-    padding-left: 5px;
     z-index: 0;
 }
 
@@ -238,11 +228,12 @@
 }
 
 .video-player-container {
-    position: relative;
+    position: absolute;
     display: flex;
     width: 45vw;
-    padding: 0 5px 5px 10px;
+    margin: 2px 2px 2px 20px;
     background-color: #3c4044;
+    z-index: 2;
 }
 
 .video-player-control {
@@ -298,14 +289,21 @@
 
 .video-container {
     position: relative;
-    margin: 5px 0 0 18px;
+    margin-top: 15px;
     justify-content: center;
-    height: 350px;
+    z-index: 2;
+}
+
+.video-container-body {
+    position: relative;
+    z-index: 2;
+    background-color: #3c4044;
 }
 
 .canvas-video-container {
     position: relative;
     z-index: 0;
+    background-color: #3c4044;
 }
 
 .lbltypetxt {
@@ -374,12 +372,12 @@
 }
 
 .canvas-control {
-    position: absolute;
+    position: relative;
     z-index: 0;
     height: 450px;
     width: 800px;
     justify-content: center;
-    background-color: rgba(60, 64, 68, 1);
+    background-color: #3c4044;
 }
 
 .annotation-control-container {

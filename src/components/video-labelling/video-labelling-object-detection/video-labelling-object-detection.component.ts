@@ -779,9 +779,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         );
     };
 
-    initializeCanvas(width: string = '53%') {
+    initializeCanvas(width: string = '50%') {
         this.canvas.nativeElement.style.width = width;
-        this.canvas.nativeElement.style.height = '62%';
+        this.canvas.nativeElement.style.height = '58%';
         this.canvas.nativeElement.width = this.canvas.nativeElement.offsetWidth;
         this.canvas.nativeElement.height = this.canvas.nativeElement.offsetHeight;
         this.canvasContext = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;

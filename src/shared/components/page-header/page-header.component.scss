@@ -20,6 +20,7 @@
 
 .container-flex-start {
     display: flex;
+    z-index: 1000;
 }
 
 /*-------------------------------------------*\
@@ -90,6 +91,7 @@
 
 .container-flex-end {
     display: flex;
+    z-index: 1000;
     // min-width: 6.5vw;
     // max-width: 6.5vw;
 }
