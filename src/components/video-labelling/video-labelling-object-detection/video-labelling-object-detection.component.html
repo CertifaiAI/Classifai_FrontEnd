@@ -178,20 +178,23 @@
             <div class="time-line-control">
                 <div class="annotation-control">
                     <img
+                        #cropTimeLine
                         class="control-icon"
                         src="assets/icons/crop.svg"
                         alt="crop time line"
-                        (click)="nextUnannotatedImage()"
+                        (click)="onClickCropTool()"
                     />
                 </div>
                 <div class="annotation-control">
                     <img
                         class="control-icon"
-                        src="assets/icons/key_frame.svg"
+                        src="assets/icons/pinpoint.svg"
                         alt="pinpoint key frame"
                         (click)="previousUnannotatedImage()"
                     />
                 </div>
+                <div class="annotation-control"></div>
+                <div class="annotation-control"></div>
                 <div class="annotation-control"></div>
                 <div class="annotation-control"></div>
                 <div class="annotation-control"></div>

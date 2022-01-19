@@ -189,6 +189,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @ViewChild('volume') volume!: ElementRef<HTMLInputElement>;
     @ViewChild('videoTimeEditor') videoTimeEditor!: ElementRef<HTMLDivElement>;
     @ViewChild('videoEditorPanel') videoEditorPanel!: ElementRef<HTMLDivElement>;
+    @ViewChild('cropTimeLine') cropTimeLine!: ElementRef<HTMLDivElement>;
 
     ngOnInit() {
         this.getLabelList();
@@ -369,8 +370,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                         );
                     }
                     this.tempList = [];
-                    console.log('Retrieve frame complete');
-                    console.log(this.thumbnailList);
+
                     this._onClickVideoFrame.emit({
                         ...this.thumbnailList[this.currentIndex],
                         thumbnailIndex: this.currentIndex,
@@ -481,12 +481,12 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     extractFrame(event: MouseEvent) {
-        event.preventDefault();
         this.extractCurrentTimeFrame(
             this.selectedVideoPath,
             this.selectedProjectName,
             this.video.nativeElement.currentTime,
         );
+        event.preventDefault();
     }
 
     extractCurrentTimeFrame(videoFilePath: string, projectName: string, currentTime: number) {
@@ -553,6 +553,10 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             console.log(timeLine.style.width);
             e.preventDefault();
         });
+    }
+
+    onClickCropTool() {
+        this.changeMouseCursorState({ move: true });
     }
 
     bindImagePath = () => {
@@ -655,13 +659,13 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         });
     }
 
-    onClickVideoTimeLine = (thumbnailIndex: number) => {
+    onClickVideoTimeLine(thumbnailIndex: number) {
         this.frameNumber = thumbnailIndex;
         this.thumbnailIndex = thumbnailIndex;
         this.clearCanvas();
         this._onClickVideoFrame.emit({ ...this.thumbnailList[thumbnailIndex], thumbnailIndex });
         this.activeFrame = thumbnailIndex;
-    };
+    }
 
     timeIndicator() {
         let indicator = '00.00.000';
@@ -775,7 +779,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         );
     };
 
-    initializeCanvas(width: string = '50%') {
+    initializeCanvas(width: string = '53%') {
         this.canvas.nativeElement.style.width = width;
         this.canvas.nativeElement.style.height = '62%';
         this.canvas.nativeElement.width = this.canvas.nativeElement.offsetWidth;
@@ -1276,14 +1280,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this.undoAction();
                 } else if (this.annotateState.annotation > -1 && (key === 'Delete' || key === 'Backspace')) {
                     this.deleteSelectedBbox();
-                } else if (key === 'd') {
-                    this.nextAnnotatedImage();
-                } else if (key === 'a') {
-                    this.previousAnnotatedImage();
-                } else if (key === 'e') {
-                    this.nextUnannotatedImage();
-                } else if (key === 'q') {
-                    this.previousUnannotatedImage();
                 } else {
                     this.moveBbox(key);
                 }
@@ -1309,6 +1305,15 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     break;
                 case '4':
                     this.skipToNextFifthVideoFrame();
+                    break;
+                case '5':
+                    this.nextUnannotatedImage();
+                    break;
+                case '6':
+                    this.previousUnannotatedImage();
+                    break;
+                case '7':
+                    this.deleteFrame();
                     break;
             }
         } catch (err) {
@@ -1417,6 +1422,20 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             this.activeFrame = this.unAnnotatedImageIndex;
             this.previousIndexUnAnnotate--;
         }
+    }
+
+    deleteFrame() {
+        const thumbnailInfoProps = this.thumbnailList[this.frameNumber];
+        this._videoLblApiService
+            .deleteImage(thumbnailInfoProps.uuid, thumbnailInfoProps.img_path, this.selectedProjectName)
+            .subscribe((res) => {
+                if (res.message === 1) {
+                    this.thumbnailList = this.thumbnailList.filter((x) => res.uuid_list.includes(x.uuid));
+                    this.currentIndex = this.frameNumber;
+                    this.frameNumber -= 1;
+                    this.onClickVideoTimeLine(this.frameNumber);
+                }
+            });
     }
 
     emitImageAnnotation(index: number) {

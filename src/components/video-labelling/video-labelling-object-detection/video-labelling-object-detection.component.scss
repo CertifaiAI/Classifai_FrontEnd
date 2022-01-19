@@ -20,9 +20,10 @@
 }
 
 .canvas-container {
-    height: 60vh;
+    height: 57vh;
     width: 90vw;
     display: flex;
+    background-color: #3c4044;
 }
 
 .active-frame-container {
@@ -191,16 +192,10 @@
     text-align: left;
 }
 
-.eye-display {
-    width: 50px;
-    color: white;
-    border-right: 2px black solid;
-    padding-right: 1vh;
-}
-
 .canvasstyle {
     position: fixed;
     padding-left: 5px;
+    z-index: 0;
 }
 
 #cross-h {
@@ -246,7 +241,8 @@
     position: relative;
     display: flex;
     width: 45vw;
-    padding: 5px;
+    padding: 0 5px 5px 10px;
+    background-color: #3c4044;
 }
 
 .video-player-control {
@@ -302,13 +298,14 @@
 
 .video-container {
     position: relative;
-    margin: 5px 0 10px 18px;
+    margin: 5px 0 0 18px;
     justify-content: center;
     height: 350px;
 }
 
 .canvas-video-container {
     position: relative;
+    z-index: 0;
 }
 
 .lbltypetxt {
@@ -379,9 +376,10 @@
 .canvas-control {
     position: absolute;
     z-index: 0;
-    height: 400px;
-    width: 700px;
+    height: 450px;
+    width: 800px;
     justify-content: center;
+    background-color: rgba(60, 64, 68, 1);
 }
 
 .annotation-control-container {
@@ -398,11 +396,12 @@
 .annotation-info-container {
     position: relative;
     width: 40vw;
+    margin-top: 2px;
 }
 
 .annotation-info-control {
     position: relative;
-    max-height: 22vh;
+    max-height: 27vh;
     width: 100%;
     max-width: 40vw;
     border: 0.0625vw solid rgb(255, 255, 255, 0.25);
@@ -444,6 +443,7 @@
     background: #525353;
     border: 0.0625vw solid rgb(255, 255, 255, 0.25);
     z-index: 1000;
+    margin-top: 2px;
 }
 
 .bottom-utility-inner-container {
@@ -480,7 +480,7 @@
 
 .toggle-down {
     position: relative;
-    height: 18.5vh;
+    height: 21.7vh;
 }
 
 .annotation-content-container {
@@ -529,7 +529,7 @@
 
 .time-line-editor {
     width: 53vw;
-    height: 17.6vh;
+    height: 22vh;
     margin: 4px 0 0 2px;
     position: relative;
     display: flex;
@@ -545,9 +545,13 @@
 .time-line-unit {
     position: absolute;
     background-color: #262a2e;
-    height: 8vh;
-    width: 0;
+    height: 10vh;
+    width: 100%;
     justify-content: flex-start;
     border: 0.0625vw solid rgb(255, 255, 255, 0.25);
-    margin-top: 4vh;
+    margin-top: 6vh;
+}
+
+.crop-pointer {
+    cursor: row-resize;
 }
