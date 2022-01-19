@@ -188,6 +188,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @ViewChild('videoProgress') videoProgress!: ElementRef<HTMLDivElement>;
     @ViewChild('volume') volume!: ElementRef<HTMLInputElement>;
     @ViewChild('videoTimeEditor') videoTimeEditor!: ElementRef<HTMLDivElement>;
+    @ViewChild('videoEditorPanel') videoEditorPanel!: ElementRef<HTMLDivElement>;
 
     ngOnInit() {
         this.getLabelList();
@@ -538,6 +539,22 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this.isLabelTabToggle = false;
     }
 
+    onScrollEditorTimeLine() {
+        const timeLine = this.videoTimeEditor.nativeElement;
+        const panel = this.videoEditorPanel.nativeElement;
+
+        panel.addEventListener('wheel', (e) => {
+            if (e.deltaY > 0) {
+                timeLine.style.width = `${(timeLine.style.width += e.deltaY * 0.1 + 'px')}px`;
+            } else {
+                timeLine.style.width = `${(timeLine.style.width += e.deltaY * -0.1 + 'px')}px`;
+            }
+            console.log(e.deltaY);
+            console.log(timeLine.style.width);
+            e.preventDefault();
+        });
+    }
+
     bindImagePath = () => {
         this.jsonSchema = {
             logos: [
@@ -625,7 +642,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         return className;
     };
 
-    @HostListener('mousewheel', ['$event'])
     videoTimelineScroll() {
         const timeLine = this._videoTimelineRef.nativeElement;
 
@@ -637,8 +653,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             }
             e.preventDefault();
         });
-
-        return true;
     }
 
     onClickVideoTimeLine = (thumbnailIndex: number) => {

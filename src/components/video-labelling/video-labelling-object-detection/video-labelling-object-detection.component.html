@@ -117,8 +117,8 @@
     <div class="videoTimeline">
         <div class="time-line-div">
             <table class="table">
-                <tbody class="video-tbody" #videoTimelineRef (scroll)="videoTimelineScroll()">
-                    <tr>
+                <tbody class="video-tbody" #videoTimelineRef (mousewheel)="videoTimelineScroll()">
+                    <tr class="video-tbody-container">
                         <ng-container *ngFor="let frame of thumbnailList; index as i">
                             <td class="tableTiming">
                                 <div [ngClass]="activeFrame === i ? 'active row' : null">
@@ -134,8 +134,8 @@
                 </tbody>
             </table>
 
-            <div class="time-line-editor">
-                <div class="time-line-unit"></div>
+            <div #videoEditorPanel class="time-line-editor" (mousewheel)="onScrollEditorTimeLine()">
+                <div #videoTimeEditor class="time-line-unit"></div>
             </div>
         </div>
 
