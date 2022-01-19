@@ -39,7 +39,7 @@
     display: flex;
     overflow-y: hidden;
     overflow-x: scroll;
-    height: 65px;
+    height: 66px;
     width: 100%;
     position: relative;
     box-sizing: content-box;
@@ -67,7 +67,7 @@
 }
 
 .table {
-    width: 53.3vw;
+    width: 53.5vw;
     height: 8vh;
     table-layout: fixed;
 }
@@ -526,9 +526,9 @@
 }
 
 .time-line-editor {
-    width: 53vw;
+    width: 53.4vw;
     height: 22vh;
-    margin: 4px 0 0 2px;
+    margin-top: 4px;
     position: relative;
     display: flex;
     flex-direction: row;
