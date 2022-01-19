@@ -34,6 +34,7 @@ import {
     EventEmitter_ThumbnailDetails,
     LabelInfo,
     LabelledFrame,
+    Polygons,
     PolyMetadata,
     projectNameUUIDList,
     SelectedLabelProps,
@@ -53,6 +54,7 @@ import { ShortcutKeyService } from '../../../shared/services/shortcut-key.servic
 import { Direction, UndoState } from '../../../shared/types/image-labelling/image-labelling.model';
 import { HTMLElementEvent } from '../../../shared/types/field/field.model';
 import { VideoLabellingApiService } from '../video-labelling-api.service';
+import { LanguageService } from '../../../shared/services/language.service';
 
 type iconConfigs = {
     imgPath: string;
@@ -87,6 +89,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         private _zoomService: ZoomService,
         private _shortcutKeyService: ShortcutKeyService,
         private _videoLblApiService: VideoLabellingApiService,
+        private _languageService: LanguageService,
     ) {}
     private canvasContext!: CanvasRenderingContext2D;
     private unsubscribe$: Subject<any> = new Subject();
@@ -154,6 +157,11 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     isProjectTabToggle: boolean = true;
     isLabelTabToggle: boolean = false;
     isAnnotationTabToggle: boolean = false;
+    selectedLabel: string = '';
+    selectedlabelList: string[] = [];
+    inputLabel: string = '';
+    clickAbilityToggle: boolean = false;
+    selectedIndexAnnotation: number = -1;
 
     @Input() _totalUuid!: number;
     @Input() _selectMetadata!: BboxMetadata;
@@ -173,6 +181,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @Output() _onClick: EventEmitter<TabsProps> = new EventEmitter();
     @Output() _onExport = new EventEmitter();
     @Output() _onReload = new EventEmitter();
+    @Output() _onClickLabel: EventEmitter<SelectedLabelProps> = new EventEmitter();
+    @Output() _onDeleteAnnotation: EventEmitter<number> = new EventEmitter();
     @ViewChild('videoTimelineRef') _videoTimelineRef!: ElementRef<HTMLDivElement>;
     @ViewChild('canvasdrawing') canvas!: ElementRef<HTMLCanvasElement>;
     @ViewChild('floatdiv') floatdiv!: ElementRef<HTMLDivElement>;
@@ -193,7 +203,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     ngOnInit() {
         this.getLabelList();
-
+        this.updateLabelList();
         this._videoLblStateService.action$
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe(({ clear, fitCenter, crossLine, ...action }) => {
@@ -250,6 +260,10 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     break;
             }
         });
+
+        this._videoLblStateService.action$
+            .pipe(takeUntil(this.unsubscribe$))
+            .subscribe(({ draw }) => (this.clickAbilityToggle = draw));
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -281,6 +295,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     this.redrawImage(this._selectMetadata);
                 }
             }
+
+            this.updateLabelList();
         }
 
         if (this.thumbnailIndex) {
@@ -558,6 +574,63 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     onClickCropTool() {
         this.changeMouseCursorState({ move: true });
     }
+
+    updateLabelList = () => {
+        this.selectedlabelList = this._tabStatus[1].label_list ? this._tabStatus[1].label_list : [];
+    };
+
+    onClickLabel = (label: string) => {
+        this.selectedLabel = label;
+        this._onChangeAnnotationLabel.emit({ label, index: -1 });
+        this._undoRedoService.appendStages({
+            meta: this._selectMetadata,
+            method: 'draw',
+        });
+    };
+
+    onDeleteLabel = (selectedLabel: string): void => {
+        let isLabelExist = false;
+        this.thumbnailList.forEach((thumbnail) => {
+            if (thumbnail.bnd_box) {
+                thumbnail.bnd_box.forEach((bndbox) => {
+                    bndbox.label === selectedLabel && (isLabelExist = true);
+                });
+            }
+            if (thumbnail.polygons) {
+                thumbnail.polygons.forEach((polygon) => {
+                    polygon.label === selectedLabel && (isLabelExist = true);
+                });
+            }
+        });
+        if (isLabelExist) {
+            this._languageService._translate.get('labelExist').subscribe((translated) => {
+                alert(translated);
+            });
+        } else {
+            const [{ label_list }] = this._tabStatus.filter((tab) => tab.label_list);
+            this._onClickLabel.emit({
+                selectedLabel,
+                label_list: label_list && label_list.length > 0 ? label_list : [],
+                action: 0,
+            });
+        }
+    };
+
+    onClickAnnotation = (index: number, { label }: Boundingbox) => {
+        this.selectedLabel = label;
+        this._annotateSelectState.setState({ annotation: index });
+    };
+
+    onDeleteAnnotation = () => {
+        if (this.selectedIndexAnnotation > -1) {
+            this._onDeleteAnnotation.emit(this.selectedIndexAnnotation);
+            this._selectMetadata.bnd_box.splice(this.selectedIndexAnnotation, 1) &&
+                this._undoRedoService.appendStages({
+                    meta: cloneDeep(this._selectMetadata),
+                    method: 'draw',
+                });
+        }
+    };
 
     bindImagePath = () => {
         this.jsonSchema = {
@@ -1227,6 +1300,12 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     labelTypeTextChange(event: string) {
         this.labelList = this.allLabelList.filter((label) => label.name.includes(event));
+    }
+
+    inputLabelChange(text: string) {
+        this.selectedlabelList = this._tabStatus[1].label_list
+            ? this._tabStatus[1].label_list?.filter((label) => label.includes(text))
+            : [];
     }
 
     validateInputLabel = ({ target }: HTMLElementEvent<HTMLTextAreaElement>): void => {

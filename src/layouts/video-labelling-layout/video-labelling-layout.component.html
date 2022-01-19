@@ -34,6 +34,8 @@
                 (_onExport)="onExport()"
                 (_onClick)="onToggleTab($event)"
                 (_onReload)="onReload()"
+                (_onClickLabel)="onProcessLabel($event)"
+                (_onDeleteAnnotation)="onDeleteAnnotation($event)"
             ></video-labelling-object-detection>
         </ng-container>
         <ng-container *ngIf="_router.url.includes('videolabel/videoseg')">

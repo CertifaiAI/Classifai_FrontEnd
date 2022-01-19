@@ -1,4 +1,7 @@
-@use "../../../shared/scss/variables" as color;
+@use 'shared/scss/variables' as color;
+@use 'shared/scss/scrollbar' as scrollbar;
+@use 'shared/scss/ellipsis' as ellipsis;
+@use 'shared/scss/indicator' as indicator;
 
 .videoTimelineContainer {
     position: relative;
@@ -552,4 +555,87 @@
 
 .crop-pointer {
     cursor: row-resize;
+}
+
+.flex-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 1.5vh;
+    color: white;
+    @include ellipsis.ellipsis-styling();
+}
+
+.utility-inner-container {
+    min-height: 16vh;
+    max-height: 16vh;
+    min-width: 40vw;
+    max-width: 40vw;
+    position: absolute;
+}
+
+.scroll {
+    &::-webkit-scrollbar-track {
+        @include scrollbar.scrollbar-track(color.$blackColor);
+    }
+
+    &::-webkit-scrollbar {
+        @include scrollbar.scrollbar();
+    }
+
+    &::-webkit-scrollbar-thumb {
+        @include scrollbar.scrollbar-thumb(color.$greyColor);
+    }
+}
+
+.div-input {
+    position: relative;
+    display: flex;
+    justify-content: flex-start;
+    margin: 0.5vh 0.9vw;
+}
+
+.input {
+    border-radius: 8vw;
+    border: none;
+    outline: none;
+    padding: 0.3vw 0 0.3vw 1vw;
+    min-height: 1.5vh;
+    max-height: 1.5vh;
+    min-width: 13vw;
+    max-width: 13vw;
+    font-size: 1.3vh;
+    background: #525353;
+    color: white;
+}
+
+.label {
+    white-space: nowrap;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.delete-annotation,
+.delete-label {
+    position: absolute;
+    right: 2vw;
+}
+
+.not-exist {
+    font-size: 1.5vh;
+    color: #999;
+    position: relative;
+}
+
+.flex-center-width {
+    display: flex;
+    justify-content: center;
+    width: 90%;
+    flex-wrap: wrap;
+}
+
+.tab-height {
+    height: 85%;
 }
