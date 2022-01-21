@@ -137,7 +137,13 @@
                 </div>
             </div>
             <div class="canvas-control">
-                <canvas #canvasdrawing class="canvasstyle" [ngStyle]="{ cursor: currentCursor() }"></canvas>
+                <canvas
+                    #canvasdrawing
+                    class="canvasstyle"
+                    (mouseenter)="changeCursorInCanvasStatus()"
+                    (mouseleave)="changeCursorInCanvasStatus()"
+                    [ngStyle]="{ cursor: currentCursor() }"
+                ></canvas>
             </div>
             <div #crossH id="cross-h" class="crosses"></div>
             <div #crossV id="cross-v" class="crosses"></div>

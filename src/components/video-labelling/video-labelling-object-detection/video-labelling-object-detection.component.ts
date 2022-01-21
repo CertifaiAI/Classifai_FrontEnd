@@ -171,6 +171,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     onSelectEndPoint: boolean = false;
     currentStartTime!: string;
     currentEndTime!: string;
+    isCursorInCanvas: boolean = false;
     readonly modalMultipleExtraction = 'modal-multiple-extraction';
 
     @Input() _totalUuid!: number;
@@ -1250,6 +1251,16 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         });
     }
 
+    changeCursorInCanvasStatus() {
+        this.canvas.nativeElement.addEventListener('mouseenter', () => {
+            this.isCursorInCanvas = true;
+        });
+
+        this.canvas.nativeElement.addEventListener('mouseleave', () => {
+            this.isCursorInCanvas = false;
+        });
+    }
+
     @HostListener('mouseout', ['$event'])
     mouseOut(event: MouseEvent) {
         try {
@@ -1285,7 +1296,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('mousemove', ['$event'])
     mouseMove(event: MouseEvent) {
         try {
-            if (this._selectMetadata) {
+            if (this._selectMetadata && this.isCursorInCanvas) {
                 const mouseWithinPointPath = this._boundingBoxCanvas.mouseClickWithinPointPath(
                     this._selectMetadata,
                     event,
