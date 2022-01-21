@@ -602,6 +602,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     onCloseMultipleExtractModal() {
         this.showTimeIndicator = false;
+        this.onSelectStartPoint = false;
+        this.currentEndTime = '00:00:00';
         this._modalService.close(this.modalMultipleExtraction);
     }
 
