@@ -307,8 +307,8 @@
 }
 
 .time-indicator {
-    width: 65px;
-    height: 25px;
+    width: 170px;
+    height: 50px;
     position: relative;
     background-color: #336b87;
     text-align: center;
@@ -317,15 +317,6 @@
     font-size: 14px;
     color: white;
     transform: translate(-45%, -260%);
-}
-
-.selected-range {
-    width: 0;
-    height: 3.3vh;
-    position: relative;
-    //background-color: rgba(51, 107, 135, 0.7);
-    background-color: red;
-    //transform: translate(0%, 0%);
 }
 
 .video-container {
@@ -676,4 +667,33 @@
 
 .tab-height {
     height: 85%;
+}
+
+.modal-content-container {
+    margin-left: 1.3vw;
+}
+
+.font-multiple-extract {
+    line-height: 4vh;
+    font-size: 1vw;
+}
+
+.extract-btn {
+    padding: 1vh 0.5vw 1vh 0.5vw;
+    background-color: #2d8ceb;
+    margin-top: 0.7vw;
+    margin-right: 0.7vw;
+    font-size: 2vh;
+    min-width: 7.5vw;
+    float: right;
+}
+
+.button-style {
+    padding: 1vh 1.5vw 1vh 1.5vw;
+    border-radius: 1vh;
+    border: none;
+    outline: none;
+    color: white;
+    cursor: pointer;
+    font-size: 2vh;
 }

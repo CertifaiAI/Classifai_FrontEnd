@@ -53,6 +53,8 @@ import { Direction, UndoState } from '../../../shared/types/image-labelling/imag
 import { HTMLElementEvent } from '../../../shared/types/field/field.model';
 import { VideoLabellingApiService } from '../video-labelling-api.service';
 import { LanguageService } from '../../../shared/services/language.service';
+import { ModalBodyStyle } from '../../../shared/types/modal/modal.model';
+import { ModalService } from '../../../shared/components/modal/modal.service';
 
 type iconConfigs = {
     imgPath: string;
@@ -88,6 +90,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         private _shortcutKeyService: ShortcutKeyService,
         private _videoLblApiService: VideoLabellingApiService,
         private _languageService: LanguageService,
+        private _modalService: ModalService,
     ) {}
     private canvasContext!: CanvasRenderingContext2D;
     private unsubscribe$: Subject<any> = new Subject();
@@ -164,10 +167,11 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     extractionStartTime!: number;
     extractionEndTime!: number;
     showTimeIndicator: boolean = false;
-    onClickStartPoint: boolean = false;
-    currentSelectedTime!: string;
-    startPoint: number = 0;
-    endPoint: number = 0;
+    onSelectStartPoint: boolean = false;
+    onSelectEndPoint: boolean = false;
+    currentStartTime!: string;
+    currentEndTime!: string;
+    readonly modalMultipleExtraction = 'modal-multiple-extraction';
 
     @Input() _totalUuid!: number;
     @Input() _selectMetadata!: BboxMetadata;
@@ -209,6 +213,15 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @ViewChild('selectFrames') selectFrames!: ElementRef<HTMLDivElement>;
     @ViewChild('currentTimeIndicator') currentTimeIndicator!: ElementRef<HTMLDivElement>;
     @ViewChild('selectedRange') selectedRange!: ElementRef<HTMLDivElement>;
+
+    multipleExtractionModalBodyStyle: ModalBodyStyle = {
+        minHeight: '18vh',
+        maxHeight: '30vh',
+        minWidth: '20vw',
+        maxWidth: '20vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
 
     ngOnInit() {
         this.getLabelList();
@@ -508,34 +521,40 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     timeRange(event: MouseEvent) {
         if (this.allowSelectTime) {
             this.showTimeIndicator = true;
-            const currentTime =
-                (event.offsetX / this.videoProgress.nativeElement.offsetWidth) * this.video.nativeElement.duration;
+            if (!this.onSelectStartPoint) {
+                this.currentStartTime = this.trackingTime(event);
+            }
 
-            const currentPlayingTimeHours = Math.floor(currentTime / 3600);
-            const currentPlayingTimeMinutes = Math.floor(currentTime / 60);
-            const currentPlayingTimeSeconds = Math.floor(currentTime - currentPlayingTimeMinutes * 60);
-
-            this.currentSelectedTime = `${currentPlayingTimeHours
-                .toString()
-                .padStart(2, '0')}:${currentPlayingTimeMinutes
-                .toString()
-                .padStart(2, '0')}:${currentPlayingTimeSeconds.toString().padStart(2, '0')}`;
+            if (this.onSelectEndPoint) {
+                this.currentEndTime = this.trackingTime(event);
+            }
 
             const x = event.offsetX;
             const y = event.offsetY;
             this.currentTimeIndicator.nativeElement.style.left = x + 'px';
             this.currentTimeIndicator.nativeElement.style.top = y + 'px';
+
             event.preventDefault();
             event.stopPropagation();
         } else {
             this.showTimeIndicator = false;
-            this.currentSelectedTime = '';
+            this.currentStartTime = '';
+            this.currentEndTime = '';
         }
     }
 
-    // displaySelectedRange(event: MouseEvent) {
-    //     this.selectedRange.nativeElement.style.width = event.offsetX + 'px';
-    // }
+    trackingTime(event: MouseEvent) {
+        const currentTime =
+            (event.offsetX / this.videoProgress.nativeElement.offsetWidth) * this.video.nativeElement.duration;
+
+        const currentPlayingTimeHours = Math.floor(currentTime / 3600);
+        const currentPlayingTimeMinutes = Math.floor(currentTime / 60);
+        const currentPlayingTimeSeconds = Math.floor(currentTime - currentPlayingTimeMinutes * 60);
+
+        return `${currentPlayingTimeHours.toString().padStart(2, '0')}:${currentPlayingTimeMinutes
+            .toString()
+            .padStart(2, '0')}:${currentPlayingTimeSeconds.toString().padStart(2, '0')}`;
+    }
 
     extractFrame(event: MouseEvent) {
         this.extractCurrentTimeFrame(
@@ -548,12 +567,11 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     setExtractionStartTime(event: MouseEvent) {
         if (this.allowSelectTime) {
-            this.onClickStartPoint = true;
-            this.selectedRange.nativeElement.style.left = event.offsetX + 'px';
+            this.onSelectStartPoint = true;
+            this.onSelectEndPoint = true;
+            this.currentStartTime = this.trackingTime(event);
             this.extractionStartTime =
                 (event.offsetX / this.videoProgress.nativeElement.offsetWidth) * this.video.nativeElement.duration;
-
-            this.startPoint = event.clientX;
             event.preventDefault();
             event.stopPropagation();
         }
@@ -561,15 +579,30 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
 
     setExtractionEndTime(event: MouseEvent) {
         if (this.allowSelectTime) {
-            this.startPoint = 0;
-            this.endPoint = 0;
+            this.onSelectEndPoint = false;
+            this.showTimeIndicator = false;
+            this.currentEndTime = this.trackingTime(event);
             this.extractionEndTime =
                 (event.offsetX / this.videoProgress.nativeElement.offsetWidth) * this.video.nativeElement.duration;
-            // this.multipleFramesExtraction(this.selectedVideoPath, this.selectedProjectName,
-            //     this.extractionStartTime, this.extractionEndTime);
+            this._modalService.open(this.modalMultipleExtraction);
             event.preventDefault();
             event.stopPropagation();
         }
+    }
+
+    onSubmitMultipleExtraction() {
+        this.multipleFramesExtraction(
+            this.selectedVideoPath,
+            this.selectedProjectName,
+            this.extractionStartTime,
+            this.extractionEndTime,
+        );
+        this._modalService.close(this.modalMultipleExtraction);
+    }
+
+    onCloseMultipleExtractModal() {
+        this.showTimeIndicator = false;
+        this._modalService.close(this.modalMultipleExtraction);
     }
 
     multipleFramesExtraction(
@@ -1520,7 +1553,11 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     break;
                 case '0':
                     this.allowSelectTime = !this.allowSelectTime;
-                    this.selectedRange.nativeElement.style.width = '';
+                    this.showTimeIndicator = !this.showTimeIndicator;
+                    this.currentStartTime = '00:00:00';
+                    this.currentEndTime = '00:00:00';
+                    this.onSelectStartPoint = false;
+                    this.onSelectEndPoint = false;
                     break;
             }
         } catch (err) {

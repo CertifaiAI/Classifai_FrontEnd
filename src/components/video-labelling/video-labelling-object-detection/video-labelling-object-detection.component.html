@@ -36,16 +36,15 @@
                         (contextmenu)="extractFrame($event)"
                         (mousedown)="setExtractionStartTime($event)"
                         (mousemove)="timeRange($event)"
-                        <!--
-                        (dragover)="displaySelectedRange($event)"
-                        --
+                        (mouseup)="setExtractionEndTime($event)"
                     >
-                        (mouseup)="setExtractionEndTime($event)" >
-                        <div #videoProgressBar class="video-progress-bar" (contextmenu)="extractFrame($event)">
-                            <div #selectedRange [ngClass]="{ 'selected-range': onClickStartPoint }"></div>
-                        </div>
+                        <div #videoProgressBar class="video-progress-bar" (contextmenu)="extractFrame($event)"></div>
                         <div #currentTimeIndicator [ngClass]="{ 'time-indicator': showTimeIndicator }">
-                            {{ currentSelectedTime }}
+                            <label class="time-indicator-label" *ngIf="showTimeIndicator"> Time range </label>
+                            <br />
+                            <label class="time-indicator-label" *ngIf="showTimeIndicator">
+                                {{ currentStartTime }} to {{ currentEndTime }}
+                            </label>
                         </div>
                     </div>
                     <div class="timer-container">
@@ -104,7 +103,7 @@
         </div>
 
         <div class="canvas-video-container">
-            <!-------------------------- Label List Popup Container -------------------------->
+            <!------------------------ Label List Popup Container -------------------------->
             <div #floatdiv class="floatdiv unclosedOut" [hidden]="!showDropdownLabelBox">
                 <!-------------------------- Label Search/ OCR Input -------------------------->
                 <form autocomplete="off" spellcheck="false" class="unclosedOut">
@@ -374,3 +373,21 @@
         </div>
     </div>
 </div>
+
+<modal
+    [id]="modalMultipleExtraction"
+    [modalBodyStyle]="multipleExtractionModalBodyStyle"
+    [modalTitle]="'multipleExtractionModal.title' | translate"
+    [scrollable]="true"
+    [zIndex]="2"
+    (_close)="onCloseMultipleExtractModal()"
+>
+    <div class="modal-content-container">
+        <p class="font-multiple-extract">
+            {{ 'multipleExtractionModal.confirmation' | translate }} from {{ currentStartTime }} to {{ currentEndTime }}
+        </p>
+        <button class="button-style extract-btn" (click)="onSubmitMultipleExtraction()">
+            {{ 'multipleExtractionModal.confirm' | translate }}
+        </button>
+    </div>
+</modal>
