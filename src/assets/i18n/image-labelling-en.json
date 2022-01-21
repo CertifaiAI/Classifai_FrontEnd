@@ -141,7 +141,7 @@
         "confirm": "Confirm"
     },
     "multipleExtractionModal": {
-        "confirmation": "Multiple Frames extraction will perform ",
+        "confirmation": "Frames extraction will perform ",
         "confirm": "Confirm",
         "title": "Multiple Extraction"
     },
