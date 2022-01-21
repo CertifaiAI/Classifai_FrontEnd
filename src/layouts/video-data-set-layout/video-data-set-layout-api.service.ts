@@ -13,7 +13,8 @@ import {
     Videos,
     VideoProject,
     VideoFramesExtractionStatus,
-    VideoInfo,
+    SingleExtractionInfo,
+    MultipleExtractionInfo,
 } from '../../shared/types/dataset-layout/data-set-layout.model';
 import { HttpClient } from '@angular/common/http';
 import { VideoLabellingModeService } from 'components/video-labelling/video-labelling-mode.service';
@@ -201,13 +202,28 @@ export class VideoDataSetLayoutApiService {
     extractSpecificFrame(videoFilePath: string, projectName: string, currentTime: number) {
         const annotationType = this.videoLabellingMode === 'videobndbox' ? 'videoboundingbox' : 'videosegmentation';
 
-        return this.http.post<VideoInfo>(
+        return this.http.post<SingleExtractionInfo>(
             `${this.hostPort}v2/${this.videoLabellingMode}/projects/${projectName}/extract`,
             {
                 video_file_path: videoFilePath,
                 project_name: projectName,
                 annotation_type: annotationType,
                 current_time: currentTime,
+            },
+        );
+    }
+
+    extractFramesForSelectedTimeRange(videoFilePath: string, projectName: string, startTime: number, endTime: number) {
+        const annotationType = this.videoLabellingMode === 'videobndbox' ? 'videoboundingbox' : 'videosegmentation';
+
+        return this.http.post<MultipleExtractionInfo>(
+            `${this.hostPort}v2/${this.videoLabellingMode}/projects/${projectName}/multipleextract`,
+            {
+                video_file_path: videoFilePath,
+                project_name: projectName,
+                annotation_type: annotationType,
+                extraction_start_time: startTime,
+                extraction_end_time: endTime,
             },
         );
     }

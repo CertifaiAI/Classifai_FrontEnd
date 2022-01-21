@@ -34,8 +34,19 @@
                         class="video-Progress"
                         (click)="videoProgressTrackClick($event)"
                         (contextmenu)="extractFrame($event)"
+                        (mousedown)="setExtractionStartTime($event)"
+                        (mousemove)="timeRange($event)"
+                        <!--
+                        (dragover)="displaySelectedRange($event)"
+                        --
                     >
-                        <div #videoProgressBar class="video-progress-bar" (contextmenu)="extractFrame($event)"></div>
+                        (mouseup)="setExtractionEndTime($event)" >
+                        <div #videoProgressBar class="video-progress-bar" (contextmenu)="extractFrame($event)">
+                            <div #selectedRange [ngClass]="{ 'selected-range': onClickStartPoint }"></div>
+                        </div>
+                        <div #currentTimeIndicator [ngClass]="{ 'time-indicator': showTimeIndicator }">
+                            {{ currentSelectedTime }}
+                        </div>
                     </div>
                     <div class="timer-container">
                         <div class="timer">
@@ -77,7 +88,15 @@
                     </div>
                     <div class="volume-control">
                         <label>
-                            <input #volume type="range" min="0" max="1" step="0.1" (change)="changeVolume()" />
+                            <input
+                                id="volume"
+                                #volume
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.1"
+                                (change)="changeVolume()"
+                            />
                         </label>
                     </div>
                 </div>
@@ -132,7 +151,7 @@
                 <tbody class="video-tbody" #videoTimelineRef (mousewheel)="videoTimelineScroll()">
                     <tr class="video-tbody-container">
                         <ng-container *ngFor="let frame of thumbnailList; index as i">
-                            <td class="tableTiming">
+                            <td #selectFrames class="tableTiming" (select)="onSelectFrames()">
                                 <div [ngClass]="activeFrame === i ? 'active row' : null">
                                     {{ i }}
                                 </div>
@@ -146,7 +165,7 @@
                 </tbody>
             </table>
 
-            <div #videoEditorPanel class="time-line-editor" (mousewheel)="onScrollEditorTimeLine()">
+            <div #videoEditorPanel class="time-line-editor" (wheel)="onScrollEditorTimeLine()">
                 <div #videoTimeEditor class="time-line-unit"></div>
             </div>
         </div>
@@ -312,26 +331,26 @@
 
                 <div class="info-tab" [ngClass]="{ 'toggle-down': isAnnotationTabToggle }">
                     <div class="annotation-content-container">
-                        <div *ngFor="let boundingBox of thumbnailList[0].bnd_box; index as j">
-                            <label
-                                class="label"
-                                [attr.data-index]="j"
-                                [ngClass]="j === -1 ? 'annotation-active' : null"
-                                (click)="clickAbilityToggle ? onClickAnnotation(j, boundingBox) : null"
-                            >
-                                <div [ngClass]="clickAbilityToggle ? 'pointer' : null">
-                                    {{ boundingBox.label }} : {{ boundingBox.id }}
-                                </div>
-                                <div
-                                    [ngClass]="clickAbilityToggle ? 'pointer' : null"
-                                    *ngIf="j === -1"
-                                    (click)="onDeleteAnnotation()"
-                                    class="delete-annotation"
-                                >
-                                    -
-                                </div>
-                            </label>
-                        </div>
+                        <!--                        <div *ngFor="let boundingBox of thumbnailList[0].bnd_box; index as j">-->
+                        <!--                            <label-->
+                        <!--                                class="label"-->
+                        <!--                                [attr.data-index]="j"-->
+                        <!--                                [ngClass]="j === -1 ? 'annotation-active' : null"-->
+                        <!--                                (click)="clickAbilityToggle ? onClickAnnotation(j, boundingBox) : null"-->
+                        <!--                            >-->
+                        <!--                                <div [ngClass]="clickAbilityToggle ? 'pointer' : null">-->
+                        <!--                                    {{ boundingBox.label }} : {{ boundingBox.id }}-->
+                        <!--                                </div>-->
+                        <!--                                <div-->
+                        <!--                                    [ngClass]="clickAbilityToggle ? 'pointer' : null"-->
+                        <!--                                    *ngIf="j === -1"-->
+                        <!--                                    (click)="onDeleteAnnotation()"-->
+                        <!--                                    class="delete-annotation"-->
+                        <!--                                >-->
+                        <!--                                    - -->
+                        <!--                                </div>-->
+                        <!--                            </label>-->
+                        <!--                        </div>-->
                     </div>
                 </div>
             </div>

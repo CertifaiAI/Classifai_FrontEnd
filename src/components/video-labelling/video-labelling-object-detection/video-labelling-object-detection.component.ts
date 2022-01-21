@@ -34,9 +34,7 @@ import {
     EventEmitter_ThumbnailDetails,
     LabelInfo,
     LabelledFrame,
-    Polygons,
     PolyMetadata,
-    projectNameUUIDList,
     SelectedLabelProps,
     TabsProps,
     videoFramesExtractionState,
@@ -162,6 +160,14 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     inputLabel: string = '';
     clickAbilityToggle: boolean = false;
     selectedIndexAnnotation: number = -1;
+    allowSelectTime: boolean = false;
+    extractionStartTime!: number;
+    extractionEndTime!: number;
+    showTimeIndicator: boolean = false;
+    onClickStartPoint: boolean = false;
+    currentSelectedTime!: string;
+    startPoint: number = 0;
+    endPoint: number = 0;
 
     @Input() _totalUuid!: number;
     @Input() _selectMetadata!: BboxMetadata;
@@ -200,6 +206,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @ViewChild('videoTimeEditor') videoTimeEditor!: ElementRef<HTMLDivElement>;
     @ViewChild('videoEditorPanel') videoEditorPanel!: ElementRef<HTMLDivElement>;
     @ViewChild('cropTimeLine') cropTimeLine!: ElementRef<HTMLDivElement>;
+    @ViewChild('selectFrames') selectFrames!: ElementRef<HTMLDivElement>;
+    @ViewChild('currentTimeIndicator') currentTimeIndicator!: ElementRef<HTMLDivElement>;
+    @ViewChild('selectedRange') selectedRange!: ElementRef<HTMLDivElement>;
 
     ngOnInit() {
         this.getLabelList();
@@ -496,6 +505,38 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             (event.offsetX / this.videoProgress.nativeElement.offsetWidth) * this.video.nativeElement.duration;
     }
 
+    timeRange(event: MouseEvent) {
+        if (this.allowSelectTime) {
+            this.showTimeIndicator = true;
+            const currentTime =
+                (event.offsetX / this.videoProgress.nativeElement.offsetWidth) * this.video.nativeElement.duration;
+
+            const currentPlayingTimeHours = Math.floor(currentTime / 3600);
+            const currentPlayingTimeMinutes = Math.floor(currentTime / 60);
+            const currentPlayingTimeSeconds = Math.floor(currentTime - currentPlayingTimeMinutes * 60);
+
+            this.currentSelectedTime = `${currentPlayingTimeHours
+                .toString()
+                .padStart(2, '0')}:${currentPlayingTimeMinutes
+                .toString()
+                .padStart(2, '0')}:${currentPlayingTimeSeconds.toString().padStart(2, '0')}`;
+
+            const x = event.offsetX;
+            const y = event.offsetY;
+            this.currentTimeIndicator.nativeElement.style.left = x + 'px';
+            this.currentTimeIndicator.nativeElement.style.top = y + 'px';
+            event.preventDefault();
+            event.stopPropagation();
+        } else {
+            this.showTimeIndicator = false;
+            this.currentSelectedTime = '';
+        }
+    }
+
+    // displaySelectedRange(event: MouseEvent) {
+    //     this.selectedRange.nativeElement.style.width = event.offsetX + 'px';
+    // }
+
     extractFrame(event: MouseEvent) {
         this.extractCurrentTimeFrame(
             this.selectedVideoPath,
@@ -503,6 +544,72 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             this.video.nativeElement.currentTime,
         );
         event.preventDefault();
+    }
+
+    setExtractionStartTime(event: MouseEvent) {
+        if (this.allowSelectTime) {
+            this.onClickStartPoint = true;
+            this.selectedRange.nativeElement.style.left = event.offsetX + 'px';
+            this.extractionStartTime =
+                (event.offsetX / this.videoProgress.nativeElement.offsetWidth) * this.video.nativeElement.duration;
+
+            this.startPoint = event.clientX;
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+
+    setExtractionEndTime(event: MouseEvent) {
+        if (this.allowSelectTime) {
+            this.startPoint = 0;
+            this.endPoint = 0;
+            this.extractionEndTime =
+                (event.offsetX / this.videoProgress.nativeElement.offsetWidth) * this.video.nativeElement.duration;
+            // this.multipleFramesExtraction(this.selectedVideoPath, this.selectedProjectName,
+            //     this.extractionStartTime, this.extractionEndTime);
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+
+    multipleFramesExtraction(
+        videoPath: string,
+        projectName: string,
+        extractionStartTime: number,
+        extractionEndTime: number,
+    ) {
+        const multipleExtraction$ = this._videoDataSetService.extractFramesForSelectedTimeRange(
+            videoPath,
+            projectName,
+            extractionStartTime,
+            extractionEndTime,
+        );
+
+        const extractStatus$ = this._videoDataSetService.videoExtractionStatus(projectName);
+
+        this.subscription = multipleExtraction$
+            .pipe(
+                first(),
+                mergeMap(() => extractStatus$),
+            )
+            .subscribe(
+                (response) => {
+                    if (response.video_frames_extraction_status === 0) {
+                        this.currentTimeStamp = response.current_time_stamp;
+                        this.isVideoFramesExtractionCompleted = response.is_video_frames_extraction_completed;
+                        this.extractedFrameIndex = response.extracted_frame_index;
+                    }
+                },
+                (error) => {
+                    console.error(error);
+                },
+                () => {
+                    if (!this.isProjectStarted) {
+                        this.isProjectStarted = true;
+                    }
+                    this.retrieveExtractedVideoFrames(this.selectedProjectName);
+                },
+            );
     }
 
     extractCurrentTimeFrame(videoFilePath: string, projectName: string, currentTime: number) {
@@ -558,21 +665,38 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     onScrollEditorTimeLine() {
         const timeLine = this.videoTimeEditor.nativeElement;
         const panel = this.videoEditorPanel.nativeElement;
+        const zoomSpeed = 0.1;
+
+        const minZoom = timeLine.offsetWidth;
+        const maxZoom = panel.clientWidth;
+
+        console.log('timeLine: ', minZoom);
+        console.log('panel: ', maxZoom);
 
         panel.addEventListener('wheel', (e) => {
-            if (e.deltaY > 0) {
-                timeLine.style.width = `${(timeLine.style.width += e.deltaY * 0.1 + 'px')}px`;
-            } else {
-                timeLine.style.width = `${(timeLine.style.width += e.deltaY * -0.1 + 'px')}px`;
-            }
             console.log(e.deltaY);
+            if (e.deltaY > 0) {
+                const delta = Math.max(-1, Math.min(1, -e.detail)) * zoomSpeed;
+                timeLine.style.width = Math.max(minZoom, Math.min(maxZoom, minZoom + minZoom * delta)) + 'px';
+            } else {
+                const delta = Math.max(-1, Math.min(1, -e.deltaY)) * zoomSpeed;
+                timeLine.style.width = Math.max(minZoom, Math.min(maxZoom, minZoom + minZoom * delta)) + 'px';
+            }
             console.log(timeLine.style.width);
+            e.stopPropagation();
             e.preventDefault();
         });
     }
 
+    onSelectFrames() {
+        this.selectFrames.nativeElement.addEventListener('select', () => {
+            console.log('select');
+        });
+    }
+
     onClickCropTool() {
-        this.changeMouseCursorState({ move: true });
+        console.log('click');
+        this.changeMouseCursorState({ 'n-resize': true });
     }
 
     updateLabelList = () => {
@@ -1393,6 +1517,10 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     break;
                 case '7':
                     this.deleteFrame();
+                    break;
+                case '0':
+                    this.allowSelectTime = !this.allowSelectTime;
+                    this.selectedRange.nativeElement.style.width = '';
                     break;
             }
         } catch (err) {
