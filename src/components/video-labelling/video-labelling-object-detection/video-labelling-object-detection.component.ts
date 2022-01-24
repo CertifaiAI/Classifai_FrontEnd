@@ -214,12 +214,13 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @ViewChild('selectFrames') selectFrames!: ElementRef<HTMLDivElement>;
     @ViewChild('currentTimeIndicator') currentTimeIndicator!: ElementRef<HTMLDivElement>;
     @ViewChild('selectedRange') selectedRange!: ElementRef<HTMLDivElement>;
+    @ViewChild('partition') partition!: ElementRef<HTMLInputElement>;
 
     multipleExtractionModalBodyStyle: ModalBodyStyle = {
         minHeight: '18vh',
         maxHeight: '30vh',
-        minWidth: '20vw',
-        maxWidth: '20vw',
+        minWidth: '25vw',
+        maxWidth: '25vw',
         margin: '15vw 71vh',
         overflow: 'none',
     };
@@ -381,6 +382,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     retrieveExtractedVideoFrames(projectName: string) {
+        console.log('a');
         const projLoadingStatus$ = this._videoDataSetService.checkExistProjectStatus(projectName);
         const thumbnail$ = this._videoDataSetService.getThumbnailList;
 
@@ -401,6 +403,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     /** This is intentional */
                 },
                 () => {
+                    console.log('temp list', this.tempList);
                     if (this.thumbnailList.length === 0) {
                         this.thumbnailList.push(...this.tempList);
                     } else {
@@ -408,13 +411,14 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                             ...this.tempList.slice(this.thumbnailList.length, this.tempList.length),
                         );
                     }
-                    this.tempList = [];
+                    // this.tempList = [];
 
                     this._onClickVideoFrame.emit({
                         ...this.thumbnailList[this.currentIndex],
                         thumbnailIndex: this.currentIndex,
                     });
                     this.currentIndex += 1;
+                    console.log('thumbnail list', this.thumbnailList);
                 },
             );
         this.subject$.next();
@@ -572,7 +576,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             this.onSelectEndPoint = true;
             this.currentStartTime = this.trackingTime(event);
             this.extractionStartTime =
-                (event.offsetX / this.videoProgress.nativeElement.offsetWidth) * this.video.nativeElement.duration;
+                (event.offsetX / this.videoProgress.nativeElement.offsetWidth) *
+                this.video.nativeElement.duration *
+                1000;
             event.preventDefault();
             event.stopPropagation();
         }
@@ -584,7 +590,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             this.showTimeIndicator = false;
             this.currentEndTime = this.trackingTime(event);
             this.extractionEndTime =
-                (event.offsetX / this.videoProgress.nativeElement.offsetWidth) * this.video.nativeElement.duration;
+                (event.offsetX / this.videoProgress.nativeElement.offsetWidth) *
+                this.video.nativeElement.duration *
+                1000;
             this._modalService.open(this.modalMultipleExtraction);
             event.preventDefault();
             event.stopPropagation();
@@ -597,7 +605,9 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             this.selectedProjectName,
             this.extractionStartTime,
             this.extractionEndTime,
+            this.selectedPartition,
         );
+        this.allowSelectTime = false;
         this._modalService.close(this.modalMultipleExtraction);
     }
 
@@ -605,6 +615,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this.showTimeIndicator = false;
         this.onSelectStartPoint = false;
         this.currentEndTime = '00:00:00';
+        this.allowSelectTime = false;
         this._modalService.close(this.modalMultipleExtraction);
     }
 
@@ -613,12 +624,14 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         projectName: string,
         extractionStartTime: number,
         extractionEndTime: number,
+        partition: number,
     ) {
         const multipleExtraction$ = this._videoDataSetService.extractFramesForSelectedTimeRange(
             videoPath,
             projectName,
             extractionStartTime,
             extractionEndTime,
+            partition,
         );
 
         const extractStatus$ = this._videoDataSetService.videoExtractionStatus(projectName);
@@ -640,9 +653,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     console.error(error);
                 },
                 () => {
-                    if (!this.isProjectStarted) {
-                        this.isProjectStarted = true;
-                    }
                     this.retrieveExtractedVideoFrames(this.selectedProjectName);
                 },
             );
@@ -775,6 +785,10 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             });
         }
     };
+
+    getSelectedPartition() {
+        this.selectedPartition = Number(this.partition.nativeElement.value);
+    }
 
     onClickAnnotation = (index: number, { label }: Boundingbox) => {
         this.selectedLabel = label;
@@ -1537,34 +1551,35 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             // for video extraction usage
             switch (key) {
                 case 'F4':
-                    this.extractCurrentTimeFrame(
-                        this.selectedVideoPath,
-                        this.selectedProjectName,
-                        this.video.nativeElement.currentTime,
-                    );
+                    const currentTime =
+                        (this.videoProgressBar.nativeElement.clientWidth /
+                            this.videoProgress.nativeElement.offsetWidth) *
+                        this.video.nativeElement.duration *
+                        1000;
+                    this.extractCurrentTimeFrame(this.selectedVideoPath, this.selectedProjectName, currentTime);
                     break;
-                case '1':
+                case ctrlKey && '1':
                     this.returnToPreviousSkippedVideoFrame();
                     break;
-                case '2':
+                case ctrlKey && '2':
                     this.previousVideoFrame();
                     break;
-                case '3':
+                case ctrlKey && '3':
                     this.nextVideoFrame();
                     break;
-                case '4':
+                case ctrlKey && '4':
                     this.skipToNextFifthVideoFrame();
                     break;
-                case '5':
+                case ctrlKey && '5':
                     this.nextUnannotatedImage();
                     break;
-                case '6':
+                case ctrlKey && '6':
                     this.previousUnannotatedImage();
                     break;
-                case '7':
+                case ctrlKey && '7':
                     this.deleteFrame();
                     break;
-                case '0':
+                case ctrlKey && '8':
                     this.allowSelectTime = !this.allowSelectTime;
                     this.showTimeIndicator = !this.showTimeIndicator;
                     this.currentStartTime = '00:00:00';

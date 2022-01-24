@@ -41,7 +41,7 @@
 .video-tbody {
     display: flex;
     overflow-y: hidden;
-    overflow-x: scroll;
+    overflow-x: hidden;
     height: 66px;
     width: 100%;
     position: relative;
@@ -51,12 +51,13 @@
     flex-direction: row;
 }
 
-.video-tbody::-webkit-scrollbar {
-    width: 0;
+.video-tbody:hover {
+    overflow-x: scroll;
+    transition: top 0.5s;
 }
 
 .video-tbody-container {
-    margin-top: 12px;
+    margin-top: 5px;
     margin-left: 2px;
 }
 
@@ -219,13 +220,13 @@
 .videoTimeLineScrollBar {
     &::-webkit-scrollbar-track {
         background-color: #293540;
-        border-radius: 10px;
+        border-radius: 5px;
     }
     &::-webkit-scrollbar {
-        width: 0.5vw;
+        width: 1vw;
     }
     &::-webkit-scrollbar-thumb {
-        border-radius: 10px;
+        border-radius: 4px;
         background-color: slategrey;
     }
 }
@@ -264,6 +265,8 @@
 }
 
 #volume::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 1px;
     margin: -5px 0 0 0;
     background: #768dff;
 }
@@ -696,4 +699,42 @@
     color: white;
     cursor: pointer;
     font-size: 2vh;
+}
+
+.partition-container {
+    display: flex;
+    flex-direction: row;
+    margin: 0 0 0 0;
+    font-size: 0.8rem;
+}
+
+.partition {
+    margin-top: 2px;
+    width: 9vw;
+}
+
+.partition-input {
+    border-radius: 8vw;
+    border: none;
+    outline: none;
+    padding-left: 1vw;
+    min-height: 2.5vh;
+    max-height: 2.5vh;
+    min-width: 5vw;
+    max-width: 5vw;
+    font-size: 2vh;
+    background: #525353;
+    color: white;
+}
+
+.scroll {
+    &::-webkit-scrollbar-track {
+        @include scrollbar.scrollbar-track(color.$blackColor);
+    }
+    &::-webkit-scrollbar {
+        @include scrollbar.scrollbar();
+    }
+    &::-webkit-scrollbar-thumb {
+        @include scrollbar.scrollbar-thumb(color.$greyColor);
+    }
 }

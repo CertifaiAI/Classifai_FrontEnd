@@ -121,6 +121,7 @@ export type MultipleExtractionInfo = {
     video_file_path: path;
     extraction_start_time: number;
     extraction_end_time: number;
+    extraction_partition: number;
 };
 
 export type VideoFramesExtractionStatus = {

@@ -153,7 +153,11 @@
     <div class="videoTimeline">
         <div class="time-line-div">
             <table class="table">
-                <tbody class="video-tbody" #videoTimelineRef (mousewheel)="videoTimelineScroll()">
+                <tbody
+                    class="video-tbody videoTimeLineScrollBar"
+                    #videoTimelineRef
+                    (mousewheel)="videoTimelineScroll()"
+                >
                     <tr class="video-tbody-container">
                         <ng-container *ngFor="let frame of thumbnailList; index as i">
                             <td #selectFrames class="tableTiming" (select)="onSelectFrames()">
@@ -392,6 +396,11 @@
         <p class="font-multiple-extract">
             {{ 'multipleExtractionModal.confirmation' | translate }} from {{ currentStartTime }} to {{ currentEndTime }}
         </p>
+        <div class="partition-container">
+            <label class="label partition">{{ 'videoInfo.partition' | translate }}</label>
+            <input #partition class="partition-input" (change)="getSelectedPartition()" />
+        </div>
+
         <button class="button-style extract-btn" (click)="onSubmitMultipleExtraction()">
             {{ 'multipleExtractionModal.confirm' | translate }}
         </button>

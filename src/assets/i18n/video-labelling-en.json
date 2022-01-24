@@ -1,7 +1,8 @@
 {
     "videoInfo": {
         "videoDuration": "Video Duration: ",
-        "videoPath": "Video Path: "
+        "videoPath": "Video Path: ",
+        "partition": "Extraction Partition: "
     },
 
     "Tracking": "Tracking Method: "

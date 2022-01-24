@@ -213,7 +213,13 @@ export class VideoDataSetLayoutApiService {
         );
     }
 
-    extractFramesForSelectedTimeRange(videoFilePath: string, projectName: string, startTime: number, endTime: number) {
+    extractFramesForSelectedTimeRange(
+        videoFilePath: string,
+        projectName: string,
+        startTime: number,
+        endTime: number,
+        partition: number,
+    ) {
         const annotationType = this.videoLabellingMode === 'videobndbox' ? 'videoboundingbox' : 'videosegmentation';
 
         return this.http.post<MultipleExtractionInfo>(
@@ -224,6 +230,7 @@ export class VideoDataSetLayoutApiService {
                 annotation_type: annotationType,
                 extraction_start_time: startTime,
                 extraction_end_time: endTime,
+                extraction_partition: partition,
             },
         );
     }
