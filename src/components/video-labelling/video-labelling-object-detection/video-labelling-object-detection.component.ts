@@ -19,7 +19,7 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep, slice } from 'lodash-es';
 import { Subject, Subscription } from 'rxjs';
 import { concatMap, first, mergeMap, takeUntil } from 'rxjs/operators';
 import { AnnotateActionState, AnnotateSelectionService } from 'shared/services/annotate-selection.service';
@@ -338,7 +338,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this.selectedProjectName = projectName;
         this.selectedVideoPath = state.videoPath;
         this.framesPerSecond = state.framesPerSecond;
-        this.selectedVideoDuration = state.videoDuration;
         this.retrieveAllVideoFrames(this.selectedProjectName);
     }
 
@@ -382,7 +381,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     retrieveExtractedVideoFrames(projectName: string) {
-        console.log('a');
         const projLoadingStatus$ = this._videoDataSetService.checkExistProjectStatus(projectName);
         const thumbnail$ = this._videoDataSetService.getThumbnailList;
 
@@ -406,18 +404,19 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     if (this.thumbnailList.length === 0) {
                         this.thumbnailList.push(...this.tempList);
                     } else {
-                        this.thumbnailList.push(
-                            ...this.tempList.slice(this.thumbnailList.length, this.tempList.length),
-                        );
+                        const sliceList = this.tempList.slice(this.thumbnailList.length);
+                        this.thumbnailList.push(...sliceList);
                     }
-                    // this.tempList = [];
+
+                    this.currentIndex += this.tempList.length - 1;
 
                     this._onClickVideoFrame.emit({
                         ...this.thumbnailList[this.currentIndex],
                         thumbnailIndex: this.currentIndex,
                     });
 
-                    this.currentIndex += 1;
+                    console.log(this.thumbnailList);
+                    this.tempList = [];
                 },
             );
         this.subject$.next();
@@ -453,6 +452,18 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 },
             );
         this.subject$.next();
+    }
+
+    onLoadVideo() {
+        const videoDurationHours = Math.floor(this.video.nativeElement.duration / 3600);
+        const videoDurationMinutes = Math.floor(this.video.nativeElement.duration / 60);
+        const videoDurationSeconds = Math.floor(this.video.nativeElement.duration - videoDurationMinutes * 60);
+
+        this.selectedVideoDuration = `${videoDurationHours
+            .toString()
+            .padStart(2, '0')}:${videoDurationMinutes
+            .toString()
+            .padStart(2, '0')}:${videoDurationSeconds.toString().padStart(2, '0')}`;
     }
 
     videoPlayerButtonClick() {
@@ -503,13 +514,16 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         const videoDurationMinutes = Math.floor(this.video.nativeElement.duration / 60);
         const videoDurationSeconds = Math.floor(this.video.nativeElement.duration - videoDurationMinutes * 60);
 
-        this.currentPlayingTime.nativeElement.innerHTML = `${currentPlayingTimeHours.toString().padStart(2, '0')}:
-        ${currentPlayingTimeMinutes.toString().padStart(2, '0')}:${currentPlayingTimeSeconds
+        this.currentPlayingTime.nativeElement.innerHTML = `${currentPlayingTimeHours
             .toString()
-            .padStart(2, '0')}`;
-
-        this.videoDuration.nativeElement.innerHTML = `${videoDurationHours.toString().padStart(2, '0')}:
-        ${videoDurationMinutes.toString().padStart(2, '0')}:${videoDurationSeconds.toString().padStart(2, '0')}`;
+            .padStart(2, '0')}:${currentPlayingTimeMinutes
+            .toString()
+            .padStart(2, '0')}:${currentPlayingTimeSeconds.toString().padStart(2, '0')}`;
+        this.videoDuration.nativeElement.innerHTML = `${videoDurationHours
+            .toString()
+            .padStart(2, '0')}:${videoDurationMinutes
+            .toString()
+            .padStart(2, '0')}:${videoDurationSeconds.toString().padStart(2, '0')}`;
     }
 
     currentVideoTime() {
@@ -592,7 +606,12 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                 (event.offsetX / this.videoProgress.nativeElement.offsetWidth) *
                 this.video.nativeElement.duration *
                 1000;
-            this._modalService.open(this.modalMultipleExtraction);
+
+            if (this.extractionEndTime > this.extractionStartTime) {
+                this._modalService.open(this.modalMultipleExtraction);
+            } else {
+                alert('Extraction end time should large than extraction start time');
+            }
             event.preventDefault();
             event.stopPropagation();
         }
@@ -607,6 +626,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             this.selectedPartition,
         );
         this.allowSelectTime = false;
+        this.partition.nativeElement.value = '';
         this._modalService.close(this.modalMultipleExtraction);
     }
 
@@ -615,6 +635,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         this.onSelectStartPoint = false;
         this.currentEndTime = '00:00:00';
         this.allowSelectTime = false;
+        this.partition.nativeElement.value = '';
         this._modalService.close(this.modalMultipleExtraction);
     }
 

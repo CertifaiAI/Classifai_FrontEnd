@@ -6,6 +6,7 @@
                     #videoPlayer
                     width="650px"
                     height="335px"
+                    (loadedmetadata)="onLoadVideo()"
                     (timeupdate)="videoTimeIndicator(); currentVideoTime()"
                 >
                     <source src="assets/tesla.mp4" type="video/mp4" />
@@ -399,6 +400,7 @@
         <div class="partition-container">
             <label class="label partition">{{ 'multipleExtractionModal.partition' | translate }}</label>
             <input #partition class="partition-input" (change)="getSelectedPartition()" />
+            <label class="partition-exp"> Exp: 10</label>
         </div>
 
         <button class="button-style extract-btn" (click)="onSubmitMultipleExtraction()">

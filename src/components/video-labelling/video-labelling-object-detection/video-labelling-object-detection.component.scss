@@ -727,6 +727,12 @@
     color: white;
 }
 
+.partition-exp {
+    font-size: 11px;
+    margin: 4px 0 0 8px;
+    color: rgba(108, 122, 137, 0.8);
+}
+
 .scroll {
     &::-webkit-scrollbar-track {
         @include scrollbar.scrollbar-track(color.$blackColor);
