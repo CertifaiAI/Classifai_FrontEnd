@@ -143,7 +143,8 @@
     "multipleExtractionModal": {
         "confirmation": "Frames extraction will perform ",
         "confirm": "Confirm",
-        "title": "Multiple Extraction"
+        "title": "Multiple Extraction",
+        "partition": "Extraction Partition: "
     },
     "configFileInfoTitle": "Choosing the Right Export",
     "configFileInfoDest1": "Config File is the configuration file contains of metadata of a project. It is suitable when the data is readily available in the system to be imported to.",
@@ -169,5 +170,10 @@
         "previousAnnotatedImage": "Previous annotated image",
         "nextUnannotatedImage": "Next unannotated image",
         "previousUnannotatedImage": "Previous unannotated image"
-    }
+    },
+    "videoInfo": {
+        "videoDuration": "Video Duration: ",
+        "videoPath": "Video Path: "
+    },
+    "Tracking": "Tracking Method: "
 }

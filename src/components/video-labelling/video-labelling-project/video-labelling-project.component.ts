@@ -71,10 +71,7 @@ export class VideoLabellingProjectComponent implements OnInit, OnChanges {
         private _videoLblState: VideoLabellingActionService,
         private _languageService: LanguageService,
         private _undoRedoService: UndoRedoService,
-    ) {
-        const langsArr: string[] = ['video-labelling-en'];
-        this._languageService.initializeLanguage(`video-labelling`, langsArr);
-    }
+    ) {}
 
     ngOnInit(): void {
         this.updateLabelList();

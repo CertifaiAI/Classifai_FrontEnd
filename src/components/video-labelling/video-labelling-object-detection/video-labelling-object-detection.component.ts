@@ -403,7 +403,6 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     /** This is intentional */
                 },
                 () => {
-                    console.log('temp list', this.tempList);
                     if (this.thumbnailList.length === 0) {
                         this.thumbnailList.push(...this.tempList);
                     } else {
@@ -417,8 +416,8 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                         ...this.thumbnailList[this.currentIndex],
                         thumbnailIndex: this.currentIndex,
                     });
+
                     this.currentIndex += 1;
-                    console.log('thumbnail list', this.thumbnailList);
                 },
             );
         this.subject$.next();
@@ -1203,20 +1202,22 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('mousedown', ['$event'])
     mouseDown(event: MouseEvent) {
         try {
-            if (this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event)) {
-                this.isMouseDown = true;
-                if (this.boundingBoxState.drag) {
-                    this.changeMouseCursorState({ grabbing: true });
-                    this._boundingBoxCanvas.setPanXY(event.offsetX, event.offsetY);
-                }
-                if (this.boundingBoxState.draw) {
-                    const tmpBox = this._boundingBoxCanvas.mouseDownDrawEnable(
-                        event.offsetX,
-                        event.offsetY,
-                        this._selectMetadata.bnd_box,
-                    );
-                    this.annotateSelectChange({ annotation: tmpBox, isDlbClick: false });
-                    this.redrawImage(this._selectMetadata);
+            if (this.isCursorInCanvas) {
+                if (this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event)) {
+                    this.isMouseDown = true;
+                    if (this.boundingBoxState.drag) {
+                        this.changeMouseCursorState({ grabbing: true });
+                        this._boundingBoxCanvas.setPanXY(event.offsetX, event.offsetY);
+                    }
+                    if (this.boundingBoxState.draw) {
+                        const tmpBox = this._boundingBoxCanvas.mouseDownDrawEnable(
+                            event.offsetX,
+                            event.offsetY,
+                            this._selectMetadata.bnd_box,
+                        );
+                        this.annotateSelectChange({ annotation: tmpBox, isDlbClick: false });
+                        this.redrawImage(this._selectMetadata);
+                    }
                 }
             } else {
                 this.isMouseDown = false;
@@ -1229,15 +1230,20 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     @HostListener('mouseup', ['$event'])
     mouseUp(event: MouseEvent) {
         try {
-            if (this.boundingBoxState.draw && this.isMouseDown) {
-                this.finishDrawBoundingBox(event);
-            }
-            if (this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event)) {
-                if (this.boundingBoxState.drag && this.isMouseDown) {
-                    this._boundingBoxCanvas.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
+            if (this.isCursorInCanvas) {
+                if (this.boundingBoxState.draw && this.isMouseDown && this.isCursorInCanvas) {
+                    this.finishDrawBoundingBox(event);
                 }
+                if (
+                    this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event) &&
+                    this.isCursorInCanvas
+                ) {
+                    if (this.boundingBoxState.drag && this.isMouseDown) {
+                        this._boundingBoxCanvas.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
+                    }
 
-                this.isMouseDown = false;
+                    this.isMouseDown = false;
+                }
             }
         } catch (err) {
             console.log(err);
@@ -1280,14 +1286,15 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
         try {
             this.crossH.nativeElement.style.visibility = 'hidden';
             this.crossV.nativeElement.style.visibility = 'hidden';
-            if (this.boundingBoxState.draw && this.isMouseDown) {
+            if (this.boundingBoxState.draw && this.isMouseDown && this.isCursorInCanvas) {
                 this.finishDrawBoundingBox(event);
             }
             if (
                 ((event.target as Element).className === 'canvasstyle' ||
                     (event.target as Element).className.includes('unclosedOut')) &&
                 !(event.relatedTarget as Element)?.className.includes('unclosedOut') &&
-                !(event.relatedTarget as Element)?.className.includes('canvasstyle')
+                !(event.relatedTarget as Element)?.className.includes('canvasstyle') &&
+                this.isCursorInCanvas
             ) {
                 if (this._selectMetadata.bnd_box.filter((bb) => bb.label === '').length !== 0) {
                     this.showDropdownLabelBox = false;
@@ -1297,7 +1304,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                     alert('Some bounding boxes will be deleted because they were not labelled.');
                 }
             }
-            if (this.boundingBoxState.drag && this.isMouseDown) {
+            if (this.boundingBoxState.drag && this.isMouseDown && this.isCursorInCanvas) {
                 this._boundingBoxCanvas.setGlobalXY(this._selectMetadata.img_x, this._selectMetadata.img_y);
                 this.redrawImage(this._selectMetadata);
             }
@@ -1529,7 +1536,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
     }
 
     @HostListener('window:keydown', ['$event'])
-    keyStrokeEvent({ ctrlKey, metaKey, shiftKey, key }: KeyboardEvent) {
+    keyStrokeEvent({ ctrlKey, metaKey, shiftKey, key, altKey }: KeyboardEvent) {
         try {
             const { isActiveModal } = this.boundingBoxState;
             if (!this.mousedown && !isActiveModal && !this.showDropdownLabelBox && this._selectMetadata) {
@@ -1558,28 +1565,28 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
                         1000;
                     this.extractCurrentTimeFrame(this.selectedVideoPath, this.selectedProjectName, currentTime);
                     break;
-                case ctrlKey && '1':
+                case altKey && '1':
                     this.returnToPreviousSkippedVideoFrame();
                     break;
-                case ctrlKey && '2':
+                case altKey && '2':
                     this.previousVideoFrame();
                     break;
-                case ctrlKey && '3':
+                case altKey && '3':
                     this.nextVideoFrame();
                     break;
-                case ctrlKey && '4':
+                case altKey && '4':
                     this.skipToNextFifthVideoFrame();
                     break;
-                case ctrlKey && '5':
+                case altKey && '5':
                     this.nextUnannotatedImage();
                     break;
-                case ctrlKey && '6':
+                case altKey && '6':
                     this.previousUnannotatedImage();
                     break;
-                case ctrlKey && '7':
+                case altKey && '7':
                     this.deleteFrame();
                     break;
-                case ctrlKey && '8':
+                case altKey && '8':
                     this.allowSelectTime = !this.allowSelectTime;
                     this.showTimeIndicator = !this.showTimeIndicator;
                     this.currentStartTime = '00:00:00';
@@ -1703,6 +1710,7 @@ export class VideoLabellingObjectDetectionComponent implements OnInit, OnChanges
             .subscribe((res) => {
                 if (res.message === 1) {
                     this.thumbnailList = this.thumbnailList.filter((x) => res.uuid_list.includes(x.uuid));
+                    console.log(this.thumbnailList);
                     this.currentIndex = this.frameNumber;
                     this.frameNumber -= 1;
                     this.onClickVideoTimeLine(this.frameNumber);

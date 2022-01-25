@@ -23,129 +23,6 @@
     </div>
 </div>
 
-<!--Design 1-->
-<!--<modal-->
-<!--    [id]="modalIdCreateProject"-->
-<!--    [modalBodyStyle]="createProjectModalBodyStyle"-->
-<!--    [modalTitle]="'createNewProject' | translate"-->
-<!--    [scrollable]="false"-->
-<!--&gt;-->
-<!--    <div class="display-modal-container">-->
-<!--        <form [formGroup]="form">-->
-<!--            <div class="content-container">-->
-<!--                <div class="new-project-container" *ngIf="step == 1">-->
-<!--                    <label class="label label-name">{{ 'newProjectName' | translate }} </label>-->
-<!--                    <input-->
-<!--                        #refProjectName-->
-<!--                        class="input-style"-->
-<!--                        type="text"-->
-<!--                        placeholder="Enter project name"-->
-<!--                        formControlName="projectName"-->
-<!--                        [value]="inputProjectName"-->
-<!--                        (input)="onChange($event.target.value)"-->
-<!--                    />-->
-<!--                </div>-->
-<!--                <ng-container-->
-<!--                    *ngIf="form.get('projectName')?.touched && form.get('projectName')?.invalid; else emptycontainer"-->
-<!--                >-->
-<!--                    <div class="validation">-->
-<!--                        <span *ngIf="form.get('projectName')?.getError('exist')">-->
-<!--                            <small class="error-create-msg"> {{ 'projectNameExist' | translate }} </small>-->
-<!--                        </span>-->
-<!--                        <span *ngIf="form.get('projectName')?.getError('required')">-->
-<!--                            <small class="error-create-msg"> {{ 'projectNameRequired' | translate }} </small>-->
-<!--                        </span>-->
-<!--                    </div>-->
-<!--                </ng-container>-->
-<!--                <ng-template #emptycontainer>-->
-<!--                    <div class="empty-container"></div>-->
-<!--                </ng-template>-->
-<!--                <br />-->
-<!--                <div class="select-folder-container" *ngIf="step == 1">-->
-<!--                    <label class="label label-select-folder">{{ 'videoFile' | translate }}</label>-->
-<!--                    <button class="button-style choose-folder-button" type="button" (click)="importVideoFile()">-->
-<!--                        {{ 'chooseFile' | translate }}-->
-<!--                    </button>-->
-<!--                </div>-->
-<!--                <div class="file-name-container" *ngIf="step == 1">-->
-<!--                    <label class="filename" #videofilename></label>-->
-<!--                </div>-->
-<!--                <div class="new-project-container" *ngIf="step == 1">-->
-<!--                    <label class="label label-name">{{ 'Frame Interval' | translate }} </label>-->
-<!--                    <input-->
-<!--                        #refFrameInterval-->
-<!--                        class="input-style"-->
-<!--                        type="text"-->
-<!--                        placeholder="Enter frame interval"-->
-<!--                        formControlName="frameInterval"-->
-<!--                        [value]="inputFrameInterval"-->
-<!--                    />-->
-<!--                </div>-->
-<!--                <br />-->
-<!--                <div class="model-button-container" *ngIf="step == 1">-->
-<!--                    <button-->
-<!--                        class="button-style create-btn"-->
-<!--                        type="button"-->
-<!--                        (click)="next()"-->
-<!--                        [ngClass]="isVideoFileUploadComplete() ? 'disabled-create-btn' : null"-->
-<!--                        [disabled]="isVideoFileUploadComplete()"-->
-<!--                    >-->
-<!--                        {{ 'Next' | translate }}-->
-<!--                    </button>-->
-<!--                </div>-->
-<!--                <div class="select-folder-container" *ngIf="step == 2">-->
-<!--                    <label class="label label-select-folder">{{ 'projectFolder' | translate }}</label>-->
-<!--                    <button class="button-style choose-folder-button" type="button" (click)="selectProjectFolder()">-->
-<!--                        {{ 'chooseFolder' | translate }}-->
-<!--                    </button>-->
-<!--                </div>-->
-<!--                <div class="folder-name-container">-->
-<!--                    <label class="foldername" #projectfoldername></label>-->
-<!--                </div>-->
-<!--                <br />-->
-<!--                <div class="select-file-container" *ngIf="step == 2">-->
-<!--                    <label class="label-select-label">-->
-<!--                        {{ 'labelListFile' | translate }}<br />-->
-<!--                        {{ 'optional' | translate }}:-->
-<!--                        <img-->
-<!--                            class="help-icon"-->
-<!--                            src="assets/icons/help.svg"-->
-<!--                            (mouseover)="showLabelTooltip = true"-->
-<!--                            (mouseout)="showLabelTooltip = false"-->
-<!--                            alt="info"-->
-<!--                        />-->
-<!--                    </label>-->
-<!--                    <div style="padding-top: 1vh">-->
-<!--                        <button class="button-file-style choose-file-button" type="button" (click)="importLabelFile()">-->
-<!--                            {{ 'chooseFile' | translate }}-->
-<!--                        </button>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <span class="labeltooltiptext" *ngIf="showLabelTooltip">-->
-<!--                    <p>{{ 'labelFileDest1' | translate }}</p>-->
-<!--                    <p>{{ 'labelFileDest2' | translate }}</p>-->
-<!--                </span>-->
-<!--                <div class="file-name-container">-->
-<!--                    <label class="filename" #labeltextfilename></label>-->
-<!--                </div>-->
-<!--                <div class="horizontal-line" *ngIf="step == 2"></div>-->
-<!--                <div class="model-button-container" *ngIf="step == 2">-->
-<!--                    <button-->
-<!--                        class="button-style create-btn"-->
-<!--                        type="submit"-->
-<!--                        (click)="onSubmit(true)"-->
-<!--                        [ngClass]="isCreateFormIncomplete() ? 'disabled-create-btn' : null"-->
-<!--                        [disabled]="isCreateFormIncomplete()"-->
-<!--                    >-->
-<!--                        {{ 'createButton' | translate }}-->
-<!--                    </button>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </form>-->
-<!--    </div>-->
-<!--</modal>-->
-
-<!--Design 2-->
 <modal
     [id]="modalIdCreateProject"
     [modalBodyStyle]="createProjectModalBodyStyle"
@@ -184,16 +61,6 @@
                 </ng-template>
                 <br />
                 <div class="select-folder-container">
-                    <label class="label label-select-folder">{{ 'videoFile' | translate }}</label>
-                    <button class="button-style choose-folder-button" type="button" (click)="importVideoFile()">
-                        {{ 'chooseFile' | translate }}
-                    </button>
-                </div>
-                <div class="file-name-container">
-                    <label class="filename" #videofilename></label>
-                </div>
-                <br />
-                <div class="select-folder-container">
                     <label class="label label-select-folder">{{ 'projectFolder' | translate }}</label>
                     <button class="button-style choose-folder-button" type="button" (click)="selectProjectFolder()">
                         {{ 'chooseFolder' | translate }}
@@ -204,14 +71,13 @@
                 </div>
                 <br />
                 <div class="select-folder-container">
-                    <label class="label label-select-folder">{{ 'uploadVideo' | translate }}</label>
-                    <input #uploadVideo type="file" accept="video/mp4" (change)="uploadVideoFile()" />
-                    <button class="button-style choose-folder-button" type="button" (click)="selectProjectFolder()">
-                        {{ 'upload' | translate }}
+                    <label class="label label-select-folder">{{ 'videoFile' | translate }}</label>
+                    <button class="button-style choose-folder-button" type="button" (click)="importVideoFile()">
+                        {{ 'chooseFile' | translate }}
                     </button>
                 </div>
-                <div class="folder-name-container">
-                    <label class="foldername">Upload video</label>
+                <div class="file-name-container">
+                    <label class="filename" #videofilename></label>
                 </div>
                 <br />
                 <div class="select-file-container">
