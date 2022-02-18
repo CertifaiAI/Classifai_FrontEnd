@@ -19,6 +19,7 @@ type CardSchema = {
 export class DataSetCardComponent implements OnChanges {
     @Input() _jsonSchema!: ProjectSchema;
     @Input() _projectType: string = 'myproject';
+    @Input() _annotationType!: string;
     @Output() _onClick: EventEmitter<string> = new EventEmitter();
     @Output() _onStarred: EventEmitter<StarredProps> = new EventEmitter();
     @Output() _onDelete: EventEmitter<string> = new EventEmitter();

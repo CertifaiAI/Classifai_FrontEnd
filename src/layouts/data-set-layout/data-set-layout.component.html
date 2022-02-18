@@ -15,6 +15,7 @@
         <data-set-card
             [_jsonSchema]="projectList"
             [_projectType]="projectType"
+            [_annotationType]="annotationType"
             (_onClick)="onSubmit(false, $event)"
             (_onStarred)="onStarred($event)"
             (_onDelete)="deleteProject($event)"
@@ -61,15 +62,29 @@
                     <div class="empty-container"></div>
                 </ng-template>
                 <br />
-                <div class="select-folder-container">
-                    <label class="label label-select-folder">{{ 'projectFolder' | translate }}</label>
-                    <button class="button-style choose-folder-button" type="button" (click)="selectProjectFolder()">
-                        {{ 'chooseFolder' | translate }}
-                    </button>
-                </div>
-                <div class="folder-name-container">
-                    <label class="foldername" #projectfoldername></label>
-                </div>
+                <ng-container *ngIf="labellingModeUrl === ('bndbox' || 'seg')">
+                    <div class="select-folder-container">
+                        <label class="label label-select-folder">{{ 'projectFolder' | translate }}</label>
+                        <button class="button-style choose-folder-button" type="button" (click)="selectProjectFolder()">
+                            {{ 'chooseFolder' | translate }}
+                        </button>
+                    </div>
+                    <div class="folder-name-container">
+                        <label class="foldername" #projectfoldername></label>
+                    </div>
+                </ng-container>
+                <br />
+                <ng-container *ngIf="labellingModeUrl === 'tabular'">
+                    <div class="select-tabular-file-container">
+                        <label class="label label-select-folder">{{ 'tabularFile' | translate }}</label>
+                        <button class="button-style choose-file-button" type="button" (click)="selectTabularFile()">
+                            {{ 'chooseFile' | translate }}
+                        </button>
+                    </div>
+                    <div class="folder-name-container">
+                        <label class="foldername" #tabularFileName></label>
+                    </div>
+                </ng-container>
                 <br />
                 <div class="select-file-container">
                     <label class="label-select-label">

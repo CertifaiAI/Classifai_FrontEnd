@@ -33,6 +33,13 @@ export type Labels = {
     label_file_path: path;
 };
 
+export type Tabular = {
+    message: message;
+    window_status: window_status;
+    window_message: string;
+    tabular_file_path: path;
+};
+
 export type ProjectStatus = {
     status: string;
     backgroundColour: number;

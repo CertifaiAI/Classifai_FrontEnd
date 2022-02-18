@@ -1,0 +1,994 @@
+.layout-container {
+    user-select: none;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(220, 220, 220, 1);
+}
+
+.dropdown-menu {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 20vw;
+    max-width: 20vw;
+    min-height: 70vw;
+}
+
+.current-tab {
+    position: relative;
+    border-left: 5px solid #ffffff;
+}
+
+.toggle {
+    display: block;
+}
+
+.close {
+    display: none;
+}
+
+.side-navigation-menu {
+    width: 20vw;
+    height: 100vh;
+    position: relative;
+    background-color: #003049;
+}
+
+.label-section,
+.graph-section,
+.tabular-table-section,
+.export-section {
+    min-height: 3vh;
+    min-width: 20vw;
+    background-color: #003049;
+    border-right: 0.5px solid white;
+    position: relative;
+}
+
+.label-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-section {
+    position: relative;
+    min-height: 5vh;
+    max-height: 5vh;
+    min-width: 19vw;
+    background-color: #003049;
+    padding: 10px 0 2px 10px;
+    text-align: left;
+    color: white;
+    border-bottom: 1px solid white;
+}
+
+.subsection {
+    position: relative;
+    min-width: 20vw;
+    max-width: 20vw;
+    min-height: 23vh;
+    max-height: 23vh;
+    margin-top: 10px;
+    border-bottom: 0.5px solid white;
+}
+
+.subsection-longer {
+    position: relative;
+    min-width: 20vw;
+    max-width: 20vw;
+    min-height: 34.5vh;
+    max-height: 34.5vh;
+    margin-top: 10px;
+    border-bottom: 0.5px solid white;
+}
+
+.image {
+    height: 3vh;
+    float: right;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.drop-down {
+    height: 4vh;
+    float: right;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.section-title {
+    min-height: 5vh;
+    max-height: 5vh;
+    position: relative;
+    width: 20vw;
+    font-size: 0.85rem;
+    color: white;
+    text-align: center;
+    line-height: 30px;
+    vertical-align: center;
+    border-bottom: 0.5px solid white;
+}
+
+.input-label {
+    position: relative;
+    margin-left: 20px;
+}
+
+.input {
+    border-radius: 10px;
+    outline: none;
+    border: none;
+    padding-left: 10px;
+}
+
+.labels {
+    margin: 5px 0 5px 10px;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.color-palette-container {
+    position: absolute;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.color-palette {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    height: 3.5vh;
+}
+
+.label-color {
+    position: relative;
+    margin: 0 30px 0 10px;
+    height: 3.5vh;
+    width: 5.5vw;
+    cursor: pointer;
+    color: white;
+    border-radius: 5px;
+    float: right;
+    justify-content: center;
+}
+
+.label-tag {
+    border-radius: 3px 0 0 3px;
+    display: inline-block;
+    height: 3.5vh;
+    line-height: 20px;
+    padding: 0 15px 0 20px;
+    position: relative;
+    margin: 0 10px 10px 0;
+    background-color: #f55652;
+    vertical-align: center;
+}
+
+.label-tag::before {
+    background-color: #eee;
+    border-radius: 10px;
+    content: '';
+    height: 6px;
+    left: 10px;
+    position: absolute;
+    width: 6px;
+    top: 7px;
+}
+
+.label-tag::after {
+    background-color: transparent;
+    right: -10px;
+    border-bottom: 11px solid transparent;
+    border-left: 10px solid #f55652;
+    border-top: 11px solid transparent;
+    content: '';
+    position: absolute;
+}
+
+.hidden-label {
+    color: white;
+    width: 5vw;
+    font-size: 0.8rem;
+    line-height: 20px;
+    position: absolute;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.label {
+    width: 15vw;
+    position: relative;
+}
+
+.label-tag-logo {
+    width: 3vw;
+    height: 3vh;
+    position: relative;
+}
+
+.select-export-label {
+    margin: 10px 0 0 20px;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.export-type-container {
+    position: relative;
+    width: 10vw;
+    height: 20vh;
+    display: flex;
+    flex-direction: column;
+    margin-left: 4rem;
+}
+
+.selected-label-container {
+    position: relative;
+    min-width: 18vw;
+    max-width: 18vw;
+    min-height: 20vh;
+    max-height: 20vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 5px;
+    margin: 5px 0 5px 8px;
+}
+
+.selected-label-container::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+}
+
+.selected-label-container::-webkit-scrollbar-track {
+    width: 30px;
+    background-color: transparent;
+}
+
+.selected-label-container::-webkit-scrollbar-thumb {
+    border: 6px solid transparent;
+    background-color: #708090;
+    border-radius: 20px;
+    background-clip: content-box;
+}
+
+.selected-label {
+    position: relative;
+    color: white;
+    height: 3vh;
+    width: 19vw;
+    font-size: 0.7rem;
+    margin: 10px 0 10px 0;
+    line-height: 20px;
+    vertical-align: center;
+}
+
+.annotation-container {
+    width: 100vw;
+    height: 100vh;
+    margin: 5vh 10vw 10vh 10vw;
+    border-radius: 20px;
+}
+
+.data-container {
+    position: relative;
+    min-height: 82vh;
+    max-height: 82vh;
+    min-width: 63vw;
+    max-width: 63vw;
+    background-color: white;
+    box-shadow: 0 6px 6px hsl(0deg 0% 0% / 0.3);
+    border-radius: 10px;
+}
+
+.empty-div {
+    position: relative;
+    max-height: 1vh;
+    margin: 1vh 0 1vh 0;
+    display: flex;
+    flex-direction: row;
+}
+
+.row-data-container {
+    position: relative;
+    width: 50vw;
+    height: 5vh;
+    font-size: 10px;
+    justify-content: space-between;
+    display: flex;
+}
+
+.inner-container {
+    position: relative;
+    min-height: 72vh;
+    max-height: 72vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.table-container {
+    height: 60vh;
+}
+
+.scroll-table {
+    min-height: 58.3vh;
+    max-height: 58.3vh;
+    min-width: 58.5vw;
+    max-width: 58.5vw;
+    overflow: hidden;
+    margin-left: 30px;
+}
+
+.scroll-table:hover {
+    overflow-y: scroll;
+    overflow-x: scroll;
+}
+
+.scroll-table::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+}
+
+.scroll-table::-webkit-scrollbar-track {
+    width: 30px;
+    background-color: transparent;
+}
+
+.scroll-table::-webkit-scrollbar-thumb {
+    border: 6px solid transparent;
+    background-color: #708090;
+    border-radius: 20px;
+    background-clip: content-box;
+}
+
+.data-table {
+    position: relative;
+    border-collapse: collapse;
+    min-width: 58.5vw;
+    max-width: 58.5vw;
+    font-size: 1rem;
+    margin-top: 10px;
+}
+
+.data-table,
+th,
+td {
+    border: 1px solid rgba(38, 182, 156, 0.5);
+    text-align: center;
+}
+
+.data-table thead tr {
+    background-color: #166166;
+    color: white;
+    font-weight: bold;
+}
+
+.data-table tr th {
+    background-color: #166166;
+    color: white;
+    font-weight: bold;
+    width: 30vw;
+    text-align: left;
+    text-indent: 10px;
+}
+
+.data-table tr td {
+    background-color: #ffffff;
+    width: 70vw;
+}
+
+.data-table tbody td tr {
+    vertical-align: middle;
+    font-size: 0.5rem;
+}
+
+.data-table th,
+.data-table td {
+    padding: 10px 10px 11px 10px;
+}
+
+.data-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.title {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.5rem;
+    font-weight: bold;
+    justify-content: left;
+    position: relative;
+    padding: 0 0 2px 20px;
+    line-height: 40px;
+    vertical-align: center;
+    background-color: #003049;
+    color: white;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.current-data {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1rem;
+    font-weight: bold;
+    position: relative;
+    margin: 5px 0 2px 30px;
+    display: flex;
+    flex-direction: row;
+    min-height: 7vh;
+    max-height: 7vh;
+}
+
+.current-data-label {
+    position: relative;
+    margin: 5px 5px 0 5px;
+    width: 7vw;
+    height: 2vh;
+}
+
+.current-annotation-label {
+    position: relative;
+    margin: 5px 5px 0 10vw;
+    width: 5vw;
+    height: 2vh;
+}
+
+.annotations-container {
+    position: relative;
+    margin-left: 0.5vw;
+    width: 16vw;
+    height: 4vh;
+}
+
+.annotations-container-second-container {
+    position: relative;
+    width: 12vw;
+    height: 30vh;
+    z-index: 2;
+    overflow-y: scroll;
+    flex-direction: column;
+    transform: translate(330%, 20%);
+    background-color: #eee;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.annotations-container-second-container::-webkit-scrollbar {
+    display: none;
+}
+
+.annotations-container-second {
+    position: relative;
+    margin-left: 0.5vw;
+    margin-top: 1vh;
+    width: 16vw;
+    height: 5vh;
+}
+
+.annotations-second {
+    min-width: 10vw;
+    max-width: 10vw;
+    min-height: 3vh;
+    max-height: 3vh;
+    color: white;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    text-align: center;
+    border: none;
+    outline: none;
+    text-overflow: ellipsis;
+    padding: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+    margin: 2px;
+}
+
+.annotations-row-container {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    outline: none;
+    border: none;
+    overflow: hidden;
+    margin-left: 2.5vw;
+    min-width: 33vw;
+    max-width: 33vw;
+    min-height: 7.5vh;
+    max-height: 7.5vh;
+    z-index: 2;
+}
+
+.annotations-row-container:hover {
+    overflow-y: hidden;
+    overflow-x: scroll;
+}
+
+.annotations-row-container::-webkit-scrollbar {
+    width: 5px;
+}
+
+.annotations-row-container::-webkit-scrollbar-track {
+    width: 5px;
+    background-color: transparent;
+}
+
+.annotations-row-container::-webkit-scrollbar-thumb {
+    border: 6px solid transparent;
+    background-color: #708090;
+    border-radius: 20px;
+    background-clip: content-box;
+}
+
+.annotations-button {
+    position: relative;
+    border-radius: 5px;
+    width: 7vw;
+    height: 4vh;
+    border: none;
+    outline: none;
+    color: white;
+    cursor: pointer;
+    background-color: #f13c20;
+    float: right;
+    margin-top: 5px;
+}
+
+.dummy {
+    position: relative;
+    justify-content: flex-end;
+    width: 51vw;
+}
+
+.dummy-inner-container {
+    position: relative;
+    width: 24vw;
+    justify-content: flex-start;
+    vertical-align: center;
+    margin-left: 3vw;
+}
+
+.label-container {
+    position: relative;
+    min-width: 10vw;
+    max-width: 15vw;
+    height: 3vh;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.label-container:hover,
+.label-container:focus {
+    outline: none;
+}
+
+.bottom-session-container {
+    position: relative;
+    flex-direction: row;
+    display: flex;
+    float: right;
+}
+
+.button-container {
+    margin-top: 10px;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+}
+
+.button-style {
+    position: relative;
+    border-radius: 5px;
+    width: 4vw;
+    height: 4vh;
+    border: none;
+    outline: none;
+    color: white;
+    cursor: pointer;
+    background-color: #3aafa9;
+}
+
+.navigation-btn {
+    padding: 1vh 0.5vw 1vh 0.5vw;
+    margin-top: 0.7vw;
+    margin-right: 0.7vw;
+    font-size: 2vh;
+    min-width: 7.5vw;
+    float: right;
+}
+
+.disabled {
+    background: #334554;
+}
+
+.bottom-container {
+    position: relative;
+    margin: 5px 0 0 30px;
+    justify-content: flex-end;
+    display: flex;
+    flex-direction: row;
+}
+
+.bottom-label-container {
+    position: relative;
+    min-height: 25vh;
+    min-width: 15vw;
+    max-width: 15vw;
+    border-radius: 5px;
+    justify-content: center;
+    flex-direction: row;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    background-color: #eee;
+    transform: translate(75%, -100%);
+}
+
+.bottom-label-container::-webkit-scrollbar {
+    display: none;
+}
+
+.select-options-container {
+    position: relative;
+    min-height: 15vh;
+    max-height: 30vh;
+    min-width: 15vw;
+    max-width: 15vw;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.dummy-options-container {
+    position: relative;
+    min-height: 10vh;
+    max-height: 10vh;
+    min-width: 30vw;
+    max-width: 30vw;
+    margin-right: 7vw;
+    display: flex;
+    overflow: hidden;
+    flex-direction: row;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.dummy-options-container:hover {
+    overflow-y: hidden;
+    overflow-x: scroll;
+}
+
+.dummy-options-container::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+}
+
+.dummy-options-container::-webkit-scrollbar-track {
+    width: 30px;
+    background-color: transparent;
+}
+
+.dummy-options-container::-webkit-scrollbar-thumb {
+    border: 6px solid transparent;
+    background-color: #708090;
+    border-radius: 20px;
+    background-clip: content-box;
+}
+
+.dummy-select-options {
+    position: relative;
+    cursor: pointer;
+    min-height: 7vh;
+    max-height: 7vh;
+    min-width: 10vw;
+    max-width: 10vw;
+    justify-content: center;
+    align-items: center;
+    background-color: #eee;
+    display: flex;
+    flex-direction: column;
+    border: none;
+    outline: none;
+}
+
+.dummy-options {
+    min-width: 5vw;
+    max-width: 5vw;
+    min-height: 3vh;
+    max-height: 3vh;
+    color: white;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    text-align: center;
+    border: none;
+    outline: none;
+    text-overflow: ellipsis;
+    padding: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+}
+
+.dummy-options:hover {
+    box-shadow: inset 0em 0em 0em 10em rgba(0, 0, 0, 0.3);
+}
+
+.select-options {
+    position: relative;
+    cursor: pointer;
+    min-height: 7vh;
+    max-height: 7vh;
+    min-width: 15vw;
+    max-width: 15vw;
+    justify-content: center;
+    align-items: center;
+    background-color: #eee;
+    display: flex;
+    flex-direction: column;
+    border: none;
+    outline: none;
+}
+
+.annotations,
+.options {
+    min-width: 10vw;
+    max-width: 10vw;
+    min-height: 3vh;
+    max-height: 3vh;
+    color: white;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    text-align: center;
+    border: none;
+    outline: none;
+    text-overflow: ellipsis;
+    padding: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+}
+
+.options:hover {
+    box-shadow: inset 0em 0em 0em 10em rgba(0, 0, 0, 0.3);
+}
+
+.select-options-button {
+    position: relative;
+    appearance: none;
+    cursor: pointer;
+    background: #f13c20;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    width: 9vw;
+    height: 4vh;
+    margin: 10px 30px 10px 0;
+}
+
+.tabular-data-container {
+    position: relative;
+    min-width: 60vw;
+    max-width: 80vw;
+    min-height: 80vh;
+    max-height: 80vh;
+    overflow-x: scroll;
+    overflow-y: hidden;
+}
+
+.tabular-data-container::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+}
+
+.tabular-data-container::-webkit-scrollbar-track {
+    width: 30px;
+    background-color: transparent;
+}
+
+.tabular-data-container::-webkit-scrollbar-thumb {
+    border: 6px solid transparent;
+    background-color: #708090;
+    border-radius: 20px;
+    background-clip: content-box;
+}
+
+.tabular-data-size {
+    width: 30vw;
+    height: 7vh;
+    position: relative;
+    display: flex;
+}
+
+.tabular-size-label {
+    line-height: 30px;
+    vertical-align: center;
+    font-size: 1rem;
+    margin: 5px;
+}
+
+.tabular-data-view {
+    margin-top: 3vh;
+    position: relative;
+    min-width: 80vw;
+    min-height: 70vh;
+}
+
+.tabular-row {
+    position: relative;
+}
+
+.tabular-row:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+}
+
+.right-side-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.header-section {
+    position: relative;
+    display: flex;
+    min-height: 10vh;
+    max-height: 10vh;
+    width: 80vw;
+    justify-content: flex-end;
+}
+
+.notification {
+    position: relative;
+    border-radius: 50%;
+    width: 3.5vw;
+    height: 7vh;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    outline: none;
+    display: flex;
+    background-color: #9fb0bd;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.submit {
+    position: relative;
+    border-radius: 5px;
+    width: 6vw;
+    height: 6vh;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    outline: none;
+    display: flex;
+    background-color: #003049;
+    color: white;
+    font-size: 1rem;
+    margin-top: 10px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.submit:hover {
+    background-color: #262a2e;
+}
+
+.notify-number {
+    position: absolute;
+    background-color: red;
+    border-radius: 50%;
+    line-height: 17px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1rem;
+    color: white;
+    width: 1.5vw;
+    margin: -50px 0 0 30px;
+}
+
+.logo {
+    width: 5vw;
+    height: 5vh;
+}
+
+.header-part {
+    position: relative;
+    margin-right: 1rem;
+    margin-left: 1rem;
+    justify-content: center;
+    align-items: center;
+    min-height: 10vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.role {
+    position: relative;
+    width: 5vw;
+    height: 5vh;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    background-color: #003049;
+    color: white;
+    line-height: 20px;
+    vertical-align: center;
+    font-size: 0.8rem;
+    text-align: center;
+    transform: translate(0, 20%);
+}
+
+.logo-container {
+    position: relative;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile {
+    margin-top: 3vh;
+}
+
+.graph-container {
+    position: relative;
+    width: 10vw;
+    height: 14vh;
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+}
+
+.features-container {
+    position: relative;
+    width: 18vw;
+    height: 23vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin-left: 7px;
+}
+
+.features-container::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+}
+
+.features-container::-webkit-scrollbar-track {
+    width: 30px;
+    background-color: transparent;
+}
+
+.features-container::-webkit-scrollbar-thumb {
+    border: 6px solid transparent;
+    background-color: #708090;
+    border-radius: 20px;
+    background-clip: content-box;
+}
+
+.feature-label {
+    font-size: 0.8rem;
+    color: white;
+    line-height: 20px;
+    vertical-align: center;
+}
+
+.plot-graph-container {
+    position: relative;
+    width: 60vw;
+    height: 65vh;
+    margin: 10px;
+}
+//input[type="checkbox"] {
+//    -webkit-appearance: none;
+//    appearance: none;
+//    background-color: #9fb0bd;
+//    cursor: pointer;
+//    border-radius: 5px;
+//    width: 15px;
+//    height: 20px;
+//}

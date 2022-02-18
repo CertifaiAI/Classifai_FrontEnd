@@ -9,19 +9,28 @@ import { LoadChildren, RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from 'components/page-not-found/page-not-found.component';
 import { HomeLayoutComponent } from 'layouts/home-layout/home-layout.component';
 
+const dataSetLayout: LoadChildren = () =>
+    import('layouts/data-set-layout/data-set-layout.module').then(({ DataSetLayoutModule }) => DataSetLayoutModule);
+
 const imgLabellingLayout: LoadChildren = () =>
     import('layouts/image-labelling-layout/image-labelling-layout.module').then(
         ({ ImageLabellingLayoutModule }) => ImageLabellingLayoutModule,
+    );
+
+const tabularLabellingLayout: LoadChildren = () =>
+    import('layouts/tabular-labelling-layout/tabular-labelling-layout.module').then(
+        ({ TabularLabellingLayoutModule }) => TabularLabellingLayoutModule,
     );
 
 const routes: Routes = [
     { path: '', component: HomeLayoutComponent },
     {
         path: 'dataset',
-        loadChildren: () =>
-            import('layouts/data-set-layout/data-set-layout.module').then(
-                ({ DataSetLayoutModule }) => DataSetLayoutModule,
-            ),
+        loadChildren: dataSetLayout,
+    },
+    {
+        path: 'tabular',
+        loadChildren: tabularLabellingLayout,
     },
     {
         path: 'imglabel/bndbox',

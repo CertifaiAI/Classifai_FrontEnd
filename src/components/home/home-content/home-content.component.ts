@@ -5,7 +5,9 @@
  */
 
 import { Component, EventEmitter, Output } from '@angular/core';
-import { CardFieldSchema } from 'shared/types/home-layout/home-layout.model';
+import { CardFieldSchema, ChosenType } from 'shared/types/home-layout/home-layout.model';
+import { Router } from '@angular/router';
+import { LabellingModeService } from '../../../shared/services/labelling-mode-service';
 
 @Component({
     selector: 'home-content',
@@ -17,13 +19,12 @@ export class HomeContentComponent {
     languageArr: (string | RegExpMatchArray)[] = [];
     jsonSchema: CardFieldSchema;
 
-    constructor() {
+    constructor(private _router: Router, private _labellingModeService: LabellingModeService) {
         this.jsonSchema = {
             fields: [
                 {
-                    enabled: false,
-                    urlPath: '',
-                    hoverLabel: 'comingSoon',
+                    enabled: true,
+                    urlPath: '/dataset',
                     title: 'tabular',
                     imgPath: 'assets/landing-page/Classifai_Thumbnail_Tabular.jpg',
                     imgAlt: 'tabular',
@@ -63,7 +64,12 @@ export class HomeContentComponent {
         };
     }
 
-    onThumbnailClick(url: string): void {
-        this._navigate.emit(url);
+    onThumbnailClick(chosenType: ChosenType): void {
+        if (chosenType.title === 'tabular') {
+            this._labellingModeService.setLabelMode(chosenType.title);
+            this._router.navigate([chosenType.url]).then((r) => r);
+        } else {
+            this._navigate.emit(chosenType.url);
+        }
     }
 }

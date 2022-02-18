@@ -9,6 +9,7 @@
     "labelListFile": "Label File",
     "optional": "(Optional)",
     "chooseFile": "Choose File",
+    "tabularFile": "Tabular File:",
     "createButton": "Create",
     "updateButton": "Proceed",
     "cancelButton": "Cancel",

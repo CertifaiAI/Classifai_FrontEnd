@@ -1,0 +1,331 @@
+<div class="layout-container">
+    <div class="dropdown-menu">
+        <div class="menu-section">
+            <label>Menu</label>
+            <img class="image" src="assets/icons/menu.svg" alt="menu" (click)="toggleMenu()" />
+        </div>
+        <div class="side-navigation-menu" [ngClass]="isToggleSideMenu ? 'toggle' : 'close'">
+            <div class="label-section">
+                <div class="section-title" [ngClass]="isToggleLabelSection ? 'current-tab' : ''">
+                    <label>Annotation</label>
+                    <img class="drop-down" src="assets/icons/drop_down.svg" alt="menu" (click)="toggleLabelSection()" />
+                </div>
+                <div class="subsection-longer" [ngClass]="isToggleLabelSection ? 'toggle' : 'close'">
+                    <div class="input-label">
+                        <input
+                            class="input"
+                            type="text"
+                            placeholder="Input label"
+                            (change)="selectLabel()"
+                            #inputLabel
+                        />
+                    </div>
+
+                    <div class="labels">
+                        <label>Labels: </label>
+                    </div>
+
+                    <div class="selected-label-container">
+                        <div class="selected-label" *ngFor="let label of labels; index as i">
+                            <div class="label-tag">
+                                <label class="label">{{ label.labelName }}</label>
+                            </div>
+                            <div class="label-color" [style.background-color]="label.tagColor">
+                                <div class="color-palette-container">
+                                    <input
+                                        type="color"
+                                        id="color"
+                                        class="color-palette"
+                                        (change)="selectColor()"
+                                        #selectedColor
+                                    />
+                                    <label for="color" class="hidden-label" (click)="getIndex(i)">tag color</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tabular-table-section">
+                <div class="section-title" [ngClass]="isToggleTabularTableSection ? 'current-tab' : ''">
+                    <label>Tabular Table</label>
+                    <img
+                        class="drop-down"
+                        src="assets/icons/drop_down.svg"
+                        alt="menu"
+                        (click)="toggleTabularTableSection()"
+                    />
+                </div>
+                <div class="subsection-longer" [ngClass]="isToggleTabularTableSection ? 'toggle' : 'close'">
+                    <div class="labels">
+                        <label>Features: </label>
+                    </div>
+                    <div class="features-container">
+                        <form [formGroup]="form" novalidate>
+                            <div *ngFor="let feature of features; let i = index">
+                                <label class="feature-label">
+                                    <input
+                                        type="checkbox"
+                                        [value]="feature.featureName"
+                                        [checked]="feature.checked"
+                                        (change)="checkFeatureCheckedStatus($event)"
+                                        (click)="getFeatureIndex(i)"
+                                    />
+                                    {{ feature.featureName }}
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+
+                    <button class="button-style navigation-btn" (click)="createSourceObservable()">
+                        Show Full Table
+                    </button>
+                </div>
+            </div>
+            <div class="graph-section">
+                <div class="section-title" [ngClass]="isToggleGraphSection ? 'current-tab' : ''">
+                    <label>Graph</label>
+                    <img class="drop-down" src="assets/icons/drop_down.svg" alt="menu" (click)="toggleGraphSection()" />
+                </div>
+                <div class="subsection" [ngClass]="isToggleGraphSection ? 'toggle' : 'close'">
+                    <div class="graph-container">
+                        <form [formGroup]="form">
+                            <div *ngFor="let type of graphType; let i = index">
+                                <input type="checkbox" [value]="type" />
+                                <label class="feature-label">
+                                    {{ type }}
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                    <button class="button-style navigation-btn" (click)="plotGraph()">Plot</button>
+                </div>
+            </div>
+            <div class="export-section">
+                <div class="section-title" [ngClass]="isToggleExportSection ? 'current-tab' : ''">
+                    <label>Export</label>
+                    <img
+                        class="drop-down"
+                        src="assets/icons/drop_down.svg"
+                        alt="menu"
+                        (click)="toggleExportSection()"
+                    />
+                </div>
+                <div class="subsection" [ngClass]="isToggleExportSection ? 'toggle' : 'close'">
+                    <label class="select-export-label">Select Export File Type: </label>
+                    <div class="export-type-container">
+                        <button class="button-style navigation-btn">CSV</button>
+                        <button class="button-style navigation-btn">Excel</button>
+                        <button class="button-style navigation-btn">Json</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="right-side-container">
+        <div class="header-section">
+            <div class="header-part">
+                <div class="logo-container">
+                    <button class="submit">Submit</button>
+                </div>
+            </div>
+            <div class="header-part">
+                <div class="logo-container">
+                    <button class="notification">
+                        <img class="logo" src="assets/icons/notifications.svg" />
+                    </button>
+                    <span class="notify-number">1</span>
+                </div>
+            </div>
+            <div class="header-part">
+                <div class="logo-container profile">
+                    <button class="notification">
+                        <img class="logo" src="assets/icons/user.svg" />
+                    </button>
+                </div>
+                <div class="role">
+                    <label>Labeller</label>
+                </div>
+            </div>
+        </div>
+        <div class="annotation-container">
+            <div class="data-container">
+                <div class="inner-container">
+                    <div class="title">
+                        <label>Annotation</label>
+                    </div>
+                    <div class="current-data">
+                        <div class="current-data-label">
+                            <label>Data Index: </label>
+                            <label>{{ currentDataIndex + 1 }}</label>
+                        </div>
+
+                        <!--                        Annotation display design 1:-->
+                        <!--                        <div class="current-annotation-label">-->
+                        <!--                            <label>Annotations: </label>-->
+                        <!--                        </div>-->
+                        <!--                        <div class="annotations-row-container">-->
+                        <!--                            <div class="annotations-container" *ngFor="let annotation of annotations">-->
+                        <!--                                <div-->
+                        <!--                                    class="annotations"-->
+                        <!--                                    [style.background-color]="annotation.tagColor"-->
+                        <!--                                >-->
+                        <!--                                    <label>{{annotation.labelName}}</label>-->
+                        <!--                                </div>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+
+                        <!--                        Annotation display design 2:-->
+                        <div class="dummy">
+                            <button class="annotations-button" (click)="toggleAnnotations()">Annotations</button>
+                            <div
+                                class="annotations-container-second-container"
+                                [ngClass]="isAnnotations ? 'toggle' : 'close'"
+                            >
+                                <div class="annotations-container-second" *ngFor="let annotation of annotations">
+                                    <div class="annotations-second" [style.background-color]="annotation.tagColor">
+                                        <label>{{ annotation.labelName }}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <div class="scroll-table">
+                            <table class="data-table">
+                                <tr *ngFor="let data of retrievedData">
+                                    <th>{{ data.name }}</th>
+                                    <td>{{ data.value }}</td>
+                                    <!--                                    comment : label for each attributes-->
+                                    <!--                                    <td>-->
+                                    <!--                                        <div class="dummy-inner-container">-->
+                                    <!--                                            <button class="select-options-button" (click)="toggleLabels()">Choose label</button>-->
+                                    <!--                                            <div class="bottom-label-container" [ngClass]="isLabelsContainerToggle ? 'toggle' : 'close'">-->
+                                    <!--                                                <div class="select-options-container">-->
+                                    <!--                                                    <div class="select-options" *ngFor="let label of labels; index as i">-->
+                                    <!--                                                        <div class="options" [style.background-color]="label.tagColor" (click)="chooseLabel(i)">-->
+                                    <!--                                                            <label>{{label.labelName}}</label>-->
+                                    <!--                                                        </div>-->
+                                    <!--                                                    </div>-->
+                                    <!--                                                </div>-->
+                                    <!--                                            </div>-->
+                                    <!--                                            <div class="annotations-row-container">-->
+                                    <!--                                                <div class="annotations-container" *ngFor="let annotation of annotations">-->
+                                    <!--                                                    <div class="annotations" [style.background-color]="annotation.tagColor">-->
+                                    <!--                                                        <label>{{annotation.labelName}}</label>-->
+                                    <!--                                                    </div>-->
+                                    <!--                                                </div>-->
+                                    <!--                                            </div>-->
+                                    <!--                                        </div>-->
+                                    <!--                                    </td>-->
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="bottom-container">
+                    <!--                    Labels display design 1:-->
+                    <!--                    <div class="dummy-options-container" *ngIf="isLabel">-->
+                    <!--                        <div class="dummy-select-options" *ngFor="let label of labels; index as i">-->
+                    <!--                            <div class="dummy-options" [style.background-color]="label.tagColor" (click)="chooseLabel(i)">-->
+                    <!--                                <label>{{label.labelName}}</label>-->
+                    <!--                            </div>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+                    <div class="bottom-session-container">
+                        <!--                        Labels display design 2: -->
+                        <div class="bottom-label-container" [ngClass]="isLabelsContainerToggle ? 'toggle' : 'close'">
+                            <div class="select-options-container">
+                                <div class="select-options" *ngFor="let label of labels; index as i">
+                                    <div
+                                        class="options"
+                                        [style.background-color]="label.tagColor"
+                                        (click)="chooseLabel(i)"
+                                    >
+                                        <label>{{ label.labelName }}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="button-container">
+                            <!--                            Labels display design 2:-->
+                            <button class="select-options-button" (click)="toggleLabels()">Choose label</button>
+
+                            <button
+                                class="button-style navigation-btn"
+                                (click)="this.getNextAttributesAndValue()"
+                                [ngClass]="currentDataIndex == this.tabularData.length ? 'disabled' : 'enabled'"
+                                [disabled]="currentDataIndex == this.tabularData.length"
+                            >
+                                Next
+                            </button>
+
+                            <button
+                                class="button-style navigation-btn"
+                                (click)="this.getPreviousAttributesAndValue()"
+                                [ngClass]="currentDataIndex == 0 ? 'disabled' : 'enabled'"
+                                [disabled]="currentDataIndex == 0"
+                            >
+                                Back
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<modal
+    [id]="modalTabularDataView"
+    [modalBodyStyle]="tabularDataViewBodyStyle"
+    [modalTitle]="'Tabular Data Table'"
+    [scrollable]="false"
+    [zIndex]="2"
+>
+    <div class="tabular-data-container">
+        <div class="tabular-data-view">
+            <gui-grid
+                [virtualScroll]="true"
+                [maxHeight]="500"
+                [width]="retrievedData.length < 5 ? 600 : 1800"
+                [sorting]="true"
+                [columns]="columns.length > 0 ? columns : []"
+                [source]="source.length > 0 ? source : 0"
+                [rowClass]="rowClass"
+            >
+            </gui-grid>
+        </div>
+    </div>
+</modal>
+
+<modal
+    [id]="modalPlotGraph"
+    [modalBodyStyle]="plotGraphBodyStyle"
+    [modalTitle]="'Class Distribution'"
+    [scrollable]="false"
+>
+    <div class="display-modal-container">
+        <div class="chart-container">
+            <div class="plot-graph-container">
+                <ngx-charts-bar-vertical
+                    [scheme]="colorScheme"
+                    [results]="statistics.length > 0 ? statistics : ''"
+                    [xAxis]="true"
+                    [yAxis]="true"
+                    [legend]="true"
+                    [showXAxisLabel]="true"
+                    [showYAxisLabel]="true"
+                    [xAxisLabel]="'Labels'"
+                    [yAxisLabel]="'Count'"
+                    [barPadding]="20"
+                >
+                </ngx-charts-bar-vertical>
+            </div>
+            <div style="margin: 13vh 12vw" *ngIf="annotationIndexMap.size == 0">
+                <h3>No Labels</h3>
+            </div>
+        </div>
+    </div>
+</modal>

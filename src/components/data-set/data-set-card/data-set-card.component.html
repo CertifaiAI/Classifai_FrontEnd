@@ -81,7 +81,7 @@
                         </label>
                     </div>
 
-                    <div class="total-photo-style">
+                    <div class="total-photo-style" *ngIf="_annotationType == ('bndbox' || 'seg')">
                         <label
                             [title]="'Total Photo: ' + project.total_uuid"
                             [ngClass]="{ disabled: !project.root_path_valid }"

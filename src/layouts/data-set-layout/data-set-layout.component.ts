@@ -26,6 +26,8 @@ import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'shared/components/spinner/spinner.service';
 import { BboxMetadata, PolyMetadata, ImageLabellingMode } from 'shared/types/image-labelling/image-labelling.model';
+import { Utils } from 'util/utils';
+import { LabellingModeService } from '../../shared/services/labelling-mode-service';
 
 type FormattedProject = {
     created_timestamp: Date;
@@ -81,6 +83,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     modalImportProjectName: string = '';
     spanClass: string = '';
     labelPath: string = '';
+    tabularFilePath: string = '';
     projectFolderPath: string = '';
     showLabelTooltip: boolean = false;
     unsupportedImageList: string[] = [];
@@ -92,6 +95,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     labelStats: ChartProps[] = [];
     noLabel: boolean = true;
     noAnnotation: boolean = true;
+    labellingModeUrl!: string;
+    annotationType!: string | null;
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
@@ -158,6 +163,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     @ViewChild('refNewProjectName') _refNewProjectName!: ElementRef<HTMLInputElement>;
     @ViewChild('jsonImportProjectFile') _jsonImportProjectFile!: ElementRef<HTMLInputElement>;
     @ViewChild('jsonImportProjectFilename') _jsonImportProjectFilename!: ElementRef<HTMLLabelElement>;
+    @ViewChild('tabularFileName') _tabularFileName!: ElementRef<HTMLLabelElement>;
 
     constructor(
         private _fb: FormBuilder,
@@ -167,6 +173,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         private _imgLblModeService: ImageLabellingModeService,
         private _languageService: LanguageService,
         private _modalService: ModalService,
+        private _labellingModeService: LabellingModeService,
     ) {
         this._imgLblModeService.imgLabelMode$
             .pipe(distinctUntilChanged())
@@ -181,6 +188,11 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.renameFormControls();
         const langsArr: string[] = ['data-set-page-en', 'data-set-page-cn', 'data-set-page-ms'];
         this._languageService.initializeLanguage(`data-set-page`, langsArr);
+
+        this.labellingModeUrl = this._labellingModeService.retrieveUrlBasedOnAnnotationMode();
+        this._labellingModeService.labelMode$
+            .pipe(distinctUntilChanged())
+            .subscribe((mode) => (this.annotationType = mode));
     }
 
     ngOnInit(): void {
@@ -317,7 +329,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     toggleModalDisplay = (shown: boolean): void => {
-        this._projectFoldername.nativeElement.innerHTML = '';
+        if (this.labellingModeUrl !== 'tabular') {
+            this._projectFoldername.nativeElement.innerHTML = '';
+        }
         this._labelTextFilename.nativeElement.innerHTML = '';
         shown && this.form.reset();
         shown
@@ -514,17 +528,22 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     }
 
     startProject = (projectName: string): void => {
-        this._router.navigate([`imglabel/${this.imgLblMode}`], {
+        this._router.navigate([this.labellingModeUrl], {
             state: { projectName },
         });
     };
 
     isCreateFormIncomplete() {
-        return this.inputProjectName === '' || this.projectFolderPath === '';
+        return this.inputProjectName === '';
     }
 
     createProject = (projectName: string): void => {
-        const createProj$ = this._dataSetService.createNewProject(projectName, this.labelPath, this.projectFolderPath);
+        const createProj$ = this._dataSetService.createNewProject(
+            projectName,
+            this.labelPath,
+            this.projectFolderPath,
+            this.tabularFilePath,
+        );
         const uploadStatus$ = this._dataSetService.localUploadStatus(projectName);
         let numberOfReq: number = 0;
 
@@ -644,6 +663,41 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         }),
                     )
                     .subscribe((response) => {
+                        this.showProjectList(this.projectType);
+                    });
+            });
+    }
+
+    selectTabularFile() {
+        const tabularFileStatus$ = this._dataSetService.importTabularFileStatus();
+        const tabularFile$ = this._dataSetService.importTabularFile();
+        tabularFile$
+            .pipe(
+                first(),
+                map(({ message }) => message),
+            )
+            .subscribe(() => {
+                let windowClosed = false;
+                interval(500)
+                    .pipe(
+                        switchMap(() => tabularFileStatus$),
+                        first((response) => {
+                            this.isOverlayOn = response.window_status === 0;
+                            if (response.window_status === 1 && response.tabular_file_path !== '') {
+                                this._tabularFileName.nativeElement.innerHTML = response.tabular_file_path.replace(
+                                    /^.*[\\\/]/,
+                                    '',
+                                );
+                                this.tabularFilePath = response.tabular_file_path;
+                                console.log(response.tabular_file_path);
+                            }
+                            if (response.window_status === 1) {
+                                windowClosed = true;
+                            }
+                            return windowClosed;
+                        }),
+                    )
+                    .subscribe(() => {
                         this.showProjectList(this.projectType);
                     });
             });
