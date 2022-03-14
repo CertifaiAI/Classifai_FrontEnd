@@ -12,11 +12,11 @@ export class PieChartComponent implements OnChanges {
 
     chartData: ChartProps[] = [
         {
-            name: 'Labelled Image',
+            name: 'Labelled Data',
             value: this.labelledImage,
         },
         {
-            name: 'Unlabelled Image',
+            name: 'Unlabelled Data',
             value: this.unLabelledImage,
         },
     ];
@@ -35,15 +35,15 @@ export class PieChartComponent implements OnChanges {
     };
 
     ngOnChanges(changes: SimpleChanges): void {
-        this.chartData = [
-            {
-                name: 'Labelled Image',
-                value: changes.labelledImage?.currentValue || 0,
-            },
-            {
-                name: 'Unlabelled Image',
-                value: changes.unLabelledImage?.currentValue || 0,
-            },
-        ];
+        // this.chartData = [
+        //     {
+        //         name: 'Labelled Image',
+        //         value: changes.labelledImage?.currentValue || 0,
+        //     },
+        //     {
+        //         name: 'Unlabelled Image',
+        //         value: changes.unLabelledImage?.currentValue || 0,
+        //     },
+        // ];
     }
 }

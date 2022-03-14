@@ -62,7 +62,7 @@
                     <div class="empty-container"></div>
                 </ng-template>
                 <br />
-                <ng-container *ngIf="labellingModeUrl === ('bndbox' || 'seg')">
+                <ng-container *ngIf="labellingModeUrl !== 'tabular'">
                     <div class="select-folder-container">
                         <label class="label label-select-folder">{{ 'projectFolder' | translate }}</label>
                         <button class="button-style choose-folder-button" type="button" (click)="selectProjectFolder()">

@@ -1,0 +1,32 @@
+@use 'shared/scss/icon' as icon;
+@use 'shared/scss/variables' as color;
+
+.utility-left-sidebar-container {
+    position: absolute;
+    top: 4.5vh;
+    min-width: 2.14vw;
+    max-width: 2.14vw;
+    min-height: 95.4vh;
+    max-height: 95.4vh;
+    background: #525353;
+    border: 0.0625vw solid rgb(255, 255, 255, 0.25);
+    z-index: 1000;
+}
+
+.utility-icon-container {
+    min-height: 5vh;
+    max-height: 5vh;
+    align-items: baseline;
+}
+
+.utility-icon-light {
+    @include icon.icon-styling();
+    &:focus,
+    &:active {
+        background: color.$iconActiveBackgroundColor;
+    }
+}
+
+.plain-icon {
+    @include icon.icon-styling(auto);
+}

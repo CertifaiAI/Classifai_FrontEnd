@@ -4,7 +4,7 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep, cond } from 'lodash-es';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DataSetLayoutService } from './data-set-layout-api.service';
 import {
@@ -528,13 +528,21 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     }
 
     startProject = (projectName: string): void => {
+        const labellingMode = this.annotationType;
         this._router.navigate([this.labellingModeUrl], {
-            state: { projectName },
+            state: { projectName, labellingMode },
         });
     };
 
     isCreateFormIncomplete() {
-        return this.inputProjectName === '';
+        let condition: boolean = false;
+
+        if (this.annotationType == 'tabular') {
+            condition = this.inputProjectName === '' || this.tabularFilePath === '';
+        } else if (this.annotationType == 'bndbox' || 'seg') {
+            condition = this.inputProjectName === '' || this.projectFolderPath === '';
+        }
+        return condition;
     }
 
     createProject = (projectName: string): void => {
@@ -689,7 +697,6 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                                     '',
                                 );
                                 this.tabularFilePath = response.tabular_file_path;
-                                console.log(response.tabular_file_path);
                             }
                             if (response.window_status === 1) {
                                 windowClosed = true;

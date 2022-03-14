@@ -5,7 +5,6 @@
  */
 
 import { Boundingbox } from 'shared/types/image-labelling/image-labelling.model';
-import papaparse from 'papaparse';
 import { Observable } from 'rxjs';
 
 export class Utils {
@@ -104,13 +103,13 @@ export class Utils {
         }
     }
 
-    public parseCsvToJson(event: any) {
-        papaparse.parse(event.target.files[0], {
-            complete(results: { data: any }) {
-                console.log('Finished:', results.data);
-            },
-        });
-    }
+    // public parseCsvToJson(event: any) {
+    //     papaparse.parse(event.target.files[0], {
+    //         complete(results: { data: any }) {
+    //             console.log('Finished:', results.data);
+    //         },
+    //     });
+    // }
 }
 
 export class ImglblCopyPaste {

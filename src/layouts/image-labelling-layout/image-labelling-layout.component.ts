@@ -43,6 +43,7 @@ import {
     ChangeAnnotationLabel,
 } from 'shared/types/image-labelling/image-labelling.model';
 import { LabelColorServices } from '../../shared/services/label-color.services';
+import { LabellingModeService } from '../../shared/services/labelling-mode-service';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -257,6 +258,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         private _spinnerService: SpinnerService,
         private _exportSaveFormatService: ExportSaveFormatService,
         private _labelColorService: LabelColorServices,
+        private labellingModeService: LabellingModeService,
     ) {
         const langsArr: string[] = ['image-labelling-en', 'image-labelling-cn', 'image-labelling-ms'];
         this._languageService.initializeLanguage(`image-labelling`, langsArr);
@@ -1375,6 +1377,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         this.unsubscribe$.complete();
         this._imgLblModeService.setState(null);
         this._imgLblActionService.setState(null);
+        this.labellingModeService.setLabellingMode(null);
         this.resetProjectStatus();
     }
 }

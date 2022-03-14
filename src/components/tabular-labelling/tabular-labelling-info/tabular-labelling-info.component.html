@@ -1,0 +1,51 @@
+<!-------------------------- Info Container -------------------------->
+
+<div
+    [ngClass]="
+        isToggleConditionsSection == false && isToggleLabelSection == false ? 'info-container' : 'info-container-adjust'
+    "
+>
+    <!-------------------------- Left Side Info Container -------------------------->
+    <div
+        [ngClass]="
+            isToggleConditionsSection == false && isToggleLabelSection == false
+                ? 'container-flex-start'
+                : 'container-flex-start-adjust'
+        "
+    >
+        <ng-container>
+            <div [ngClass]="hasAnnotation ? 'indicator' : 'no-indicator'"></div>
+            <label class="imageTitle">{{ status }}</label>
+        </ng-container>
+    </div>
+    <!-------------------------- Center Side Info Container -------------------------->
+    <div
+        [ngClass]="
+            isToggleConditionsSection == false && isToggleLabelSection == false
+                ? 'container-flex-center'
+                : 'container-flex-center-adjust'
+        "
+    >
+        <ng-container>
+            <div class="totalThumbnail">
+                <ng-container>
+                    <label>{{ currentIndex + 1 }} / {{ totalUuid }} </label>
+                </ng-container>
+            </div>
+        </ng-container>
+    </div>
+    <div class="container-flex-end">
+        <div class="search-bar">
+            <input
+                class="search-input"
+                type="text"
+                placeholder="Search Data"
+                maxlength="15"
+                (change)="searchData($event)"
+            />
+            <div class="search-logo-container">
+                <img class="search-logo" src="assets/icons/search.svg" (click)="navigateData()" />
+            </div>
+        </div>
+    </div>
+</div>

@@ -14,7 +14,6 @@
                     class="card-container"
                     [attr.data-index]="i"
                     (dblclick)="project.root_path_valid && onOpenProject(i, project)"
-                    [ngClass]="{ disabled: !project.root_path_valid }"
                 >
                     <div class="card-header-style">
                         <div>

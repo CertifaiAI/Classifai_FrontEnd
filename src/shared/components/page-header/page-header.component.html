@@ -34,6 +34,9 @@
                 >
             </div>
         </ng-container>
+        <div class="btn-container last-btn-container" (click)="toggleProjectSettings()">
+            <label class="label">Project Settings</label>
+        </div>
     </div>
     <!-------------------------- Right Side Page Header -------------------------->
     <div class="container-flex-end">
@@ -108,5 +111,69 @@
             Next
         </button>
         <button class="button-style prev-btn" (click)="prevTutorial()" *ngIf="tutorialIdx > 0">Previous</button>
+    </div>
+</modal>
+
+<modal
+    [id]="modalProjectSettingsView"
+    [modalBodyStyle]="projectSettingsStyle"
+    [modalTitle]="'Project Settings'"
+    [scrollable]="false"
+>
+    <div class="project-settings-container">
+        <div class="table-container" *ngIf="labels.length > 0">
+            <div class="shortcut-title">
+                <label>Customize shortcut key for labels: </label>
+            </div>
+            <div class="table-inner-container">
+                <table class="data-table">
+                    <tr *ngFor="let label of labels; index as i">
+                        <th>{{ label.labelName }}</th>
+                        <td>
+                            <input
+                                class="input-shortcut-key"
+                                type="text"
+                                placeholder="Enter shortcut key for label"
+                                [id]="i"
+                                (change)="onSelectShortCutKey($event, label)"
+                                (keydown.enter)="moveToNextInput(i + 1)"
+                            />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="table-container" *ngIf="labels.length == 0">
+            <div style="margin: 25vh 0 0 12vw">
+                <label>No Labels</label>
+            </div>
+        </div>
+
+        <div class="features-container" *ngIf="features.length > 0">
+            <div class="feature-title-labels">
+                <label>Select Display Features: </label>
+            </div>
+            <div class="features-form-container">
+                <form [formGroup]="form" novalidate>
+                    <div *ngFor="let feature of features; let i = index">
+                        <label class="feature-label">
+                            <input
+                                type="checkbox"
+                                [value]="feature.featureName"
+                                [checked]="feature.checked"
+                                (change)="setFeatureCheckedStatus($event, feature)"
+                            />
+                            {{ feature.featureName }}
+                        </label>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="features-container" *ngIf="features.length == 0">
+            <div style="margin: 25vh 0 0 6vw">
+                <label>No Features</label>
+            </div>
+        </div>
     </div>
 </modal>

@@ -1,0 +1,513 @@
+@use 'shared/scss/variables' as color;
+@use 'shared/scss/scrollbar' as scrollbar;
+@use 'shared/scss/ellipsis' as ellipsis;
+@use 'shared/scss/indicator' as indicator;
+
+.flex-content {
+    display: flex;
+    flex-flow: column;
+    height: 33%;
+    min-height: 10%;
+    flex-shrink: 0;
+    flex-grow: 0;
+    resize: vertical;
+}
+
+.closed {
+    display: none;
+}
+
+/*-------------------------------------------*\
+    Tab Container
+\*-------------------------------------------*/
+
+@mixin tab-after() {
+    position: absolute;
+    content: '';
+    top: 4vh;
+    min-width: 100vw;
+    max-width: 100vw;
+    min-height: 93vh;
+    max-height: 93vh;
+    background: #383535;
+    z-index: -1;
+}
+
+.tab-container {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    right: 0;
+    position: fixed;
+    z-index: 1;
+    min-width: 18.5vw;
+    max-width: 18.5vw;
+}
+
+.utility-right-project-container {
+    height: 100%;
+    min-width: 16.3vw;
+    max-width: 16.3vw;
+    background: #383535;
+    border: 0.0325vw solid rgb(255, 255, 255, 0.25);
+    border-top: none;
+    position: relative;
+    z-index: 1;
+    align-items: stretch;
+    &::after {
+        position: absolute;
+        content: '';
+        top: 0;
+        min-width: 8.5vw;
+        max-width: 8.5vw;
+        min-height: 4vh;
+        max-height: 4vh;
+        background: #383535;
+        z-index: -1;
+        font-size: 1.5vh;
+        line-height: 3vh;
+        color: white;
+        padding: 0.5vh 0 0 2vw;
+    }
+}
+
+.tab {
+    position: relative;
+    overflow: hidden;
+    &::before {
+        @include tab-after();
+    }
+}
+
+.flex-fill-remaining {
+    flex: 1 1 auto;
+}
+
+/*-------------------------------------------*\
+    Tab Header
+\*-------------------------------------------*/
+
+@mixin tab-close-styling {
+    float: right;
+    vertical-align: middle;
+    min-height: 4vh;
+    max-height: 4vh;
+    color: rgb(105, 105, 105);
+    font-size: 1.8vh;
+    line-height: 4vh;
+    text-align: center;
+    display: inline-grid;
+    padding-bottom: 1vh;
+}
+
+.tab-name {
+    font-size: 1.7vh;
+    padding: 0.5vw 2vw 0 1vw;
+    display: inline-block;
+    color: white;
+    position: absolute;
+}
+
+.flex-tab-icons {
+    display: flex;
+    width: 100%;
+}
+
+.tab-close-thumbnailless {
+    @include tab-close-styling();
+    flex: 1 0 60%;
+    justify-content: right;
+    position: relative;
+    z-index: 1;
+}
+
+.div-close {
+    margin-right: 0.5vw;
+    min-width: 1.6vw;
+    max-width: 1.6vw;
+    min-height: 4vh;
+    max-height: 4vh;
+    color: white;
+    cursor: pointer;
+    text-align: center;
+    /* float is needed due to flex direction column would glitch the close button to left side permanently */
+    float: right;
+    &:active {
+        background: grey;
+    }
+}
+
+/*-------------------------------------------*\
+    Tab Containers
+\*-------------------------------------------*/
+
+.utility-inner-container {
+    padding: 2.5vh 0 0 0.2vw;
+    scroll-behavior: smooth;
+    overflow: hidden;
+    z-index: 1;
+    min-width: 15.5vw;
+    max-width: 15.5vw;
+    position: relative;
+}
+
+.scroll {
+    &::-webkit-scrollbar-track {
+        @include scrollbar.scrollbar-track(color.$blackColor);
+    }
+    &::-webkit-scrollbar {
+        @include scrollbar.scrollbar();
+    }
+    &::-webkit-scrollbar-thumb {
+        @include scrollbar.scrollbar-thumb(color.$greyColor);
+    }
+}
+
+/*-------------------------------------------*\
+    Project & Label Tab Containers
+\*-------------------------------------------*/
+
+.tab-height {
+    height: 80%;
+}
+
+/*-------------------------------------------*\
+    Label & Annotation Tab Containers
+\*-------------------------------------------*/
+
+.flex-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 1.5vh;
+    color: white;
+    @include ellipsis.ellipsis-styling();
+}
+
+.flex-center-width {
+    display: flex;
+    justify-content: center;
+    width: 90%;
+    flex-wrap: wrap;
+}
+
+.label-active,
+.annotation-active {
+    border: 0.15vw solid yellow;
+    padding: 1.5px;
+}
+
+.delete-annotation,
+.delete-label {
+    position: absolute;
+    right: 2vw;
+    color: yellow;
+}
+
+/*-------------------------------------------*\
+    Project Tab Containers
+\*-------------------------------------------*/
+
+.img-container {
+    font-size: 1.5vh;
+    color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 5vh;
+    max-height: 5vh;
+    cursor: pointer;
+    margin: 0vh 0.3vw;
+    padding: 0.1vh 0.4vw;
+    &:hover {
+        background-color: #444;
+        border-radius: 2px;
+    }
+}
+
+.img-selected {
+    background: #555;
+}
+
+.img-skeleton {
+    max-height: 4.3vh;
+    min-height: 4.3vh;
+    min-width: 3vw;
+    max-width: 3vw;
+    border: 0.005vh color.$greyColor dotted;
+}
+
+.img {
+    max-height: 4.3vh;
+    min-height: 4.3vh;
+    max-width: 3vw;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.img-name {
+    margin-left: 0.5vw;
+    @include ellipsis.ellipsis-styling();
+    width: 100%;
+}
+
+.img-path {
+    margin-top: 4vh;
+}
+
+.thumbnail-actions {
+    text-align: end;
+    padding-right: 1vw;
+    width: 10vw;
+}
+
+.thumbnail-actions-icon {
+    border-radius: 50%;
+    padding: 0.2vh;
+    min-height: 3vh;
+    max-height: 3vh;
+    min-width: 1.5vw;
+    max-width: 1.5vw;
+}
+
+.thumbnail-actions-icon:hover {
+    background: #555;
+}
+
+.indicator {
+    @include indicator.indicator-styling(#75fe7c, relative);
+}
+
+.no-indicator {
+    @include indicator.indicator-styling(#ffba54, relative);
+}
+
+/*-------------------------------------------*\
+    Label Search Field
+\*-------------------------------------------*/
+
+.div-input {
+    display: flex;
+    justify-content: flex-start;
+    margin: 0.5vh 0.9vw;
+}
+
+.input {
+    border-radius: 8vw;
+    border: none;
+    outline: none;
+    padding: 0.3vw 0 0.3vw 1vw;
+    min-height: 1.5vh;
+    max-height: 1.5vh;
+    min-width: 13vw;
+    max-width: 13vw;
+    font-size: 1.3vh;
+    background: #525353;
+    color: white;
+}
+
+.input-invalid {
+    border: 0.2vw solid red;
+}
+
+/*-------------------------------------------*\
+    Label Tab Containers
+\*-------------------------------------------*/
+
+.label {
+    flex: 1 1 80%;
+    display: flex;
+    justify-content: flex-start;
+    margin: 0.25vh 0 0.25vh 0.5vw;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.not-exist {
+    font-size: 1.5vh;
+    color: #999;
+}
+
+/*-------------------------------------------*\
+    Annotation Tab Containers
+\*-------------------------------------------*/
+
+.tab-smaller-height {
+    height: 60%;
+}
+
+.annotations-container {
+    position: relative;
+    margin-top: 5vh;
+    margin-left: 0.5vw;
+    width: 16vw;
+    height: 40vh;
+}
+
+.annotations-inner-container {
+    position: relative;
+    margin-left: 0.5vw;
+    width: 16vw;
+    height: 4vh;
+    flex-direction: column;
+}
+
+.annotations {
+    min-width: 10vw;
+    max-width: 10vw;
+    min-height: 3vh;
+    max-height: 3vh;
+    color: white;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    text-align: center;
+    border: none;
+    outline: none;
+    text-overflow: ellipsis;
+    padding: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    margin: 2vh;
+}
+
+.label-panel-container {
+    position: relative;
+    margin: 2vh 0 0 0.3vw;
+    justify-content: flex-end;
+    flex-direction: column;
+    min-width: 20vw;
+    max-width: 20vw;
+}
+
+.label-panel-title-container {
+    position: relative;
+    color: white;
+    font-size: 2vh;
+    border: 0.0625vw solid rgba(255, 255, 255, 0.5);
+    background-color: #363636;
+    min-width: 14.25vw;
+    max-width: 14.25vw;
+    min-height: 3vh;
+    max-height: 3vh;
+    padding: 5px 0 0 10px;
+    vertical-align: center;
+}
+
+.search-label {
+    position: relative;
+    border: 0.0625vw solid rgba(255, 255, 255, 0.5);
+    background-color: #363636;
+    min-width: 15vw;
+    max-width: 15vw;
+    min-height: 5vh;
+    max-height: 5vh;
+}
+
+.search-input {
+    border-radius: 8vw;
+    min-height: 1.8vh;
+    max-height: 1.8vh;
+    min-width: 9vw;
+    max-width: 9vw;
+    font-size: 1.3vh;
+    background: #525353;
+    color: white;
+    position: absolute;
+    z-index: 2;
+    border: none;
+    outline: none;
+    padding: 0.3vw 0 0.3vw 1vw;
+    margin: 5px 0 0 30px;
+}
+
+.labels-container {
+    position: absolute;
+    min-height: 32vh;
+    max-height: 32vh;
+    min-width: 15vw;
+    max-width: 15vw;
+    overflow: hidden;
+    background-color: #eee;
+    border: 0.0625vw solid rgba(255, 255, 255, 0.5);
+}
+
+.labels-container:hover {
+    overflow-y: scroll;
+}
+
+.labels-container::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+}
+
+.labels-container::-webkit-scrollbar-track {
+    width: 20px;
+    background-color: transparent;
+}
+
+.labels-container::-webkit-scrollbar-thumb {
+    border: 6px solid transparent;
+    background-color: #708090;
+    border-radius: 20px;
+    background-clip: content-box;
+}
+
+.select-options-container {
+    position: relative;
+    min-height: 30vh;
+    max-height: 30vh;
+    min-width: 15vw;
+    max-width: 15vw;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+}
+
+.select-options {
+    position: relative;
+    min-height: 7vh;
+    max-height: 7vh;
+    min-width: 15vw;
+    max-width: 15vw;
+    justify-content: center;
+    align-items: center;
+    background-color: #eee;
+    flex-direction: column;
+    border: none;
+    outline: none;
+}
+
+.options {
+    min-width: 10vw;
+    max-width: 10vw;
+    min-height: 3vh;
+    max-height: 3vh;
+    color: white;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    text-align: center;
+    border: none;
+    outline: none;
+    text-overflow: ellipsis;
+    padding: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+}
+
+.select-options .options {
+    margin: 2vh 0 0 2vw;
+}
+
+.options:hover {
+    box-shadow: inset 0em 0em 0em 10em rgba(0, 0, 0, 0.3);
+}

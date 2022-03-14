@@ -194,3 +194,177 @@
     overflow: hidden auto;
     max-height: 50vh;
 }
+
+.project-settings-container {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    min-width: 60vw;
+    max-width: 60vw;
+    min-height: 60vh;
+    max-height: 60vh;
+}
+
+.project-settings-container::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+}
+
+.project-settings-container::-webkit-scrollbar-track {
+    width: 30px;
+    background-color: transparent;
+}
+
+.project-settings-container::-webkit-scrollbar-thumb {
+    border: 6px solid transparent;
+    background-color: #708090;
+    border-radius: 20px;
+    background-clip: content-box;
+}
+
+.table-container {
+    position: relative;
+    min-width: 35vw;
+    max-width: 35vw;
+    min-height: 60vh;
+    max-height: 60vh;
+}
+
+.data-table {
+    position: relative;
+    border-collapse: collapse;
+    min-width: 32vw;
+    max-width: 32vw;
+    min-height: 4vh;
+    max-height: 4vh;
+    font-size: 1.6vh;
+    margin-top: 10px;
+    border: 0.0625vw solid rgba(255, 255, 255, 0.5);
+    margin-left: 1.2vw;
+}
+
+.data-table,
+th,
+td {
+    border: 0.0625vw solid rgba(255, 255, 255, 0.5);
+    text-align: center;
+}
+
+.data-table tr {
+    background-color: #545454;
+    color: white;
+    font-weight: bold;
+}
+
+.data-table tr th {
+    background-color: #545454;
+    color: white;
+    font-weight: bold;
+    width: 8vw;
+    height: 3vh;
+    text-align: left;
+    text-indent: 10px;
+}
+
+.data-table tr td {
+    background-color: #eeeeee;
+    width: 10vw;
+    height: 3vh;
+    color: black;
+}
+
+.data-table th,
+.data-table td {
+    vertical-align: middle;
+    padding: 5px;
+}
+
+.input-shortcut-key {
+    border: none;
+    appearance: none;
+    border-radius: 3px;
+    background-color: #eeeeee;
+    width: 12vw;
+    padding: 3px;
+    font-size: 2vh;
+    text-align: center;
+}
+
+.features-form-container {
+    position: relative;
+    min-width: 20vw;
+    max-width: 20vw;
+    min-height: 50vh;
+    max-height: 50vh;
+    margin: 10px 0 0 2px;
+    overflow-y: scroll;
+}
+
+.features-form-container::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+}
+
+.features-form-container::-webkit-scrollbar-track {
+    width: 30px;
+    background-color: transparent;
+}
+
+.features-form-container::-webkit-scrollbar-thumb {
+    border: 6px solid transparent;
+    background-color: #708090;
+    border-radius: 20px;
+    background-clip: content-box;
+}
+
+.feature-label {
+    font-size: 2vh;
+    color: white;
+}
+
+.features-container {
+    position: relative;
+    margin: 1vh 0 0 3vw;
+}
+
+.feature-title-labels {
+    margin: 5px 0 5px 10px;
+    color: white;
+    font-size: 2vh;
+}
+
+.shortcut-title {
+    margin: 5px 0 5px 15px;
+    color: white;
+    font-size: 2vh;
+}
+
+.no-label-alert {
+    margin: 25vh 0 0 12vw;
+}
+
+.table-inner-container {
+    position: absolute;
+    min-height: 52vh;
+    max-height: 52vh;
+    min-width: 35vw;
+    max-width: 35vw;
+    overflow-y: scroll;
+}
+
+.table-inner-container::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+}
+
+.table-inner-container::-webkit-scrollbar-track {
+    width: 30px;
+    background-color: transparent;
+}
+
+.table-inner-container::-webkit-scrollbar-thumb {
+    border: 6px solid transparent;
+    background-color: #708090;
+    border-radius: 20px;
+    background-clip: content-box;
+}

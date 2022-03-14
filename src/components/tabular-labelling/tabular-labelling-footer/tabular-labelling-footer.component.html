@@ -1,0 +1,15 @@
+<!-------------------------- Footer Container -------------------------->
+
+<div class="footer-container">
+    <ng-container>
+        <div class="footer-label-container">
+            <div class="footer-label footer-project-name">
+                <label> Project: {{ projectName }}</label>
+            </div>
+            <div class="footer-label">File Type : {{ fileType }}</div>
+            <div class="footer-image-path" [title]="'footer.copyToClipboard' | translate">
+                <label class="footer-path-label"> File Path : {{ filePath }}</label>
+            </div>
+        </div>
+    </ng-container>
+</div>

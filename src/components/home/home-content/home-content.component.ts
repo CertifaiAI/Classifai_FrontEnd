@@ -67,7 +67,7 @@ export class HomeContentComponent {
     onThumbnailClick(chosenType: ChosenType): void {
         if (chosenType.title === 'tabular') {
             this._labellingModeService.setLabelMode(chosenType.title);
-            this._router.navigate([chosenType.url]).then((r) => r);
+            this._router.navigate([chosenType.url]);
         } else {
             this._navigate.emit(chosenType.url);
         }

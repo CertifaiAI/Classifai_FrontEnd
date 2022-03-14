@@ -1,4 +1,4 @@
-export type Labels = {
+export type label = {
     labelName: string;
     tagColor: string;
 };

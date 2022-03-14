@@ -1,11 +1,20 @@
-import { TutorialService, TutorialState } from './../../services/tutorial.service';
 /**
  * @license
  * Use of this source code is governed by Apache License 2.0 that can be
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Input, OnInit } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    ElementRef,
+    EventEmitter,
+    HostListener,
+    Input,
+    Output,
+    OnInit,
+    ViewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { IconSchema } from 'shared/types/icon/icon.model';
 import { ImgLabelProps } from 'shared/types/image-labelling/image-labelling.model';
@@ -13,6 +22,10 @@ import { ModalBodyStyle } from 'shared/types/modal/modal.model';
 import { ModalService } from '../modal/modal.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { Features, label } from '../../types/tabular-labelling/tabular-labelling.model';
+import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
+import { TutorialService, TutorialState } from './../../services/tutorial.service';
+import { TabularLabellingLayoutService } from '../../../layouts/tabular-labelling-layout/tabular-labelling-layout.service';
 
 type HeaderLabelSchema = {
     name: string;
@@ -34,6 +47,10 @@ type Tutorial = {
 })
 export class PageHeaderComponent implements OnInit {
     @Input() _onChange!: ImgLabelProps;
+    @Input() labels: label[] = [];
+    @Input() features: Features[] = [];
+    @Output() selectedShortCutKeys: EventEmitter<Map<string, string>> = new EventEmitter();
+    @Output() featuresCheckedStatus: EventEmitter<Map<string, boolean>> = new EventEmitter();
     // @Output() _navigate: EventEmitter<UrlProps> = new EventEmitter();
     logoSrc: string = `assets/icons/classifai_logo_white.svg`;
     jsonSchema!: IconSchema;
@@ -45,17 +62,22 @@ export class PageHeaderComponent implements OnInit {
     bndBoxIntro: boolean = false;
     polygonIntro: boolean = false;
     help: string = 'pageHeader.tutorial';
+    form: FormGroup;
+    labelShortCutKeyMap: Map<string, string> = new Map();
+    featuresCheckedStatusMap: Map<string, boolean> = new Map();
+    labellingMode: string = '';
+
     headerLabels: HeaderLabelSchema[] = [
         {
             name: 'pageHeader.home',
             url: '/',
             disable: false,
         },
-        // {
-        //     name: 'pageHeader.datasetManagement',
-        //     url: '/dataset',
-        //     disable: false,
-        // },
+        {
+            name: 'pageHeader.datasetManagement',
+            url: '/dataset',
+            disable: false,
+        },
         // {
         //     name: 'pageHeader.revision',
         //     url: '/',
@@ -306,6 +328,16 @@ export class PageHeaderComponent implements OnInit {
         maxWidth: '70vw',
         margin: '8vw 71vh',
         overflow: 'none',
+        position: 'relative',
+    };
+    readonly modalProjectSettingsView = 'modal-project-settings-view';
+    projectSettingsStyle: ModalBodyStyle = {
+        minHeight: '73vh',
+        maxHeight: '73vh',
+        maxWidth: '70vw',
+        width: '60vw',
+        margin: '5vw 5vh',
+        overflow: 'none',
     };
 
     constructor(
@@ -313,16 +345,22 @@ export class PageHeaderComponent implements OnInit {
         private _modalService: ModalService,
         private _tutorialService: TutorialService,
         private elementRef: ElementRef,
+        private fb: FormBuilder,
+        private tabularLabellingLayoutService: TabularLabellingLayoutService,
     ) {
         const { url } = _router;
         this.bindImagePath(url);
         this._tutorialService.tutorial$
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe((state) => (this.tutorialState = state));
+        this.form = this.fb.group({
+            checkArray: this.fb.array([]),
+        });
     }
 
     ngOnInit(): void {
         this.tutorialConfig(false, '');
+        this.labellingMode = this.tabularLabellingLayoutService.getRouteState(history).labellingMode;
     }
 
     tutorialConfig(ignoreCheckState: boolean, tutorialName: string) {
@@ -457,6 +495,31 @@ export class PageHeaderComponent implements OnInit {
             this.tutorialMenuToggle = true;
             this.isToggle = true;
         }
+    }
+
+    toggleProjectSettings() {
+        this._modalService.open(this.modalProjectSettingsView);
+    }
+
+    onSelectShortCutKey(event: any, label: label) {
+        const inputShortCutKey = event.target.value;
+        this.labelShortCutKeyMap.set(label.labelName, inputShortCutKey);
+        this.selectedShortCutKeys.emit(this.labelShortCutKeyMap);
+    }
+
+    moveToNextInput(id: number) {
+        const element = document.getElementById(String(id));
+        if (element && id < this.labels.length) {
+            element.focus();
+        } else if (id == this.labels.length) {
+            (document.activeElement as HTMLDivElement).blur();
+        }
+    }
+
+    setFeatureCheckedStatus(event: any, feature: Features) {
+        this.featuresCheckedStatusMap.set(feature.featureName, event.target.checked);
+        this.featuresCheckedStatus.emit(this.featuresCheckedStatusMap);
+        this.featuresCheckedStatusMap.clear();
     }
 
     @HostListener('document:click', ['$event.target'])

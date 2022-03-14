@@ -1,0 +1,52 @@
+<!-------------------------- Tabs Container -------------------------->
+
+<div class="tab-container">
+    <div class="utility-right-project-container flex-fill-remaining">
+        <div class="utility-inner-container tab-height" style="overflow: hidden" *ngIf="annotations">
+            <label class="tab-name">Annotations: </label>
+            <div class="annotations-container">
+                <div class="annotations-inner-container" *ngFor="let annotation of annotations">
+                    <div
+                        class="annotations"
+                        [style.background-color]="annotation?.tagColor"
+                        (contextmenu)="removeAnnotation($event, annotation)"
+                    >
+                        <label>{{ annotation?.labelName }}</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="utility-right-project-container flex-fill-remaining">
+        <div class="utility-inner-container tab-height" style="overflow: hidden" *ngIf="tempLabels">
+            <label class="tab-name" style="position: relative">Labels: </label>
+            <div class="label-panel-container">
+                <div>
+                    <div class="search-label">
+                        <input
+                            class="search-input"
+                            type="text"
+                            placeholder="Search Label"
+                            (keyup)="searchLabel($event)"
+                            #inputSearchLabel
+                        />
+                    </div>
+                </div>
+                <div class="labels-container">
+                    <div class="select-options-container">
+                        <div
+                            class="select-options"
+                            *ngFor="let label of tempLabels"
+                            [ngClass]="annotations.includes(label) ? 'close' : 'toggle'"
+                        >
+                            <div class="options" [style.background-color]="label.tagColor" (click)="chooseLabel(label)">
+                                <label>{{ label.labelName }}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

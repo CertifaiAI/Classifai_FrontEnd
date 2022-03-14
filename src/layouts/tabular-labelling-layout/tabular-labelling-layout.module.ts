@@ -13,6 +13,7 @@ import { GuiGridModule } from '@generic-ui/ngx-grid';
 import { FabricSelectModule } from '@generic-ui/fabric';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { TabularLabellingModule } from '../../components/tabular-labelling/tabular-labelling.module';
 
 @NgModule({
     imports: [
@@ -30,6 +31,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
         FormsModule,
         ReactiveFormsModule,
         NgxChartsModule,
+        TabularLabellingModule,
     ],
     declarations: [TabularLabellingLayoutComponent],
 })

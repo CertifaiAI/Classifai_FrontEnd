@@ -4,6 +4,8 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
+import { label } from '../tabular-labelling/tabular-labelling.model';
+
 type error_code = number;
 type errormessage = string;
 type content = string[];
@@ -115,4 +117,16 @@ export type MessageDeleteImg = {
 export type AddImageResponse = {
     add_image_status: number;
     add_image_message: string;
+};
+
+export type UpdateTabularDataResponse = {
+    message: number;
+    error_code?: error_code;
+    error_message?: errormessage;
+};
+
+export type SpecificTabularDataResponse = {
+    message: number;
+    error_message?: errormessage;
+    label_list: any;
 };

@@ -10,9 +10,10 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { PageHeaderComponent } from './page-header.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-    imports: [CommonModule, RouterModule, TranslateModule, ModalModule],
+    imports: [CommonModule, RouterModule, TranslateModule, ModalModule, ReactiveFormsModule, FormsModule],
     declarations: [PageHeaderComponent],
     exports: [PageHeaderComponent],
 })

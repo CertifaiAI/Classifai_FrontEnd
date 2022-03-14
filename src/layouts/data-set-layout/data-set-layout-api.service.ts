@@ -40,16 +40,20 @@ export class DataSetLayoutService {
     ) {
         // if has mode value, acquire the mode value
         // else return to lading page
-        this.mode.imgLabelMode$.pipe(distinctUntilChanged()).subscribe((modeVal) => {
-            if (modeVal) {
-                this.imageLabellingMode = modeVal;
+        // this.mode.imgLabelMode$.pipe(distinctUntilChanged()).subscribe((modeVal) => {
+        //     if (modeVal) {
+        //         this.imageLabellingMode = modeVal;
+        //     } else {
+        //         this.router.navigate(['/']);
+        //     }
+        // });
+
+        this._labellingModeService.labelMode$.pipe(distinctUntilChanged()).subscribe((labellingMode) => {
+            if (labellingMode) {
+                this.labellingMode = labellingMode;
             } else {
                 this.router.navigate(['/']);
             }
-        });
-
-        this._labellingModeService.labelMode$.pipe(distinctUntilChanged()).subscribe((labellingMode) => {
-            this.labellingMode = labellingMode;
         });
     }
 
@@ -64,7 +68,6 @@ export class DataSetLayoutService {
         projectFolderPath: string,
         tabularFilePath: string,
     ): Observable<ProjectMessage> => {
-        console.log(this.labellingMode);
         let annotationType = '';
         if (this.labellingMode === 'tabular') {
             annotationType = 'tabular';
@@ -91,13 +94,13 @@ export class DataSetLayoutService {
 
     renameProject = (oldProjectName: string, newProjectName: string): Observable<Message> => {
         return this.http.put<Message>(
-            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${oldProjectName}/rename/${newProjectName}`,
+            `${this.hostPort}v2/${this.labellingMode}/projects/${oldProjectName}/rename/${newProjectName}`,
             {},
         );
     };
 
     deleteProject = (projectName: string): Observable<Message> => {
-        return this.http.delete<Message>(`${this.hostPort}${this.imageLabellingMode}/projects/${projectName}`);
+        return this.http.delete<Message>(`${this.hostPort}${this.labellingMode}/projects/${projectName}`);
     };
 
     updateProjectLoadStatus = (projectName: string): Observable<Message> => {
@@ -122,7 +125,7 @@ export class DataSetLayoutService {
 
     getThumbnailList = (projectName: string, uuid: string): Observable<BboxMetadata & PolyMetadata> => {
         return this.http.get<BboxMetadata & PolyMetadata>(
-            `${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/uuid/${uuid}/thumbnail`,
+            `${this.hostPort}${this.labellingMode}/projects/${projectName}/uuid/${uuid}/thumbnail`,
         );
     };
 
@@ -131,7 +134,7 @@ export class DataSetLayoutService {
     };
 
     updateLabelList = (projectName: string, label_list: string[]): Observable<Message> => {
-        return this.http.put<Message>(`${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/newlabels`, {
+        return this.http.put<Message>(`${this.hostPort}${this.labellingMode}/projects/${projectName}/newlabels`, {
             label_list,
         });
     };
@@ -143,7 +146,7 @@ export class DataSetLayoutService {
     ): Observable<MessageProjectProgress> => {
         const conditionalEndPoint = action === 'loaded' ? 'status' : action;
         return this.http.put<MessageProjectProgress>(
-            `${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/${conditionalEndPoint}`,
+            `${this.hostPort}${this.labellingMode}/projects/${projectName}/${conditionalEndPoint}`,
             {
                 // status: 'true',
                 status: loading.toString(),
@@ -185,7 +188,7 @@ export class DataSetLayoutService {
 
     getProjectStats = (projectName: string): Observable<ProjectStatsResponse> => {
         return this.http.get<ProjectStatsResponse>(
-            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/statistic`,
+            `${this.hostPort}v2/${this.labellingMode}/projects/${projectName}/statistic`,
         );
     };
 }
