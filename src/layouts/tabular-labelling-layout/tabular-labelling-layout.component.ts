@@ -829,9 +829,6 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         if (this.labellingThresholdConditionsMap.has(index)) {
             this.labellingThresholdConditionsMap.delete(index);
         }
-
-        console.log(this.labellingThresholdConditionsMap);
-        console.log(this.labellingRangeConditionsMap);
     }
 
     setToggleState(index: number, status: boolean, identifier: string) {

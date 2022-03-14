@@ -48,8 +48,14 @@ export class TabularLabellingLayoutService {
     };
 
     setPreLabellingConditions = (projectName: string, conditions: Map<number, any>): Observable<Message> => {
-        return this.http.post<Message>(`${this.hostPort}v2/tabular/projects/${projectName}/pre`, {
-            condition: conditions,
+        let list = [];
+        for (const [key, value] of conditions) {
+            list.push([key, value]);
+        }
+        const conditionsJsonObject = Object.fromEntries(list);
+
+        return this.http.post<Message>(`${this.hostPort}v2/tabular/projects/${projectName}/prelabel`, {
+            conditions: JSON.stringify(conditionsJsonObject),
         });
     };
 }
