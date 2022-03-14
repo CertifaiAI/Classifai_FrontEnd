@@ -49,7 +49,7 @@ type conditionSet = {
 type threshold = {
     attribute?: string;
     operator?: string;
-    value?: number;
+    value?: number | string;
     annotation?: label;
 };
 
@@ -57,8 +57,8 @@ type range = {
     attribute?: string;
     lowerOperator?: string;
     upperOperator?: string;
-    lowerLimit?: number;
-    upperLimit?: number;
+    lowerLimit?: number | string;
+    upperLimit?: number | string;
     annotation?: label;
 };
 
@@ -759,6 +759,17 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         if (status == true) {
             const check = this.alertUnCompleteConditions(index, type);
             if (check == false) return;
+
+            if (type == 'Range') {
+                const result = this.labellingRangeConditionsMap.get(index) as range;
+                const upperLimit = result.upperLimit;
+                const lowerLimit = result.lowerLimit;
+                if (lowerLimit && upperLimit && lowerLimit > upperLimit) {
+                    alert('Value set at lower limit is higher than upper limit, please correct');
+                    return;
+                }
+            }
+
             this.selectedConditionTypes[index].isSet = false;
             this.selectedConditionTypes[index].buttonLabel = 'edit';
         } else {
@@ -958,6 +969,12 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                         tagColor: '#254E58',
                     },
                 };
+
+                this.tempSelectedAnnotations[index].forEach((ele) => {
+                    if (ele.labelName == parameter) {
+                        ele.isSelected = !ele.isSelected;
+                    }
+                });
                 break;
         }
 
