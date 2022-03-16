@@ -128,5 +128,5 @@ export type UpdateTabularDataResponse = {
 export type SpecificTabularDataResponse = {
     message: number;
     error_message?: errormessage;
-    label_list: any;
+    tabular_data: any;
 };

@@ -50,7 +50,7 @@ type threshold = {
     attribute?: string;
     operator?: string;
     value?: number | string;
-    annotation?: label;
+    label?: label;
 };
 
 type range = {
@@ -59,7 +59,7 @@ type range = {
     upperOperator?: string;
     lowerLimit?: number | string;
     upperLimit?: number | string;
-    annotation?: label;
+    label?: label;
 };
 
 type tempAnnotations = {
@@ -235,9 +235,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 }),
             )
             .subscribe(
-                (ele) => {
+                (response) => {
                     const labelProperties: label[] = [];
-                    this.tabularData = ele.label_list;
+                    this.tabularData = response.tabular_data;
 
                     if (this.tabularData.LABEL === null) {
                         this.annotationIndexMap.set(this.currentDataIndex, null);
@@ -447,8 +447,8 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     retrieveCurrentData(projectName: string, uuid: string) {
         this.tabularLabellingLayoutService.getSpecificData(projectName, uuid).subscribe(
-            (ele) => {
-                this.tabularData = ele.label_list;
+            (response) => {
+                this.tabularData = response.tabular_data;
                 if (this.tabularData.LABEL !== null) {
                     const annotation = JSON.parse(this.tabularData.LABEL);
                     this.annotations = annotation;
@@ -783,7 +783,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 }
             });
         }
-        const identifiers = ['attribute', 'operator', 'lowerOperator', 'upperOperator', 'annotation'];
+        const identifiers = ['attribute', 'operator', 'lowerOperator', 'upperOperator', 'label'];
         for (const identifier of identifiers) {
             this.setToggleState(index, true, identifier);
         }
@@ -813,7 +813,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     };
 
     onClickInputField(index: number) {
-        const identifiers = ['attribute', 'operator', 'lowerOperator', 'upperOperator', 'annotation'];
+        const identifiers = ['attribute', 'operator', 'lowerOperator', 'upperOperator', 'label'];
         for (const identifier of identifiers) {
             this.setToggleState(index, true, identifier);
         }
@@ -915,7 +915,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 break;
             case 'annotation':
                 data = {
-                    annotation: {
+                    label: {
                         labelName: parameter,
                         tagColor: '#254E58',
                     },
@@ -961,7 +961,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 break;
             case 'annotation':
                 data = {
-                    annotation: {
+                    label: {
                         labelName: parameter,
                         tagColor: '#254E58',
                     },
@@ -984,9 +984,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
         if (containKey == false) {
             const newKey = Object.keys(array)[0];
-            if (newKey == 'annotation') {
+            if (newKey == 'label') {
                 const annotation = {
-                    annotation: [array.annotation],
+                    label: [array.label],
                 };
                 this.labellingThresholdConditionsMap.set(index, annotation);
             } else {
@@ -999,9 +999,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
             if (result) {
                 if (availableKey.includes(newKey) == false) {
-                    if (newKey === 'annotation') {
+                    if (newKey === 'label') {
                         const annotation = {
-                            annotation: [array.annotation],
+                            label: [array.label],
                         };
                         result = { ...result, ...annotation };
                         this.labellingThresholdConditionsMap.set(index, result);
@@ -1020,20 +1020,18 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                         case 'value':
                             result.value = array.value;
                             break;
-                        case 'annotation':
-                            const annotations = result.annotation;
+                        case 'label':
+                            const annotations = result.label;
                             const isContain = annotations.some(
-                                (ele: { labelName: string | undefined }) =>
-                                    ele.labelName == array.annotation?.labelName,
+                                (ele: { labelName: string | undefined }) => ele.labelName == array.label?.labelName,
                             );
 
                             if (isContain == false) {
-                                annotations.push(array.annotation);
-                                result.annotation = annotations;
+                                annotations.push(array.label);
+                                result.label = annotations;
                             } else {
                                 const index = annotations.findIndex(
-                                    (ele: { labelName: string | undefined }) =>
-                                        ele.labelName == array.annotation?.labelName,
+                                    (ele: { labelName: string | undefined }) => ele.labelName == array.label?.labelName,
                                 );
                                 annotations.splice(index, 1);
                             }
@@ -1049,9 +1047,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
         if (!containKey) {
             const newKey = Object.keys(array)[0];
-            if (newKey == 'annotation') {
+            if (newKey == 'label') {
                 const annotation = {
-                    annotation: [array.annotation],
+                    label: [array.label],
                 };
                 this.labellingRangeConditionsMap.set(index, annotation);
             } else {
@@ -1064,9 +1062,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
             if (result) {
                 if (!availableKey.includes(newKey)) {
-                    if (newKey === 'annotation') {
+                    if (newKey === 'label') {
                         const annotation = {
-                            annotation: [array.annotation],
+                            label: [array.label],
                         };
                         result = { ...result, ...annotation };
                         this.labellingRangeConditionsMap.set(index, result);
@@ -1091,20 +1089,18 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                         case 'upperLimit':
                             result.upperLimit = array.upperLimit;
                             break;
-                        case 'annotation':
-                            const annotations = result.annotation;
+                        case 'label':
+                            const annotations = result.label;
                             const isContain = annotations.some(
-                                (ele: { labelName: string | undefined }) =>
-                                    ele.labelName == array.annotation?.labelName,
+                                (ele: { labelName: string | undefined }) => ele.labelName == array.label?.labelName,
                             );
 
                             if (isContain == false) {
-                                annotations.push(array.annotation);
-                                result.annotation = annotations;
+                                annotations.push(array.label);
+                                result.label = annotations;
                             } else if (isContain == true) {
                                 const index = annotations.findIndex(
-                                    (ele: { labelName: string | undefined }) =>
-                                        ele.labelName == array.annotation?.labelName,
+                                    (ele: { labelName: string | undefined }) => ele.labelName == array.label?.labelName,
                                 );
                                 annotations.splice(index, 1);
                             }
@@ -1150,7 +1146,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
             case 'upperOperator':
                 display = 'Upper Operator';
                 break;
-            case 'annotation':
+            case 'label':
                 display = 'Annotation';
                 break;
         }
@@ -1170,8 +1166,8 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 const operator = selection.operator;
                 display = operator ? this.operatorSymbol(operator, 'Threshold') : 'Operator';
                 break;
-            case 'annotation':
-                const annotation = selection.annotation;
+            case 'label':
+                const annotation = selection.label;
                 display = annotation ? annotation.labelName : 'Annotation';
                 break;
             case 'value':
@@ -1199,8 +1195,8 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 const upperOperator = selection.upperOperator;
                 display = upperOperator ? this.operatorSymbol(upperOperator, 'Range') : 'upperOperator';
                 break;
-            case 'annotation':
-                const annotation = selection.annotation;
+            case 'label':
+                const annotation = selection.label;
                 display = annotation ? annotation.labelName : 'annotation';
                 break;
             case 'lowerLimit':
@@ -1225,8 +1221,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         const value = conditions.value == undefined ? 'value' : String(conditions.value);
         const operator =
             conditions.operator == undefined ? 'operator' : this.operatorSymbol(conditions.operator, 'Threshold');
-        const annotations =
-            conditions.annotation == undefined ? 'annotations' : this.expandAnnotation(conditions.annotation);
+        const annotations = conditions.label == undefined ? 'annotations' : this.expandAnnotation(conditions.label);
         const displayString = attribute + ' ' + operator + ' ' + value + ' ' + '\u003a' + ' ' + annotations;
 
         display = displayString;
@@ -1251,8 +1246,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
             conditions.upperOperator == undefined
                 ? 'upperOperator'
                 : this.operatorSymbol(conditions.upperOperator, 'Range');
-        const annotations =
-            conditions.annotation == undefined ? 'annotations' : this.expandAnnotation(conditions.annotation);
+        const annotations = conditions.label == undefined ? 'annotations' : this.expandAnnotation(conditions.label);
         const displayString =
             lowerLimit +
             ' ' +
