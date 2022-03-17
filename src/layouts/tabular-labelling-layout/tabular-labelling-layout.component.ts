@@ -67,6 +67,12 @@ type tempAnnotations = {
     isSelected: boolean;
 };
 
+enum DataType {
+    STRING = 'string',
+    NUMBER = 'number',
+    DATE = 'date',
+}
+
 @Component({
     selector: 'app-tabular-labelling-layout',
     templateUrl: './tabular-labelling-layout.component.html',
@@ -79,6 +85,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     tabularData!: any;
     tabularDataObservable!: Observable<any>;
     headersTypeMap: Map<string, GuiDataType> = new Map<string, GuiDataType>();
+    attributeTypeMap: Map<string, DataType> = new Map<string, DataType>();
     private sizeOptions: Array<string> = ['5 000', '25 000', '50 000', '100 000', '200 000', '1 000000'];
     private selectedSize: string = this.sizeOptions[0];
     columns: Array<GuiColumn> = [];
@@ -291,17 +298,19 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
             );
     }
 
-    generateColumnsArray(tabularData: any) {
-        const isNumber = (inputData: any): boolean => {
-            return !isNaN(inputData);
-        };
+    isNumber = (inputData: any): boolean => {
+        return !isNaN(inputData);
+    };
 
+    generateColumnsArray(tabularData: any) {
         for (const [key, value] of Object.entries(tabularData)) {
             if (!this.excludeKeys.includes(key)) {
-                if (isNumber(value)) {
+                if (typeof value == 'number') {
                     this.headersTypeMap.set(key, GuiDataType.NUMBER);
-                } else {
+                    this.attributeTypeMap.set(key, DataType.NUMBER);
+                } else if (typeof value == 'string') {
                     this.headersTypeMap.set(key, GuiDataType.STRING);
+                    this.attributeTypeMap.set(key, DataType.STRING);
                 }
             }
         }
@@ -314,6 +323,8 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 field: key,
             });
         }
+
+        console.log(this.attributeTypeMap);
     }
 
     sizeSelected(selectedSize: string): void {
@@ -757,18 +768,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     editSelectedLabellingCondition(index: number, status: boolean, type: string) {
         if (status == true) {
-            const check = this.alertUnCompleteConditions(index, type);
-            if (check == false) return;
-
-            if (type == 'Range') {
-                const result = this.labellingRangeConditionsMap.get(index) as range;
-                const upperLimit = result.upperLimit;
-                const lowerLimit = result.lowerLimit;
-                if (lowerLimit && upperLimit && lowerLimit > upperLimit) {
-                    alert('Value set at lower limit is higher than upper limit, please correct');
-                    return;
-                }
-            }
+            if (this.alertUnCompleteConditions(index, type) == true) return;
+            if (this.alertLimitOutBound(index, type) == true) return;
+            if (this.alertWrongDataType(index, type) == true) return;
 
             this.selectedConditionTypes[index].isSet = false;
             this.selectedConditionTypes[index].buttonLabel = 'edit';
@@ -798,18 +800,77 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         }
 
         if (conditions == undefined) {
-            alert('Please finish customize the conditions');
-            return false;
+            alert('Current condition is undefined. Please set the parameter of condition');
+            return true;
         } else {
             if (type == 'Threshold' && Object.keys(conditions).length < 4) {
-                alert('Please finish customize the conditions');
-                return false;
+                alert('Please finish setting the threshold conditions');
+                return true;
             } else if (type == 'Range' && Object.keys(conditions).length < 6) {
-                alert('Please finish customize the conditions');
-                return false;
+                alert('Please finish setting the range conditions');
+                return true;
             }
         }
-        return true;
+        return false;
+    };
+
+    alertLimitOutBound = (index: number, type: string): boolean => {
+        if (type == 'Range') {
+            const result = this.labellingRangeConditionsMap.get(index) as range;
+            const upperLimit = result.upperLimit;
+            const lowerLimit = result.lowerLimit;
+            if (lowerLimit && upperLimit && lowerLimit > upperLimit) {
+                alert('Value set at lower limit is higher than upper limit, please correct');
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    alertWrongDataType = (index: number, type: string) => {
+        if (type == 'Threshold') {
+            const thresholdCondition = this.labellingThresholdConditionsMap.get(index);
+            const attributeName = thresholdCondition.attribute;
+            const attributeType = this.attributeTypeMap.get(attributeName.toUpperCase());
+            const value = thresholdCondition.value;
+
+            if (attributeType == 'number') {
+                if (this.isNumber(value) == false) {
+                    alert('Input value is not a number. Please correct it');
+                    return true;
+                }
+            }
+
+            if (attributeType == 'string') {
+                if (typeof value !== 'string') {
+                    alert('Input value is not a string. Please correct it');
+                    return true;
+                }
+            }
+        } else if (type == 'Range') {
+            const rangeCondition = this.labellingRangeConditionsMap.get(index);
+            const attributeName = rangeCondition.attribute;
+            const attributeType = this.attributeTypeMap.get(attributeName.toUpperCase());
+            const lowerLimit = rangeCondition.lowerLimit;
+            const upperLimit = rangeCondition.upperLimit;
+
+            if (attributeType == 'number') {
+                if (this.isNumber(lowerLimit) == false || this.isNumber(upperLimit) == false) {
+                    alert('Input value is not a number. Please correct it');
+                    return true;
+                }
+            }
+
+            if (attributeType == 'string') {
+                if (typeof lowerLimit != 'string' || typeof upperLimit != 'string') {
+                    alert('Input value is not a string. Please correct it');
+                    return true;
+                }
+            }
+        }
+
+        return false;
     };
 
     onClickInputField(index: number) {
@@ -828,6 +889,16 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
         if (this.labellingThresholdConditionsMap.has(index)) {
             this.labellingThresholdConditionsMap.delete(index);
+        }
+
+        if (this.conditionMapsList.has(index)) {
+            this.conditionMapsList.delete(index);
+        }
+
+        if (this.displayConditions.has(index)) {
+            this.displayConditions.delete(index);
+            this.conditionList.splice(0, this.conditionList.length);
+            this.listOutConditions();
         }
     }
 
@@ -1328,18 +1399,18 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         if (status == false) {
             for (const [key, condition] of this.labellingThresholdConditionsMap.entries()) {
                 if (this.conditionMapsList.has(key) == false) {
-                    this.conditionMapsList.set(key, condition);
+                    this.conditionMapsList.set(key, { threshold: condition });
                 } else {
-                    let selectedCondition = this.conditionMapsList.get(key);
+                    let selectedCondition = this.conditionMapsList.get(key)['threshold'];
                     selectedCondition = condition;
                 }
             }
 
             for (const [key, condition] of this.labellingRangeConditionsMap) {
                 if (this.conditionMapsList.has(key) == false) {
-                    this.conditionMapsList.set(key, condition);
+                    this.conditionMapsList.set(key, { range: condition });
                 } else {
-                    let selectedCondition = this.conditionMapsList.get(key);
+                    let selectedCondition = this.conditionMapsList.get(key)['range'];
                     selectedCondition = condition;
                 }
             }

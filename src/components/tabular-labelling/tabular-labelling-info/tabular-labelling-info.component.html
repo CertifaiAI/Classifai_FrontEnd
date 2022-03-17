@@ -42,6 +42,7 @@
                 placeholder="Search Data"
                 maxlength="15"
                 (change)="searchData($event)"
+                (keyup.enter)="navigateData()"
             />
             <div class="search-logo-container">
                 <img class="search-logo" src="assets/icons/search.svg" (click)="navigateData()" />

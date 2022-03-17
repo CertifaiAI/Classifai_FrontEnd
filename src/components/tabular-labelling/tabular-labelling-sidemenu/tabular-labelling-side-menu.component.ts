@@ -36,7 +36,11 @@ export class TabularLabellingSideMenuComponent implements OnInit, OnChanges {
 
     ngOnInit() {}
 
-    ngOnChanges(changes: SimpleChanges): void {}
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.conditions) {
+            this.conditions = changes.conditions.currentValue;
+        }
+    }
 
     createLabel(event: any) {
         let label;
