@@ -306,7 +306,10 @@
                                     placeholder="Enter threshold value"
                                     value="{{ displaySelection(i, 'value', 'Threshold') }}"
                                     class="condition-input"
-                                    (change)="getConditionSettings(i, $event.target.value, 'Threshold', 'value')"
+                                    (change)="
+                                        getConditionSettings(i, $event.target.value, 'Threshold', 'value');
+                                        alertWrongDataType(i, 'Threshold', $event.target.value)
+                                    "
                                     (click)="onClickInputField(i)"
                                     #thresholdValue
                                 />
@@ -360,7 +363,10 @@
                                     placeholder="Enter lower limit"
                                     value="{{ displaySelection(i, 'lowerLimit', 'Range') }}"
                                     class="condition-input"
-                                    (change)="getConditionSettings(i, $event.target.value, 'Range', 'lowerLimit')"
+                                    (change)="
+                                        getConditionSettings(i, $event.target.value, 'Range', 'lowerLimit');
+                                        alertWrongDataType(i, 'Range', $event.target.value)
+                                    "
                                     (click)="onClickInputField(i)"
                                     #lowerLimitValue
                                 />
@@ -403,7 +409,10 @@
                                     </button>
                                 </div>
                                 <div class="conditions-drop-down-container" *ngIf="conditionalType.isToggleAttributes">
-                                    <div class="conditions-drop-down" *ngFor="let attribute of attributeNames">
+                                    <div
+                                        class="conditions-drop-down"
+                                        *ngFor="let attribute of filteredStringTypeAttributeNames"
+                                    >
                                         <div
                                             class="select-parameter"
                                             (click)="getConditionSettings(i, attribute, 'Range', 'attribute')"
@@ -447,7 +456,10 @@
                                     placeholder="Enter Upper Limit"
                                     value="{{ displaySelection(i, 'upperLimit', 'Range') }}"
                                     class="condition-input"
-                                    (change)="getConditionSettings(i, $event.target.value, 'Range', 'upperLimit')"
+                                    (change)="
+                                        getConditionSettings(i, $event.target.value, 'Range', 'upperLimit');
+                                        alertWrongDataType(i, 'Range', $event.target.value)
+                                    "
                                     (click)="onClickInputField(i)"
                                     #upperLimitValue
                                 />

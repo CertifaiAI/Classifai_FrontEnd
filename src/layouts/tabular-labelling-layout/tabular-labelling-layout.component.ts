@@ -112,7 +112,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     operatorTypes: string[] = [
         'more than',
         'more than or equal to',
-        'equal',
+        'equal to',
         'less than or equal to',
         'less than',
         'not equal to',
@@ -134,12 +134,14 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     conditionTypes: string[] = ['Range', 'Threshold'];
     selectedConditions: string[] = [];
     attributeNames: string[] = [];
+    filteredStringTypeAttributeNames: string[] = [];
     conditionList: string[] = [];
     selectedConditionTypes: conditionSet[] = [];
     conditionMapsList: Map<number, any> = new Map();
     displayConditions: Map<number, string> = new Map();
     labellingThresholdConditionsMap: Map<number, any> = new Map();
     labellingRangeConditionsMap: Map<number, any> = new Map();
+    identifiers: string[] = ['attribute', 'operator', 'lowerOperator', 'upperOperator', 'annotation'];
     readonly modalPlotGraph = 'modal-plot-graph';
     readonly modalTabularDataView = 'modal-tabular-data-view';
     readonly modalIdProjectStats = 'modal-project-stats';
@@ -367,6 +369,13 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
             }
         }
 
+        for (const name of this.attributeNames) {
+            const type = this.attributeTypeMap.get(name);
+            if (type != DataType.STRING) {
+                this.filteredStringTypeAttributeNames.push(name);
+            }
+        }
+
         for (let i = 0; i < this.features.length; i++) {
             this.appendFeaturesBasedOnCheckedStatus(this.features[i].featureName, this.features[i].checked);
         }
@@ -392,6 +401,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     updateLabel(newLabel: label) {
         this.labels.push(newLabel);
+        this.tempSelectedAnnotations.push([{ labelName: newLabel.labelName, isSelected: false }]);
         this.tempLabels = this.labels;
         const labelList = this.labels.map((ele) => ele.labelName);
         this._dataSetService.updateLabelList(this.projectName, labelList).subscribe((ele) => {
@@ -768,10 +778,10 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         if (status == true) {
             if (this.alertUnCompleteConditions(index, type) == true) return;
             if (this.alertLimitOutBound(index, type) == true) return;
-            if (this.alertWrongDataType(index, type) == true) return;
 
             this.selectedConditionTypes[index].isSet = false;
             this.selectedConditionTypes[index].buttonLabel = 'edit';
+            this.checkAndCorrectValueType(index, type);
         } else {
             this.selectedConditionTypes.forEach((ele, i) => {
                 if (i == index) {
@@ -783,11 +793,32 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 }
             });
         }
-        const identifiers = ['attribute', 'operator', 'lowerOperator', 'upperOperator', 'label'];
-        for (const identifier of identifiers) {
+        for (const identifier of this.identifiers) {
             this.setToggleState(index, true, identifier);
         }
         this.resetConditionListDisplay(index, type);
+    }
+
+    checkAndCorrectValueType(index: number, type: string) {
+        if (type == 'Threshold') {
+            const thresholdCondition = this.labellingThresholdConditionsMap.get(index);
+            const attributeName = thresholdCondition.attribute;
+            const attributeType = this.attributeTypeMap.get(attributeName.toUpperCase());
+            if (attributeType == 'number') {
+                const value = thresholdCondition.value;
+                this.labellingThresholdConditionsMap.get(index).value = Number(value);
+            }
+        } else if (type == 'Range') {
+            const rangeCondition = this.labellingRangeConditionsMap.get(index);
+            const attributeName = rangeCondition.attribute;
+            const attributeType = this.attributeTypeMap.get(attributeName.toUpperCase());
+            if (attributeType == 'number') {
+                const lowerLimit = rangeCondition.lowerLimit;
+                const upperLimit = rangeCondition.upperLimit;
+                this.labellingRangeConditionsMap.get(index).lowerLimit = Number(lowerLimit);
+                this.labellingRangeConditionsMap.get(index).upperLimit = Number(upperLimit);
+            }
+        }
     }
 
     alertUnCompleteConditions = (index: number, type: string): boolean => {
@@ -818,8 +849,8 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
             const result = this.labellingRangeConditionsMap.get(index) as range;
             const upperLimit = result.upperLimit;
             const lowerLimit = result.lowerLimit;
-            if (lowerLimit && upperLimit && lowerLimit > upperLimit) {
-                alert('Value set at lower limit is higher than upper limit, please correct');
+            if (lowerLimit && upperLimit && lowerLimit >= upperLimit) {
+                alert('Value set at lower limit is higher than or equal to upper limit, please correct');
                 return true;
             }
         }
@@ -827,49 +858,27 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         return false;
     };
 
-    alertWrongDataType = (index: number, type: string) => {
+    alertWrongDataType = (index: number, type: string, value: any) => {
         if (type == 'Threshold') {
             const thresholdCondition = this.labellingThresholdConditionsMap.get(index);
             const attributeName = thresholdCondition.attribute;
             const attributeType = this.attributeTypeMap.get(attributeName.toUpperCase());
-            const value = thresholdCondition.value;
 
-            if (attributeType == 'number') {
-                if (this.isNumber(value) == false) {
-                    alert('Input value is not a number. Please correct it');
-                    return true;
-                }
+            if (attributeType == DataType.NUMBER && !this.isNumber(value)) {
+                alert('Input value is not a number. Please correct it');
+                return;
             }
 
-            if (attributeType == 'string') {
-                if (typeof value !== 'string') {
-                    alert('Input value is not a string. Please correct it');
-                    return true;
-                }
+            if (attributeType == DataType.STRING && this.isNumber(value)) {
+                alert('Input value is not a string. Please correct it');
+                return;
             }
         } else if (type == 'Range') {
-            const rangeCondition = this.labellingRangeConditionsMap.get(index);
-            const attributeName = rangeCondition.attribute;
-            const attributeType = this.attributeTypeMap.get(attributeName.toUpperCase());
-            const lowerLimit = rangeCondition.lowerLimit;
-            const upperLimit = rangeCondition.upperLimit;
-
-            if (attributeType == 'number') {
-                if (this.isNumber(lowerLimit) == false || this.isNumber(upperLimit) == false) {
-                    alert('Input value is not a number. Please correct it');
-                    return true;
-                }
-            }
-
-            if (attributeType == 'string') {
-                if (typeof lowerLimit != 'string' || typeof upperLimit != 'string') {
-                    alert('Input value is not a string. Please correct it');
-                    return true;
-                }
+            if (!this.isNumber(value)) {
+                alert('Input value is not a number. Please correct it');
+                return;
             }
         }
-
-        return false;
     };
 
     onClickInputField(index: number) {
@@ -1034,7 +1043,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 break;
             case 'value':
                 data = {
-                    value: Number(parameter),
+                    value: parameter,
                 };
                 break;
             case 'annotation':
@@ -1075,12 +1084,12 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 break;
             case 'lowerLimit':
                 data = {
-                    lowerLimit: Number(parameter),
+                    lowerLimit: parameter,
                 };
                 break;
             case 'upperLimit':
                 data = {
-                    upperLimit: Number(parameter),
+                    upperLimit: parameter,
                 };
                 break;
             case 'annotation':
@@ -1423,7 +1432,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
             case 'less than':
                 operator = '\u003c';
                 break;
-            case 'equal':
+            case 'equal to':
                 operator = '\u003d';
                 break;
             case 'more than':
