@@ -778,10 +778,10 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         if (status == true) {
             if (this.alertUnCompleteConditions(index, type) == true) return;
             if (this.alertLimitOutBound(index, type) == true) return;
+            if (this.checkAndCorrectValueType(index, type) == false) return;
 
             this.selectedConditionTypes[index].isSet = false;
             this.selectedConditionTypes[index].buttonLabel = 'edit';
-            this.checkAndCorrectValueType(index, type);
         } else {
             this.selectedConditionTypes.forEach((ele, i) => {
                 if (i == index) {
@@ -799,7 +799,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         this.resetConditionListDisplay(index, type);
     }
 
-    checkAndCorrectValueType(index: number, type: string) {
+    checkAndCorrectValueType = (index: number, type: string) => {
         if (type == 'Threshold') {
             const thresholdCondition = this.labellingThresholdConditionsMap.get(index);
             const attributeName = thresholdCondition.attribute;
@@ -807,6 +807,15 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
             if (attributeType == 'number') {
                 const value = thresholdCondition.value;
                 this.labellingThresholdConditionsMap.get(index).value = Number(value);
+            }
+
+            if (attributeType == 'string') {
+                const operator = this.labellingThresholdConditionsMap.get(index).operator;
+                const allowedOperator = ['equal to', 'not equal to'];
+                if (!allowedOperator.includes(operator)) {
+                    alert('Only equal to and not equal operator are allowed for current selected attribute');
+                    return false;
+                }
             }
         } else if (type == 'Range') {
             const rangeCondition = this.labellingRangeConditionsMap.get(index);
@@ -819,7 +828,8 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 this.labellingRangeConditionsMap.get(index).upperLimit = Number(upperLimit);
             }
         }
-    }
+        return true;
+    };
 
     alertUnCompleteConditions = (index: number, type: string): boolean => {
         let conditions;
