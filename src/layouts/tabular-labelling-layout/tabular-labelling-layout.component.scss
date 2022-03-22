@@ -940,7 +940,7 @@ td {
 
 .align {
     width: 52vw;
-    margin-left: 18vw;
+    margin-left: 21vw;
     margin-bottom: 1vh;
 }
 
@@ -979,7 +979,7 @@ td {
 
 .condition-container {
     margin: 2vh 0 1vh 1vw;
-    width: 67vw;
+    width: 70vw;
     height: 8vh;
     position: relative;
     border: 0.0625vw solid rgba(255, 255, 255, 0.25);
@@ -1208,4 +1208,18 @@ td {
 
 .edit-btn-color {
     background-color: #254e58;
+}
+
+.date-format-example {
+    position: relative;
+    font-size: 1.5vh;
+    color: white;
+    margin-left: 1vw;
+    min-width: 6vw;
+    max-width: 6vw;
+    min-height: 5vh;
+    max-height: 5vh;
+    line-height: 20px;
+    vertical-align: center;
+    text-align: center;
 }

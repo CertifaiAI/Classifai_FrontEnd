@@ -341,6 +341,30 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="select-container" *ngIf="isDateAttribute(i, 'Threshold')">
+                                <div class="select-inner-container">
+                                    <button
+                                        class="condition-selection-btn"
+                                        (click)="setToggleState(i, conditionalType.isToggleDate, 'dateformat')"
+                                    >
+                                        {{ displaySelection(i, 'dateformat', 'Threshold') }}
+                                    </button>
+                                </div>
+                                <div class="conditions-drop-down-container" *ngIf="conditionalType.isToggleDate">
+                                    <div class="conditions-drop-down" *ngFor="let format of dateFormat">
+                                        <div
+                                            class="select-parameter"
+                                            (click)="getConditionSettings(i, format.format, 'Threshold', 'dateformat')"
+                                        >
+                                            <label> {{ format.format }} </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="date-format-example">
+                                    <label> {{ displayDateExample(i, 'Threshold') }} </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </ng-container>
@@ -489,6 +513,30 @@
                                             <label>{{ annotation.labelName }}</label>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+
+                            <div class="select-container" *ngIf="isDateAttribute(i, 'Range')">
+                                <div class="select-inner-container">
+                                    <button
+                                        class="condition-selection-btn"
+                                        (click)="setToggleState(i, conditionalType.isToggleDate, 'dateformat')"
+                                    >
+                                        {{ displaySelection(i, 'dateformat', 'Range') }}
+                                    </button>
+                                </div>
+                                <div class="conditions-drop-down-container" *ngIf="conditionalType.isToggleDate">
+                                    <div class="conditions-drop-down" *ngFor="let format of dateFormat">
+                                        <div
+                                            class="select-parameter"
+                                            (click)="getConditionSettings(i, format.format, 'Range', 'dateformat')"
+                                        >
+                                            <label> {{ format.format }} </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="date-format-example">
+                                    <label> {{ displayDateExample(i, 'Range') }} </label>
                                 </div>
                             </div>
                         </div>

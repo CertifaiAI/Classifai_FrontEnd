@@ -10,30 +10,19 @@ import {
     ViewChild,
 } from '@angular/core';
 import { LabellingModeService } from '../../shared/services/labelling-mode-service';
-import { forkJoin, from, interval, Observable, Subject, Subscription } from 'rxjs';
+import { forkJoin, from, Observable, Subject, Subscription } from 'rxjs';
 import { GuiColumn, GuiDataType, GuiRowClass } from '@generic-ui/ngx-grid';
 import { first, mergeMap, take, takeUntil } from 'rxjs/operators';
 import { ModalBodyStyle } from '../../shared/types/modal/modal.model';
 import { ModalService } from '../../shared/components/modal/modal.service';
-import {
-    annotationsStats,
-    Data,
-    Features,
-    label,
-    RemovedFeature,
-} from '../../shared/types/tabular-labelling/tabular-labelling.model';
+import { Data, Features, label, RemovedFeature } from '../../shared/types/tabular-labelling/tabular-labelling.model';
 import { TabularLabellingLayoutService } from './tabular-labelling-layout.service';
-import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { DataSetLayoutService } from '../data-set-layout/data-set-layout-api.service';
 import { Router } from '@angular/router';
 import { ChartProps } from '../../shared/types/dataset-layout/data-set-layout.model';
-import { labels_stats } from '../../shared/types/message/message.model';
 import { LanguageService } from '../../shared/services/language.service';
-import { assertNotNull } from '@angular/compiler/src/output/output_ast';
-import { ExportSaveFormatService, ProcessResponse, SaveFormat } from '../../shared/services/export-save-format.service';
-import { revokeObjectURL } from 'blob-util';
-import { cond } from 'lodash-es';
-import { createAotCompiler } from '@angular/compiler';
+import { ExportSaveFormatService } from '../../shared/services/export-save-format.service';
 
 type conditionSet = {
     type: string;
@@ -44,6 +33,7 @@ type conditionSet = {
     isToggleLowerOperator: boolean;
     isToggleUpperOperator: boolean;
     isToggleAnnotation: boolean;
+    isToggleDate: boolean;
 };
 
 type threshold = {
@@ -51,6 +41,7 @@ type threshold = {
     operator?: string;
     value?: number | string;
     label?: label;
+    dateformat?: string;
 };
 
 type range = {
@@ -60,6 +51,7 @@ type range = {
     lowerLimit?: number | string;
     upperLimit?: number | string;
     label?: label;
+    dateformat?: string;
 };
 
 type tempAnnotations = {
@@ -72,6 +64,11 @@ enum DataType {
     NUMBER = 'number',
     DATE = 'date',
 }
+
+type dateFormat = {
+    format: string;
+    example: string;
+};
 
 @Component({
     selector: 'app-tabular-labelling-layout',
@@ -142,6 +139,11 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     labellingThresholdConditionsMap: Map<number, any> = new Map();
     labellingRangeConditionsMap: Map<number, any> = new Map();
     identifiers: string[] = ['attribute', 'operator', 'lowerOperator', 'upperOperator', 'annotation'];
+    dateFormat: dateFormat[] = [
+        { format: 'yyyy/mm/dd', example: '2022/12/31' },
+        { format: 'mm/dd/yyyy', example: '12/31/2022' },
+        { format: 'dd/mm/yyyy', example: '31/12/2022' },
+    ];
     readonly modalPlotGraph = 'modal-plot-graph';
     readonly modalTabularDataView = 'modal-tabular-data-view';
     readonly modalIdProjectStats = 'modal-project-stats';
@@ -181,7 +183,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     };
     addLabellingConditionBodyStyle: ModalBodyStyle = {
         height: '74vh',
-        width: '72vw',
+        width: '75vw',
         margin: '10vh 0 5vh 3vw',
         overflow: 'none',
     };
@@ -304,15 +306,54 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         return !isNaN(inputData);
     };
 
+    isValidDate = (value: any): boolean => {
+        const dayMonthYearRegex = /^([0]?[1-9]|[1|2][0-9]|[3][0|1])[./-]([0]?[1-9]|[1][0-2])[./-]([0-9]{4}|[0-9]{2})$/g; // for dd/mm/yyyy
+        const yearMonthDayRegex = /^\d{4}[./-](0?[1-9]|1[012])[./-](0?[1-9]|[12][0-9]|3[01])$/g; // for yyyy/dd/mm
+
+        if (dayMonthYearRegex.test(value)) {
+            return true;
+        }
+
+        if (yearMonthDayRegex.test(value)) {
+            return true;
+        }
+
+        return false;
+    };
+
+    checkTypeOfValue = (value: any) => {
+        if (this.isValidDate(value)) {
+            return 'date';
+        }
+
+        if (typeof value == 'number') {
+            return 'number';
+        }
+
+        if (typeof value == 'string') {
+            return 'string';
+        } else {
+            console.error('Unidentifiable type of value');
+        }
+    };
+
     generateColumnsArray(tabularData: any) {
         for (const [key, value] of Object.entries(tabularData)) {
             if (!this.excludeKeys.includes(key)) {
-                if (typeof value == 'number') {
-                    this.headersTypeMap.set(key, GuiDataType.NUMBER);
-                    this.attributeTypeMap.set(key, DataType.NUMBER);
-                } else if (typeof value == 'string') {
-                    this.headersTypeMap.set(key, GuiDataType.STRING);
-                    this.attributeTypeMap.set(key, DataType.STRING);
+                const type = this.checkTypeOfValue(value);
+                switch (type) {
+                    case 'number':
+                        this.headersTypeMap.set(key, GuiDataType.NUMBER);
+                        this.attributeTypeMap.set(key, DataType.NUMBER);
+                        break;
+                    case 'string':
+                        this.headersTypeMap.set(key, GuiDataType.STRING);
+                        this.attributeTypeMap.set(key, DataType.STRING);
+                        break;
+                    case 'date':
+                        this.headersTypeMap.set(key, GuiDataType.DATE);
+                        this.attributeTypeMap.set(key, DataType.DATE);
+                        break;
                 }
             }
         }
@@ -761,6 +802,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
             isToggleLowerOperator: false,
             isToggleUpperOperator: false,
             isToggleAnnotation: false,
+            isToggleDate: false,
         });
         this.toggleTypeSelection();
 
@@ -779,6 +821,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
             if (this.alertUnCompleteConditions(index, type) == true) return;
             if (this.alertLimitOutBound(index, type) == true) return;
             if (this.checkAndCorrectValueType(index, type) == false) return;
+            if (this.alertIncorrectSetting(index, type) == true) return;
 
             this.selectedConditionTypes[index].isSet = false;
             this.selectedConditionTypes[index].buttonLabel = 'edit';
@@ -876,19 +919,54 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
             if (attributeType == DataType.NUMBER && !this.isNumber(value)) {
                 alert('Input value is not a number. Please correct it');
-                return;
+                return true;
             }
 
             if (attributeType == DataType.STRING && this.isNumber(value)) {
                 alert('Input value is not a string. Please correct it');
-                return;
+                return true;
+            }
+
+            if (attributeType == DataType.DATE && !this.isValidDate(value)) {
+                alert('Wrong input date format. Please correct it with chosen date format');
+                return true;
             }
         } else if (type == 'Range') {
-            if (!this.isNumber(value)) {
+            const thresholdCondition = this.labellingThresholdConditionsMap.get(index);
+            const attributeName = thresholdCondition.attribute;
+            const attributeType = this.attributeTypeMap.get(attributeName.toUpperCase());
+
+            if (attributeType == DataType.NUMBER && !this.isNumber(value)) {
                 alert('Input value is not a number. Please correct it');
-                return;
+                return true;
+            }
+
+            if (attributeType == DataType.DATE && !this.isValidDate(value)) {
+                alert('Wrong input date format. Please correct it with chosen date format');
+                return true;
             }
         }
+
+        return false;
+    };
+
+    alertIncorrectSetting = (index: number, type: string) => {
+        let condition;
+        if (type == 'Threshold') {
+            condition = this.labellingThresholdConditionsMap.get(index);
+        }
+
+        if (type == 'Range') {
+            condition = this.labellingRangeConditionsMap.get(index);
+        }
+
+        if (condition) {
+            if (this.alertWrongDataType(index, type, condition.value) == true) {
+                return true;
+            }
+        }
+
+        return false;
     };
 
     onClickInputField(index: number) {
@@ -983,26 +1061,39 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                     this.selectedConditionTypes[index].isToggleAnnotation = false;
                     this.selectedConditionTypes[index].isToggleUpperOperator = false;
                     this.selectedConditionTypes[index].isToggleLowerOperator = false;
+                    this.selectedConditionTypes[index].isToggleDate = false;
                     break;
                 case 'operator':
                     this.selectedConditionTypes[index].isToggleOperator = true;
                     this.selectedConditionTypes[index].isToggleAttributes = false;
                     this.selectedConditionTypes[index].isToggleAnnotation = false;
+                    this.selectedConditionTypes[index].isToggleDate = false;
                     break;
                 case 'lowerOperator':
                     this.selectedConditionTypes[index].isToggleLowerOperator = true;
                     this.selectedConditionTypes[index].isToggleUpperOperator = false;
                     this.selectedConditionTypes[index].isToggleAttributes = false;
                     this.selectedConditionTypes[index].isToggleAnnotation = false;
+                    this.selectedConditionTypes[index].isToggleDate = false;
                     break;
                 case 'upperOperator':
                     this.selectedConditionTypes[index].isToggleUpperOperator = true;
                     this.selectedConditionTypes[index].isToggleLowerOperator = false;
                     this.selectedConditionTypes[index].isToggleAttributes = false;
                     this.selectedConditionTypes[index].isToggleAnnotation = false;
+                    this.selectedConditionTypes[index].isToggleDate = false;
                     break;
                 case 'annotation':
                     this.selectedConditionTypes[index].isToggleAnnotation = true;
+                    this.selectedConditionTypes[index].isToggleAttributes = false;
+                    this.selectedConditionTypes[index].isToggleOperator = false;
+                    this.selectedConditionTypes[index].isToggleUpperOperator = false;
+                    this.selectedConditionTypes[index].isToggleLowerOperator = false;
+                    this.selectedConditionTypes[index].isToggleDate = false;
+                    break;
+                case 'dateformat':
+                    this.selectedConditionTypes[index].isToggleDate = true;
+                    this.selectedConditionTypes[index].isToggleAnnotation = false;
                     this.selectedConditionTypes[index].isToggleAttributes = false;
                     this.selectedConditionTypes[index].isToggleOperator = false;
                     this.selectedConditionTypes[index].isToggleUpperOperator = false;
@@ -1026,9 +1117,59 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 case 'annotation':
                     this.selectedConditionTypes[index].isToggleAnnotation = false;
                     break;
+                case 'dateformat':
+                    this.selectedConditionTypes[index].isToggleDate = false;
+                    break;
             }
         }
     }
+
+    isDateAttribute = (index: number, type: string) => {
+        let isDate = false;
+        let condition;
+
+        if (type == 'Threshold') {
+            if (this.labellingThresholdConditionsMap) {
+                condition = this.labellingThresholdConditionsMap.get(index);
+            }
+        } else if (type == 'Range') {
+            if (this.labellingRangeConditionsMap) {
+                condition = this.labellingRangeConditionsMap.get(index);
+            }
+        }
+
+        if (condition != undefined) {
+            const attributeName = condition.attribute.toUpperCase();
+            const type = this.attributeTypeMap.get(attributeName);
+            if (type == DataType.DATE) {
+                isDate = true;
+            }
+        }
+
+        return isDate;
+    };
+
+    displayDateExample = (index: number, type: string) => {
+        let condition;
+        if (type == 'Threshold') {
+            if (this.labellingThresholdConditionsMap) {
+                condition = this.labellingThresholdConditionsMap.get(index);
+            }
+        } else if (type == 'Range') {
+            if (this.labellingRangeConditionsMap) {
+                condition = this.labellingRangeConditionsMap.get(index);
+            }
+        }
+
+        if (condition != undefined) {
+            const dateFormat = condition.dateformat;
+            for (const date of this.dateFormat) {
+                if (date.format == dateFormat) {
+                    return 'exp: ' + date.example;
+                }
+            }
+        }
+    };
 
     getConditionSettings(index: number, parameter: string, conditionType: string, identifier: string) {
         if (conditionType === 'Threshold') {
@@ -1069,6 +1210,11 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                         ele.isSelected = !ele.isSelected;
                     }
                 });
+                break;
+            case 'dateformat':
+                data = {
+                    dateformat: parameter,
+                };
                 break;
         }
         this.setThresholdConditionSettingsMap(data, index);
@@ -1115,6 +1261,11 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                         ele.isSelected = !ele.isSelected;
                     }
                 });
+                break;
+            case 'dateformat':
+                data = {
+                    dateformat: parameter,
+                };
                 break;
         }
         this.setRangeConditionSettingsMap(data, index);
@@ -1177,6 +1328,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                                 );
                                 annotations.splice(index, 1);
                             }
+                            break;
+                        case 'dateformat':
+                            result.dateformat = array.dateformat;
                             break;
                     }
                 }
@@ -1247,6 +1401,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                                 annotations.splice(index, 1);
                             }
                             break;
+                        case 'dateformat':
+                            result.dateformat = array.dateformat;
+                            break;
                     }
                 }
             }
@@ -1291,6 +1448,8 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
             case 'label':
                 display = 'Annotation';
                 break;
+            case 'dateformat':
+                display = 'Date Format';
         }
         return display;
     };
@@ -1316,6 +1475,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 const value = selection.value;
                 display = value ? String(value) : '';
                 break;
+            case 'dateformat':
+                const dateFormat = selection.dateformat;
+                display = dateFormat ? dateFormat : 'Date Format';
         }
         return display;
     };
@@ -1349,6 +1511,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 const upperLimit = selection.upperLimit;
                 display = upperLimit ? String(upperLimit) : '';
                 break;
+            case 'dateformat':
+                const dateFormat = selection.dateformat;
+                display = dateFormat ? dateFormat : 'Date Format';
         }
         return display;
     };
