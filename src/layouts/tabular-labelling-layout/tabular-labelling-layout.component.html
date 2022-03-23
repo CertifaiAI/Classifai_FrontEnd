@@ -321,7 +321,7 @@
                                         class="condition-selection-btn"
                                         (click)="setToggleState(i, conditionalType.isToggleAnnotation, 'annotation')"
                                     >
-                                        annotation
+                                        Annotation
                                     </button>
                                 </div>
                                 <div class="conditions-drop-down-container" *ngIf="conditionalType.isToggleAnnotation">
@@ -346,16 +346,16 @@
                                 <div class="select-inner-container">
                                     <button
                                         class="condition-selection-btn"
-                                        (click)="setToggleState(i, conditionalType.isToggleDate, 'dateformat')"
+                                        (click)="setToggleState(i, conditionalType.isToggleDate, 'dateFormat')"
                                     >
-                                        {{ displaySelection(i, 'dateformat', 'Threshold') }}
+                                        {{ displaySelection(i, 'dateFormat', 'Threshold') }}
                                     </button>
                                 </div>
                                 <div class="conditions-drop-down-container" *ngIf="conditionalType.isToggleDate">
                                     <div class="conditions-drop-down" *ngFor="let format of dateFormat">
                                         <div
                                             class="select-parameter"
-                                            (click)="getConditionSettings(i, format.format, 'Threshold', 'dateformat')"
+                                            (click)="getConditionSettings(i, format.format, 'Threshold', 'dateFormat')"
                                         >
                                             <label> {{ format.format }} </label>
                                         </div>
@@ -495,7 +495,7 @@
                                         class="condition-selection-btn"
                                         (click)="setToggleState(i, conditionalType.isToggleAnnotation, 'annotation')"
                                     >
-                                        annotation
+                                        Annotation
                                     </button>
                                 </div>
                                 <div class="conditions-drop-down-container" *ngIf="conditionalType.isToggleAnnotation">
@@ -520,16 +520,16 @@
                                 <div class="select-inner-container">
                                     <button
                                         class="condition-selection-btn"
-                                        (click)="setToggleState(i, conditionalType.isToggleDate, 'dateformat')"
+                                        (click)="setToggleState(i, conditionalType.isToggleDate, 'dateFormat')"
                                     >
-                                        {{ displaySelection(i, 'dateformat', 'Range') }}
+                                        {{ displaySelection(i, 'dateFormat', 'Range') }}
                                     </button>
                                 </div>
                                 <div class="conditions-drop-down-container" *ngIf="conditionalType.isToggleDate">
                                     <div class="conditions-drop-down" *ngFor="let format of dateFormat">
                                         <div
                                             class="select-parameter"
-                                            (click)="getConditionSettings(i, format.format, 'Range', 'dateformat')"
+                                            (click)="getConditionSettings(i, format.format, 'Range', 'dateFormat')"
                                         >
                                             <label> {{ format.format }} </label>
                                         </div>
