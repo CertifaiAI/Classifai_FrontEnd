@@ -144,6 +144,8 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         { format: 'mm/dd/yyyy', example: '12/31/2022' },
         { format: 'dd/mm/yyyy', example: '31/12/2022' },
     ];
+    previousConditionIndex: number = 0;
+    previousConditionType: string = '';
     readonly modalPlotGraph = 'modal-plot-graph';
     readonly modalTabularDataView = 'modal-tabular-data-view';
     readonly modalIdProjectStats = 'modal-project-stats';
@@ -840,6 +842,11 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     }
 
     editSelectedLabellingCondition(index: number, status: boolean, type: string) {
+        if (index > this.previousConditionIndex) {
+            if (this.alertUnCompleteConditions(this.previousConditionIndex, this.previousConditionType) == true) return;
+            this.previousConditionIndex = index;
+        }
+
         if (status == true) {
             if (this.alertUnCompleteConditions(index, type) == true) return;
             if (this.alertLimitOutBound(index, type) == true) return;
@@ -849,6 +856,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
             this.selectedConditionTypes[index].isSet = false;
             this.selectedConditionTypes[index].buttonLabel = 'edit';
         } else {
+            this.previousConditionType = type;
             this.selectedConditionTypes.forEach((ele, i) => {
                 if (i == index) {
                     ele.isSet = true;
