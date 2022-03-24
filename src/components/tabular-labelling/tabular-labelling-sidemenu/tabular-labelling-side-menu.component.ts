@@ -11,6 +11,7 @@ import {
     ViewChild,
 } from '@angular/core';
 import { label } from '../../../shared/types/tabular-labelling/tabular-labelling.model';
+import { ModalService } from '../../../shared/components/modal/modal.service';
 
 @Component({
     selector: 'tabular-labelling-side-menu',

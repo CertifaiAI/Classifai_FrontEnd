@@ -140,9 +140,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     labellingRangeConditionsMap: Map<number, any> = new Map();
     identifiers: string[] = ['attribute', 'operator', 'lowerOperator', 'upperOperator', 'annotation', 'dateFormat'];
     dateFormat: dateFormat[] = [
-        { format: 'yyyy/mm/dd', example: '2022/12/31' },
-        { format: 'mm/dd/yyyy', example: '12/31/2022' },
-        { format: 'dd/mm/yyyy', example: '31/12/2022' },
+        { format: 'yyyy/MM/dd', example: '2022/01/05' },
+        { format: 'MM/dd/yyyy', example: '05/01/2022' },
+        { format: 'dd/MM/yyyy', example: '01/05/2022' },
     ];
     previousConditionIndex: number = 0;
     previousConditionType: string = '';
@@ -151,6 +151,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     readonly modalIdProjectStats = 'modal-project-stats';
     readonly modalIdSave = 'modal-save';
     readonly modalAddLabellingConditions = 'modal-add-labelling-conditions';
+    readonly modalAlertWindow = 'modal-alert-window';
     colorScheme = {
         domain: ['#659DBD', '#379683', '#8EE4AF', '#E7717D', '#F13C20', '#FF652F', '#376E6F'],
     };
@@ -187,6 +188,14 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         height: '74vh',
         width: '75vw',
         margin: '10vh 0 5vh 3vw',
+        overflow: 'none',
+    };
+    alertWindowBodyStyle: ModalBodyStyle = {
+        minHeight: '30vh',
+        maxHeight: '30vh',
+        minWidth: '33vw',
+        maxWidth: '33vw',
+        margin: '15vw 68vh',
         overflow: 'none',
     };
 
@@ -412,6 +421,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                     name: key,
                     value: String(value),
                 });
+            }
+
+            if (!this.attributeNames.includes(key)) {
                 this.attributeNames.push(key);
             }
         }
@@ -963,11 +975,19 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 }
 
                 if (attributeType == DataType.DATE) {
-                    const upperLimit = result.upperLimit;
-                    const lowerLimit = result.lowerLimit;
+                    const format = result.dateFormat;
+                    if (!format) {
+                        alert('Please specify date format');
+                        return true;
+                    }
+                    const upperLimit = result.upperLimit as string;
+                    const lowerLimit = result.lowerLimit as string;
 
                     if (lowerLimit && upperLimit) {
-                        if (new Date(lowerLimit) >= new Date(upperLimit)) {
+                        const lowerLimitDate = this.parseDate(lowerLimit, format);
+                        const upperLimitDate = this.parseDate(upperLimit, format);
+
+                        if (lowerLimitDate && upperLimitDate && lowerLimitDate.getTime() >= upperLimitDate.getTime()) {
                             alert('Date set at lower limit is higher than or equal to upper limit. Please correct it');
                             return true;
                         }
@@ -976,6 +996,34 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
             }
         }
         return false;
+    };
+
+    parseDate = (dateString: string, format: string) => {
+        const dayMonthYearRegex = /^([0]?[1-9]|[1|2][0-9]|[3][0|1])[./-]([0]?[1-9]|[1][0-2])[./-]([0-9]{4}|[0-9]{2})$/g;
+        const yearMonthDayRegex = /^\d{4}[./-](0?[1-9]|1[012])[./-](0?[1-9]|[12][0-9]|3[01])$/g;
+        let splitDate: string[] = [];
+
+        if (dayMonthYearRegex.test(dateString)) {
+            const pattern1 = dateString.split(/[/.-]+/);
+            splitDate = pattern1;
+        }
+
+        if (yearMonthDayRegex.test(dateString)) {
+            const pattern2 = dateString.split(/[/.-]+/);
+            splitDate = pattern2;
+        }
+
+        switch (format) {
+            case 'dd/MM/yyyy':
+                const dayMonthYear = new Date(Number(splitDate[2]), Number(splitDate[1]) - 1, Number(splitDate[0]));
+                return dayMonthYear;
+            case 'MM/dd/yyyy':
+                const monthDayYear = new Date(Number(splitDate[2]), Number(splitDate[0]) - 1, Number(splitDate[1]));
+                return monthDayYear;
+            case 'yyyy/MM/dd':
+                const yearMonthDay = new Date(Number(splitDate[0]), Number(splitDate[1]) - 1, Number(splitDate[2]));
+                return yearMonthDay;
+        }
     };
 
     alertWrongDataType = (index: number, type: string, value: any) => {
@@ -1726,9 +1774,23 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     }
 
     automateLabelling() {
+        if (this.conditionMapsList.size == 0) {
+            alert('No pre-labelling conditions settings');
+            return;
+        }
+        this.modalService.close(this.modalAlertWindow);
+        this.modalService.close(this.modalAddLabellingConditions);
         this.tabularLabellingLayoutService
             .setPreLabellingConditions(this.projectName, this.conditionMapsList)
             .subscribe(() => {});
+    }
+
+    onClickAutomate() {
+        this.modalService.open(this.modalAlertWindow);
+    }
+
+    onCancelAutomate() {
+        this.modalService.close(this.modalAlertWindow);
     }
 
     @HostListener('window:beforeunload', ['$event'])

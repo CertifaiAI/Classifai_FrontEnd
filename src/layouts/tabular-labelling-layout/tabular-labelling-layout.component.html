@@ -112,8 +112,8 @@
                             <button
                                 class="button-style navigation-btn"
                                 (click)="this.getNextAttributesAndValue()"
-                                [ngClass]="currentDataIndex == this.uuidList.length ? 'disabled' : 'enabled'"
-                                [disabled]="currentDataIndex == this.uuidList.length"
+                                [ngClass]="currentDataIndex == this.uuidList.length - 1 ? 'disabled' : 'enabled'"
+                                [disabled]="currentDataIndex == this.uuidList.length - 1"
                             >
                                 Next
                             </button>
@@ -562,7 +562,7 @@
         <div class="bottom-container align">
             <div class="bottom-session-container">
                 <div class="button-container">
-                    <button class="button-style navigation-btn" (click)="automateLabelling()">Automate</button>
+                    <button class="button-style navigation-btn" (click)="onClickAutomate()">Automate</button>
                 </div>
             </div>
         </div>
@@ -588,3 +588,27 @@
 <!--        </div>-->
 <!--    </div>-->
 <!--</modal>-->
+
+<modal
+    [id]="modalAlertWindow"
+    [modalBodyStyle]="alertWindowBodyStyle"
+    [modalTitle]="'Warning'"
+    [scrollable]="false"
+    [zIndex]="3"
+>
+    <div class="automate-warning-container">
+        <p class="font-warning">
+            Please ensure that the format of input values and date are correct. Otherwise it may causes errors in
+            assigning labels.
+        </p>
+        <p class="font-warning">Do you want to proceed with the current settings?</p>
+        <div class="bottom-container adjust">
+            <div class="bottom-session-container">
+                <div class="button-container">
+                    <button class="button-style navigation-btn" (click)="onCancelAutomate()">No</button>
+                    <button class="button-style navigation-btn" (click)="automateLabelling()">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</modal>
