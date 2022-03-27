@@ -130,3 +130,9 @@ export type SpecificTabularDataResponse = {
     error_message?: errormessage;
     tabular_data: any;
 };
+
+export type DownloadResponse = {
+    message: message;
+    error_code?: error_code;
+    error_message?: errormessage;
+};

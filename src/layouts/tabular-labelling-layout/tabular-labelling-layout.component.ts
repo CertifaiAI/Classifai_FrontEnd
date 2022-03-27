@@ -79,6 +79,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     private subject: Subject<any> = new Subject<any>();
     private subscription!: Subscription;
     projectName: string = '';
+    projectFolder: string = '';
     tabularData!: any;
     tabularDataObservable!: Observable<any>;
     headersTypeMap: Map<string, GuiDataType> = new Map<string, GuiDataType>();
@@ -228,6 +229,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     ngOnInit(): void {
         this.projectName = this.tabularLabellingLayoutService.getRouteState(history).projectName;
+        this.projectFolder = this.tabularLabellingLayoutService.getRouteState(history).projectFolder;
         this.initProject(this.projectName);
     }
 
@@ -421,10 +423,10 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                     name: key,
                     value: String(value),
                 });
-            }
 
-            if (!this.attributeNames.includes(key)) {
-                this.attributeNames.push(key);
+                if (!this.attributeNames.includes(key)) {
+                    this.attributeNames.push(key);
+                }
             }
         }
 
@@ -769,34 +771,22 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         }
     }
 
-    onClickDownload = async (saveFormat: any) => {
-        // const labelList = this.labelChoosen.filter((e) => e.isChoosen === true).map((e) => e.label);
-        // const fullLabelList = this.labelChoosen.map((e) => e.label);
-        // this.saveType.saveBulk && this.processingNum++;
-        // const response: ProcessResponse = await this._exportSaveFormatService.exportSaveFormat({
-        //     ...this.saveType,
-        //     saveFormat,
-        //     metadata: this.selectedMetaData,
-        //     index: this.currentAnnotationIndex,
-        //     projectName: this.selectedProjectName,
-        //     fullLabelList,
-        //     ...((this.saveType.saveBulk || saveFormat === 'ocr' || saveFormat === 'json' || saveFormat === 'coco') && {
-        //         projectFullMetadata: this.thumbnailList,
-        //     }),
-        //     ...(saveFormat !== 'json' && {
-        //         labelList,
-        //     }),
-        // });
-        /**
-         * Response Message:
-         * 0 - isEmpty/Warning
-         * 1 - Success/Done
-         */
-        // if (response.message === 0) {
-        //     this.warningMessage = response.msg;
-        //     this._modalService.open(this.modalExportWarning);
-        // }
-        // this.saveType.saveBulk && this.processingNum--;
+    onClickDownload = (format: string) => {
+        this.tabularLabellingLayoutService.downloadFile(this.projectName, format).subscribe(
+            (res) => {
+                if (res.message == 1) {
+                    alert(this.projectName + '.' + format + ' is generated in project folder ' + this.projectFolder);
+                } else if (res.message == 0) {
+                    alert(res.error_message);
+                }
+            },
+            (error) => {
+                console.error(error);
+            },
+            () => {
+                this.modalService.close(this.modalIdSave);
+            },
+        );
     };
 
     createCondition(event: any) {

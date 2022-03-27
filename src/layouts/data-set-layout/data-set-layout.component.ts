@@ -529,8 +529,12 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
 
     startProject = (projectName: string): void => {
         const labellingMode = this.annotationType;
+        const path = this.projectList.projects
+            .filter((ele) => ele.project_name == projectName)
+            .map((ele) => ele.project_path)[0];
+        const projectFolder = path.split(/[\\+]/).pop();
         this._router.navigate([this.labellingModeUrl], {
-            state: { projectName, labellingMode },
+            state: { projectName, labellingMode, projectFolder },
         });
     };
 

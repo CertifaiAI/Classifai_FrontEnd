@@ -2,12 +2,17 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment.prod';
 import { HttpClient } from '@angular/common/http';
-import { Message, SpecificTabularDataResponse, UpdateTabularDataResponse } from 'shared/types/message/message.model';
+import {
+    DownloadResponse,
+    Message,
+    SpecificTabularDataResponse,
+    UpdateTabularDataResponse,
+} from 'shared/types/message/message.model';
 import { Labels } from 'shared/types/dataset-layout/data-set-layout.model';
 import { label } from 'shared/types/tabular-labelling/tabular-labelling.model';
 
 type CustomHistory = Omit<History, 'state'> & {
-    state: { projectName: string; labellingMode: string };
+    state: { projectName: string; labellingMode: string; projectFolder: string };
 };
 
 @Injectable({
@@ -56,6 +61,12 @@ export class TabularLabellingLayoutService {
 
         return this.http.post<Message>(`${this.hostPort}v2/tabular/projects/${projectName}/prelabel`, {
             conditions: JSON.stringify(conditionsJsonObject),
+        });
+    };
+
+    downloadFile = (projectName: string, format: string): Observable<DownloadResponse> => {
+        return this.http.post<DownloadResponse>(`${this.hostPort}v2/tabular/projects/${projectName}/file`, {
+            file_type: format,
         });
     };
 }
