@@ -29,7 +29,7 @@ export class TabularLabellingRightSidebarComponent implements OnInit, OnChanges 
     @Output() _onClick: EventEmitter<TabsProps> = new EventEmitter();
     @Output() _onExport = new EventEmitter();
     @Output() _onReload = new EventEmitter();
-    @Output() _onOpenProjectStats = new EventEmitter();
+    @Output() _onToggleProjectStats = new EventEmitter();
     @Output() _onAddImage = new EventEmitter();
 
     jsonSchema!: IconSchema;
@@ -49,7 +49,7 @@ export class TabularLabellingRightSidebarComponent implements OnInit, OnChanges 
                     hoverLabel: `rightSideBar.statistic`,
                     alt: `Statistic`,
                     onClick: () => {
-                        this._onOpenProjectStats.emit();
+                        this._onToggleProjectStats.emit();
                     },
                 },
                 {

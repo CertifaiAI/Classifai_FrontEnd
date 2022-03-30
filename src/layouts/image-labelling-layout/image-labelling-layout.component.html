@@ -388,7 +388,7 @@
 >
     <div class="display-modal-container">
         <div class="chart-container">
-            <app-pie-chart [labelledImage]="labelledImage" [unLabelledImage]="unLabelledImage"></app-pie-chart>
+            <app-pie-chart [labelledData]="labelledImage" [unLabelledData]="unLabelledImage"></app-pie-chart>
             <app-bar-chart *ngIf="!noLabel && !noAnnotation" [labelStats]="labelStats"></app-bar-chart>
             <div style="margin: 13vh 12vw" *ngIf="noLabel">
                 <h3>No Labels</h3>

@@ -1101,10 +1101,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             .getProjectStats(this.selectedProjectName)
             .pipe()
             .subscribe((project) => {
-                console.log(project);
                 if (project) {
-                    this.labelledImage = project.labeled_image;
-                    this.unLabelledImage = project.unlabeled_image;
+                    this.labelledImage = project.labeled_data;
+                    this.unLabelledImage = project.unlabeled_data;
                     this.labelStats = [];
                     project.label_per_class_in_project.forEach((labelMeta: labels_stats) => {
                         if (labelMeta.count > 0) {

@@ -79,7 +79,7 @@ export class TabularLabellingLeftSidebarComponent implements OnInit, OnChanges {
                 },
                 {
                     imgPath: `assets/icons/table.svg`,
-                    hoverLabel: `rightSideBar.table`,
+                    hoverLabel: `leftSideBar.table`,
                     alt: `Table`,
                     onClick: () => {
                         this._toggleTabularTable.emit();
@@ -94,13 +94,13 @@ export class TabularLabellingLeftSidebarComponent implements OnInit, OnChanges {
                         this._toggleSave.emit();
                     },
                 },
-                {
-                    imgPath: `assets/icons/info.svg`,
-                    hoverLabel: `leftSideBar.info`,
-                    alt: `KeyPoint`,
-                    toggleable: false,
-                    onClick: () => {},
-                },
+                // {
+                //     imgPath: `assets/icons/info.svg`,
+                //     hoverLabel: `leftSideBar.info`,
+                //     alt: `KeyPoint`,
+                //     toggleable: false,
+                //     onClick: () => {},
+                // },
             ],
         };
     };

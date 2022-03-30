@@ -52,7 +52,12 @@ export class TabularLabellingLayoutService {
         );
     };
 
-    setPreLabellingConditions = (projectName: string, conditions: Map<number, any>): Observable<Message> => {
+    setPreLabellingConditions = (
+        projectName: string,
+        conditions: Map<number, any>,
+        uuid: string,
+        mode: string,
+    ): Observable<Message> => {
         let list = [];
         for (const [key, value] of conditions) {
             list.push([key, value]);
@@ -61,12 +66,19 @@ export class TabularLabellingLayoutService {
 
         return this.http.post<Message>(`${this.hostPort}v2/tabular/projects/${projectName}/prelabel`, {
             conditions: JSON.stringify(conditionsJsonObject),
+            uuid: uuid,
+            labelling_mode: mode,
         });
     };
 
-    downloadFile = (projectName: string, format: string): Observable<DownloadResponse> => {
+    downloadFile = (projectName: string, format: string, filterInvalidData: boolean): Observable<DownloadResponse> => {
         return this.http.post<DownloadResponse>(`${this.hostPort}v2/tabular/projects/${projectName}/file`, {
             file_type: format,
+            filter_invalid_data: filterInvalidData,
         });
     };
+
+    getAllInvalidData(projectName: string): Observable<string[]> {
+        return this.http.get<string[]>(`${this.hostPort}v2/tabular/projects/${projectName}/invalid`);
+    }
 }

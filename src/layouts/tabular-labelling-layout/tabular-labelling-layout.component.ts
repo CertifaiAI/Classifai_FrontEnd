@@ -23,10 +23,12 @@ import { Router } from '@angular/router';
 import { ChartProps } from '../../shared/types/dataset-layout/data-set-layout.model';
 import { LanguageService } from '../../shared/services/language.service';
 import { ExportSaveFormatService } from '../../shared/services/export-save-format.service';
+import { cloneDeep } from 'lodash-es';
+import { labels_stats } from '../../shared/types/message/message.model';
 
 type conditionSet = {
     type: string;
-    isSet: boolean;
+    isClickSet: boolean;
     buttonLabel: string;
     isToggleAttributes: boolean;
     isToggleOperator: boolean;
@@ -94,7 +96,6 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     retrievedData: Data[] = [];
     features: Features[] = [];
     currentDataIndex: number = 0;
-    labeledData: label[] = [];
     isToggleLabelSection: boolean = true;
     isToggleConditionSection: boolean = true;
     isOptionContainerToggle: boolean = false;
@@ -139,6 +140,12 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     displayConditions: Map<number, string> = new Map();
     labellingThresholdConditionsMap: Map<number, any> = new Map();
     labellingRangeConditionsMap: Map<number, any> = new Map();
+    tempLabellingConditionsMap: Map<number, any> = new Map();
+    tempThresholdArray: threshold[] = [];
+    emptyLabel: boolean = true;
+    emptyAnnotation: boolean = true;
+    labeledData: number = 0;
+    unLabeledData: number = 0;
     identifiers: string[] = ['attribute', 'operator', 'lowerOperator', 'upperOperator', 'annotation', 'dateFormat'];
     dateFormat: dateFormat[] = [
         { format: 'yyyy/MM/dd', example: '2022/01/05' },
@@ -147,6 +154,17 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     ];
     previousConditionIndex: number = 0;
     previousConditionType: string = '';
+    isDuplication: boolean = false;
+    isInvalid = false;
+    filterInvalidData = false;
+    listOfOverlappingConditions: Map<string, Map<number, any>>[] = [];
+    listOfInvalidDataUUID: string[] = [];
+    currentInvalidDataIndex: number = 0;
+    isSkipInvalidData: boolean = false;
+    isShowInvalidDataOnly: boolean = false;
+    checkIsInvalid = false;
+    tempInvalidArray: label[] = [];
+    labellingSequenceChoice: string = 'append';
     readonly modalPlotGraph = 'modal-plot-graph';
     readonly modalTabularDataView = 'modal-tabular-data-view';
     readonly modalIdProjectStats = 'modal-project-stats';
@@ -192,10 +210,10 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         overflow: 'none',
     };
     alertWindowBodyStyle: ModalBodyStyle = {
-        minHeight: '30vh',
-        maxHeight: '30vh',
-        minWidth: '33vw',
-        maxWidth: '33vw',
+        minHeight: '34vh',
+        maxHeight: '34vh',
+        minWidth: '40vw',
+        maxWidth: '40vw',
         margin: '15vw 68vh',
         overflow: 'none',
     };
@@ -208,6 +226,12 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     @ViewChild('thresholdValue') thresholdValue!: ElementRef<HTMLInputElement>;
     @ViewChild('lowerLimitValue') lowerLimitValue!: ElementRef<HTMLInputElement>;
     @ViewChild('upperLimitValue') upperLimitValue!: ElementRef<HTMLInputElement>;
+    @ViewChild('scrollTable') scrollTable!: ElementRef<HTMLDivElement>;
+    @ViewChild('invalid') invalidCheckBox!: ElementRef<HTMLInputElement>;
+    @ViewChild('skipInvalid') skipInvalidCheckBox!: ElementRef<HTMLInputElement>;
+    @ViewChild('showInvalidOnly') showInvalidOnlyCheckBox!: ElementRef<HTMLInputElement>;
+    @ViewChild('overwrite') overWriteCheckBox!: ElementRef<HTMLInputElement>;
+    @ViewChild('append') appendCheckBox!: ElementRef<HTMLInputElement>;
 
     constructor(
         private labellingModeService: LabellingModeService,
@@ -233,11 +257,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         this.initProject(this.projectName);
     }
 
-    ngOnChanges(changes: SimpleChanges) {
-        // if(changes.labels) {
-        //     this.createTempAnnotations();
-        // }
-    }
+    ngOnChanges(changes: SimpleChanges) {}
 
     initProject(projectName: string) {
         const projectMetaStatus$ = this._dataSetService.checkProjectStatus(projectName);
@@ -290,6 +310,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                         this.isAnnotation(this.annotations);
                     }
                     this.getFileInfo(this.tabularData.FILENAME);
+                    this.updateInvalidCheckBox();
                 },
             );
 
@@ -443,6 +464,56 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     }
 
     getPreviousAttributesAndValue() {
+        if (this.isShowInvalidDataOnly) {
+            this.getAllInvalidDataUUID();
+            if (this.listOfInvalidDataUUID.length > 0) {
+                if (this.currentInvalidDataIndex > 0) {
+                    this.currentInvalidDataIndex--;
+                } else {
+                    this.currentInvalidDataIndex = 0;
+                }
+                this.retrieveCurrentData(this.projectName, this.listOfInvalidDataUUID[this.currentInvalidDataIndex]);
+                this.currentDataIndex = this.uuidList.findIndex(
+                    (ele) => ele == this.listOfInvalidDataUUID[this.currentInvalidDataIndex],
+                );
+            }
+            return;
+        }
+
+        if (this.isSkipInvalidData) {
+            this.getAllInvalidDataUUID();
+            if (this.listOfInvalidDataUUID.length > 0) {
+                this.currentDataIndex--;
+                let include = false;
+                let uuid = this.uuidList[this.currentDataIndex];
+                if (this.listOfInvalidDataUUID.includes(uuid)) {
+                    include = true;
+                }
+                while (include) {
+                    this.currentDataIndex--;
+                    uuid = this.uuidList[this.currentDataIndex];
+                    if (!this.listOfInvalidDataUUID.includes(uuid)) {
+                        include = false;
+                        break;
+                    }
+                }
+                if (this.currentDataIndex > 0) {
+                    this.retrieveCurrentData(this.projectName, this.uuidList[this.currentDataIndex]);
+                } else {
+                    const firstInvalidUUID = this.listOfInvalidDataUUID[0];
+                    const index = this.uuidList.findIndex((ele) => ele == firstInvalidUUID);
+                    if (index == 0) {
+                        this.currentDataIndex = index + 1;
+                        this.retrieveCurrentData(this.projectName, this.uuidList[this.currentDataIndex]);
+                    } else {
+                        this.currentDataIndex = index - 1;
+                        this.retrieveCurrentData(this.projectName, this.uuidList[this.currentDataIndex]);
+                    }
+                }
+                return;
+            }
+        }
+
         if (this.currentDataIndex === 0) {
             return;
         }
@@ -452,6 +523,48 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     }
 
     getNextAttributesAndValue() {
+        if (this.isShowInvalidDataOnly) {
+            this.getAllInvalidDataUUID();
+            if (this.listOfInvalidDataUUID.length > 0) {
+                if (this.currentInvalidDataIndex != this.listOfInvalidDataUUID.length - 1) {
+                    this.currentInvalidDataIndex++;
+                } else {
+                    this.currentInvalidDataIndex = this.listOfInvalidDataUUID.length - 1;
+                }
+                const uuid = this.listOfInvalidDataUUID[this.currentInvalidDataIndex];
+                this.retrieveCurrentData(this.projectName, uuid);
+                this.currentDataIndex = this.uuidList.findIndex((ele) => ele == uuid);
+            }
+            return;
+        }
+
+        if (this.isSkipInvalidData) {
+            this.getAllInvalidDataUUID();
+            if (this.listOfInvalidDataUUID.length > 0) {
+                this.currentDataIndex++;
+                let include = false;
+                let uuid = this.uuidList[this.currentDataIndex];
+                if (this.listOfInvalidDataUUID.includes(uuid)) {
+                    include = true;
+                }
+                while (include) {
+                    this.currentDataIndex++;
+                    uuid = this.uuidList[this.currentDataIndex];
+                    if (!this.listOfInvalidDataUUID.includes(uuid)) {
+                        include = false;
+                        break;
+                    }
+                }
+                if (this.currentDataIndex < this.uuidList.length - 1) {
+                    this.retrieveCurrentData(this.projectName, uuid);
+                } else {
+                    this.currentDataIndex = this.uuidList.length - 1;
+                    this.retrieveCurrentData(this.projectName, uuid);
+                }
+            }
+            return;
+        }
+
         if (this.currentDataIndex === this.uuidList.length) {
             return;
         }
@@ -488,6 +601,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     }
 
     chooseLabel(label: label) {
+        if (this.isInvalid) return;
         const isContainAnnotation = this.annotations.includes(label);
         if (isContainAnnotation) return;
 
@@ -505,6 +619,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     }
 
     removeAnnotation(annotation: label) {
+        if (this.isInvalid == true) return;
         this.annotations = this.annotations.filter((ele) => ele !== annotation);
         this.annotationIndexMap.set(this.currentDataIndex, this.annotations);
         this.updateTempLabels();
@@ -540,6 +655,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                     this.tempLabels = this.labels;
                     this.isAnnotation(this.annotations);
                 }
+                this.updateInvalidCheckBox();
             },
             (error) => {
                 console.error(error);
@@ -563,11 +679,8 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     };
 
     updateAnnotation() {
-        const annotation = this.annotationIndexMap.get(this.currentDataIndex);
-        const labelList = annotation || null;
-        const uuid = this.tabularData.UUID;
         this.tabularLabellingLayoutService
-            .updateTabularDataLabel(this.projectName, uuid, labelList)
+            .updateTabularDataLabel(this.projectName, this.tabularData.UUID, this.annotations)
             .subscribe((response) => {
                 if (response.error_code == 0) {
                     console.error(response.error_message);
@@ -651,23 +764,47 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     }
 
     @HostListener('window:keydown', ['$event'])
-    keyStrokeEvent({ altKey, key }: KeyboardEvent) {
+    keyStrokeEvent({ altKey, ctrlKey, key }: KeyboardEvent) {
         try {
             switch (key) {
                 case 'ArrowLeft':
+                    this.scrollTable.nativeElement.scrollTop = 0;
                     if (this.currentDataIndex == 0) {
                         return;
                     }
                     this.getPreviousAttributesAndValue();
                     break;
                 case 'ArrowRight':
+                    this.scrollTable.nativeElement.scrollTop = 0;
                     if (this.currentDataIndex == this.tabularData.length) {
                         return;
                     }
                     this.getNextAttributesAndValue();
                     break;
-                case altKey && 'p':
-                    this.createSourceObservable();
+                case 'ArrowUp':
+                    this.scrollTable.nativeElement.scrollBy(0, -20);
+                    break;
+                case 'ArrowDown':
+                    this.scrollTable.nativeElement.scrollBy(0, 20);
+                    break;
+                case altKey && 'q':
+                    this.invalidCheckBox.nativeElement.checked = !this.invalidCheckBox.nativeElement.checked;
+                    this.invalidateData(this.invalidCheckBox.nativeElement.checked);
+                    break;
+                case altKey && 'w':
+                    this.skipInvalidCheckBox.nativeElement.checked = !this.skipInvalidCheckBox.nativeElement.checked;
+                    this.skipInvalidData();
+                    break;
+                case altKey && 'e':
+                    document.addEventListener('keydown', (event) => {
+                        if (event.altKey && event.key == 'e') {
+                            event.preventDefault();
+                        }
+                    });
+                    this.showInvalidOnlyCheckBox.nativeElement.checked =
+                        !this.showInvalidOnlyCheckBox.nativeElement.checked;
+                    this.showInvalidDataOnly();
+                    break;
             }
 
             if (key && this.labelShortCutKeyMap.size > 0) {
@@ -678,6 +815,12 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
             }
         } catch (err) {
             console.log(err);
+        }
+    }
+
+    @HostListener('keydown.control', ['$event'])
+    controlKeyEvent(event: KeyboardEvent) {
+        if (event.ctrlKey) {
         }
     }
 
@@ -771,8 +914,8 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         }
     }
 
-    onClickDownload = (format: string) => {
-        this.tabularLabellingLayoutService.downloadFile(this.projectName, format).subscribe(
+    onClickDownload = (format: string, filterInvalidData: boolean) => {
+        this.tabularLabellingLayoutService.downloadFile(this.projectName, format, filterInvalidData).subscribe(
             (res) => {
                 if (res.message == 1) {
                     alert(this.projectName + '.' + format + ' is generated in project folder ' + this.projectFolder);
@@ -804,7 +947,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     getConditionType(type: string) {
         this.selectedConditionTypes.push({
             type,
-            isSet: false,
+            isClickSet: false,
             buttonLabel: 'edit',
             isToggleAttributes: false,
             isToggleOperator: false,
@@ -843,32 +986,67 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         }
     }
 
-    editSelectedLabellingCondition(index: number, status: boolean, type: string) {
-        if (index > this.previousConditionIndex) {
-            if (this.alertUnCompleteConditions(this.previousConditionIndex, this.previousConditionType) == true) return;
-            this.previousConditionIndex = index;
+    isCompleteCurrentCondition = (type: string, index: number) => {
+        let condition;
+        if (type == 'Threshold') {
+            condition = this.labellingThresholdConditionsMap.get(index);
+        } else if (type == 'Range') {
+            condition = this.labellingRangeConditionsMap.get(index);
         }
 
-        if (status == true) {
-            if (this.alertUnCompleteConditions(index, type) == true) return;
+        return this.alertUnCompleteConditions(condition, this.previousConditionType) == true ? true : false;
+    };
+
+    editSelectedLabellingCondition(index: number, isClickSet: boolean, type: string) {
+        if (this.previousConditionType == '') {
+            this.previousConditionType = type;
+        }
+        if (index != this.previousConditionIndex) {
+            if (this.isCompleteCurrentCondition(this.previousConditionType, this.previousConditionIndex) == true)
+                return;
+            this.previousConditionIndex = index;
+            this.previousConditionType = type;
+        }
+
+        if (isClickSet == true) {
+            if (type == 'Threshold') {
+                if (this.labellingThresholdConditionsMap.has(index)) {
+                    if (this.alertUnCompleteConditions(this.labellingThresholdConditionsMap.get(index), type) == true)
+                        return;
+                } else {
+                    if (this.alertUnCompleteConditions(this.tempLabellingConditionsMap.get(index), type) == true)
+                        return;
+                    if (this.alertDuplicateConditions(type, this.tempLabellingConditionsMap) == true) return;
+                }
+            } else if (type == 'Range') {
+                if (this.labellingRangeConditionsMap.has(index)) {
+                    if (this.alertUnCompleteConditions(this.labellingRangeConditionsMap.get(index), type) == true)
+                        return;
+                } else {
+                    if (this.alertUnCompleteConditions(this.tempLabellingConditionsMap.get(index), type) == true)
+                        return;
+                    if (this.alertDuplicateConditions(type, this.tempLabellingConditionsMap) == true) return;
+                }
+            }
+
             if (this.alertLimitOutBound(index, type) == true) return;
             if (this.checkAndCorrectValueType(index, type) == false) return;
             if (this.alertIncorrectSetting(index, type) == true) return;
 
-            this.selectedConditionTypes[index].isSet = false;
+            this.selectedConditionTypes[index].isClickSet = false;
             this.selectedConditionTypes[index].buttonLabel = 'edit';
         } else {
-            this.previousConditionType = type;
             this.selectedConditionTypes.forEach((ele, i) => {
                 if (i == index) {
-                    ele.isSet = true;
+                    ele.isClickSet = true;
                     ele.buttonLabel = 'set';
                 } else {
-                    ele.isSet = false;
+                    ele.isClickSet = false;
                     ele.buttonLabel = 'edit';
                 }
             });
         }
+
         for (const identifier of this.identifiers) {
             this.setToggleState(index, true, identifier);
         }
@@ -877,7 +1055,12 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     checkAndCorrectValueType = (index: number, type: string) => {
         if (type == 'Threshold') {
-            const thresholdCondition = this.labellingThresholdConditionsMap.get(index);
+            let thresholdCondition;
+            if (this.tempLabellingConditionsMap.get(index)) {
+                thresholdCondition = this.tempLabellingConditionsMap.get(index);
+            } else {
+                thresholdCondition = this.labellingThresholdConditionsMap.get(index);
+            }
             const attributeName = thresholdCondition.attribute;
             const attributeType = this.attributeTypeMap.get(attributeName.toUpperCase());
             if (attributeType == 'number') {
@@ -894,53 +1077,110 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 }
             }
         } else if (type == 'Range') {
-            const rangeCondition = this.labellingRangeConditionsMap.get(index);
+            let rangeCondition;
+            if (this.tempLabellingConditionsMap.get(index)) {
+                rangeCondition = this.tempLabellingConditionsMap.get(index);
+            } else {
+                rangeCondition = this.labellingRangeConditionsMap.get(index);
+            }
             const attributeName = rangeCondition.attribute;
             const attributeType = this.attributeTypeMap.get(attributeName.toUpperCase());
             if (attributeType == 'number') {
                 const lowerLimit = rangeCondition.lowerLimit;
                 const upperLimit = rangeCondition.upperLimit;
-                this.labellingRangeConditionsMap.get(index).lowerLimit = Number(lowerLimit);
-                this.labellingRangeConditionsMap.get(index).upperLimit = Number(upperLimit);
+                if (this.tempLabellingConditionsMap.get(index)) {
+                    this.tempLabellingConditionsMap.get(index).lowerLimit = Number(lowerLimit);
+                    this.tempLabellingConditionsMap.get(index).upperLimit = Number(upperLimit);
+                } else {
+                    this.labellingRangeConditionsMap.get(index).lowerLimit = Number(lowerLimit);
+                    this.labellingRangeConditionsMap.get(index).upperLimit = Number(upperLimit);
+                }
             }
         }
         return true;
     };
 
-    alertUnCompleteConditions = (index: number, type: string): boolean => {
-        let conditions;
-        if (type == 'Threshold') {
-            conditions = this.labellingThresholdConditionsMap.get(index);
-        } else if (type == 'Range') {
-            conditions = this.labellingRangeConditionsMap.get(index);
-        }
-
+    alertUnCompleteConditions = (conditions: any, type: string): boolean => {
         if (conditions == undefined) {
-            alert('Current condition is undefined. Please set the parameter of condition');
+            alert(type + ' condition is undefined. Please set the parameters of the condition');
             return true;
         } else {
             if (type == 'Threshold') {
                 const keys = Object.keys(conditions);
+                const thresholdKeys = ['attribute', 'operator', 'value', 'label', 'dateFormat'];
                 if (keys.includes('dateFormat') && keys.length < 5) {
-                    alert('Please finish setting the threshold conditions');
+                    const missingKeys = thresholdKeys
+                        .filter((ele) => !keys.includes(ele))
+                        .map((ele) => ele.charAt(0).toUpperCase() + ele.substring(1));
+                    const index = missingKeys.findIndex((ele) => ele == 'Label');
+                    missingKeys[index] = 'Annotation';
+                    alert(
+                        'Please finish setting the threshold conditions.\n' +
+                            'Empty settings: ' +
+                            missingKeys.join(', '),
+                    );
                     return true;
                 }
 
                 if (!keys.includes('dateFormat') && keys.length < 4) {
-                    alert('Please finish setting the threshold conditions');
+                    const missingKeys = thresholdKeys
+                        .filter((ele) => ele != 'dateFormat')
+                        .filter((ele) => !keys.includes(ele))
+                        .map((ele) => ele.charAt(0).toUpperCase() + ele.substring(1));
+                    const index = missingKeys.findIndex((ele) => ele == 'Label');
+                    missingKeys[index] = 'Annotation';
+                    alert(
+                        'Please finish setting the threshold conditions.\n' +
+                            'Empty settings: ' +
+                            missingKeys.join(', '),
+                    );
+                    return true;
+                }
+
+                if (conditions.label.length == 0) {
+                    alert('Empty label');
                     return true;
                 }
             }
 
             if (type == 'Range') {
                 const keys = Object.keys(conditions);
+                const rangeKeys = [
+                    'attribute',
+                    'lowerOperator',
+                    'upperOperator',
+                    'lowerLimit',
+                    'upperLimit',
+                    'label',
+                    'dateFormat',
+                ];
                 if (keys.includes('dateFormat') && keys.length < 7) {
-                    alert('Please finish setting the Range conditions');
+                    const missingKeys = rangeKeys
+                        .filter((ele) => !keys.includes(ele))
+                        .map((ele) => ele.charAt(0).toUpperCase() + ele.substring(1));
+                    const index = missingKeys.findIndex((ele) => ele == 'Label');
+                    missingKeys[index] = 'Annotation';
+                    alert(
+                        'Please finish setting the Range conditions.\n' + 'Empty settings: ' + missingKeys.join(', '),
+                    );
                     return true;
                 }
 
                 if (!keys.includes('dateFormat') && keys.length < 6) {
-                    alert('Please finish setting the Range conditions');
+                    const missingKeys = rangeKeys
+                        .filter((ele) => ele != 'dateFormat')
+                        .filter((ele) => !keys.includes(ele))
+                        .map((ele) => ele.charAt(0).toUpperCase() + ele.substring(1));
+                    const index = missingKeys.findIndex((ele) => ele == 'Label');
+                    missingKeys[index] = 'Annotation';
+                    alert(
+                        'Please finish setting the Range conditions.\n' + 'Empty settings: ' + missingKeys.join(', '),
+                    );
+                    return true;
+                }
+
+                if (conditions.label.length == 0) {
+                    alert('Empty label');
                     return true;
                 }
             }
@@ -950,7 +1190,12 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     alertLimitOutBound = (index: number, type: string): boolean => {
         if (type == 'Range') {
-            const result = this.labellingRangeConditionsMap.get(index) as range;
+            let result;
+            if (this.tempLabellingConditionsMap.get(index)) {
+                result = this.tempLabellingConditionsMap.get(index);
+            } else {
+                result = this.labellingRangeConditionsMap.get(index);
+            }
             if (result.attribute) {
                 const attributeName = result.attribute;
                 const attributeType = this.attributeTypeMap.get(attributeName.toUpperCase());
@@ -1018,7 +1263,13 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     alertWrongDataType = (index: number, type: string, value: any) => {
         if (type == 'Threshold') {
-            const thresholdCondition = this.labellingThresholdConditionsMap.get(index);
+            let thresholdCondition;
+            if (this.tempLabellingConditionsMap.get(index)) {
+                thresholdCondition = this.tempLabellingConditionsMap.get(index);
+            } else {
+                thresholdCondition = this.labellingThresholdConditionsMap.get(index);
+            }
+
             if (thresholdCondition.attribute) {
                 const attributeType = this.attributeTypeMap.get(thresholdCondition.attribute.toUpperCase());
                 if (attributeType == DataType.NUMBER && !this.isNumber(value)) {
@@ -1037,7 +1288,13 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 }
             }
         } else if (type == 'Range') {
-            const rangeCondition = this.labellingRangeConditionsMap.get(index);
+            let rangeCondition;
+            if (this.tempLabellingConditionsMap.get(index)) {
+                rangeCondition = this.tempLabellingConditionsMap.get(index);
+            } else {
+                rangeCondition = this.labellingRangeConditionsMap.get(index);
+            }
+
             if (rangeCondition.attribute) {
                 const attributeType = this.attributeTypeMap.get(rangeCondition.attribute.toUpperCase());
                 if (attributeType == DataType.NUMBER && !this.isNumber(value)) {
@@ -1057,7 +1314,11 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     alertIncorrectSetting = (index: number, type: string) => {
         let condition;
         if (type == 'Threshold') {
-            condition = this.labellingThresholdConditionsMap.get(index);
+            if (this.tempLabellingConditionsMap.get(index)) {
+                condition = this.tempLabellingConditionsMap.get(index);
+            } else {
+                condition = this.labellingThresholdConditionsMap.get(index);
+            }
             if (condition) {
                 if (this.alertWrongDataType(index, type, condition.value) == true) {
                     return true;
@@ -1066,7 +1327,12 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         }
 
         if (type == 'Range') {
-            condition = this.labellingRangeConditionsMap.get(index);
+            if (this.tempLabellingConditionsMap.get(index)) {
+                condition = this.tempLabellingConditionsMap.get(index);
+            } else {
+                condition = this.labellingRangeConditionsMap.get(index);
+            }
+
             if (condition) {
                 if (this.alertWrongDataType(index, type, condition.lowerLimit) == true) {
                     return true;
@@ -1080,6 +1346,126 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         return false;
     };
 
+    alertDuplicateConditions = (type: string, newConditions: Map<number, any>) => {
+        if (type == 'Threshold') {
+            return this.checkThresholdDuplicate(type, newConditions);
+        } else if (type == 'Range') {
+            return this.checkRangeDuplicate(type, newConditions);
+        }
+    };
+
+    checkIfBothLabelArraySimilar = (currentLabelList: label[], setLabelList: label[]) => {
+        const setLabel: string[] = setLabelList.map((ele: { labelName: string; tagColor: string }) => ele.labelName);
+        const currentLabel: string[] = currentLabelList.map(
+            (ele: { labelName: string; tagColor: string }) => ele.labelName,
+        );
+        if (setLabel.length === currentLabel.length) {
+            return setLabel.every((element) => {
+                if (currentLabel.includes(element)) {
+                    return true;
+                }
+                return false;
+            });
+        }
+        return false;
+    };
+
+    checkRangeDuplicate = (type: string, newConditions: Map<number, any>) => {
+        let currentSetCondition;
+        for (const [key, value] of newConditions) {
+            currentSetCondition = value;
+        }
+
+        if (currentSetCondition.label.length == 0) {
+            alert('Empty label');
+            return;
+        }
+
+        if (this.labellingRangeConditionsMap.size == 0) {
+            this.updateLabellingMap(type, newConditions);
+            return false;
+        }
+
+        const listOfChecking: boolean[] = [];
+        if (currentSetCondition) {
+            for (const [key, value] of this.labellingRangeConditionsMap) {
+                if (currentSetCondition.attribute == value.attribute) {
+                    const isSameOperators =
+                        currentSetCondition.lowerOperator == value.lowerOperator &&
+                        currentSetCondition.upperOperator == value.upperOperator;
+                    const isSameLimits =
+                        currentSetCondition.lowerLimit == value.lowerLimit &&
+                        currentSetCondition.upperLimit == value.upperLimit;
+                    const isSameLabels = this.checkIfBothLabelArraySimilar(value.label, currentSetCondition.label);
+                    if (isSameLimits && isSameLabels && isSameOperators) {
+                        listOfChecking.push(true);
+                    } else {
+                        listOfChecking.push(false);
+                    }
+                }
+            }
+        }
+        if (listOfChecking.includes(true)) {
+            alert('This condition is repeated, please correct it');
+            return true;
+        } else {
+            this.updateLabellingMap(type, newConditions);
+            return false;
+        }
+    };
+
+    checkThresholdDuplicate = (type: string, newConditions: Map<number, any>) => {
+        let currentSetCondition;
+        for (const [key, value] of newConditions) {
+            currentSetCondition = value;
+        }
+
+        if (this.labellingThresholdConditionsMap.size == 0) {
+            this.updateLabellingMap(type, newConditions);
+            return false;
+        } else if (currentSetCondition.label == undefined || currentSetCondition.label.length == 0) {
+            alert('Empty label');
+            return;
+        }
+
+        const listOfChecking: boolean[] = [];
+        if (currentSetCondition) {
+            for (const [key, value] of this.labellingThresholdConditionsMap) {
+                if (currentSetCondition.attribute == value.attribute) {
+                    const isSameOperator = currentSetCondition.operator == value.operator;
+                    const isSameValue = currentSetCondition.value == value.value;
+                    const isSameLabels = this.checkIfBothLabelArraySimilar(value.label, currentSetCondition.label);
+                    if (isSameValue && isSameLabels && isSameOperator) {
+                        listOfChecking.push(true);
+                    } else {
+                        listOfChecking.push(false);
+                    }
+                }
+            }
+        }
+
+        if (listOfChecking.includes(true)) {
+            alert('This condition is repeated, please correct it');
+            return true;
+        } else {
+            this.updateLabellingMap(type, newConditions);
+            return false;
+        }
+    };
+
+    updateLabellingMap(type: string, newConditions: Map<number, any>) {
+        if (type == 'Threshold') {
+            for (const [key, value] of newConditions) {
+                this.labellingThresholdConditionsMap.set(key, value);
+            }
+        } else if (type == 'Range') {
+            for (const [key, value] of newConditions) {
+                this.labellingRangeConditionsMap.set(key, value);
+            }
+        }
+        this.tempLabellingConditionsMap.clear();
+    }
+
     onClickInputField(index: number) {
         for (const identifier of this.identifiers) {
             this.setToggleState(index, true, identifier);
@@ -1091,33 +1477,44 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         this.tempSelectedAnnotations.splice(index, 1);
 
         if (this.labellingRangeConditionsMap.has(index)) {
-            this.adjustIndexOfMap(index, this.labellingRangeConditionsMap);
+            this.labellingRangeConditionsMap.delete(index);
+            this.labellingRangeConditionsMap = this.adjustIndexOfMap(index, this.labellingRangeConditionsMap);
+            this.labellingThresholdConditionsMap = this.adjustIndexOfMap(index, this.labellingThresholdConditionsMap);
         }
 
         if (this.labellingThresholdConditionsMap.has(index)) {
-            this.adjustIndexOfMap(index, this.labellingThresholdConditionsMap);
+            this.labellingThresholdConditionsMap.delete(index);
+            this.labellingThresholdConditionsMap = this.adjustIndexOfMap(index, this.labellingThresholdConditionsMap);
+            this.labellingRangeConditionsMap = this.adjustIndexOfMap(index, this.labellingRangeConditionsMap);
         }
 
         if (this.conditionMapsList.has(index)) {
-            this.adjustIndexOfMap(index, this.conditionMapsList);
+            this.conditionMapsList.delete(index);
+            this.conditionMapsList = this.adjustIndexOfMap(index, this.conditionMapsList);
         }
 
         if (this.displayConditions.has(index)) {
-            this.adjustIndexOfMap(index, this.displayConditions);
+            this.displayConditions.delete(index);
+            this.displayConditions = this.adjustIndexOfMap(index, this.displayConditions);
             this.conditionList.splice(0, this.conditionList.length);
             this.listOutConditions();
         }
+        this.previousConditionIndex = this.conditionMapsList.size;
+        this.previousConditionType = '';
     }
 
-    adjustIndexOfMap(index: number, map: Map<number, any>) {
-        map.delete(index);
+    adjustIndexOfMap = (index: number, map: Map<number, any>) => {
+        const newMap: Map<number, any> = new Map();
         for (const [key, value] of map.entries()) {
+            if (key == 0 || key < index) {
+                newMap.set(key, value);
+            }
             if (key > index) {
-                map.set(key - 1, value);
-                map.delete(key);
+                newMap.set(key - 1, value);
             }
         }
-    }
+        return newMap;
+    };
 
     resetConditionListDisplay(index: number, type: string) {
         if (type == 'Threshold') {
@@ -1327,7 +1724,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 };
                 break;
         }
-        this.setThresholdConditionSettingsMap(data, index);
+        this.preCheckThresholdConditionSettings(data, index);
     }
 
     setRangeConditions(identifier: string, parameter: string, index: number) {
@@ -1378,25 +1775,40 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 };
                 break;
         }
-        this.setRangeConditionSettingsMap(data, index);
+        this.preCheckRangeConditionSettings(data, index);
     }
 
-    setThresholdConditionSettingsMap(array: threshold, index: number) {
-        const containKey = this.labellingThresholdConditionsMap.has(index);
-        const newKey = Object.keys(array)[0];
+    preCheckThresholdConditionSettings(array: threshold, index: number) {
+        if (this.labellingThresholdConditionsMap.has(index)) {
+            this.setThresholdConditionSettingsMap(array, index, this.labellingThresholdConditionsMap);
+        } else {
+            this.setThresholdConditionSettingsMap(array, index, this.tempLabellingConditionsMap);
+        }
+    }
 
+    preCheckRangeConditionSettings(array: threshold, index: number) {
+        if (this.labellingRangeConditionsMap.has(index)) {
+            this.setRangeConditionSettingsMap(array, index, this.labellingRangeConditionsMap);
+        } else {
+            this.setRangeConditionSettingsMap(array, index, this.tempLabellingConditionsMap);
+        }
+    }
+
+    setThresholdConditionSettingsMap(array: threshold, index: number, conditionMap: Map<number, any>) {
+        const containKey = conditionMap.has(index);
+        const newKey = Object.keys(array)[0];
         if (containKey == false) {
             const newKey = Object.keys(array)[0];
             if (newKey == 'label') {
                 const annotation = {
                     label: [array.label],
                 };
-                this.labellingThresholdConditionsMap.set(index, annotation);
+                conditionMap.set(index, annotation);
             } else {
-                this.labellingThresholdConditionsMap.set(index, array);
+                conditionMap.set(index, array);
             }
         } else {
-            let result = this.labellingThresholdConditionsMap.get(index);
+            let result = conditionMap.get(index);
             const availableKey = Object.keys(result);
             const newKey = Object.keys(array)[0];
 
@@ -1407,10 +1819,10 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                             label: [array.label],
                         };
                         result = { ...result, ...annotation };
-                        this.labellingThresholdConditionsMap.set(index, result);
+                        conditionMap.set(index, result);
                     } else {
                         result = { ...result, ...array };
-                        this.labellingThresholdConditionsMap.set(index, result);
+                        conditionMap.set(index, result);
                     }
                 } else {
                     switch (newKey) {
@@ -1448,8 +1860,8 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         }
     }
 
-    setRangeConditionSettingsMap(array: range, index: number) {
-        const containKey = this.labellingRangeConditionsMap.has(index);
+    setRangeConditionSettingsMap(array: range, index: number, conditionMap: Map<number, any>) {
+        const containKey = conditionMap.has(index);
 
         if (!containKey) {
             const newKey = Object.keys(array)[0];
@@ -1457,12 +1869,12 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 const annotation = {
                     label: [array.label],
                 };
-                this.labellingRangeConditionsMap.set(index, annotation);
+                conditionMap.set(index, annotation);
             } else {
-                this.labellingRangeConditionsMap.set(index, array);
+                conditionMap.set(index, array);
             }
         } else {
-            let result = this.labellingRangeConditionsMap.get(index);
+            let result = conditionMap.get(index);
             const availableKey = Object.keys(result);
             const newKey = Object.keys(array)[0];
 
@@ -1473,10 +1885,10 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                             label: [array.label],
                         };
                         result = { ...result, ...annotation };
-                        this.labellingRangeConditionsMap.set(index, result);
+                        conditionMap.set(index, result);
                     } else {
                         result = { ...result, ...array };
-                        this.labellingRangeConditionsMap.set(index, result);
+                        conditionMap.set(index, result);
                     }
                 } else {
                     switch (newKey) {
@@ -1523,18 +1935,30 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     displaySelection = (index: number, identifier: string, condition: string): string => {
         let selection = '';
         if (condition == 'Threshold') {
-            const result = this.labellingThresholdConditionsMap.get(index);
-            if (result == undefined) {
+            let thresholdCondition;
+            if (this.labellingThresholdConditionsMap.has(index)) {
+                thresholdCondition = this.labellingThresholdConditionsMap.get(index);
+            } else {
+                thresholdCondition = this.tempLabellingConditionsMap.get(index);
+            }
+
+            if (thresholdCondition == undefined) {
                 selection = this.displayDefaultText(identifier);
             } else {
-                selection = this.displayThresholdSelection(index, identifier);
+                selection = this.displayThresholdSelection(index, identifier, thresholdCondition);
             }
         } else {
-            const result = this.labellingRangeConditionsMap.get(index);
-            if (result == undefined) {
+            let rangeCondition;
+            if (this.labellingRangeConditionsMap.has(index)) {
+                rangeCondition = this.labellingRangeConditionsMap.get(index);
+            } else {
+                rangeCondition = this.tempLabellingConditionsMap.get(index);
+            }
+
+            if (rangeCondition == undefined) {
                 selection = this.displayDefaultText(identifier);
             } else {
-                selection = this.displayRangeSelection(index, identifier);
+                selection = this.displayRangeSelection(index, identifier, rangeCondition);
             }
         }
         return selection;
@@ -1550,10 +1974,10 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 display = 'Operator';
                 break;
             case 'lowerOperator':
-                display = 'Lower Operator';
+                display = 'Operator';
                 break;
             case 'upperOperator':
-                display = 'Upper Operator';
+                display = 'Operator';
                 break;
             case 'label':
                 display = 'Annotation';
@@ -1564,8 +1988,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         return display;
     };
 
-    displayThresholdSelection = (index: number, identifier: string): string => {
-        const selection = this.labellingThresholdConditionsMap.get(index) as threshold;
+    displayThresholdSelection = (index: number, identifier: string, selection: threshold): string => {
         let display = '';
 
         switch (identifier) {
@@ -1592,8 +2015,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         return display;
     };
 
-    displayRangeSelection = (index: number, identifier: string): string => {
-        const selection = this.labellingRangeConditionsMap.get(index) as range;
+    displayRangeSelection = (index: number, identifier: string, selection: range): string => {
         let display = '';
 
         switch (identifier) {
@@ -1771,7 +2193,12 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         this.modalService.close(this.modalAlertWindow);
         this.modalService.close(this.modalAddLabellingConditions);
         this.tabularLabellingLayoutService
-            .setPreLabellingConditions(this.projectName, this.conditionMapsList)
+            .setPreLabellingConditions(
+                this.projectName,
+                this.conditionMapsList,
+                this.uuidList[this.currentDataIndex],
+                this.labellingSequenceChoice,
+            )
             .subscribe(() => {});
     }
 
@@ -1781,6 +2208,92 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     onCancelAutomate() {
         this.modalService.close(this.modalAlertWindow);
+    }
+
+    invalidateData(checked: boolean) {
+        if (checked) {
+            this.isInvalid = true;
+            this.annotations.splice(0, this.annotations.length);
+            this.annotations.push({ labelName: 'Invalid', tagColor: 'red' });
+            this.updateTempLabels();
+            this.updateAnnotation();
+        } else {
+            this.isInvalid = false;
+            this.annotations.splice(0, 1);
+            this.updateAnnotation();
+        }
+    }
+
+    updateInvalidCheckBox() {
+        const labelName = this.annotations.filter((ele) => ele.labelName == 'Invalid');
+        if (labelName.length != 0) {
+            this.isInvalid = true;
+            this.invalidCheckBox.nativeElement.checked = true;
+        } else {
+            this.isInvalid = false;
+            this.invalidCheckBox.nativeElement.checked = false;
+        }
+        this.invalidCheckBox.nativeElement.blur();
+    }
+
+    filterInvalidDataInOutputFile(checked: boolean) {
+        this.filterInvalidData = checked;
+    }
+
+    getAllInvalidDataUUID() {
+        this.tabularLabellingLayoutService.getAllInvalidData(this.projectName).subscribe((res) => {
+            this.listOfInvalidDataUUID = res;
+        });
+    }
+
+    skipInvalidData() {
+        this.isSkipInvalidData = !this.isSkipInvalidData;
+    }
+
+    showInvalidDataOnly() {
+        this.isShowInvalidDataOnly = !this.isShowInvalidDataOnly;
+    }
+
+    labellingSequenceMode() {
+        if (this.appendCheckBox.nativeElement.checked == true) {
+            this.overWriteCheckBox.nativeElement.disabled = true;
+            this.labellingSequenceChoice = 'append';
+        } else if (this.appendCheckBox.nativeElement.checked == false) {
+            this.overWriteCheckBox.nativeElement.disabled = false;
+        }
+
+        if (this.overWriteCheckBox.nativeElement.checked == true) {
+            this.appendCheckBox.nativeElement.disabled = true;
+            this.labellingSequenceChoice = 'overwrite';
+        } else if (this.overWriteCheckBox.nativeElement.checked == false) {
+            this.appendCheckBox.nativeElement.disabled = false;
+        }
+    }
+
+    projectStatistics() {
+        this._dataSetService.getProjectStats(this.projectName).subscribe((response) => {
+            if (response) {
+                this.labeledData = response.labeled_data;
+                this.unLabeledData = response.unlabeled_data;
+                this.statistics.splice(0, this.statistics.length);
+                response.label_per_class_in_project.forEach((labelMeta: labels_stats) => {
+                    if (labelMeta.count > 0) {
+                        this.emptyLabel = false;
+                        this.emptyAnnotation = false;
+                    }
+                    const meta = {
+                        name: labelMeta.label,
+                        value: labelMeta.count,
+                    };
+                    this.statistics.push(meta);
+                });
+                if (response.label_per_class_in_project.length === 0) {
+                    this.emptyLabel = true;
+                    this.emptyAnnotation = true;
+                }
+                this.modalService.open(this.modalIdProjectStats);
+            }
+        });
     }
 
     @HostListener('window:beforeunload', ['$event'])

@@ -96,7 +96,7 @@
                 <!--                    </div>-->
                 <div class="inner-container">
                     <div class="table-container">
-                        <div class="scroll-table">
+                        <div class="scroll-table" #scrollTable>
                             <table class="data-table">
                                 <tr *ngFor="let data of retrievedData">
                                     <th>{{ data.name }}</th>
@@ -108,12 +108,37 @@
                 </div>
                 <div class="bottom-container">
                     <div class="bottom-session-container">
+                        <div class="selection-invalid">
+                            <div class="invalid-data short">
+                                <input
+                                    #invalid
+                                    type="checkbox"
+                                    id="invalid"
+                                    (click)="invalidateData($event.target.checked)"
+                                />
+                                <label for="invalid">Invalid</label>
+                            </div>
+                            <div class="invalid-data middle">
+                                <input #skipInvalid type="checkbox" id="skipInvalid" (click)="skipInvalidData()" />
+                                <label for="skipInvalid">Skip Invalid</label>
+                            </div>
+                            <div class="invalid-data long">
+                                <input
+                                    #showInvalidOnly
+                                    type="checkbox"
+                                    id="showInvalidOnly"
+                                    (click)="showInvalidDataOnly()"
+                                />
+                                <label for="showInvalidOnly">Show Invalid Only</label>
+                            </div>
+                        </div>
+
                         <div class="button-container">
                             <button
                                 class="button-style navigation-btn"
                                 (click)="this.getNextAttributesAndValue()"
-                                [ngClass]="currentDataIndex == this.uuidList.length - 1 ? 'disabled' : 'enabled'"
-                                [disabled]="currentDataIndex == this.uuidList.length - 1"
+                                [ngClass]="this.currentDataIndex == this.uuidList.length - 1 ? 'disabled' : 'enabled'"
+                                [disabled]="this.currentDataIndex == this.uuidList.length - 1"
                             >
                                 Next
                             </button>
@@ -121,8 +146,8 @@
                             <button
                                 class="button-style navigation-btn"
                                 (click)="this.getPreviousAttributesAndValue()"
-                                [ngClass]="currentDataIndex == 0 ? 'disabled' : 'enabled'"
-                                [disabled]="currentDataIndex == 0"
+                                [ngClass]="this.currentDataIndex == 0 ? 'disabled' : 'enabled'"
+                                [disabled]="this.currentDataIndex == 0"
                             >
                                 Back
                             </button>
@@ -139,7 +164,9 @@
             (onSearchLabel)="searchLabel($event)"
             (onRemoveAnnotation)="removeAnnotation($event)"
         ></tabular-labelling-project>
-        <tabular-labelling-right-sidebar></tabular-labelling-right-sidebar>
+        <tabular-labelling-right-sidebar
+            (_onToggleProjectStats)="projectStatistics()"
+        ></tabular-labelling-right-sidebar>
     </div>
     <tabular-labelling-footer
         [projectName]="projectName"
@@ -209,14 +236,22 @@
 <modal [id]="'modal-save'" [modalBodyStyle]="saveModalBodyStyle" [scrollable]="true">
     <div class="save-format-list">
         <div class="save-format-content">
+            <div class="filter-data">
+                <input
+                    type="checkbox"
+                    id="filterInvalid"
+                    (click)="filterInvalidDataInOutputFile($event.target.checked)"
+                />
+                <label for="filterInvalid">Filter invalid data</label>
+            </div>
             <ng-container>
-                <button class="save-format-btn" (click)="onClickDownload('csv')">CSV</button>
+                <button class="save-format-btn" (click)="onClickDownload('csv', filterInvalidData)">CSV</button>
                 <br />
-                <button class="save-format-btn" (click)="onClickDownload('excel')">EXCEL</button>
+                <button class="save-format-btn" (click)="onClickDownload('excel', filterInvalidData)">EXCEL</button>
                 <br />
-                <button class="save-format-btn" (click)="onClickDownload('json')">JSON</button>
+                <button class="save-format-btn" (click)="onClickDownload('json', filterInvalidData)">JSON</button>
                 <br />
-                <button class="save-format-btn" (click)="onClickDownload('label')">Label</button>
+                <button class="save-format-btn" (click)="onClickDownload('label', false)">Label</button>
                 <br />
             </ng-container>
         </div>
@@ -231,7 +266,7 @@
 >
     <div class="labelling-conditions-container">
         <div class="condition-type-container">
-            <label style="font-size: 2vh">Add Type of Condition : </label>
+            <label style="font-size: 2.3vh; margin-left: 0.3vw">Add Type of Condition : </label>
             <button class="condition-selection-btn" (click)="toggleTypeSelection()">select types</button>
         </div>
 
@@ -242,21 +277,25 @@
                 </div>
             </div>
         </div>
-
-        <div class="labelling-conditions-inner-container">
+        <div class="labelling-conditions-inner-container" *ngIf="selectedConditionTypes.length == 0">
+            <div class="add-conditions-alert">
+                <label>Set conditions for automated labelling</label>
+            </div>
+        </div>
+        <div class="labelling-conditions-inner-container" *ngIf="selectedConditionTypes.length != 0">
             <div class="condition-container" *ngFor="let conditionalType of selectedConditionTypes; index as i">
                 <ng-container *ngIf="conditionalType.type == 'Threshold'">
                     <div class="selection-container">
                         <div class="condition-title threshold-title">
                             <label> Threshold: </label>
                         </div>
-                        <div class="condition-expression" *ngIf="conditionalType.isSet == false">
+                        <div class="condition-expression" *ngIf="conditionalType.isClickSet == false">
                             <div>
                                 <label> {{ displayThresholdCondition(i) }} </label>
                             </div>
                         </div>
 
-                        <div class="pop-up-setting-window" *ngIf="conditionalType.isSet">
+                        <div class="pop-up-setting-window" *ngIf="conditionalType.isClickSet">
                             <div class="select-container">
                                 <div class="select-inner-container">
                                     <button
@@ -278,7 +317,7 @@
                                 </div>
                             </div>
 
-                            <div class="select-container" *ngIf="conditionalType.isSet">
+                            <div class="select-container" *ngIf="conditionalType.isClickSet">
                                 <div class="select-inner-container">
                                     <button
                                         class="condition-selection-btn"
@@ -315,7 +354,7 @@
                                 />
                             </div>
 
-                            <div class="select-container" *ngIf="conditionalType.isSet">
+                            <div class="select-container" *ngIf="conditionalType.isClickSet">
                                 <div class="select-inner-container">
                                     <button
                                         class="condition-selection-btn"
@@ -374,13 +413,13 @@
                         <div class="condition-title range-title">
                             <label> Range: </label>
                         </div>
-                        <div class="condition-expression" *ngIf="conditionalType.isSet == false">
+                        <div class="condition-expression" *ngIf="conditionalType.isClickSet == false">
                             <div>
                                 <label> {{ displayRangeCondition(i) }} </label>
                             </div>
                         </div>
 
-                        <div class="pop-up-setting-window" *ngIf="conditionalType.isSet">
+                        <div class="pop-up-setting-window" *ngIf="conditionalType.isClickSet">
                             <div class="condition-description-container">
                                 <input
                                     type="text"
@@ -396,7 +435,7 @@
                                 />
                             </div>
 
-                            <div class="select-container" *ngIf="conditionalType.isSet">
+                            <div class="select-container" *ngIf="conditionalType.isClickSet">
                                 <div class="select-inner-container">
                                     <button
                                         class="condition-selection-btn"
@@ -447,7 +486,7 @@
                                 </div>
                             </div>
 
-                            <div class="select-container" *ngIf="conditionalType.isSet">
+                            <div class="select-container" *ngIf="conditionalType.isClickSet">
                                 <div class="select-inner-container">
                                     <button
                                         class="condition-selection-btn"
@@ -489,7 +528,7 @@
                                 />
                             </div>
 
-                            <div class="select-container" *ngIf="conditionalType.isSet">
+                            <div class="select-container" *ngIf="conditionalType.isClickSet">
                                 <div class="select-inner-container">
                                     <button
                                         class="condition-selection-btn"
@@ -546,8 +585,8 @@
                     <button
                         class="condition-selection-btn"
                         (click)="
-                            editSelectedLabellingCondition(i, conditionalType.isSet, conditionalType.type);
-                            preparePreLabellingConditions(conditionalType.isSet)
+                            editSelectedLabellingCondition(i, conditionalType.isClickSet, conditionalType.type);
+                            preparePreLabellingConditions(conditionalType.isClickSet)
                         "
                         [ngClass]="conditionalType.buttonLabel == 'edit' ? 'edit-btn-color' : 'set-btn-color'"
                     >
@@ -569,25 +608,25 @@
     </div>
 </modal>
 
-<!--<modal-->
-<!--    [id]="modalIdProjectStats"-->
-<!--    [modalBodyStyle]="projectStatsBodyStyle"-->
-<!--    [modalTitle]="'projectStats' | translate"-->
-<!--    [scrollable]="false"-->
-<!--&gt;-->
-<!--    <div class="display-modal-container">-->
-<!--        <div class="chart-container">-->
-<!--            <app-pie-chart [labelledImage]="annotationIndexMap?.size" [unLabelledImage]="tabularData.length - annotationIndexMap.size"></app-pie-chart>-->
-<!--            <app-bar-chart *ngIf="tabularData.length > 0 && annotationIndexMap.size > 0" [labelStats]="statistics"></app-bar-chart>-->
-<!--            <div style="margin: 13vh 12vw" *ngIf="tabularData.length == 0 ">-->
-<!--                <h3>No Labels</h3>-->
-<!--            </div>-->
-<!--            <div style="margin: 13vh 10vw" *ngIf="annotationIndexMap.size == 0">-->
-<!--                <h3>No Annotation</h3>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</modal>-->
+<modal
+    [id]="modalIdProjectStats"
+    [modalBodyStyle]="projectStatsBodyStyle"
+    [modalTitle]="'projectStats' | translate"
+    [scrollable]="false"
+>
+    <div class="display-modal-container">
+        <div class="chart-container">
+            <app-pie-chart [labelledData]="labeledData" [unLabelledData]="unLabeledData"></app-pie-chart>
+            <app-bar-chart *ngIf="!emptyLabel && !emptyAnnotation" [labelStats]="statistics"></app-bar-chart>
+            <div style="margin: 13vh 12vw" *ngIf="emptyLabel">
+                <h3>No Labels</h3>
+            </div>
+            <div style="margin: 13vh 10vw" *ngIf="emptyAnnotation">
+                <h3>No Annotation</h3>
+            </div>
+        </div>
+    </div>
+</modal>
 
 <modal
     [id]="modalAlertWindow"
@@ -602,12 +641,20 @@
             assigning labels.
         </p>
         <p class="font-warning">Do you want to proceed with the current settings?</p>
-        <div class="bottom-container adjust">
-            <div class="bottom-session-container">
-                <div class="button-container">
-                    <button class="button-style navigation-btn" (click)="onCancelAutomate()">No</button>
-                    <button class="button-style navigation-btn" (click)="automateLabelling()">Yes</button>
-                </div>
+        <div class="selection-invalid">
+            <div class="invalid-data labelling-style">
+                <input #overwrite type="checkbox" id="overwrite" (click)="this.labellingSequenceMode()" />
+                <label for="overwrite">Overwrite labels based on conditions</label>
+            </div>
+            <div class="invalid-data labelling-style">
+                <input #append type="checkbox" id="append" (click)="this.labellingSequenceMode()" />
+                <label for="append">Append labels based on conditions</label>
+            </div>
+        </div>
+        <div class="alert-bottom-container">
+            <div>
+                <button class="button-style navigation-btn" (click)="onCancelAutomate()">No</button>
+                <button class="button-style navigation-btn" (click)="automateLabelling()">Yes</button>
             </div>
         </div>
     </div>

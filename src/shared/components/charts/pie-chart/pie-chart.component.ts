@@ -7,17 +7,17 @@ import { ChartProps } from 'shared/types/dataset-layout/data-set-layout.model';
     styleUrls: ['./pie-chart.component.scss'],
 })
 export class PieChartComponent implements OnChanges {
-    @Input() labelledImage: number = 0;
-    @Input() unLabelledImage: number = 10;
+    @Input() labelledData: number = 0;
+    @Input() unLabelledData: number = 10;
 
     chartData: ChartProps[] = [
         {
             name: 'Labelled Data',
-            value: this.labelledImage,
+            value: this.labelledData,
         },
         {
             name: 'Unlabelled Data',
-            value: this.unLabelledImage,
+            value: this.unLabelledData,
         },
     ];
 
@@ -35,15 +35,15 @@ export class PieChartComponent implements OnChanges {
     };
 
     ngOnChanges(changes: SimpleChanges): void {
-        // this.chartData = [
-        //     {
-        //         name: 'Labelled Image',
-        //         value: changes.labelledImage?.currentValue || 0,
-        //     },
-        //     {
-        //         name: 'Unlabelled Image',
-        //         value: changes.unLabelledImage?.currentValue || 0,
-        //     },
-        // ];
+        this.chartData = [
+            {
+                name: 'Labelled Data',
+                value: changes.labelledData?.currentValue || 0,
+            },
+            {
+                name: 'Unlabelled Data',
+                value: changes.unLabelledData?.currentValue || 0,
+            },
+        ];
     }
 }

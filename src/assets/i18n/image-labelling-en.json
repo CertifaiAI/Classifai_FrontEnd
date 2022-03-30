@@ -22,7 +22,10 @@
         "eraser": "Eraser",
         "fitCenter": "Fit Center",
         "save": "Save",
-        "info": "Shortcut Key Info"
+        "info": "Shortcut Key Info",
+        "table": "Tabular Table",
+        "conditions": "Automate Conditions",
+        "label": "Labels"
     },
     "rightSideBar": {
         "folderOrFiles": "Folder / Files",

@@ -68,8 +68,8 @@ export type ImportResponse = {
 export type ProjectStatsResponse = {
     message: error_code;
     project_name: string;
-    labeled_image: number;
-    unlabeled_image: number;
+    labeled_data: number;
+    unlabeled_data: number;
     label_per_class_in_project: labels_stats[];
     error_message?: string;
 };

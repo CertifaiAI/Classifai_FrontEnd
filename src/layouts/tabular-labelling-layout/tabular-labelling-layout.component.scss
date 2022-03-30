@@ -1235,12 +1235,83 @@ td {
 
 .automate-warning-container {
     margin: 1vh 0 0 1vw;
-    min-width: 30vw;
-    max-width: 30vw;
+    min-width: 38vw;
+    max-width: 38vw;
     min-height: 28vh;
     max-height: 28vh;
 }
 
-.adjust {
-    margin-top: 5vh;
+.selection-invalid {
+    position: relative;
+    min-width: 25vw;
+    max-width: 25vw;
+    min-height: 4vh;
+    max-height: 4vh;
+    justify-content: flex-start;
+    display: flex;
+    flex-direction: row;
+    margin-top: 3.8vh;
+    margin-right: 9.3vw;
+}
+
+.invalid-data {
+    position: relative;
+    min-height: 4vh;
+    max-height: 4vh;
+    color: white;
+    font-size: 2vh;
+    line-height: 20px;
+    vertical-align: center;
+}
+
+.short {
+    min-width: 5vw;
+    max-width: 5vw;
+}
+
+.middle {
+    min-width: 7vw;
+    max-width: 9vw;
+}
+
+.long {
+    min-width: 9vw;
+    max-width: 11vw;
+}
+
+.labelling-style {
+    min-width: 18vw;
+    max-width: 20vw;
+}
+
+.filter-data {
+    position: relative;
+    min-width: 20vw;
+    max-width: 20vw;
+    min-height: 4vh;
+    max-height: 4vh;
+    color: white;
+    margin-left: 1vw;
+    font-size: 2vh;
+    line-height: 20px;
+    vertical-align: center;
+}
+
+.add-conditions-alert {
+    margin-left: 21vw;
+    margin-top: 23vh;
+    font-size: 3.5vh;
+    color: white;
+}
+
+.alert-bottom-container {
+    min-width: 20vw;
+    max-width: 20vw;
+    display: flex;
+    flex-direction: row;
+    margin-top: 3vh;
+    margin-left: 19vw;
+}
+
+.alert-bottom-inner-container {
 }

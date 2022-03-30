@@ -90,8 +90,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     keyToSort: string = 'project_name';
     projectType: string = 'myproject';
     enableSort: boolean = true;
-    labelledImage: number = 0;
-    unLabelledImage: number = 0;
+    labelledData: number = 0;
+    unLabelledData: number = 0;
     labelStats: ChartProps[] = [];
     noLabel: boolean = true;
     noAnnotation: boolean = true;
@@ -357,8 +357,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .pipe()
             .subscribe((project) => {
                 if (project) {
-                    this.labelledImage = project.labeled_image;
-                    this.unLabelledImage = project.unlabeled_image;
+                    this.labelledData = project.labeled_data;
+                    this.unLabelledData = project.unlabeled_data;
                     this.labelStats = [];
                     project.label_per_class_in_project.forEach((labelMeta: labels_stats) => {
                         if (labelMeta.count > 0) {
