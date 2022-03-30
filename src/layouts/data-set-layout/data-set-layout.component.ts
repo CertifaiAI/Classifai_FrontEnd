@@ -332,6 +332,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         if (this.labellingModeUrl !== 'tabular') {
             this._projectFoldername.nativeElement.innerHTML = '';
         }
+        this._tabularFileName.nativeElement.innerHTML = '';
         this._labelTextFilename.nativeElement.innerHTML = '';
         shown && this.form.reset();
         shown
