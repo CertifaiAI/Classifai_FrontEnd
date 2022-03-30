@@ -2230,6 +2230,8 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
             this.invalidCheckBox.nativeElement.checked = false;
         }
         this.invalidCheckBox.nativeElement.blur();
+        this.skipInvalidCheckBox.nativeElement.blur();
+        this.showInvalidOnlyCheckBox.nativeElement.blur();
     }
 
     filterInvalidDataInOutputFile(checked: boolean) {
