@@ -602,19 +602,16 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     chooseLabel(label: label) {
         if (this.isInvalid) return;
-        const isContainAnnotation = this.annotations.includes(label);
-        if (isContainAnnotation) return;
 
         this.annotations.push(label);
-        const value = this.annotationIndexMap.get(this.currentDataIndex);
 
+        const value = this.annotationIndexMap.get(this.currentDataIndex);
         if (value == null) {
             this.annotationIndexMap.set(this.currentDataIndex, [label]);
         } else if (!value.includes(label)) {
             value.push(label);
         }
-
-        this.tempLabels = this.labels.filter((ele) => !this.annotations.includes(ele));
+        this.updateTempLabels();
         this.updateAnnotation();
     }
 
@@ -646,12 +643,11 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
             (response) => {
                 this.tabularData = response.tabular_data;
                 if (this.tabularData.LABEL !== null) {
-                    const annotation = JSON.parse(this.tabularData.LABEL);
-                    this.annotations = annotation;
+                    this.annotations = JSON.parse(this.tabularData.LABEL);
                     this.updateTempLabels();
                     this.isAnnotation(this.annotations);
                 } else {
-                    this.annotations = [];
+                    this.annotations.splice(0, this.annotations.length);
                     this.tempLabels = this.labels;
                     this.isAnnotation(this.annotations);
                 }
