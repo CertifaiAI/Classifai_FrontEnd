@@ -40,6 +40,7 @@ import { ImageLabellingActionService } from '../../image-labelling/image-labelli
 import { LabelColorServices } from '../../../shared/services/label-color.services';
 import { Labels } from '../../../shared/types/dataset-layout/data-set-layout.model';
 import { label } from '../../../shared/types/tabular-labelling/tabular-labelling.model';
+import { Key } from 'readline';
 
 @Component({
     selector: 'tabular-labelling-project',

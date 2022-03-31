@@ -335,7 +335,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 (err) => console.error(err),
                 () => {
                     this.tabularDataObservable = from(data);
-                    this.createSourceObservable();
+                    this.generateSource();
                 },
             );
     }
@@ -406,22 +406,22 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         }
     }
 
-    sizeSelected(selectedSize: string): void {
-        this.generateSource(selectedSize);
-    }
+    // sizeSelected(selectedSize: string): void {
+    //     this.generateSource(selectedSize);
+    // }
 
-    createSourceObservable() {
-        if (this.tabularData.length == 0) {
-            alert('Empty Data');
-            return;
-        }
-        this.generateSource(this.selectedSize);
-    }
+    // createSourceObservable() {
+    // if (this.tabularData.length == 0) {
+    //     alert('Empty Data');
+    //     return;
+    // }
+    //     this.generateSource(this.selectedSize);
+    // }
 
-    generateSource(selectedSize: string): void {
-        const size = Number(selectedSize.split(' ').join(''));
+    generateSource(): void {
+        // const size = Number(selectedSize.split(' ').join(''));
 
-        this.tabularDataObservable.pipe(take(size)).subscribe(
+        this.tabularDataObservable.subscribe(
             (response) => {
                 this.source.push(response);
             },
@@ -454,7 +454,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         for (const name of this.attributeNames) {
             const type = this.attributeTypeMap.get(name);
             if (type != DataType.STRING) {
-                this.filteredStringTypeAttributeNames.push(name);
+                if (!this.filteredStringTypeAttributeNames.includes(name)) {
+                    this.filteredStringTypeAttributeNames.push(name);
+                }
             }
         }
 
@@ -800,6 +802,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                     this.showInvalidOnlyCheckBox.nativeElement.checked =
                         !this.showInvalidOnlyCheckBox.nativeElement.checked;
                     this.showInvalidDataOnly();
+                    break;
+                case altKey && 't':
+                    this.removeAnnotation(this.annotations[this.annotations.length - 1]);
                     break;
             }
 
