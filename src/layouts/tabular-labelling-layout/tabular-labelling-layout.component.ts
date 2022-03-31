@@ -1471,6 +1471,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     deleteCondition(index: number) {
         this.selectedConditionTypes.splice(index, 1);
         this.tempSelectedAnnotations.splice(index, 1);
+        this.tempLabellingConditionsMap.clear();
 
         if (this.labellingRangeConditionsMap.has(index)) {
             this.labellingRangeConditionsMap.delete(index);
@@ -1632,12 +1633,16 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         let condition;
 
         if (type == 'Threshold') {
-            if (this.labellingThresholdConditionsMap) {
+            if (this.labellingThresholdConditionsMap.size > 0) {
                 condition = this.labellingThresholdConditionsMap.get(index);
+            } else {
+                condition = this.tempLabellingConditionsMap.get(index);
             }
         } else if (type == 'Range') {
-            if (this.labellingRangeConditionsMap) {
+            if (this.labellingRangeConditionsMap.size > 0) {
                 condition = this.labellingRangeConditionsMap.get(index);
+            } else {
+                condition = this.tempLabellingConditionsMap.get(index);
             }
         }
 
@@ -2021,11 +2026,11 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 break;
             case 'lowerOperator':
                 const lowerOperator = selection.lowerOperator;
-                display = lowerOperator ? this.operatorSymbol(lowerOperator, 'Range') : 'Lower Operator';
+                display = lowerOperator ? this.operatorSymbol(lowerOperator, 'Range') : 'Operator';
                 break;
             case 'upperOperator':
                 const upperOperator = selection.upperOperator;
-                display = upperOperator ? this.operatorSymbol(upperOperator, 'Range') : 'Upper Operator';
+                display = upperOperator ? this.operatorSymbol(upperOperator, 'Range') : 'Operator';
                 break;
             case 'label':
                 const annotation = selection.label;
