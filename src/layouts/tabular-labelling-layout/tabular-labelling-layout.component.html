@@ -183,7 +183,7 @@
     [zIndex]="2"
 >
     <div class="tabular-data-container">
-        <div class="tabular-data-view">
+        <div class="tabular-data-view" *ngIf="tabularData">
             <gui-grid
                 [virtualScroll]="true"
                 [maxHeight]="400"
@@ -194,13 +194,13 @@
                 [theme]="'dark'"
             >
             </gui-grid>
-            <!--            <ag-grid-angular-->
-            <!--                style="width: 50vw; height: 50vh;"-->
-            <!--                class="ag-theme-alphine"-->
-            <!--                [rowData]="tabularDataObservable | async"-->
-            <!--                [columnDefs]="columnsDefs"-->
-            <!--            >-->
-            <!--            </ag-grid-angular>-->
+            <!--                        <ag-grid-angular-->
+            <!--                            style="width: 50vw; height: 50vh;"-->
+            <!--                            class="ag-theme-alphine"-->
+            <!--                            [rowData]="tabularDataObservable | async"-->
+            <!--                            [columnDefs]="columnsDefs"-->
+            <!--                        >-->
+            <!--                        </ag-grid-angular>-->
         </div>
     </div>
 </modal>

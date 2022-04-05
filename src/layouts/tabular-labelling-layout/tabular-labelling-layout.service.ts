@@ -28,8 +28,8 @@ export class TabularLabellingLayoutService {
         return { ...state };
     }
 
-    getAllTabularData(projectName: string): Observable<any> {
-        return this.http.get(`${this.hostPort}v2/tabular/projects/${projectName}/alldata`);
+    getAllTabularData(projectName: string): Observable<any[]> {
+        return this.http.get<any[]>(`${this.hostPort}v2/tabular/projects/${projectName}/alldata`);
     }
 
     updateTabularDataLabel = (
