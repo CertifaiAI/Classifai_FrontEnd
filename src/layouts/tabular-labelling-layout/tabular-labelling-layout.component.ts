@@ -9,20 +9,22 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { LabellingModeService } from '../../shared/services/labelling-mode-service';
-import { forkJoin, from, Observable, Subject, Subscription } from 'rxjs';
+import { Data, Features, RemovedFeature, label } from '../../shared/types/tabular-labelling/tabular-labelling.model';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { GuiColumn, GuiDataType, GuiRowClass } from '@generic-ui/ngx-grid';
+import { Observable, Subject, Subscription, forkJoin, from, ObservedValueOf } from 'rxjs';
 import { first, mergeMap, take, takeUntil } from 'rxjs/operators';
+
+import { ChartProps } from '../../shared/types/dataset-layout/data-set-layout.model';
+import { ColDef } from 'ag-grid-community';
+import { DataSetLayoutService } from '../data-set-layout/data-set-layout-api.service';
+import { ExportSaveFormatService } from '../../shared/services/export-save-format.service';
+import { LabellingModeService } from '../../shared/services/labelling-mode-service';
+import { LanguageService } from '../../shared/services/language.service';
 import { ModalBodyStyle } from '../../shared/types/modal/modal.model';
 import { ModalService } from '../../shared/components/modal/modal.service';
-import { Data, Features, label, RemovedFeature } from '../../shared/types/tabular-labelling/tabular-labelling.model';
-import { TabularLabellingLayoutService } from './tabular-labelling-layout.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { DataSetLayoutService } from '../data-set-layout/data-set-layout-api.service';
 import { Router } from '@angular/router';
-import { ChartProps } from '../../shared/types/dataset-layout/data-set-layout.model';
-import { LanguageService } from '../../shared/services/language.service';
-import { ExportSaveFormatService } from '../../shared/services/export-save-format.service';
+import { TabularLabellingLayoutService } from './tabular-labelling-layout.service';
 import { cloneDeep } from 'lodash-es';
 import { labels_stats } from '../../shared/types/message/message.model';
 
@@ -83,13 +85,16 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     projectName: string = '';
     projectFolder: string = '';
     tabularData!: any;
-    tabularDataObservable!: Observable<any>;
+    tabularDataObservable: Observable<any[]> = new Observable<any[]>();
     headersTypeMap: Map<string, GuiDataType> = new Map<string, GuiDataType>();
     attributeTypeMap: Map<string, DataType> = new Map<string, DataType>();
     private sizeOptions: Array<string> = ['5 000', '25 000', '50 000', '100 000', '200 000', '1 000000'];
     private selectedSize: string = this.sizeOptions[0];
     columns: Array<GuiColumn> = [];
-    source: Array<any> = [];
+    tableWidth: number = 0;
+    filteredColumns: string[] = ['UUID', 'PROJECT_NAME', 'FILENAME', 'LABEL'];
+    source: Array<any[]> = [];
+    loading: boolean = true;
     labels: label[] = [];
     annotations: label[] = [];
     annotationIndexMap: Map<number, label[] | null> = new Map();
@@ -165,6 +170,8 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     checkIsInvalid = false;
     tempInvalidArray: label[] = [];
     labellingSequenceChoice: string = 'append';
+    columnsDefs: ColDef[] = [];
+    rowData!: Observable<any>;
     readonly modalPlotGraph = 'modal-plot-graph';
     readonly modalTabularDataView = 'modal-tabular-data-view';
     readonly modalIdProjectStats = 'modal-project-stats';
@@ -255,6 +262,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         this.projectName = this.tabularLabellingLayoutService.getRouteState(history).projectName;
         this.projectFolder = this.tabularLabellingLayoutService.getRouteState(history).projectFolder;
         this.initProject(this.projectName);
+        this.getAllTabularData();
     }
 
     ngOnChanges(changes: SimpleChanges) {}
@@ -270,7 +278,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 mergeMap(() => forkJoin([projectMetaStatus$])),
                 first(([{ message, content }]) => {
                     const { is_loaded } = content[0];
-                    return message === 1 && !is_loaded ? true : false;
+                    return message === 1 && !is_loaded;
                 }),
                 mergeMap(([{ message }]) =>
                     !message ? [] : forkJoin([updateProjectLoadStatus$, checkProjectStatus$]),
@@ -300,7 +308,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                     this.generateColumnsArray(this.tabularData);
                     this.getAttributesAndValue(this.tabularData);
                     const annotation = this.annotationIndexMap.get(this.currentDataIndex);
-                    if (annotation && annotation !== null && annotation.length != 0) {
+                    if (annotation && annotation.length !== 0) {
                         this.annotations.push(...annotation);
                         this.updateTempLabels();
                         this.isAnnotation(this.annotations);
@@ -324,20 +332,30 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     }
 
     getAllTabularData() {
-        const tabularData$ = this.tabularLabellingLayoutService.getAllTabularData(this.projectName);
-        let data: any[] = [];
-        this.subscription = this.subject
-            .pipe(() => tabularData$)
-            .subscribe(
-                (response) => {
-                    data = response;
-                },
-                (err) => console.error(err),
-                () => {
-                    this.tabularDataObservable = from(data);
-                    this.generateSource();
-                },
-            );
+        let allData: any[] = [];
+        this.tabularLabellingLayoutService.getAllTabularData(this.projectName).subscribe(
+            (response) => {
+                allData = response;
+            },
+            (err) => console.error(err),
+            () => {
+                const filteredKeys = Object.keys(allData[0]).filter((ele) => !this.filteredColumns.includes(ele));
+                const data = allData.filter((ele) => {
+                    const keys = Object.keys(ele);
+                    for (const key of keys) {
+                        if (!filteredKeys.includes(key)) {
+                            delete ele[key];
+                        }
+                    }
+                    return ele;
+                });
+                this.tabularDataObservable = new Observable<any[]>((observer) => {
+                    setTimeout(() => {
+                        observer.next(data);
+                    }, 1000);
+                });
+            },
+        );
     }
 
     isNumber = (inputData: any): boolean => {
@@ -364,11 +382,11 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
             return 'date';
         }
 
-        if (typeof value == 'number') {
+        if (typeof value === 'number') {
             return 'number';
         }
 
-        if (typeof value == 'string') {
+        if (typeof value === 'string') {
             return 'string';
         } else {
             console.error('Unidentifiable type of value');
@@ -398,12 +416,21 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
         for (const [key, value] of this.headersTypeMap) {
             this.features.push({ featureName: key, checked: true });
-            this.columns.push({
-                header: key,
-                type: value,
-                field: key,
-            });
+            if (!this.filteredColumns.includes(key)) {
+                this.columns.push({
+                    header: key,
+                    type: value,
+                    field: key,
+                });
+
+                this.columnsDefs.push({
+                    headerName: key,
+                    field: key,
+                });
+            }
         }
+
+        this.tableWidth = this.columns.length < 5 ? 1100 : 1800;
     }
 
     // sizeSelected(selectedSize: string): void {
@@ -421,17 +448,17 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     generateSource(): void {
         // const size = Number(selectedSize.split(' ').join(''));
 
-        this.tabularDataObservable.subscribe(
-            (response) => {
-                this.source.push(response);
-            },
-            (error) => {
-                console.error(error);
-            },
-            () => {
-                this.modalService.open(this.modalTabularDataView);
-            },
-        );
+        // this.tabularDataObservable.pipe(takeUntil(this.unsubscribe$)).subscribe(
+        //     (response) => {
+        //         this.source.push(response);
+        //     },
+        //     (error) => {
+        //         console.error(error);
+        //     },
+        //     () => {
+        this.modalService.open(this.modalTabularDataView);
+        //     },
+        // );
     }
 
     getAttributesAndValue(data: any) {
@@ -603,7 +630,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     }
 
     chooseLabel(label: label) {
-        if (this.isInvalid) return;
+        if (this.isInvalid) {
+            return;
+        }
 
         this.annotations.push(label);
 
@@ -618,7 +647,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     }
 
     removeAnnotation(annotation: label) {
-        if (this.isInvalid == true) return;
+        if (this.isInvalid == true) {
+            return;
+        }
         this.annotations = this.annotations.filter((ele) => ele !== annotation);
         this.annotationIndexMap.set(this.currentDataIndex, this.annotations);
         this.updateTempLabels();
@@ -745,7 +776,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     }
 
     calculateAnnotationNumber() {
-        let list: any[] = [];
+        const list: any[] = [];
         let annotationNumberMap: Map<string, number> = new Map();
 
         for (let i = 0; i < this.annotationIndexMap.size; i++) {
@@ -810,7 +841,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
             if (key && this.labelShortCutKeyMap.size > 0) {
                 const selectedLabel = this.findKeyByValue(this.labelShortCutKeyMap, key.toString());
-                if (selectedLabel == null) return;
+                if (selectedLabel == null) {
+                    return;
+                }
                 const label = this.labels.filter((ele) => ele.labelName == selectedLabel)[0];
                 this.chooseLabel(label);
             }
@@ -876,7 +909,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     navigateToTargetData(index: number) {
         const adjustIndex = index - 1;
-        if (adjustIndex < 0) return;
+        if (adjustIndex < 0) {
+            return;
+        }
         this.currentDataIndex = adjustIndex;
         this.retrieveCurrentData(this.projectName, this.uuidList[adjustIndex]);
         this.getAttributesAndValue(this.tabularData);
@@ -962,7 +997,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     }
 
     createTempAnnotations() {
-        let tempAnnotations: tempAnnotations[] = [];
+        const tempAnnotations: tempAnnotations[] = [];
         for (const label of this.labels) {
             tempAnnotations.push({ labelName: label.labelName, isSelected: false });
         }
@@ -989,50 +1024,65 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     isCompleteCurrentCondition = (type: string, index: number) => {
         let condition;
-        if (type == 'Threshold') {
+        if (type === 'Threshold') {
             condition = this.labellingThresholdConditionsMap.get(index);
-        } else if (type == 'Range') {
+        } else if (type === 'Range') {
             condition = this.labellingRangeConditionsMap.get(index);
         }
 
-        return this.alertUnCompleteConditions(condition, this.previousConditionType) == true ? true : false;
+        return this.alertUnCompleteConditions(condition, this.previousConditionType);
     };
 
     editSelectedLabellingCondition(index: number, isClickSet: boolean, type: string) {
-        if (this.previousConditionType == '') {
+        if (this.previousConditionType === '') {
             this.previousConditionType = type;
         }
         if (index != this.previousConditionIndex) {
-            if (this.isCompleteCurrentCondition(this.previousConditionType, this.previousConditionIndex) == true)
+            if (this.isCompleteCurrentCondition(this.previousConditionType, this.previousConditionIndex)) {
                 return;
+            }
             this.previousConditionIndex = index;
             this.previousConditionType = type;
         }
 
-        if (isClickSet == true) {
+        if (isClickSet) {
             if (type == 'Threshold') {
                 if (this.labellingThresholdConditionsMap.has(index)) {
-                    if (this.alertUnCompleteConditions(this.labellingThresholdConditionsMap.get(index), type) == true)
+                    if (this.alertUnCompleteConditions(this.labellingThresholdConditionsMap.get(index), type)) {
                         return;
+                    }
                 } else {
-                    if (this.alertUnCompleteConditions(this.tempLabellingConditionsMap.get(index), type) == true)
+                    if (this.alertUnCompleteConditions(this.tempLabellingConditionsMap.get(index), type)) {
                         return;
-                    if (this.alertDuplicateConditions(type, this.tempLabellingConditionsMap) == true) return;
+                    }
+                    if (this.alertDuplicateConditions(type, this.tempLabellingConditionsMap) == true) {
+                        return;
+                    }
                 }
             } else if (type == 'Range') {
                 if (this.labellingRangeConditionsMap.has(index)) {
-                    if (this.alertUnCompleteConditions(this.labellingRangeConditionsMap.get(index), type) == true)
+                    if (this.alertUnCompleteConditions(this.labellingRangeConditionsMap.get(index), type)) {
                         return;
+                    }
                 } else {
-                    if (this.alertUnCompleteConditions(this.tempLabellingConditionsMap.get(index), type) == true)
+                    if (this.alertUnCompleteConditions(this.tempLabellingConditionsMap.get(index), type)) {
                         return;
-                    if (this.alertDuplicateConditions(type, this.tempLabellingConditionsMap) == true) return;
+                    }
+                    if (this.alertDuplicateConditions(type, this.tempLabellingConditionsMap) == true) {
+                        return;
+                    }
                 }
             }
 
-            if (this.alertLimitOutBound(index, type) == true) return;
-            if (this.checkAndCorrectValueType(index, type) == false) return;
-            if (this.alertIncorrectSetting(index, type) == true) return;
+            if (this.alertLimitOutBound(index, type)) {
+                return;
+            }
+            if (!this.checkAndCorrectValueType(index, type)) {
+                return;
+            }
+            if (this.alertIncorrectSetting(index, type)) {
+                return;
+            }
 
             this.selectedConditionTypes[index].isClickSet = false;
             this.selectedConditionTypes[index].buttonLabel = 'edit';
@@ -1064,12 +1114,12 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
             }
             const attributeName = thresholdCondition.attribute;
             const attributeType = this.attributeTypeMap.get(attributeName.toUpperCase());
-            if (attributeType == 'number') {
+            if (attributeType === 'number') {
                 const value = thresholdCondition.value;
                 this.labellingThresholdConditionsMap.get(index).value = Number(value);
             }
 
-            if (attributeType == 'string') {
+            if (attributeType === 'string') {
                 const operator = this.labellingThresholdConditionsMap.get(index).operator;
                 const allowedOperator = ['equal to', 'not equal to'];
                 if (!allowedOperator.includes(operator)) {
@@ -1077,7 +1127,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                     return false;
                 }
             }
-        } else if (type == 'Range') {
+        } else if (type === 'Range') {
             let rangeCondition;
             if (this.tempLabellingConditionsMap.get(index)) {
                 rangeCondition = this.tempLabellingConditionsMap.get(index);
@@ -1102,11 +1152,11 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     };
 
     alertUnCompleteConditions = (conditions: any, type: string): boolean => {
-        if (conditions == undefined) {
+        if (conditions === undefined) {
             alert(type + ' condition is undefined. Please set the parameters of the condition');
             return true;
         } else {
-            if (type == 'Threshold') {
+            if (type === 'Threshold') {
                 const keys = Object.keys(conditions);
                 const thresholdKeys = ['attribute', 'operator', 'value', 'label', 'dateFormat'];
                 if (keys.includes('dateFormat') && keys.length < 5) {
@@ -1664,17 +1714,17 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     displayDateExample = (index: number, type: string) => {
         let condition;
-        if (type == 'Threshold') {
+        if (type === 'Threshold') {
             if (this.labellingThresholdConditionsMap) {
                 condition = this.labellingThresholdConditionsMap.get(index);
             }
-        } else if (type == 'Range') {
+        } else if (type === 'Range') {
             if (this.labellingRangeConditionsMap) {
                 condition = this.labellingRangeConditionsMap.get(index);
             }
         }
 
-        if (condition != undefined) {
+        if (condition !== undefined) {
             const dateFormat = condition.dateFormat;
             for (const date of this.dateFormat) {
                 if (date.format == dateFormat) {
@@ -2058,7 +2108,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     displayThresholdCondition = (index: number): string => {
         const isKey = this.labellingThresholdConditionsMap.has(index);
-        if (isKey == false) return 'empty';
+        if (!isKey) {
+            return 'empty';
+        }
         let display = '';
 
         const conditions = this.labellingThresholdConditionsMap.get(index) as threshold;
@@ -2076,22 +2128,24 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     displayRangeCondition = (index: number): string => {
         const isKey = this.labellingRangeConditionsMap.has(index);
-        if (isKey == false) return 'empty';
-        let display = '';
+        if (!isKey) {
+            return 'empty';
+        }
+        let display: string;
 
         const conditions = this.labellingRangeConditionsMap.get(index) as range;
         const attribute = conditions.attribute == undefined ? 'attribute' : conditions.attribute.toLowerCase();
         const lowerLimit = conditions.lowerLimit == undefined ? 'lowerLimit' : String(conditions.lowerLimit);
         const upperLimit = conditions.upperLimit == undefined ? 'upperLimit' : String(conditions.upperLimit);
         const lowerOperator =
-            conditions.lowerOperator == undefined
+            conditions.lowerOperator === undefined
                 ? 'lowerOperator'
                 : this.operatorSymbol(conditions.lowerOperator, 'Range');
         const upperOperator =
-            conditions.upperOperator == undefined
+            conditions.upperOperator === undefined
                 ? 'upperOperator'
                 : this.operatorSymbol(conditions.upperOperator, 'Range');
-        const annotations = conditions.label == undefined ? 'annotations' : this.expandAnnotation(conditions.label);
+        const annotations = conditions.label === undefined ? 'annotations' : this.expandAnnotation(conditions.label);
         const displayString =
             lowerLimit +
             ' ' +
@@ -2113,11 +2167,11 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     };
 
     createConditionsDisplay(index: number, selectedCondition: string) {
-        if (this.displayConditions.has(index) == false) {
+        if (!this.displayConditions.has(index)) {
             this.displayConditions.set(index, selectedCondition);
         } else {
             let condition = this.displayConditions.get(index);
-            if (condition != selectedCondition) {
+            if (condition !== selectedCondition) {
                 condition = selectedCondition;
             }
         }
@@ -2127,7 +2181,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     expandAnnotation = (annotations: any): string => {
         let annotationString = '';
         for (let i = 0; i < annotations.length; i++) {
-            if (i != annotations.length - 1) {
+            if (i !== annotations.length - 1) {
                 annotationString += annotations[i].labelName + ', ';
             } else {
                 annotationString += annotations[i].labelName;
@@ -2137,7 +2191,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     };
 
     operatorSymbol = (operator: string, type: string): string => {
-        let symbol = '';
+        const symbol = '';
         switch (operator) {
             case 'less than or equal to':
                 operator = '\u2264';
@@ -2175,7 +2229,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 if (this.conditionMapsList.has(key) == false) {
                     this.conditionMapsList.set(key, { threshold: condition });
                 } else {
-                    let selectedCondition = this.conditionMapsList.get(key)['threshold'];
+                    let selectedCondition = this.conditionMapsList.get(key).threshold;
                     selectedCondition = condition;
                 }
             }
@@ -2184,7 +2238,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 if (this.conditionMapsList.has(key) == false) {
                     this.conditionMapsList.set(key, { range: condition });
                 } else {
-                    let selectedCondition = this.conditionMapsList.get(key)['range'];
+                    let selectedCondition = this.conditionMapsList.get(key).range;
                     selectedCondition = condition;
                 }
             }

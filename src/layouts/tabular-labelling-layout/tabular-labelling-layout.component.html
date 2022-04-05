@@ -19,7 +19,7 @@
 
     <div class="layout">
         <tabular-labelling-left-sidebar
-            (_toggleTabularTable)="getAllTabularData()"
+            (_toggleTabularTable)="generateSource()"
             (_toggleLabels)="toggleLabelSection()"
             (_toggleConditions)="toggleConditionSection()"
             (_toggleSave)="toggleSave()"
@@ -186,15 +186,21 @@
         <div class="tabular-data-view">
             <gui-grid
                 [virtualScroll]="true"
-                [maxHeight]="500"
-                [width]="retrievedData.length < 5 ? 600 : 1800"
-                [sorting]="true"
-                [columns]="columns.length > 0 ? columns : []"
-                [source]="source.length > 0 ? source : 0"
+                [maxHeight]="400"
+                [width]="tabularData.length > 0 ? 1100 : 1800"
+                [columns]="columns"
+                [source]="tabularDataObservable | async"
                 [rowClass]="rowClass"
                 [theme]="'dark'"
             >
             </gui-grid>
+            <!--            <ag-grid-angular-->
+            <!--                style="width: 50vw; height: 50vh;"-->
+            <!--                class="ag-theme-alphine"-->
+            <!--                [rowData]="tabularDataObservable | async"-->
+            <!--                [columnDefs]="columnsDefs"-->
+            <!--            >-->
+            <!--            </ag-grid-angular>-->
         </div>
     </div>
 </modal>

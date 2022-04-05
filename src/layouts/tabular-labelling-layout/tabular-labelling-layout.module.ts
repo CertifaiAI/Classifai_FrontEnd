@@ -14,6 +14,7 @@ import { FabricSelectModule } from '@generic-ui/fabric';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { TabularLabellingModule } from '../../components/tabular-labelling/tabular-labelling.module';
+import { AgGridModule } from 'ag-grid-angular';
 
 @NgModule({
     imports: [
@@ -32,6 +33,7 @@ import { TabularLabellingModule } from '../../components/tabular-labelling/tabul
         ReactiveFormsModule,
         NgxChartsModule,
         TabularLabellingModule,
+        AgGridModule,
     ],
     declarations: [TabularLabellingLayoutComponent],
 })
