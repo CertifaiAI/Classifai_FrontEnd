@@ -1,6 +1,15 @@
 <div *ngIf="isOverlayOn" class="overlay">
-    <p style="margin-top: 40vh; color: rgb(255, 255, 255, 0.9); text-align: center; font-size: 3vh">
-        {{ isImageUploading ? 'Uploading the Images. Please Wait...' : 'Selection Window was Opened' }}
+    <p
+        style="margin-top: 40vh; color: rgba(255, 255, 255, 0.9); text-align: center; font-size: 3vh"
+        *ngIf="annotationType === 'bndbox' || annotationType === 'seg'"
+    >
+        {{ isUploading ? 'Uploading the Images. Please Wait...' : 'Selection Window was Opened' }}
+    </p>
+    <p
+        style="margin-top: 40vh; color: rgba(255, 255, 255, 0.9); text-align: center; font-size: 3vh"
+        *ngIf="annotationType === 'tabular'"
+    >
+        {{ isUploading ? 'Uploading the Tabular Data. Please Wait...' : 'Selection Window was Opened' }}
     </p>
 </div>
 <page-header [_onChange]="onChangeSchema"></page-header>

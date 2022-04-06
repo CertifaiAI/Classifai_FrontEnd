@@ -353,7 +353,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 this.tabularDataObservable = new Observable<any[]>((observer) => {
                     setTimeout(() => {
                         observer.next(data);
-                    }, 1000);
+                    }, 500);
                 });
             },
         );
@@ -426,7 +426,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                         this.attributeTypeMap.set(key, DataType.STRING);
                         break;
                     case 'date':
-                        this.headersTypeMap.set(key, GuiDataType.DATE);
+                        this.headersTypeMap.set(key, GuiDataType.STRING);
                         this.attributeTypeMap.set(key, DataType.DATE);
                         break;
                 }
@@ -497,7 +497,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
         for (const name of this.attributeNames) {
             const type = this.attributeTypeMap.get(name);
-            if (type != DataType.STRING) {
+            if (type !== DataType.STRING) {
                 if (!this.filteredStringTypeAttributeNames.includes(name)) {
                     this.filteredStringTypeAttributeNames.push(name);
                 }

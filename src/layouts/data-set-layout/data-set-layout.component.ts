@@ -74,7 +74,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     unsubscribe$: Subject<any> = new Subject();
     isLoading = false;
     isOverlayOn = false;
-    isImageUploading = false;
+    isUploading = false;
     isProjectLoading = false;
     isDeleteSuccess = false;
     projectName: string = '';
@@ -542,9 +542,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     isCreateFormIncomplete() {
         let condition: boolean = false;
 
-        if (this.annotationType == 'tabular') {
+        if (this.annotationType === 'tabular') {
             condition = this.inputProjectName === '' || this.tabularFilePath === '';
-        } else if (this.annotationType == 'bndbox' || 'seg') {
+        } else if (this.annotationType === 'bndbox' || 'seg') {
             condition = this.inputProjectName === '' || this.projectFolderPath === '';
         }
         return condition;
@@ -570,9 +570,12 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                       mergeMap(() => uploadStatus$),
                       /** @property {number} message value 4 means upload completed, value 1 means cancelled */
                       first(({ file_system_status, unsupported_image_list }) => {
-                          this.unsupportedImageList = unsupported_image_list;
-                          this.isOverlayOn = file_system_status === 1 || file_system_status === 2 ? true : false;
-                          this.isImageUploading = file_system_status === 2 ? true : false;
+                          this.isOverlayOn = file_system_status === 1 || file_system_status === 2;
+                          this.isUploading = file_system_status === 2;
+
+                          if (this.annotationType === 'bndbox' || this.annotationType === 'seg') {
+                              this.unsupportedImageList = unsupported_image_list;
+                          }
                           return file_system_status === 3;
                       }),
                   )
