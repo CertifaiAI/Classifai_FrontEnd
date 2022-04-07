@@ -57,18 +57,21 @@ export class TabularLabellingLayoutService {
         conditions: Map<number, any>,
         uuid: string,
         mode: string,
-    ): Observable<Message> => {
+    ): Observable<SpecificTabularDataResponse> => {
         let list = [];
         for (const [key, value] of conditions) {
             list.push([key, value]);
         }
         const conditionsJsonObject = Object.fromEntries(list);
 
-        return this.http.post<Message>(`${this.hostPort}v2/tabular/projects/${projectName}/prelabel`, {
-            conditions: JSON.stringify(conditionsJsonObject),
-            uuid: uuid,
-            labelling_mode: mode,
-        });
+        return this.http.post<SpecificTabularDataResponse>(
+            `${this.hostPort}v2/tabular/projects/${projectName}/prelabel`,
+            {
+                conditions: JSON.stringify(conditionsJsonObject),
+                uuid: uuid,
+                labelling_mode: mode,
+            },
+        );
     };
 
     downloadFile = (projectName: string, format: string, filterInvalidData: boolean): Observable<DownloadResponse> => {

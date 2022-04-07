@@ -331,8 +331,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     toggleModalDisplay = (shown: boolean): void => {
         if (this.labellingModeUrl !== 'tabular') {
             this._projectFoldername.nativeElement.innerHTML = '';
+        } else if (this.labellingModeUrl === 'tabular') {
+            this._tabularFileName.nativeElement.innerHTML = '';
         }
-        this._tabularFileName.nativeElement.innerHTML = '';
         this._labelTextFilename.nativeElement.innerHTML = '';
         shown && this.form.reset();
         shown

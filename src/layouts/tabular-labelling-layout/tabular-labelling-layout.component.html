@@ -23,6 +23,7 @@
             (_toggleLabels)="toggleLabelSection()"
             (_toggleConditions)="toggleConditionSection()"
             (_toggleSave)="toggleSave()"
+            (_toggleInfo)="toggleInfo()"
         ></tabular-labelling-left-sidebar>
         <tabular-labelling-side-menu
             [labels]="labels"
@@ -663,5 +664,19 @@
                 <button class="button-style navigation-btn" (click)="automateLabelling()">Yes</button>
             </div>
         </div>
+    </div>
+</modal>
+
+<modal [id]="modalShortcutKeyInfo" [modalBodyStyle]="infoModalBodyStyle" [scrollable]="true">
+    <div class="table-box">
+        <table class="short-cut-key-table">
+            <caption class="shortcut-key-info-header">
+                Keyboard Shortcut Information
+            </caption>
+            <tr *ngFor="let info of shortcutKeyInfo()">
+                <td innerHTML="{{ info.shortcutKey }}"></td>
+                <td innerHTML="{{ info.functionality }}"></td>
+            </tr>
+        </table>
     </div>
 </modal>

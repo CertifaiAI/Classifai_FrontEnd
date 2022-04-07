@@ -13,18 +13,10 @@ import {
     SimpleChanges,
     OnChanges,
     ChangeDetectionStrategy,
-    HostListener,
 } from '@angular/core';
 import { isEqual } from 'lodash-es';
-import {
-    ImgLabelProps,
-    ImageLabelUrl,
-    TabsProps,
-    CompleteMetadata,
-} from 'shared/types/image-labelling/image-labelling.model';
-import { AnnotateSelectionService } from 'shared/services/annotate-selection.service';
+import { TabsProps, CompleteMetadata } from 'shared/types/image-labelling/image-labelling.model';
 import { IconSchema } from 'shared/types/icon/icon.model';
-import { MousrCursorService } from '../../../shared/services/mouse-cursor.service';
 
 @Component({
     selector: 'tabular-labelling-left-sidebar',
@@ -38,6 +30,7 @@ export class TabularLabellingLeftSidebarComponent implements OnInit, OnChanges {
     @Output() _toggleLabels: EventEmitter<any> = new EventEmitter();
     @Output() _toggleConditions: EventEmitter<any> = new EventEmitter();
     @Output() _toggleSave: EventEmitter<any> = new EventEmitter<any>();
+    @Output() _toggleInfo: EventEmitter<any> = new EventEmitter<any>();
     @Output() _modalNoLabel = new EventEmitter();
     jsonSchema!: IconSchema;
     iconIndex!: number;
@@ -94,13 +87,15 @@ export class TabularLabellingLeftSidebarComponent implements OnInit, OnChanges {
                         this._toggleSave.emit();
                     },
                 },
-                // {
-                //     imgPath: `assets/icons/info.svg`,
-                //     hoverLabel: `leftSideBar.info`,
-                //     alt: `KeyPoint`,
-                //     toggleable: false,
-                //     onClick: () => {},
-                // },
+                {
+                    imgPath: `assets/icons/info.svg`,
+                    hoverLabel: `leftSideBar.info`,
+                    alt: `KeyPoint`,
+                    toggleable: false,
+                    onClick: () => {
+                        this._toggleInfo.emit();
+                    },
+                },
             ],
         };
     };

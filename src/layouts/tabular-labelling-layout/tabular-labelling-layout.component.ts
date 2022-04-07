@@ -179,6 +179,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     readonly modalIdSave = 'modal-save';
     readonly modalAddLabellingConditions = 'modal-add-labelling-conditions';
     readonly modalAlertWindow = 'modal-alert-window';
+    readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
     colorScheme = {
         domain: ['#659DBD', '#379683', '#8EE4AF', '#E7717D', '#F13C20', '#FF652F', '#376E6F'],
     };
@@ -223,6 +224,14 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         minWidth: '40vw',
         maxWidth: '40vw',
         margin: '15vw 68vh',
+        overflow: 'none',
+    };
+    infoModalBodyStyle: ModalBodyStyle = {
+        maxHeight: '50vh',
+        minWidth: '40vw',
+        maxWidth: '40vw',
+        margin: '20vh 23vw',
+        padding: '0vh 0vw 3vh 0vw',
         overflow: 'none',
     };
 
@@ -2295,7 +2304,11 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 this.uuidList[this.currentDataIndex],
                 this.labellingSequenceChoice,
             )
-            .subscribe(() => {});
+            .subscribe((res) => {
+                if (res.message == 1) {
+                    console.log(res.tabular_data);
+                }
+            });
     }
 
     onClickAutomate() {
@@ -2409,6 +2422,55 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                     this._router.navigate(['/']);
                 });
     };
+
+    toggleInfo() {
+        this.modalService.open(this.modalShortcutKeyInfo);
+    }
+
+    shortcutKeyInfo() {
+        return [
+            {
+                no: 1,
+                shortcutKey: `Arrow right`,
+                functionality: `Navigate next data`,
+            },
+            {
+                no: 2,
+                shortcutKey: `Arrow left`,
+                functionality: `Navigate previous data`,
+            },
+            {
+                no: 3,
+                shortcutKey: `Arrow up`,
+                functionality: `Scroll table up`,
+            },
+            {
+                no: 4,
+                shortcutKey: `Arrow down`,
+                functionality: `Scroll table down`,
+            },
+            {
+                no: 5,
+                shortcutKey: `Alt + q`,
+                functionality: `Invalidate current data`,
+            },
+            {
+                no: 6,
+                shortcutKey: `Alt + w`,
+                functionality: `Skip all invalid data`,
+            },
+            {
+                no: 7,
+                shortcutKey: `Alt + e`,
+                functionality: `Show invalid data only`,
+            },
+            {
+                no: 8,
+                shortcutKey: `Alt + t`,
+                functionality: `Remove last annotation`,
+            },
+        ];
+    }
 
     ngOnDestroy() {
         this.unsubscribe$.next();
