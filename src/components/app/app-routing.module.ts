@@ -14,6 +14,11 @@ const imgLabellingLayout: LoadChildren = () =>
         ({ ImageLabellingLayoutModule }) => ImageLabellingLayoutModule,
     );
 
+const audioLabellingLayout: LoadChildren = () =>
+    import('layouts/audio-labelling-layout/audio-labelling-layout.module').then(
+        ({ AudioLabellingLayoutModule }) => AudioLabellingLayoutModule,
+    );
+
 const routes: Routes = [
     { path: '', component: HomeLayoutComponent },
     {
@@ -30,6 +35,10 @@ const routes: Routes = [
     {
         path: 'imglabel/seg',
         loadChildren: imgLabellingLayout,
+    },
+    {
+        path: 'audio',
+        loadChildren: audioLabellingLayout,
     },
     { path: '**', component: PageNotFoundComponent },
 ];

@@ -1,6 +1,15 @@
 <div *ngIf="isOverlayOn" class="overlay">
-    <p style="margin-top: 40vh; color: rgb(255, 255, 255, 0.9); text-align: center; font-size: 3vh">
-        {{ isImageUploading ? 'Uploading the Images. Please Wait...' : 'Selection Window was Opened' }}
+    <p
+        style="margin-top: 40vh; color: rgba(255, 255, 255, 0.9); text-align: center; font-size: 3vh"
+        *ngIf="annotationType === 'bndbox' || annotationType === 'seg'"
+    >
+        {{ isUploading ? 'Uploading the Images. Please Wait...' : 'Selection Window was Opened' }}
+    </p>
+    <p
+        style="margin-top: 40vh; color: rgba(255, 255, 255, 0.9); text-align: center; font-size: 3vh"
+        *ngIf="annotationType === 'tabular'"
+    >
+        {{ isUploading ? 'Uploading the Tabular Data. Please Wait...' : 'Selection Window was Opened' }}
     </p>
 </div>
 <page-header [_onChange]="onChangeSchema"></page-header>
@@ -15,6 +24,7 @@
         <data-set-card
             [_jsonSchema]="projectList"
             [_projectType]="projectType"
+            [_annotationType]="annotationType"
             (_onClick)="onSubmit(false, $event)"
             (_onStarred)="onStarred($event)"
             (_onDelete)="deleteProject($event)"
@@ -61,15 +71,29 @@
                     <div class="empty-container"></div>
                 </ng-template>
                 <br />
-                <div class="select-folder-container">
-                    <label class="label label-select-folder">{{ 'projectFolder' | translate }}</label>
-                    <button class="button-style choose-folder-button" type="button" (click)="selectProjectFolder()">
-                        {{ 'chooseFolder' | translate }}
-                    </button>
-                </div>
-                <div class="folder-name-container">
-                    <label class="foldername" #projectfoldername></label>
-                </div>
+                <ng-container *ngIf="labellingModeUrl !== 'audio'">
+                    <div class="select-folder-container">
+                        <label class="label label-select-folder">{{ 'projectFolder' | translate }}</label>
+                        <button class="button-style choose-folder-button" type="button" (click)="selectProjectFolder()">
+                            {{ 'chooseFolder' | translate }}
+                        </button>
+                    </div>
+                    <div class="folder-name-container">
+                        <label class="foldername" #projectfoldername></label>
+                    </div>
+                </ng-container>
+                <br />
+                <ng-container *ngIf="labellingModeUrl === 'audio'">
+                    <div class="select-file-container">
+                        <label class="label label-select-folder">{{ 'Audio File:' }}</label>
+                        <button class="button-style choose-file-button" type="button" (click)="selectAudioFile()">
+                            {{ 'chooseFile' | translate }}
+                        </button>
+                    </div>
+                    <div class="folder-name-container">
+                        <label class="foldername" #audioFileName></label>
+                    </div>
+                </ng-container>
                 <br />
                 <div class="select-file-container">
                     <label class="label-select-label">
@@ -246,7 +270,7 @@
 >
     <div class="display-modal-container">
         <div class="chart-container">
-            <app-pie-chart [labelledImage]="labelledImage" [unLabelledImage]="unLabelledImage"></app-pie-chart>
+            <app-pie-chart [labelledData]="labelledImage" [unLabelledData]="unLabelledImage"></app-pie-chart>
             <app-bar-chart *ngIf="!noLabel && !noAnnotation" [labelStats]="labelStats"></app-bar-chart>
             <div style="margin: 13vh 12vw" *ngIf="noLabel">
                 <h3>No Labels</h3>

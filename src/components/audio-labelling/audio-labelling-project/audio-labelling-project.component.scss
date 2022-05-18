@@ -1,0 +1,99 @@
+.tab-container {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    right: 0;
+    position: fixed;
+    z-index: 1;
+    min-width: 18.5vw;
+    max-width: 18.5vw;
+}
+
+.utility-right-project-container {
+    height: 100%;
+    min-width: 16.3vw;
+    max-width: 16.3vw;
+    background: #383535;
+    border: 0.0325vw solid rgb(255, 255, 255, 0.25);
+    border-top: none;
+    position: relative;
+    z-index: 1;
+    align-items: stretch;
+    &::after {
+        position: absolute;
+        content: '';
+        top: 0;
+        min-width: 8.5vw;
+        max-width: 8.5vw;
+        min-height: 4vh;
+        max-height: 4vh;
+        background: #383535;
+        z-index: -1;
+        font-size: 1.5vh;
+        line-height: 3vh;
+        color: white;
+        padding: 0.5vh 0 0 2vw;
+    }
+}
+
+.flex-fill-remaining {
+    flex: 1 1 auto;
+}
+
+.utility-inner-container {
+    padding: 2.5vh 0 0 0.2vw;
+    scroll-behavior: smooth;
+    overflow: hidden;
+    z-index: 1;
+    min-width: 15.5vw;
+    max-width: 15.5vw;
+    position: relative;
+}
+
+.tab-height {
+    height: 80%;
+}
+
+.tab-name {
+    font-size: 1.7vh;
+    padding: 0.5vw 2vw 0 1vw;
+    display: inline-block;
+    color: white;
+    position: absolute;
+}
+
+.annotations-container {
+    position: relative;
+    margin-top: 5vh;
+    margin-left: 0.5vw;
+    width: 16vw;
+    height: 40vh;
+}
+
+.annotations-inner-container {
+    position: relative;
+    margin-left: 0.5vw;
+    width: 16vw;
+    height: 4vh;
+    flex-direction: column;
+}
+
+.annotations {
+    min-width: 10vw;
+    max-width: 10vw;
+    min-height: 3vh;
+    max-height: 3vh;
+    color: white;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    text-align: center;
+    border: none;
+    outline: none;
+    text-overflow: ellipsis;
+    padding: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    margin: 2vh;
+}

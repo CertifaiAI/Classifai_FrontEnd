@@ -3,7 +3,7 @@
         <div
             (mouseover)="mouseEventCapture($event, i)"
             (mouseleave)="mouseEventCapture($event, i)"
-            (click)="emitParentUrl(field.enabled, field.urlPath)"
+            (click)="emitParentUrl(field.enabled, field.urlPath, field.title)"
             [attr.data-index]="i"
             [ngStyle]="hoverStyling(i, hover, field.hoverLabel, field.imgPath)"
             class="card-container"

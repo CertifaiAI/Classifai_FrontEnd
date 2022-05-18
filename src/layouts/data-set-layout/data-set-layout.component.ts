@@ -26,6 +26,7 @@ import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'shared/components/spinner/spinner.service';
 import { BboxMetadata, PolyMetadata, ImageLabellingMode } from 'shared/types/image-labelling/image-labelling.model';
+import { LabellingModeService } from '../../shared/services/labelling-mode-service';
 
 type FormattedProject = {
     created_timestamp: Date;
@@ -92,6 +93,10 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     labelStats: ChartProps[] = [];
     noLabel: boolean = true;
     noAnnotation: boolean = true;
+    labellingModeUrl!: string;
+    annotationType!: string | null;
+    audioFilePath!: string;
+    isUploading: boolean = false;
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
@@ -158,6 +163,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     @ViewChild('refNewProjectName') _refNewProjectName!: ElementRef<HTMLInputElement>;
     @ViewChild('jsonImportProjectFile') _jsonImportProjectFile!: ElementRef<HTMLInputElement>;
     @ViewChild('jsonImportProjectFilename') _jsonImportProjectFilename!: ElementRef<HTMLLabelElement>;
+    @ViewChild('audioFileName') _audioFileName!: ElementRef<HTMLLabelElement>;
 
     constructor(
         private _fb: FormBuilder,
@@ -167,6 +173,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         private _imgLblModeService: ImageLabellingModeService,
         private _languageService: LanguageService,
         private _modalService: ModalService,
+        private _labellingModeService: LabellingModeService,
     ) {
         this._imgLblModeService.imgLabelMode$
             .pipe(distinctUntilChanged())
@@ -181,6 +188,11 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         this.renameFormControls();
         const langsArr: string[] = ['data-set-page-en', 'data-set-page-cn', 'data-set-page-ms'];
         this._languageService.initializeLanguage(`data-set-page`, langsArr);
+
+        this.labellingModeUrl = this._labellingModeService.retrieveUrlBasedOnAnnotationMode();
+        this._labellingModeService.labelMode$
+            .pipe(distinctUntilChanged())
+            .subscribe((mode) => (this.annotationType = mode));
     }
 
     ngOnInit(): void {
@@ -317,7 +329,11 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     toggleModalDisplay = (shown: boolean): void => {
-        this._projectFoldername.nativeElement.innerHTML = '';
+        if (this.labellingModeUrl !== 'audio') {
+            this._projectFoldername.nativeElement.innerHTML = '';
+        } else if (this.labellingModeUrl === 'audio') {
+            this._audioFileName.nativeElement.innerHTML = '';
+        }
         this._labelTextFilename.nativeElement.innerHTML = '';
         shown && this.form.reset();
         shown
@@ -343,8 +359,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .pipe()
             .subscribe((project) => {
                 if (project) {
-                    this.labelledImage = project.labeled_image;
-                    this.unLabelledImage = project.unlabeled_image;
+                    this.labelledImage = project.labeled_data;
+                    this.unLabelledImage = project.unlabeled_data;
                     this.labelStats = [];
                     project.label_per_class_in_project.forEach((labelMeta: labels_stats) => {
                         if (labelMeta.count > 0) {
@@ -514,17 +530,35 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     }
 
     startProject = (projectName: string): void => {
-        this._router.navigate([`imglabel/${this.imgLblMode}`], {
-            state: { projectName },
+        const labellingMode = this.annotationType;
+        const path = this.projectList.projects
+            .filter((ele) => ele.project_name === projectName)
+            .map((ele) => ele.project_path)[0];
+        const fileName = path.split(/[\\+]/).pop();
+        const filePath = path;
+        this._router.navigate([this.labellingModeUrl], {
+            state: { projectName, fileName, filePath },
         });
     };
 
     isCreateFormIncomplete() {
-        return this.inputProjectName === '' || this.projectFolderPath === '';
+        let condition: boolean = false;
+
+        if (this.annotationType === 'audio') {
+            condition = this.inputProjectName === '' || this.audioFilePath === '';
+        } else if (this.annotationType === 'bndbox' || 'seg') {
+            condition = this.inputProjectName === '' || this.projectFolderPath === '';
+        }
+        return condition;
     }
 
     createProject = (projectName: string): void => {
-        const createProj$ = this._dataSetService.createNewProject(projectName, this.labelPath, this.projectFolderPath);
+        const createProj$ = this._dataSetService.createNewProject(
+            projectName,
+            this.labelPath,
+            this.projectFolderPath,
+            this.audioFilePath,
+        );
         const uploadStatus$ = this._dataSetService.localUploadStatus(projectName);
         let numberOfReq: number = 0;
 
@@ -538,9 +572,12 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                       mergeMap(() => uploadStatus$),
                       /** @property {number} message value 4 means upload completed, value 1 means cancelled */
                       first(({ file_system_status, unsupported_image_list }) => {
-                          this.unsupportedImageList = unsupported_image_list;
-                          this.isOverlayOn = file_system_status === 1 || file_system_status === 2 ? true : false;
-                          this.isImageUploading = file_system_status === 2 ? true : false;
+                          this.isOverlayOn = file_system_status === 1 || file_system_status === 2;
+                          this.isUploading = file_system_status === 2;
+
+                          if (this.annotationType === 'bndbox' || this.annotationType === 'seg') {
+                              this.unsupportedImageList = unsupported_image_list;
+                          }
                           return file_system_status === 3;
                       }),
                   )
@@ -610,6 +647,40 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         }),
                     )
                     .subscribe((response) => {
+                        this.showProjectList(this.projectType);
+                    });
+            });
+    }
+
+    selectAudioFile() {
+        const audioFileStatus$ = this._dataSetService.importAudioFileStatus();
+        const audioFile$ = this._dataSetService.importAudioFile();
+        audioFile$
+            .pipe(
+                first(),
+                map(({ message }) => message),
+            )
+            .subscribe(() => {
+                let windowClosed = false;
+                interval(500)
+                    .pipe(
+                        switchMap(() => audioFileStatus$),
+                        first((response) => {
+                            this.isOverlayOn = response.window_status === 0;
+                            if (response.window_status === 1 && response.audio_file_path !== '') {
+                                this._audioFileName.nativeElement.innerHTML = response.audio_file_path.replace(
+                                    /^.*[\\\/]/,
+                                    '',
+                                );
+                                this.audioFilePath = response.audio_file_path;
+                            }
+                            if (response.window_status === 1) {
+                                windowClosed = true;
+                            }
+                            return windowClosed;
+                        }),
+                    )
+                    .subscribe(() => {
                         this.showProjectList(this.projectType);
                     });
             });

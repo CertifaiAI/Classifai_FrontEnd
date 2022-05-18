@@ -5,7 +5,9 @@
  */
 
 import { Component, EventEmitter, Output } from '@angular/core';
-import { CardFieldSchema } from 'shared/types/home-layout/home-layout.model';
+import { CardFieldSchema, ChosenType } from 'shared/types/home-layout/home-layout.model';
+import { Router } from '@angular/router';
+import { LabellingModeService } from '../../../shared/services/labelling-mode-service';
 
 @Component({
     selector: 'home-content',
@@ -17,7 +19,7 @@ export class HomeContentComponent {
     languageArr: (string | RegExpMatchArray)[] = [];
     jsonSchema: CardFieldSchema;
 
-    constructor() {
+    constructor(private _router: Router, private _labellingModeService: LabellingModeService) {
         this.jsonSchema = {
             fields: [
                 {
@@ -50,20 +52,24 @@ export class HomeContentComponent {
                     logoAlt: 'Video',
                 },
                 {
-                    enabled: false,
-                    urlPath: '',
-                    hoverLabel: 'comingSoon',
-                    title: 'voice',
+                    enabled: true,
+                    urlPath: '/dataset',
+                    title: 'audio',
                     imgPath: 'assets/landing-page/Classifai_Thumbnail_Voice.jpg',
-                    imgAlt: 'voice',
+                    imgAlt: 'audio',
                     logoPath: 'assets/landing-page/ClassifaiThumbnail_Icon_MP3.png',
-                    logoAlt: 'voice',
+                    logoAlt: 'audio',
                 },
             ],
         };
     }
 
-    onThumbnailClick(url: string): void {
-        this._navigate.emit(url);
+    onThumbnailClick(chosenType: ChosenType): void {
+        if (chosenType.title === 'audio') {
+            this._labellingModeService.setLabelMode(chosenType.title);
+            this._router.navigate([chosenType.url]);
+        } else {
+            this._navigate.emit(chosenType.url);
+        }
     }
 }

@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import { LanguageService } from 'shared/services/language.service';
 import { ImageLabellingModeService } from 'components/image-labelling/image-labelling-mode.service';
 import { ImageLabellingMode } from 'shared/types/image-labelling/image-labelling.model';
+import { LabellingModeService } from '../../shared/services/labelling-mode-service';
 
 @Component({
     selector: 'home-layout',
@@ -55,6 +56,7 @@ export class HomeLayoutComponent {
         private _router: Router,
         private _imgLblMode: ImageLabellingModeService,
         private _languageService: LanguageService,
+        private _labellingModeService: LabellingModeService,
     ) {
         const langsArr: string[] = ['landing-page-en', 'landing-page-cn', 'landing-page-ms'];
         this._languageService.initializeLanguage(`landing-page`, langsArr);
@@ -74,6 +76,7 @@ export class HomeLayoutComponent {
             if (path) {
                 const chosenMode: ImageLabellingMode = path === 'boundingbox' ? 'bndbox' : 'seg';
                 this._imgLblMode.setState(chosenMode);
+                this._labellingModeService.setLabelMode(chosenMode);
                 this._router.navigate([this.navigateUrl]);
             }
             this._modalService.close(id);

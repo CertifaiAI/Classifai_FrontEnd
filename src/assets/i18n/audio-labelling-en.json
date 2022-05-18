@@ -1,0 +1,10 @@
+{
+    "pageHeader": {
+        "home": "Home",
+        "datasetManagement": "Dataset Management",
+        "revision": "Revision",
+        "addUser": "Add user",
+        "profile": "Profile",
+        "tutorial": "Tutorial"
+    }
+}

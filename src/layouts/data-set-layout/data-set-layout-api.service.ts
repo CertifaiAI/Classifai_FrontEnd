@@ -20,26 +20,38 @@ import {
     ImportResponse,
     ProjectMessage,
     ProjectStatsResponse,
+    Audio,
 } from 'shared/types/message/message.model';
 import { UnsupportedImageService } from 'shared/services/unsupported-image.service';
 import { ImageLabellingMode, BboxMetadata, PolyMetadata } from 'shared/types/image-labelling/image-labelling.model';
+import { LabellingModeService } from '../../shared/services/labelling-mode-service';
 
 @Injectable({ providedIn: 'any' })
 export class DataSetLayoutService {
     private hostPort: string = environment.baseURL;
     private imageLabellingMode: ImageLabellingMode = null;
+    private labellingMode: string | null = null;
 
     constructor(
         private http: HttpClient,
         private mode: ImageLabellingModeService,
         private router: Router,
         private _unsupportedImageService: UnsupportedImageService,
+        private _labellingModeService: LabellingModeService,
     ) {
         // if has mode value, acquire the mode value
         // else return to lading page
-        this.mode.imgLabelMode$.pipe(distinctUntilChanged()).subscribe((modeVal) => {
-            if (modeVal) {
-                this.imageLabellingMode = modeVal;
+        // this.mode.imgLabelMode$.pipe(distinctUntilChanged()).subscribe((modeVal) => {
+        //     if (modeVal) {
+        //         this.imageLabellingMode = modeVal;
+        //     } else {
+        //         this.router.navigate(['/']);
+        //     }
+        // });
+
+        this._labellingModeService.labelMode$.pipe(distinctUntilChanged()).subscribe((labellingMode) => {
+            if (labellingMode) {
+                this.labellingMode = labellingMode;
             } else {
                 this.router.navigate(['/']);
             }
@@ -47,7 +59,7 @@ export class DataSetLayoutService {
     }
 
     getProjectList = (): Observable<MessageContent<Project[]>> => {
-        return this.http.get<MessageContent<Project[]>>(`${this.hostPort}${this.imageLabellingMode}/projects/meta`);
+        return this.http.get<MessageContent<Project[]>>(`${this.hostPort}${this.labellingMode}/projects/meta`);
         // .pipe(catchError(this.handleError));
     };
 
@@ -55,14 +67,24 @@ export class DataSetLayoutService {
         projectName: string,
         labelPath: string,
         projectFolderPath: string,
+        audioFilePath: string,
     ): Observable<ProjectMessage> => {
-        const annotationType = this.imageLabellingMode === 'bndbox' ? 'boundingbox' : 'segmentation';
+        let annotationType = '';
+        if (this.labellingMode === 'audio') {
+            annotationType = 'audio';
+        } else if (this.labellingMode === 'bndbox') {
+            annotationType = 'boundingbox';
+        } else if (this.labellingMode === 'seg') {
+            annotationType = 'segmentation';
+        }
+
         return this.http.put<ProjectMessage>(`${this.hostPort}v2/projects`, {
             project_name: projectName,
             annotation_type: annotationType,
             status: 'raw',
             project_path: projectFolderPath,
             label_file_path: labelPath,
+            audio_file_path: audioFilePath,
         });
     };
 
@@ -74,52 +96,48 @@ export class DataSetLayoutService {
 
     renameProject = (oldProjectName: string, newProjectName: string): Observable<Message> => {
         return this.http.put<Message>(
-            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${oldProjectName}/rename/${newProjectName}`,
+            `${this.hostPort}v2/${this.labellingMode}/projects/${oldProjectName}/rename/${newProjectName}`,
             {},
         );
     };
 
     deleteProject = (projectName: string): Observable<Message> => {
-        return this.http.delete<Message>(`${this.hostPort}${this.imageLabellingMode}/projects/${projectName}`);
+        return this.http.delete<Message>(`${this.hostPort}${this.labellingMode}/projects/${projectName}`);
     };
 
     updateProjectLoadStatus = (projectName: string): Observable<Message> => {
-        return this.http.get<Message>(`${this.hostPort}${this.imageLabellingMode}/projects/${projectName}`);
+        return this.http.get<Message>(`${this.hostPort}${this.labellingMode}/projects/${projectName}`);
     };
 
     checkProjectStatus = (projectName: string): Observable<MessageContent<Project[]>> => {
         return this.http.get<MessageContent<Project[]>>(
-            `${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/meta`,
+            `${this.hostPort}${this.labellingMode}/projects/${projectName}/meta`,
         );
     };
 
     manualCloseProject = (projectName: string, status = 'closed'): Observable<Message> => {
-        return this.http.put<Message>(`${this.hostPort}${this.imageLabellingMode}/projects/${projectName}`, {
+        return this.http.put<Message>(`${this.hostPort}${this.labellingMode}/projects/${projectName}`, {
             status,
         });
     };
 
     checkExistProjectStatus = (projectName: string): Observable<LabelList> => {
-        return this.http.get<LabelList>(
-            `${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/loadingstatus`,
-        );
+        return this.http.get<LabelList>(`${this.hostPort}${this.labellingMode}/projects/${projectName}/loadingstatus`);
     };
 
     getThumbnailList = (projectName: string, uuid: string): Observable<BboxMetadata & PolyMetadata> => {
         return this.http.get<BboxMetadata & PolyMetadata>(
-            `${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/uuid/${uuid}/thumbnail`,
+            `${this.hostPort}${this.labellingMode}/projects/${projectName}/uuid/${uuid}/thumbnail`,
         );
     };
 
     localUploadStatus = (projectName: string): Observable<MessageUploadStatus> => {
-        return this.http.get<MessageUploadStatus>(
-            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}`,
-        );
+        return this.http.get<MessageUploadStatus>(`${this.hostPort}v2/${this.labellingMode}/projects/${projectName}`);
     };
 
-    updateLabelList = (projectName: string, label_list: string[]): Observable<Message> => {
-        return this.http.put<Message>(`${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/newlabels`, {
-            label_list,
+    updateLabelList = (projectName: string, labelList: string[]): Observable<Message> => {
+        return this.http.put<Message>(`${this.hostPort}${this.labellingMode}/projects/${projectName}/newlabels`, {
+            label_list: labelList,
         });
     };
 
@@ -130,7 +148,7 @@ export class DataSetLayoutService {
     ): Observable<MessageProjectProgress> => {
         const conditionalEndPoint = action === 'loaded' ? 'status' : action;
         return this.http.put<MessageProjectProgress>(
-            `${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/${conditionalEndPoint}`,
+            `${this.hostPort}${this.labellingMode}/projects/${projectName}/${conditionalEndPoint}`,
             {
                 // status: 'true',
                 status: loading.toString(),
@@ -139,7 +157,7 @@ export class DataSetLayoutService {
     };
 
     importStatus = (): Observable<ImportResponse> => {
-        return this.http.get<ImportResponse>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/importstatus`);
+        return this.http.get<ImportResponse>(`${this.hostPort}v2/${this.labellingMode}/projects/importstatus`);
     };
 
     importLabelFile() {
@@ -158,13 +176,21 @@ export class DataSetLayoutService {
         return this.http.get<Folder>(`${this.hostPort}v2/folders`);
     }
 
+    importAudioFile() {
+        return this.http.put<Message>(`${this.hostPort}v2/audiofile`, {});
+    }
+
+    importAudioFileStatus() {
+        return this.http.get<Audio>(`${this.hostPort}v2/audiofile`);
+    }
+
     downloadUnsupportedImageList(projectName: string, unsupportedImageList: string[]) {
         return this._unsupportedImageService.downloadUnsupportedImageList(projectName, unsupportedImageList);
     }
 
     getProjectStats = (projectName: string): Observable<ProjectStatsResponse> => {
         return this.http.get<ProjectStatsResponse>(
-            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/statistic`,
+            `${this.hostPort}v2/${this.labellingMode}/projects/${projectName}/statistic`,
         );
     };
 }
