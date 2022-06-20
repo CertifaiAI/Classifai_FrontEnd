@@ -2262,7 +2262,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     listOutConditions() {
         for (const [key, value] of this.displayConditions.entries()) {
-            if (this.conditionList.includes(value) == false) {
+            if (this.conditionList.includes(value) === false) {
                 this.conditionList.push(value);
             }
         }
@@ -2271,7 +2271,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     preparePreLabellingConditions(status: boolean) {
         if (status == false) {
             for (const [key, condition] of this.labellingThresholdConditionsMap.entries()) {
-                if (this.conditionMapsList.has(key) == false) {
+                if (this.conditionMapsList.has(key) === false) {
                     this.conditionMapsList.set(key, { threshold: condition });
                 } else {
                     let selectedCondition = this.conditionMapsList.get(key).threshold;
@@ -2280,7 +2280,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
             }
 
             for (const [key, condition] of this.labellingRangeConditionsMap) {
-                if (this.conditionMapsList.has(key) == false) {
+                if (this.conditionMapsList.has(key) === false) {
                     this.conditionMapsList.set(key, { range: condition });
                 } else {
                     let selectedCondition = this.conditionMapsList.get(key).range;
@@ -2291,7 +2291,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     }
 
     automateLabelling() {
-        if (this.conditionMapsList.size == 0) {
+        if (this.conditionMapsList.size === 0) {
             alert('No pre-labelling conditions settings');
             return;
         }
@@ -2305,9 +2305,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 this.labellingSequenceChoice,
             )
             .subscribe((res) => {
-                if (res.message == 1) {
-                    console.log(res.tabular_data);
-                }
+                // if (res.message == 1) {
+                //     console.log(res.tabular_data);
+                // }
             });
     }
 
@@ -2335,7 +2335,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     updateInvalidCheckBox() {
         const labelName = this.annotations.filter((ele) => ele.labelName == 'Invalid');
-        if (labelName.length != 0) {
+        if (labelName.length !== 0) {
             this.isInvalid = true;
             this.invalidCheckBox.nativeElement.checked = true;
         } else {
@@ -2366,17 +2366,17 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     }
 
     labellingSequenceMode() {
-        if (this.appendCheckBox.nativeElement.checked == true) {
+        if (this.appendCheckBox.nativeElement.checked) {
             this.overWriteCheckBox.nativeElement.disabled = true;
             this.labellingSequenceChoice = 'append';
-        } else if (this.appendCheckBox.nativeElement.checked == false) {
+        } else if (!this.appendCheckBox.nativeElement.checked) {
             this.overWriteCheckBox.nativeElement.disabled = false;
         }
 
-        if (this.overWriteCheckBox.nativeElement.checked == true) {
+        if (this.overWriteCheckBox.nativeElement.checked) {
             this.appendCheckBox.nativeElement.disabled = true;
             this.labellingSequenceChoice = 'overwrite';
-        } else if (this.overWriteCheckBox.nativeElement.checked == false) {
+        } else if (!this.overWriteCheckBox.nativeElement.checked) {
             this.appendCheckBox.nativeElement.disabled = false;
         }
     }

@@ -71,30 +71,30 @@
                     : 'annotation-container'
             "
         >
-            <!--            <div-->
-            <!--                class="data-container"-->
-            <!--                (contextmenu)="toggleContainer($event);closeContainer($event)"-->
-            <!--                (click)="checkUsedAnnotations()"-->
-            <!--            >-->
+            <!--                        <div-->
+            <!--                            class="data-container"-->
+            <!--                            (contextmenu)="toggleContainer($event);closeContainer($event)"-->
+            <!--                            (click)="checkUsedAnnotations()"-->
+            <!--                        >-->
             <div class="data-container">
                 <!--                design 3: floating label container-->
-                <!--                    <div class="float-options-container" #floatContainer>-->
-                <!--                        <div class="select-options-container">-->
-                <!--                            <div-->
-                <!--                                class="select-options"-->
-                <!--                                *ngFor="let label of labels; index as i"-->
-                <!--                                [ngClass]="annotations.includes(label) ? 'close' : 'toggle'"-->
-                <!--                            >-->
-                <!--                                <div-->
-                <!--                                    class="options"-->
-                <!--                                    [style.background-color]="label.tagColor"-->
-                <!--                                    (click)="chooseLabel(i); updateLabel()"-->
-                <!--                                >-->
-                <!--                                    <label>{{ label.labelName }}</label>-->
-                <!--                                </div>-->
-                <!--                            </div>-->
-                <!--                        </div>-->
-                <!--                    </div>-->
+                <!--                                    <div class="float-options-container" #floatContainer>-->
+                <!--                                        <div class="select-options-container">-->
+                <!--                                            <div-->
+                <!--                                                class="select-options"-->
+                <!--                                                *ngFor="let label of labels; index as i"-->
+                <!--                                                [ngClass]="annotations.includes(label) ? 'close' : 'toggle'"-->
+                <!--                                            >-->
+                <!--                                                <div-->
+                <!--                                                    class="options"-->
+                <!--                                                    [style.background-color]="label.tagColor"-->
+                <!--                                                    (click)="chooseLabel(i)"-->
+                <!--                                                >-->
+                <!--                                                    <label>{{ label.labelName }}</label>-->
+                <!--                                                </div>-->
+                <!--                                            </div>-->
+                <!--                                        </div>-->
+                <!--                                    </div>-->
                 <div class="inner-container">
                     <div class="table-container">
                         <div class="scroll-table" #scrollTable>
