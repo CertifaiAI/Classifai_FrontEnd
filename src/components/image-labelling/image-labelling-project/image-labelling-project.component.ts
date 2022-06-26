@@ -17,7 +17,7 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { cloneDeep, isEqual } from 'lodash-es';
+import { isEqual } from 'lodash-es';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import {
@@ -37,7 +37,7 @@ import { LanguageService } from 'shared/services/language.service';
 import { UndoRedoService } from 'shared/services/undo-redo.service';
 import { HTMLElementEvent } from 'shared/types/field/field.model';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
-
+import { LabelColorServices } from '../../../shared/services/label-color.services';
 
 @Component({
     selector: 'image-labelling-project',
@@ -52,6 +52,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     @ViewChild('thumbnailList') thumbnailList!: ElementRef<HTMLDivElement>;
     @Input() _thumbnailList: CompleteMetadata[] = [];
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
+    @Input() _changeClickAbilityToggleStatus!: boolean;
+    @Input() _projectName!: string;
     @Output() _onClose: EventEmitter<TabsProps> = new EventEmitter();
     @Output() _onClickThumbnail: EventEmitter<EventEmitter_ThumbnailDetails> = new EventEmitter();
     @Output() _onClickLabel: EventEmitter<SelectedLabelProps> = new EventEmitter();
@@ -61,6 +63,8 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     @Output() _loadMoreThumbnails: EventEmitter<void> = new EventEmitter();
     @Output() _onRenameImage: EventEmitter<CompleteMetadata> = new EventEmitter();
     @Output() _onDeleteImage: EventEmitter<CompleteMetadata> = new EventEmitter();
+    @Output() _clickAbilityToggleStatus: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() _refreshLabelColor: EventEmitter<void> = new EventEmitter();
     action: number = -1;
     displayInputLabel: boolean = false;
     inputLabel: string = '';
@@ -79,6 +83,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         private _imgLblState: ImageLabellingActionService,
         private _languageService: LanguageService,
         private _undoRedoService: UndoRedoService,
+        private _labelColorService: LabelColorServices,
     ) {}
 
     ngOnInit(): void {
@@ -107,6 +112,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
 
     updateLabelList = () => {
         this.labelList = this._tabStatus[1].label_list ? this._tabStatus[1].label_list : [];
+        this.pickRandomColorForLabel();
     };
 
     onClose = (tab: TabsProps): void => {
@@ -186,6 +192,7 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
                 action: 0,
             });
         }
+        this._refreshLabelColor.emit();
     };
 
     onClickLabel = (label: string) => {
@@ -201,23 +208,6 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
         this.selectedLabel = label;
         this._annotateService.setState({ annotation: index });
     };
-
-    onDeleteAnnotation = () => {
-        if (this.selectedIndexAnnotation > -1) {
-            this._onDeleteAnnotation.emit(this.selectedIndexAnnotation);
-            this._selectMetadata.bnd_box.splice(this.selectedIndexAnnotation, 1) &&
-                this._undoRedoService.appendStages({
-                    meta: cloneDeep(this._selectMetadata),
-                    method: 'draw',
-                });
-        }
-    };
-
-    // onClickAnnotation = <T extends BboxMetadata>({ bnd_box }: T) => {
-    //     // this._onClickThumbnail.emit(thumbnail);
-    //     const bbLabel = bnd_box.map(({ label }) => label);
-    //     console.log(bbLabel);
-    // };
 
     checkCloseToggle = (tab: TabsProps): string | null => {
         let classes = '';
@@ -258,6 +248,23 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
                     break;
                 }
             }
+            this.pickRandomColorForLabel();
+        }
+
+        if (changes._changeClickAbilityToggleStatus) {
+            this.clickAbilityToggle = this._changeClickAbilityToggleStatus;
+            if (!this.clickAbilityToggle) {
+                this.selectedIndexAnnotation = -1;
+                this.selectedLabel = '';
+            }
+        }
+
+        if (this.clickAbilityToggle) {
+            setTimeout(() => this._clickAbilityToggleStatus.emit(true));
+        }
+
+        if (changes.selectedIndexAnnotation) {
+            console.log(this.selectedIndexAnnotation);
         }
     }
 
@@ -284,6 +291,10 @@ export class ImageLabellingProjectComponent implements OnInit, OnChanges, OnDest
     deleteImage(thumbnail: Omit<BboxMetadata & PolyMetadata, 'img_src'>, thumbnailIndex: number) {
         this.onClick(thumbnail, thumbnailIndex);
         this._onDeleteImage.emit(thumbnail);
+    }
+
+    pickRandomColorForLabel(): void {
+        this._labelColorService.setLabelColors(this.labelList, this._projectName);
     }
 
     ngOnDestroy(): void {

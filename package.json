@@ -27,6 +27,7 @@
         "@ngx-translate/core": "^13.0.0",
         "@ngx-translate/http-loader": "^6.0.0",
         "@swimlane/ngx-charts": "^19.0.1",
+        "blob-util": "^2.0.2",
         "file-saver": "^2.0.5",
         "jszip": "^3.5.0",
         "lodash-es": "^4.17.15",

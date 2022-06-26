@@ -157,3 +157,42 @@
     cursor: pointer;
     font-size: 2vh;
 }
+
+.icon {
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+    padding-left: 10px;
+    padding-bottom: 3px;
+}
+
+.tutorial {
+    box-shadow: 0 2px 7px 0 rgb(0, 0, 0, 0.2);
+    line-height: 50px;
+    padding-left: 40px;
+    padding-right: 40px;
+    text-align: center;
+    cursor: pointer;
+    &:hover {
+        background-color: #464a4e;
+    }
+    position: relative;
+    z-index: 1000;
+    vertical-align: center;
+}
+
+.tutorial-dropdown-menu {
+    position: absolute;
+    color: white;
+    font-size: 2vh;
+    top: 6vh;
+    right: 2vw;
+    background-color: #30353a;
+    padding: 0.1rem;
+    border-radius: 0.5rem;
+    transform: translateY(-10px);
+    transition: 150ms ease-in-out, transform 150ms ease-in-out;
+    z-index: 1000;
+    overflow: hidden auto;
+    max-height: 50vh;
+}

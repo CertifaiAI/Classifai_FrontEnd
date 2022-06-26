@@ -30,7 +30,8 @@
         "annotation": "Annotation",
         "statistic": "Statistic",
         "export": "Export",
-        "reload": "Reload"
+        "reload": "Reload",
+        "addImageFiles": "Add Image File"
     },
     "labellingProject": {
         "project": "Project",
@@ -99,6 +100,30 @@
             "9": {
                 "key": "Double click on a selected bounding box/ polygon",
                 "functionality": "Choose label for the selected bounding box"
+            },
+            "10": {
+                "key": "Alt + z",
+                "functionality": "Select pointer tool to move, zoom in and out of image"
+            },
+            "11": {
+                "key": "Alt + a",
+                "functionality": "Select annotation tool to annotate image"
+            },
+            "12": {
+                "key": "Alt + x",
+                "functionality": "Cancel selected tool and revert back to default mode"
+            },
+            "13": {
+                "key": "Ctrl/Command (press once)",
+                "functionality": "Shift image in canvas when drawing polygons in zoom mode"
+            },
+            "14": {
+                "key": "x",
+                "functionality": "Cancel the function of shift image in zoom mode"
+            },
+            "15": {
+                "key": "Esc",
+                "functionality": "Remove the current incomplete drawing of polygons"
             }
         }
     },
@@ -140,11 +165,14 @@
         "dontask": "Don't ask me again",
         "confirm": "Confirm"
     },
-    "multipleExtractionModal": {
-        "confirmation": "Frames extraction will perform ",
+    "addImageModal": {
+        "addImage": "Add images",
+        "addFolder": "Add folder",
+        "submit": "Submit",
         "confirm": "Confirm",
-        "title": "Multiple Extraction",
-        "partition": "Extraction Partition: "
+        "confirmation": "Are you sure you want to add the selected images to the project folder ?",
+        "imageAdded": "Total images added : ",
+        "notification": "Select images from source folder to add into current project folder"
     },
     "configFileInfoTitle": "Choosing the Right Export",
     "configFileInfoDest1": "Config File is the configuration file contains of metadata of a project. It is suitable when the data is readily available in the system to be imported to.",
@@ -164,16 +192,5 @@
         "noLabelSelected": "There are no label selected.",
         "noPolygon": "There are no polygon."
     },
-    "projectStats": "Project Statistics",
-    "videoTimeLine": {
-        "nextAnnotatedImage": "Next annotated image",
-        "previousAnnotatedImage": "Previous annotated image",
-        "nextUnannotatedImage": "Next unannotated image",
-        "previousUnannotatedImage": "Previous unannotated image"
-    },
-    "videoInfo": {
-        "videoDuration": "Video Duration: ",
-        "videoPath": "Video Path: "
-    },
-    "Tracking": "Tracking Method: "
+    "projectStats": "Project Statistics"
 }

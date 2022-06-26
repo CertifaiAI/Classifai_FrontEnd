@@ -29,6 +29,7 @@ import {
     LabelInfo,
     Polygons,
     PolyMetadata,
+    SelectedLabelProps,
     TabsProps,
     UndoState,
 } from 'shared/types/image-labelling/image-labelling.model';
@@ -41,10 +42,12 @@ import { ZoomState, ZoomService, WheelDelta } from 'shared/services/zoom.service
 import { SharedUndoRedoService } from 'shared/services/shared-undo-redo.service';
 import { SegmentationCanvasService } from './segmentation-canvas.service';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
+import { LabelColorServices } from '../../../shared/services/label-color.services';
+import { HTMLElementEvent } from '../../../shared/types/field/field.model';
 
 interface ExtendedMouseEvent extends MouseEvent {
-  layerX: number;
-  layerY: number;
+    layerX: number;
+    layerY: number;
 }
 
 @Component({
@@ -74,11 +77,19 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
     labelList: LabelInfo[] = [];
     allLabelList: LabelInfo[] = [];
     mouseEvent: MouseEvent | undefined;
+    labelColorList!: Map<string, string>;
+    invalidInput: boolean = false;
+    intervalId!: NodeJS.Timeout;
     @Input() _selectMetadata!: PolyMetadata;
     @Input() _imgSrc: string = '';
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
+    @Input() _projectName!: string;
+    @Input() _refreshAllLabelColor!: boolean;
     @Output() _onChangeMetadata: EventEmitter<PolyMetadata> = new EventEmitter();
     @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
+    @Output() _clickAbilityToggle: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() _onCompleteRefresh: EventEmitter<boolean> = new EventEmitter();
+    @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
     @ViewChild('crossH') crossH!: ElementRef<HTMLDivElement>;
     @ViewChild('crossV') crossV!: ElementRef<HTMLDivElement>;
 
@@ -92,6 +103,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
         private _mouseCursorService: MousrCursorService,
         private _shortcutKeyService: ShortcutKeyService,
         private _sharedUndoRedoService: SharedUndoRedoService,
+        private _labelColorListService: LabelColorServices,
     ) {}
 
     ngOnInit(): void {
@@ -153,6 +165,31 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             this._undoRedoService.clearAllStages();
             this._segCanvasService.setSelectedPolygon(-1);
             this.loadImage(changes._imgSrc.currentValue);
+        }
+
+        if (changes._tabStatus) {
+            let adjustImagePosition = true;
+            for (const { closed } of this._tabStatus) {
+                if (!closed) {
+                    adjustImagePosition = false;
+                    break;
+                }
+            }
+
+            if (this.canvas) {
+                if (adjustImagePosition === true) {
+                    this.initializeCanvas();
+                    this.imgFitToCenter();
+                } else {
+                    this.redrawImage(this._selectMetadata);
+                }
+            }
+        }
+
+        if (changes._refreshAllLabelColor) {
+            if (this._refreshAllLabelColor) {
+                setTimeout(() => this.updateLabelColor());
+            }
         }
     }
 
@@ -235,7 +272,13 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             const annotationList = this._tabStatus[2].annotation ? this._tabStatus[2].annotation[0].polygons ?? [] : [];
             this.sortingLabelList(this.labelList, annotationList);
         }
-        this._segCanvasService.drawAllPolygon(this._selectMetadata, this.canvasContext, this.annotateState.annotation);
+        this.labelColorList = this._labelColorListService.getLabelColorList(this._projectName);
+        this._segCanvasService.drawAllPolygon(
+            this._selectMetadata,
+            this.canvasContext,
+            this.annotateState.annotation,
+            this.labelColorList,
+        );
     }
 
     /**
@@ -334,6 +377,28 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 this.movePolygon(key);
             }
 
+            if (ctrlKey) {
+                this._imgLblStateService.setState({ draw: false, drag: true, scroll: true });
+                this.intervalId = setInterval(() => {
+                    this._segCanvasService.panPolygons(this._selectMetadata, true, () => {
+                        /** This is intentional */
+                    });
+                    this._segCanvasService.drawNewPolygon(
+                        this._selectMetadata,
+                        this.image,
+                        this.canvasContext,
+                        this.canvas.nativeElement,
+                        false,
+                    );
+                }, 100);
+            }
+
+            if (key === 'x' || key === 'X') {
+                clearInterval(this.intervalId);
+                this._segCanvasService.setGlobalXY(this.mouseEvent as ExtendedMouseEvent);
+                this._imgLblStateService.setState({ draw: true, drag: false, scroll: false });
+            }
+
             if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'copy')) {
                 this.copyPolygon();
             } else if (this._shortcutKeyService.checkKey(ctrlKey, metaKey, shiftKey, key, 'paste')) {
@@ -347,7 +412,6 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                     this.undoAction();
                 }
             }
-            // }
         } catch (err) {
             console.log('canvasKeyDownEvent', err);
         }
@@ -386,7 +450,7 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
             this._selectMetadata,
             this.canvasContext,
             this.image,
-            this.canvas.nativeElement
+            this.canvas.nativeElement,
         );
         this.redrawImage(this._selectMetadata);
         this.mouseMoveDrawCanvas(this.mouseEvent as ExtendedMouseEvent);
@@ -806,10 +870,63 @@ export class ImageLabellingSegmentationComponent implements OnInit, OnChanges, O
                 meta: this._selectMetadata,
                 method: 'draw',
             });
+        this._selectMetadata.polygons = this._selectMetadata.polygons.map((poly) => ({
+            ...poly,
+            color: this.labelColorList.get(poly.label) as string,
+        }));
+        this.emitMetadata();
     }
 
     labelTypeTextChange(event: string) {
         this.labelList = this.allLabelList.filter((label) => label.name.includes(event));
+    }
+
+    validateInputLabel = ({ target }: HTMLElementEvent<HTMLTextAreaElement>): void => {
+        const { value } = target;
+        const valTrimmed = value.trim();
+        if (valTrimmed) {
+            const isInvalidLabel: boolean = this._tabStatus.some(
+                ({ label_list }) => label_list && label_list.length && label_list.some((label) => label === valTrimmed),
+            );
+            if (!isInvalidLabel) {
+                this.invalidInput = false;
+                this.showDropdownLabelBox = false;
+                this._onChangeAnnotationLabel.emit({ label: value, index: this.annotateState.annotation });
+                this._selectMetadata.polygons[this.annotateState.annotation].label = value;
+                this._undoRedoService.isStateChange(this._selectMetadata.polygons) &&
+                    this._undoRedoService.appendStages({
+                        meta: this._selectMetadata,
+                        method: 'draw',
+                    });
+                const label_lists = this._tabStatus
+                    .map(({ label_list }) => (label_list ? label_list : []))
+                    .filter((tab) => tab.length > 0)[0];
+                this._onEnterLabel.emit({ action: 1, label_list: label_lists ? [...label_lists, value] : [value] });
+                this.labelSearch = '';
+            } else {
+                this.invalidInput = true;
+                console.error(`Invalid existing label input`);
+            }
+        }
+    };
+
+    cancelClickAbilityToggleStatus() {
+        this._clickAbilityToggle.emit(false);
+    }
+
+    updateLabelColor() {
+        const labelsId: number[] = [];
+        for (const [_, { id }] of this._selectMetadata.polygons.entries()) {
+            labelsId.push(id);
+        }
+        this._selectMetadata.polygons = this._selectMetadata.polygons.map((poly) => ({
+            ...poly,
+            color: this.labelColorList.get(poly.label) as string,
+            region: String(labelsId.indexOf(poly.id) + 1),
+        }));
+        this.redrawImage(this._selectMetadata);
+        this.emitMetadata();
+        this._onCompleteRefresh.emit();
     }
 
     ngOnDestroy(): void {

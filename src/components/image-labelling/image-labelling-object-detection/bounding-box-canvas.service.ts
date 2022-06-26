@@ -6,7 +6,14 @@
 
 import { Injectable } from '@angular/core';
 import { clone } from 'lodash-es';
-import { BboxMetadata, Boundingbox, DiffXY, Direction, LabelInfo, xyCoordinate } from 'shared/types/image-labelling/image-labelling.model';
+import {
+    BboxMetadata,
+    Boundingbox,
+    DiffXY,
+    Direction,
+    LabelInfo,
+    xyCoordinate,
+} from 'shared/types/image-labelling/image-labelling.model';
 import { Utils } from 'util/utils';
 
 @Injectable({
@@ -432,9 +439,14 @@ export class BoundingBoxCanvasService {
         labelList: LabelInfo[],
         boundingBoxes: Boundingbox[],
         context: CanvasRenderingContext2D | null,
+        labelColorList: Map<string, string>,
     ) {
         try {
             if (boundingBoxes.length > 0) {
+                boundingBoxes = boundingBoxes.map((box) => ({
+                    ...box,
+                    color: labelColorList.get(box.label) as string,
+                }));
                 for (const [i, boundingBox] of boundingBoxes.entries()) {
                     this.setEachBbox(
                         i === this.currentClickedBox.box || i === this.currentSelectedBndBox ? true : false,
@@ -445,10 +457,6 @@ export class BoundingBoxCanvasService {
                 }
             }
             if (this.currentClickedBox.box === -1 && this.currentSelectedBndBox === -1) {
-                for (const boundingBox of boundingBoxes) {
-                    boundingBox.color = `rgba(255,255,0,0.8)`;
-                    this.drawEachBoxOn(labelList, boundingBox, context, false);
-                }
                 const { x1, x2, y1, y2 } = this.currentDrawing;
                 this.tmpbox = this.generateNewBox(x1, x2, y1, y2);
                 this.tmpbox && this.drawEachBoxOn(labelList, this.tmpbox, context, true);
@@ -464,8 +472,7 @@ export class BoundingBoxCanvasService {
         boundingBox: Boundingbox,
         context: CanvasRenderingContext2D | null,
     ) {
-        boundingBox.color = selected ? `rgba(0,255,0,1.0)` : `rgba(255,255,0,0.8)`;
-        boundingBox.lineWidth = selected ? 2 : 1;
+        boundingBox.lineWidth = selected ? 3 : 2;
         this.drawEachBoxOn(labelList, boundingBox, context, selected ? true : false);
     }
 

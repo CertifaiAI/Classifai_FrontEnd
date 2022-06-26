@@ -4,7 +4,6 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-
 import {
     Component,
     OnInit,
@@ -14,12 +13,19 @@ import {
     SimpleChanges,
     OnChanges,
     ChangeDetectionStrategy,
+    HostListener,
 } from '@angular/core';
 import { isEqual } from 'lodash-es';
-import { ImgLabelProps, ImageLabelUrl, TabsProps, CompleteMetadata } from 'shared/types/image-labelling/image-labelling.model';
+import {
+    ImgLabelProps,
+    ImageLabelUrl,
+    TabsProps,
+    CompleteMetadata,
+} from 'shared/types/image-labelling/image-labelling.model';
 import { AnnotateSelectionService } from 'shared/services/annotate-selection.service';
 import { IconSchema } from 'shared/types/icon/icon.model';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
+import { MousrCursorService } from '../../../shared/services/mouse-cursor.service';
 
 @Component({
     selector: 'image-labelling-left-sidebar',
@@ -31,8 +37,10 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     @Input() _onChange!: ImgLabelProps;
     @Input() _currentUrl: ImageLabelUrl = '';
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
+    @Input() _clickAbilityToggleStatus: boolean = false;
     @Output() _navigate: EventEmitter<any> = new EventEmitter();
     @Output() _modalNoLabel = new EventEmitter();
+    @Output() _clickAbilityToggle: EventEmitter<boolean> = new EventEmitter<boolean>();
     jsonSchema!: IconSchema;
     iconIndex!: number;
     labelList: string[] = [];
@@ -41,6 +49,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
     constructor(
         private _imgLabelState: ImageLabellingActionService,
         private _annotateService: AnnotateSelectionService,
+        private _mouseCursorService: MousrCursorService,
     ) {}
 
     ngOnInit(): void {
@@ -75,6 +84,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     onClick: () => {
                         this.resetSelectedAnnotate();
                         this._imgLabelState.setState({ draw: false, drag: true, scroll: true });
+                        this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus); // To deselect the selected label in the column
                     },
                 },
                 // {
@@ -94,7 +104,12 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                           toggleable: true,
                           onClick: () => {
                               this.resetSelectedAnnotate();
-                              this._imgLabelState.setState({ draw: true, drag: false, scroll: false, crossLine: this.isCrossLineOn });
+                              this._imgLabelState.setState({
+                                  draw: true,
+                                  drag: false,
+                                  scroll: false,
+                                  crossLine: this.isCrossLineOn,
+                              });
                           },
                       }
                     : {
@@ -142,11 +157,16 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                     alt: `Cross Guiding Line`,
                     toggleable: false,
                     onClick: () => {
-                      this.isCrossLineOn = !this.isCrossLineOn;
-                      this.bindImagePath();
-                      if (this.iconIndex === 2 ) {
-                          this._imgLabelState.setState({ draw: true, drag: false, scroll: false, crossLine: this.isCrossLineOn });
-                      }
+                        this.isCrossLineOn = !this.isCrossLineOn;
+                        this.bindImagePath();
+                        if (this.iconIndex === 2) {
+                            this._imgLabelState.setState({
+                                draw: true,
+                                drag: false,
+                                scroll: false,
+                                crossLine: this.isCrossLineOn,
+                            });
+                        }
                     },
                 },
                 {
@@ -164,6 +184,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                             clear: true,
                         });
                         this._imgLabelState.setState(null);
+                        this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus);
                     },
                 },
                 {
@@ -175,6 +196,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                         this.resetSelectedAnnotate();
                         this._imgLabelState.setState({ draw: false, drag: false, fitCenter: true, scroll: false });
                         this._imgLabelState.setState(null);
+                        this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus);
                     },
                 },
                 {
@@ -193,6 +215,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                             save: true,
                             keyInfo: false,
                         });
+                        this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus);
                     },
                 },
                 {
@@ -211,6 +234,7 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
                             save: false,
                             keyInfo: true,
                         });
+                        this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus);
                     },
                 },
             ],
@@ -246,4 +270,34 @@ export class ImageLabellingLeftSidebarComponent implements OnInit, OnChanges {
 
     conditionalActiveIcon = (index: number): object | null =>
         index === this.iconIndex ? { background: 'rgb(59 59 59)' } : null;
+
+    @HostListener('window:keydown', ['$event'])
+    keyStrokeEvent({ altKey, key }: KeyboardEvent) {
+        try {
+            if (altKey && (key === 'z' || key === 'Z')) {
+                this.resetSelectedAnnotate();
+                this._imgLabelState.setState({ draw: false, drag: true, scroll: true });
+                this.getIndex(1);
+                this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus);
+            } else if (altKey && (key === 'a' || key === 'A')) {
+                this.resetSelectedAnnotate();
+                this._imgLabelState.setState({ draw: true, drag: false, scroll: false, crossLine: this.isCrossLineOn });
+                this.getIndex(2);
+            } else if (altKey && (key === 'x' || key === 'X')) {
+                this.resetSelectedAnnotate();
+                this._imgLabelState.setState({ draw: false, drag: false, scroll: false, crossLine: false });
+                this._mouseCursorService.setState({ default: true });
+                this.getIndex(0);
+                this.emitClickAbilityToggleStatus(this._clickAbilityToggleStatus);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    emitClickAbilityToggleStatus(status: boolean) {
+        if (status) {
+            this._clickAbilityToggle.emit(false);
+        }
+    }
 }

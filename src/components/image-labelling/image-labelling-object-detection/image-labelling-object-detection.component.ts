@@ -44,6 +44,7 @@ import { ShortcutKeyService } from 'shared/services/shortcut-key.service';
 import { HTMLElementEvent } from 'shared/types/field/field.model';
 import { BoundingBoxCanvasService } from './bounding-box-canvas.service';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
+import { LabelColorServices } from '../../../shared/services/label-color.services';
 
 @Component({
     selector: 'image-labelling-object-detection',
@@ -71,14 +72,19 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
     showDropdownLabelBox: boolean = false;
     invalidInput: boolean = false;
     closeEnough: number = 5;
+    labelColorList!: Map<string, string>;
     private mouseCursor!: MouseCursorState;
     private zoom!: ZoomState;
     @Input() _selectMetadata!: BboxMetadata;
     @Input() _imgSrc: string = '';
     @Input() _tabStatus: TabsProps<CompleteMetadata>[] = [];
+    @Input() _refreshAllLabelColor!: boolean;
+    @Input() _projectName!: string;
     @Output() _onChangeMetadata: EventEmitter<BboxMetadata> = new EventEmitter();
     @Output() _onChangeAnnotationLabel: EventEmitter<ChangeAnnotationLabel> = new EventEmitter();
     @Output() _onEnterLabel: EventEmitter<Omit<SelectedLabelProps, 'selectedLabel'>> = new EventEmitter();
+    @Output() _clickAbilityToggle: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() _onRefresh: EventEmitter<void> = new EventEmitter();
 
     constructor(
         private _ref: ChangeDetectorRef,
@@ -91,6 +97,7 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         private _mouseCursorService: MousrCursorService,
         private _shortcutKeyService: ShortcutKeyService,
         private _sharedUndoRedoService: SharedUndoRedoService,
+        private _labelColorService: LabelColorServices,
     ) {}
 
     ngOnInit() {
@@ -175,6 +182,12 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 } else {
                     this.redrawImage(this._selectMetadata);
                 }
+            }
+        }
+
+        if (changes._refreshAllLabelColor) {
+            if (this._refreshAllLabelColor) {
+                setTimeout(() => this.updateColor());
             }
         }
     }
@@ -429,6 +442,11 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
         try {
             if (this.boundingBoxState.draw && this.mousedown) {
                 this.finishDrawBoundingBox(event);
+                this._selectMetadata.bnd_box = this._selectMetadata.bnd_box.map((box) => ({
+                    ...box,
+                    color: this.labelColorList.get(box.label) as string,
+                }));
+                this.emitMetadata();
             }
             if (this._boundingBoxCanvas.mouseClickWithinPointPath(this._selectMetadata, event)) {
                 if (this.boundingBoxState.drag && this.mousedown) {
@@ -573,14 +591,14 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             let posFromTop = event.offsetY * (100 / document.documentElement.clientHeight) + 8.5;
             let posFromLeft = event.offsetX * (100 / document.documentElement.clientWidth) + 2.5;
             // Re-adjustment of floating div position if it is outside of the canvas
-            if (posFromTop < 20) {
-                posFromTop = 20;
+            if (posFromTop < 9) {
+                posFromTop = 9;
             }
             if (posFromTop > 76) {
                 posFromTop = 76;
             }
-            if (posFromLeft < 32) {
-                posFromLeft = 32;
+            if (posFromLeft < 2.5) {
+                posFromLeft = 2.5;
             }
             if (posFromLeft > 66) {
                 posFromLeft = 66;
@@ -610,6 +628,11 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             this.crossV.nativeElement.style.visibility = 'hidden';
             if (this.boundingBoxState.draw && this.mousedown) {
                 this.finishDrawBoundingBox(event);
+                this._selectMetadata.bnd_box = this._selectMetadata.bnd_box.map((box) => ({
+                    ...box,
+                    color: this.labelColorList.get(box.label) as string,
+                }));
+                this.emitMetadata();
             }
             if (
                 ((event.target as Element).className === 'canvasstyle' ||
@@ -691,7 +714,13 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             }
             this.sortingLabelList(this.labelList, annotationList);
         }
-        this._boundingBoxCanvas.drawAllBoxOn(this.labelList, this._selectMetadata.bnd_box, this.canvasContext);
+        this.labelColorList = this._labelColorService.getLabelColorList(this._projectName);
+        this._boundingBoxCanvas.drawAllBoxOn(
+            this.labelList,
+            this._selectMetadata.bnd_box,
+            this.canvasContext,
+            this.labelColorList,
+        );
     }
 
     clearCanvas() {
@@ -734,6 +763,11 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                 meta: this._selectMetadata,
                 method: 'draw',
             });
+        this._selectMetadata.bnd_box = this._selectMetadata.bnd_box.map((box) => ({
+            ...box,
+            color: this.labelColorList.get(box.label) as string,
+        }));
+        this.emitMetadata();
     }
 
     sortingLabelList(labelList: LabelInfo[], annotationList: Boundingbox[]) {
@@ -776,6 +810,10 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
                         meta: this._selectMetadata,
                         method: 'draw',
                     });
+                const label_lists = this._tabStatus
+                    .map(({ label_list }) => (label_list ? label_list : []))
+                    .filter((tab) => tab.length > 0)[0];
+                this._onEnterLabel.emit({ action: 1, label_list: label_lists ? [...label_lists, value] : [value] });
                 this.labelSearch = '';
             } else {
                 this.invalidInput = true;
@@ -783,6 +821,20 @@ export class ImageLabellingObjectDetectionComponent implements OnInit, OnChanges
             }
         }
     };
+
+    cancelClickAbilityToggleStatus() {
+        this._clickAbilityToggle.emit(false);
+    }
+
+    updateColor() {
+        this._selectMetadata.bnd_box = this._selectMetadata.bnd_box.map((box) => ({
+            ...box,
+            color: this.labelColorList.get(box.label) as string,
+        }));
+        this.redrawImage(this._selectMetadata);
+        this.emitMetadata();
+        this._onRefresh.emit();
+    }
 
     ngOnDestroy(): void {
         this._annotateSelectState.setState();

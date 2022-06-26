@@ -24,7 +24,7 @@ import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'shared/components/spinner/spinner.service';
 import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
-import { ExportStatus, labels_stats, Message } from 'shared/types/message/message.model';
+import { AddImageResponse, ExportStatus, labels_stats, Message } from 'shared/types/message/message.model';
 import { ModalBodyStyle } from 'shared/types/modal/modal.model';
 import { ChartProps, ProjectSchema } from 'shared/types/dataset-layout/data-set-layout.model';
 import {
@@ -42,6 +42,7 @@ import {
     SelectedLabelProps,
     ChangeAnnotationLabel,
 } from 'shared/types/image-labelling/image-labelling.model';
+import { LabelColorServices } from '../../shared/services/label-color.services';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -110,6 +111,16 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     isFetching: boolean = true;
     noLabel: boolean = true;
     noAnnotation: boolean = true;
+    tabClosedStatus!: TabsProps;
+    imageNameList: string[] = [];
+    imageBase64List: string[] = [];
+    selectedFiles!: FileList;
+    isSelectedImagesAdding: boolean = false;
+    imageLoading: boolean = false;
+    totalImage!: number;
+    progress: string = '';
+    clickAbilityToggle!: boolean;
+    refreshAllLabelColor: boolean = false;
     readonly modalExportOptions = 'modal-export-options';
     readonly modalExportProject = 'modal-export-project';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
@@ -118,6 +129,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     readonly modalRenameImage = 'modal-rename-image';
     readonly modalDeleteImage = 'modal-delete-image';
     readonly modalIdProjectStats = 'modal-project-stats';
+    readonly modalAddImage = 'modal-add-image';
+    readonly modalSubmitAddedImage = 'modal-submit-added-image';
+    readonly modalImageLoadingProgress = 'modal-image-loading-progress';
     exportModalBodyStyle: ModalBodyStyle = {
         minHeight: '15vh',
         maxHeight: '15vh',
@@ -195,6 +209,27 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         margin: '7vw 36vh',
         overflow: 'none',
     };
+    addImageBodyStyle: ModalBodyStyle = {
+        height: '73vh',
+        width: '83vw',
+        margin: '5vw 5vh',
+        overflowY: 'none',
+    };
+    submitAddedImageBodyStyle: ModalBodyStyle = {
+        height: '27vh',
+        width: '30vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+    };
+    imageLoadingProgressBodyStyle: ModalBodyStyle = {
+        minHeight: '18vh',
+        maxHeight: '30vh',
+        minWidth: '20vw',
+        maxWidth: '20vw',
+        margin: '15vw 71vh',
+        overflow: 'none',
+        background: 'none',
+    };
     saveType: ExportSaveType = {
         saveCurrentImage: true,
         saveBulk: false,
@@ -221,6 +256,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
         public _languageService: LanguageService,
         private _spinnerService: SpinnerService,
         private _exportSaveFormatService: ExportSaveFormatService,
+        private _labelColorService: LabelColorServices,
     ) {
         const langsArr: string[] = ['image-labelling-en', 'image-labelling-cn', 'image-labelling-ms'];
         this._languageService.initializeLanguage(`image-labelling`, langsArr);
@@ -457,6 +493,8 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             (this.tabStatus = this.tabStatus.map((tab) =>
                 tab.name.toLowerCase() === name.toLowerCase() ? { ...tab, closed } : { ...tab },
             ));
+
+        this.tabClosedStatus = { name, closed };
     };
 
     onExport = (): void => {
@@ -677,7 +715,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
     getImageNameFromPath(thumbnailInfo: CompleteMetadata) {
         this.imgPath = thumbnailInfo.img_path;
         let separater = '';
-        const platform = window.navigator.platform;
+        const platform = window.navigator.userAgent;
         if (platform.startsWith('Mac') || platform.startsWith('Linux')) {
             separater = '/';
         } else {
@@ -742,6 +780,13 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 () => (this.showLoading = false),
             );
         }
+        // if (this.selectedMetaData?.polygons !== undefined) {
+        //     const labelColorList = this._labelColorService.getLabelColorList(this.selectedProjectName);
+        //     this.selectedMetaData.polygons = this.selectedMetaData.polygons.map((poly) => ({
+        //         ...poly,
+        //         color: labelColorList.get(poly.label) as string
+        //     }));
+        // }
     };
 
     onProcessLabel = ({ selectedLabel, label_list, action }: SelectedLabelProps) => {
@@ -766,10 +811,20 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
 
     onChangeAnnotationLabel = (changeAnnoLabel: ChangeAnnotationLabel): void => {
         changeAnnoLabel.index = this.currentAnnotationIndex;
+        const labelColorList = this._labelColorService.getLabelColorList(this.selectedProjectName);
         if (this.selectedMetaData) {
             if (this.selectedMetaData.polygons) {
                 this.selectedMetaData.polygons[changeAnnoLabel.index].label = changeAnnoLabel.label;
+                this.selectedMetaData.polygons[changeAnnoLabel.index].color = labelColorList.get(
+                    changeAnnoLabel.label,
+                ) as string;
                 this.currentAnnotationLabel = changeAnnoLabel.label;
+            }
+
+            if (this.selectedMetaData.bnd_box) {
+                this.selectedMetaData.bnd_box[changeAnnoLabel.index].color = labelColorList.get(
+                    changeAnnoLabel.label,
+                ) as string;
             }
         }
         this.tabStatus = this._imgLblLayoutService.changeAnnotationLabel(this.tabStatus, changeAnnoLabel);
@@ -974,7 +1029,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 if (res.message === 1) {
                     const index = this.thumbnailList.findIndex((t) => t.uuid === this.selectedUuid);
                     let separater = '';
-                    const platform = window.navigator.platform;
+                    const platform = window.navigator.userAgent;
                     if (platform.startsWith('Mac') || platform.startsWith('Linux')) {
                         separater = '/';
                     } else {
@@ -1044,12 +1099,12 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             .getProjectStats(this.selectedProjectName)
             .pipe()
             .subscribe((project) => {
-                console.log(project.statistic_data);
-                if (project.statistic_data) {
-                    this.labelledImage = project.statistic_data[0].labeled_image;
-                    this.unLabelledImage = project.statistic_data[0].unlabeled_image;
+                console.log(project);
+                if (project) {
+                    this.labelledImage = project.labeled_image;
+                    this.unLabelledImage = project.unlabeled_image;
                     this.labelStats = [];
-                    project.statistic_data[0].label_per_class_in_project.forEach((labelMeta: labels_stats) => {
+                    project.label_per_class_in_project.forEach((labelMeta: labels_stats) => {
                         if (labelMeta.count > 0) {
                             this.noAnnotation = false;
                         }
@@ -1059,7 +1114,7 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                         };
                         this.labelStats.push(meta);
                     });
-                    if (project.statistic_data[0].label_per_class_in_project.length === 0) {
+                    if (project.label_per_class_in_project.length === 0) {
                         this.noLabel = true;
                         this.noAnnotation = false;
                     }
@@ -1068,6 +1123,172 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 }
             });
     };
+
+    toggleAddImage() {
+        this._modalService.open(this.modalAddImage);
+    }
+
+    toggleSubmitAddedImage() {
+        this._modalService.open(this.modalSubmitAddedImage);
+    }
+
+    onCloseAddImageModal() {
+        this.imageNameList.splice(0, this.imageNameList.length);
+        this.imageBase64List.splice(0, this.imageBase64List.length);
+    }
+
+    addNewImages(event: any) {
+        this.selectedFiles = event.target.files;
+        this.totalImage = this.selectedFiles.length;
+        // tslint:disable-next-line:prefer-for-of
+        for (let i = 0; i <= this.selectedFiles.length; i++) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                if (reader.result) {
+                    if (!this.imageBase64List.includes(reader.result as string)) {
+                        this.imageBase64List.push(reader.result as string);
+                    }
+
+                    if (!this.imageNameList.includes(this.selectedFiles[i].name)) {
+                        this.imageNameList.push(this.selectedFiles[i].name);
+                    }
+                    this.imageLoadingProgress(this.imageBase64List.length, this.totalImage);
+                }
+            };
+
+            if (this.selectedFiles[i]) {
+                reader.readAsDataURL(this.selectedFiles[i]);
+            }
+        }
+    }
+
+    imageLoadingProgress(currentIndex: number, totalImage: number) {
+        this._modalService.open(this.modalImageLoadingProgress);
+
+        this.progress = ((currentIndex / totalImage) * 100).toFixed(0).trim() + '%';
+        this.imageLoading = currentIndex < this.totalImage;
+
+        if (currentIndex === this.totalImage) {
+            this.totalImage = 0;
+            this._modalService.close(this.modalImageLoadingProgress);
+        }
+    }
+
+    deleteSelectedImage(index: number) {
+        this.imageNameList.splice(index, 1);
+        this.imageBase64List.splice(index, 1);
+    }
+
+    submitAddedImages() {
+        this._modalService.close(this.modalSubmitAddedImage);
+        this._modalService.close(this.modalAddImage);
+        this.isOverlayOn = true;
+        this.isSelectedImagesAdding = true;
+
+        const addImage$ = this._imgLblApiService.submitSelectedImageFile(
+            this.selectedProjectName,
+            this.imageNameList,
+            this.imageBase64List,
+        );
+
+        const addImageResponse$ = this._imgLblApiService.addImagesStatus(this.selectedProjectName);
+
+        const returnResponse = ({ message }: Message): Observable<AddImageResponse> => {
+            return message === 1
+                ? interval(500).pipe(
+                      mergeMap(() => addImageResponse$),
+                      first(({ add_image_status }) => {
+                          return add_image_status === 0 || add_image_status === 1;
+                      }),
+                  )
+                : throwError((error: any) => {
+                      console.error(error);
+                      return error;
+                  });
+        };
+
+        this.subjectSubscription = this.subject$
+            .pipe(
+                first(),
+                mergeMap(() => addImage$),
+                mergeMap((response) => returnResponse(response)),
+            )
+            .subscribe(
+                (response) => {
+                    if (response.add_image_status === 0) {
+                        this.onCloseAddImageModal();
+                    }
+
+                    if (response.add_image_status === 1) {
+                        this.onCloseAddImageModal();
+                        console.log('Operation add image to project folder failed');
+                    }
+                },
+                () => {
+                    console.error('Error happened in add image operation, check log for information');
+                },
+                () => {
+                    this.isOverlayOn = false;
+                    this.isSelectedImagesAdding = false;
+                    this.onReload();
+                },
+            );
+
+        this.subject$.next();
+    }
+
+    changeClickAbilityToggleStatus(status: boolean) {
+        this.clickAbilityToggle = status;
+    }
+
+    refreshLabelColor() {
+        this.refreshAllLabelColor = true;
+    }
+
+    completeRefreshLabelColor() {
+        this.refreshAllLabelColor = false;
+    }
+
+    refreshAllPolygonsLabelColorAndRegion() {
+        const idMap = new Map<number, number[]>();
+        const labelColorList = this._labelColorService.getLabelColorList(this.selectedProjectName);
+
+        for (const [i, { polygons }] of this.thumbnailList.entries()) {
+            if (polygons !== undefined) {
+                let idList: number[] = [];
+                for (const [_, { id }] of polygons.entries()) {
+                    idList.push(id);
+                }
+                idMap.set(i, idList);
+                idList = [];
+            }
+        }
+        for (const [j, { polygons }] of this.thumbnailList.entries()) {
+            if (polygons !== undefined) {
+                const idList = idMap.get(j);
+                if (idList !== undefined) {
+                    this.thumbnailList[j].polygons = polygons.map((poly) => ({
+                        ...poly,
+                        color: labelColorList.get(poly.label) as string,
+                        region: String(idList.indexOf(poly.id) + 1),
+                    }));
+                }
+            }
+        }
+    }
+
+    refreshAllBndBoxLabelColor() {
+        const labelColorList = this._labelColorService.getLabelColorList(this.selectedProjectName);
+
+        for (const [i, { bnd_box }] of this.thumbnailList.entries()) {
+            if (bnd_box !== undefined) {
+                this.thumbnailList[i].bnd_box = bnd_box.map((box) => ({
+                    ...box,
+                    color: labelColorList.get(box.label) as string,
+                }));
+            }
+        }
+    }
 
     shortcutKeyInfo() {
         return [
@@ -1115,6 +1336,36 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
                 no: 9,
                 shortcutKey: `info.shortcut.9.key`,
                 functionality: `info.shortcut.9.functionality`,
+            },
+            {
+                no: 10,
+                shortcutKey: `info.shortcut.10.key`,
+                functionality: `info.shortcut.10.functionality`,
+            },
+            {
+                no: 11,
+                shortcutKey: `info.shortcut.11.key`,
+                functionality: `info.shortcut.11.functionality`,
+            },
+            {
+                no: 12,
+                shortcutKey: `info.shortcut.12.key`,
+                functionality: `info.shortcut.12.functionality`,
+            },
+            {
+                no: 13,
+                shortcutKey: `info.shortcut.13.key`,
+                functionality: `info.shortcut.13.functionality`,
+            },
+            {
+                no: 14,
+                shortcutKey: `info.shortcut.14.key`,
+                functionality: `info.shortcut.14.functionality`,
+            },
+            {
+                no: 15,
+                shortcutKey: `info.shortcut.15.key`,
+                functionality: `info.shortcut.15.functionality`,
             },
         ];
     }

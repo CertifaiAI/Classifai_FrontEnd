@@ -12,6 +12,7 @@ import { distinctUntilChanged } from 'rxjs/operators';
 import { environment } from 'environments/environment.prod';
 import { CompleteMetadata, ImageLabellingMode } from 'shared/types/image-labelling/image-labelling.model';
 import {
+    AddImageResponse,
     ExportResponse,
     ExportStatus,
     Message,
@@ -122,6 +123,23 @@ export class ImageLabellingApiService {
         return this.http.delete<MessageDeleteImg>(
             `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/uuids`,
             options,
+        );
+    };
+
+    submitSelectedImageFile = (
+        projectName: string,
+        imageNameList: string[],
+        imageBase64List: string[],
+    ): Observable<Message> => {
+        return this.http.put<Message>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/add`, {
+            img_name_list: imageNameList,
+            img_base64_list: imageBase64List,
+        });
+    };
+
+    addImagesStatus = (projectName: string): Observable<AddImageResponse> => {
+        return this.http.get<AddImageResponse>(
+            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/addstatus`,
         );
     };
 }
