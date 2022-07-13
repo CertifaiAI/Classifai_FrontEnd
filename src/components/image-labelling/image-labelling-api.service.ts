@@ -4,13 +4,6 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { distinctUntilChanged } from 'rxjs/operators';
-import { environment } from 'environments/environment.prod';
-import { CompleteMetadata, ImageLabellingMode } from 'shared/types/image-labelling/image-labelling.model';
 import {
     AddImageResponse,
     ExportResponse,
@@ -23,17 +16,25 @@ import {
     MessageRenameImg,
     UUID,
 } from 'shared/types/message/message.model';
-import { ImageLabellingModeService } from './image-labelling-mode.service';
+import { CompleteMetadata } from 'shared/types/labelling-type/image-labelling.model';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
+import { distinctUntilChanged } from 'rxjs/operators';
+import { environment } from 'environments/environment.prod';
+import { LabelModeService } from '../../shared/services/label-mode-service';
 
 @Injectable({ providedIn: 'any' })
 export class ImageLabellingApiService {
     private hostPort: string = environment.baseURL;
-    public imageLabellingMode: ImageLabellingMode = null;
+    public annotationType!: string;
 
-    constructor(private http: HttpClient, private mode: ImageLabellingModeService, private router: Router) {
-        this.mode.imgLabelMode$.pipe(distinctUntilChanged()).subscribe((modeVal) => {
-            if (modeVal) {
-                this.imageLabellingMode = modeVal;
+    constructor(private http: HttpClient, private labelModeService: LabelModeService, private router: Router) {
+        this.labelModeService.labelMode$.pipe(distinctUntilChanged()).subscribe((labelMode) => {
+            if (labelMode) {
+                this.annotationType = labelMode;
             } else {
                 this.router.navigate(['/']);
             }
@@ -42,12 +43,12 @@ export class ImageLabellingApiService {
 
     getBase64Thumbnail = (projectName: string, uuid: UUID): Observable<MessageBase64Img> => {
         return this.http.get<MessageBase64Img>(
-            `${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/uuid/${uuid}/imgsrc`,
+            `${this.hostPort}${this.annotationType}/projects/${projectName}/uuid/${uuid}/imgsrc`,
         );
     };
 
     updateLabelList = (projectName: string, label_list: string[]): Observable<Message> => {
-        return this.http.put<Message>(`${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/newlabels`, {
+        return this.http.put<Message>(`${this.hostPort}${this.annotationType}/projects/${projectName}/newlabels`, {
             label_list,
         });
     };
@@ -58,7 +59,7 @@ export class ImageLabellingApiService {
         metadata: CompleteMetadata,
     ): Observable<MessageProjectProgress> => {
         return this.http.put<MessageProjectProgress>(
-            `${this.hostPort}${this.imageLabellingMode}/projects/${projectName}/uuid/${uuid}/update`,
+            `${this.hostPort}${this.annotationType}/projects/${projectName}/uuid/${uuid}/update`,
             {
                 ...metadata,
             },
@@ -77,7 +78,7 @@ export class ImageLabellingApiService {
 
     exportProject = (projectName: string, exportType: string): Observable<ExportResponse> => {
         return this.http.put<ExportResponse>(
-            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/export/${exportType}`,
+            `${this.hostPort}v2/${this.annotationType}/projects/${projectName}/export/${exportType}`,
             {
                 newprojectid: projectName,
             },
@@ -85,24 +86,24 @@ export class ImageLabellingApiService {
     };
 
     exportProjectStatus() {
-        return this.http.get<ExportStatus>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/exportstatus`);
+        return this.http.get<ExportStatus>(`${this.hostPort}v2/${this.annotationType}/projects/exportstatus`);
     }
 
     reloadProject = (projectName: string): Observable<Message> => {
-        return this.http.put<Message>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/reload`, {
+        return this.http.put<Message>(`${this.hostPort}v2/${this.annotationType}/projects/${projectName}/reload`, {
             newprojectid: projectName,
         });
     };
 
     reloadProjectStatus = (projectName: string): Observable<MessageReload> => {
         return this.http.get<MessageReload>(
-            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/reloadstatus`,
+            `${this.hostPort}v2/${this.annotationType}/projects/${projectName}/reloadstatus`,
         );
     };
 
     renameImage = (uuid: UUID, newImageName: string, projectName: string): Observable<MessageRenameImg> => {
         return this.http.put<MessageRenameImg>(
-            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/imgsrc/rename`,
+            `${this.hostPort}v2/${this.annotationType}/projects/${projectName}/imgsrc/rename`,
             {
                 uuid,
                 new_fname: newImageName,
@@ -121,7 +122,7 @@ export class ImageLabellingApiService {
             },
         };
         return this.http.delete<MessageDeleteImg>(
-            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/uuids`,
+            `${this.hostPort}v2/${this.annotationType}/projects/${projectName}/uuids`,
             options,
         );
     };
@@ -131,7 +132,7 @@ export class ImageLabellingApiService {
         imageNameList: string[],
         imageBase64List: string[],
     ): Observable<Message> => {
-        return this.http.put<Message>(`${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/add`, {
+        return this.http.put<Message>(`${this.hostPort}v2/${this.annotationType}/projects/${projectName}/add`, {
             img_name_list: imageNameList,
             img_base64_list: imageBase64List,
         });
@@ -139,7 +140,7 @@ export class ImageLabellingApiService {
 
     addImagesStatus = (projectName: string): Observable<AddImageResponse> => {
         return this.http.get<AddImageResponse>(
-            `${this.hostPort}v2/${this.imageLabellingMode}/projects/${projectName}/addstatus`,
+            `${this.hostPort}v2/${this.annotationType}/projects/${projectName}/addstatus`,
         );
     };
 }

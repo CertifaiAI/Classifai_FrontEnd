@@ -5,6 +5,19 @@
  */
 
 import {
+    ActionState,
+    ChangeAnnotationLabel,
+    CompleteMetadata,
+    Direction,
+    LabelInfo,
+    PolyMetadata,
+    Polygons,
+    SelectedLabelProps,
+    TabsProps,
+    UndoState,
+} from 'shared/types/labelling-type/image-labelling.model';
+import { AnnotateActionState, AnnotateSelectionService } from 'shared/services/annotate-selection.service';
+import {
     ChangeDetectionStrategy,
     Component,
     ElementRef,
@@ -18,32 +31,20 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { cloneDeep } from 'lodash-es';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import {
-    ActionState,
-    ChangeAnnotationLabel,
-    CompleteMetadata,
-    Direction,
-    LabelInfo,
-    Polygons,
-    PolyMetadata,
-    SelectedLabelProps,
-    TabsProps,
-    UndoState,
-} from 'shared/types/image-labelling/image-labelling.model';
-import { AnnotateActionState, AnnotateSelectionService } from 'shared/services/annotate-selection.service';
-import { CopyPasteService } from 'shared/services/copy-paste.service';
 import { MouseCursorState, MousrCursorService } from 'shared/services/mouse-cursor.service';
-import { ShortcutKeyService } from 'shared/services/shortcut-key.service';
-import { UndoRedoService } from 'shared/services/undo-redo.service';
-import { ZoomState, ZoomService, WheelDelta } from 'shared/services/zoom.service';
-import { SharedUndoRedoService } from 'shared/services/shared-undo-redo.service';
-import { SegmentationCanvasService } from './segmentation-canvas.service';
+import { WheelDelta, ZoomService, ZoomState } from 'shared/services/zoom.service';
+
+import { CopyPasteService } from 'shared/services/copy-paste.service';
+import { HTMLElementEvent } from '../../../shared/types/field/field.model';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
 import { LabelColorServices } from '../../../shared/services/label-color.services';
-import { HTMLElementEvent } from '../../../shared/types/field/field.model';
+import { SegmentationCanvasService } from './segmentation-canvas.service';
+import { SharedUndoRedoService } from 'shared/services/shared-undo-redo.service';
+import { ShortcutKeyService } from 'shared/services/shortcut-key.service';
+import { Subject } from 'rxjs';
+import { UndoRedoService } from 'shared/services/undo-redo.service';
+import { cloneDeep } from 'lodash-es';
+import { takeUntil } from 'rxjs/operators';
 
 interface ExtendedMouseEvent extends MouseEvent {
     layerX: number;

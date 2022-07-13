@@ -4,8 +4,15 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
+import {
+    BboxMetadata,
+    Boundingbox,
+    Method,
+    Polygons,
+    UndoState,
+} from 'shared/types/labelling-type/image-labelling.model';
+
 import { Injectable } from '@angular/core';
-import { Boundingbox, Polygons, UndoState, BboxMetadata, Method } from 'shared/types/image-labelling/image-labelling.model';
 import { Utils } from 'util/utils';
 
 type NotateType = Boundingbox[] | Polygons[] | null;

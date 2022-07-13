@@ -4,9 +4,16 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { cloneDeep } from 'lodash-es';
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { DataSetLayoutService } from './data-set-layout-api.service';
+/**
+ * !! IMPORTANT
+ * @author Daniel Lim Heng Jie
+ * @description converted to ES6 style to trick Angular's Lifecycle
+ * to allow the bypass of it to always be unequal object compare during lifecyckle hooks checking (ngOnChanges)
+ * as comp "data-set-card" needs to check prop changes
+ * via ngOnChanges to run logic
+ */
+
+import { BboxMetadata, PolyMetadata } from 'shared/types/labelling-type/image-labelling.model';
 import {
     ChartProps,
     DataSetProps,
@@ -15,17 +22,20 @@ import {
     ProjectSchema,
     StarredProps,
 } from '../../shared/types/dataset-layout/data-set-layout.model';
-import { distinctUntilChanged, first, map, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
-import { interval, Observable, Subject, Subscription, throwError } from 'rxjs';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ImageLabellingModeService } from 'components/image-labelling/image-labelling-mode.service';
+import { MessageUploadStatus, ProjectMessage, labels_stats } from 'shared/types/message/message.model';
+import { Observable, Subject, Subscription, interval, throwError } from 'rxjs';
+import { distinctUntilChanged, first, map, mergeMap, switchMap, takeUntil } from 'rxjs/operators';
+
+import { DataSetLayoutService } from './data-set-layout-api.service';
+import { LabelModeService } from 'shared/services/label-mode-service';
 import { LanguageService } from 'shared/services/language.service';
-import { labels_stats, MessageUploadStatus, ProjectMessage } from 'shared/types/message/message.model';
 import { ModalBodyStyle } from 'shared/types/modal/modal.model';
 import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'shared/components/spinner/spinner.service';
-import { BboxMetadata, PolyMetadata, ImageLabellingMode } from 'shared/types/image-labelling/image-labelling.model';
+import { cloneDeep } from 'lodash-es';
 
 type FormattedProject = {
     created_timestamp: Date;
@@ -39,6 +49,7 @@ type FormattedProject = {
     is_new: boolean;
     total_uuid: number;
     root_path_valid: boolean;
+    project_file_path: string;
 };
 
 @Component({
@@ -72,26 +83,36 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     unsubscribe$: Subject<any> = new Subject();
     isLoading = false;
     isOverlayOn = false;
-    isImageUploading = false;
+    isUploading = false;
     isProjectLoading = false;
     isDeleteSuccess = false;
     projectName: string = '';
-    imgLblMode: ImageLabellingMode = null;
+    labelMode: string | null = '';
     modalSpanMessage: string = '';
     modalImportProjectName: string = '';
     spanClass: string = '';
     labelPath: string = '';
+    audioFilePath: string = '';
+    tabularFilePath: string = '';
+    videoFilePath: string = '';
     projectFolderPath: string = '';
+    projectFilePath: string = '';
     showLabelTooltip: boolean = false;
     unsupportedImageList: string[] = [];
     keyToSort: string = 'project_name';
     projectType: string = 'myproject';
     enableSort: boolean = true;
-    labelledImage: number = 0;
-    unLabelledImage: number = 0;
+    labelledData: number = 0;
+    unLabelledData: number = 0;
     labelStats: ChartProps[] = [];
     noLabel: boolean = true;
     noAnnotation: boolean = true;
+    labelModeUrl: string = '';
+    isAudio: boolean = false;
+    isTabular: boolean = false;
+    isVideo: boolean = false;
+    isImage: boolean = false;
+
     readonly modalIdCreateProject = 'modal-create-project';
     readonly modalIdRenameProject = 'modal-rename-project';
     readonly modalIdImportProject = 'modal-import-project';
@@ -155,6 +176,9 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     @ViewChild('refProjectName') _refProjectName!: ElementRef<HTMLInputElement>;
     @ViewChild('projectfoldername') _projectFoldername!: ElementRef<HTMLLabelElement>;
     @ViewChild('labeltextfilename') _labelTextFilename!: ElementRef<HTMLLabelElement>;
+    @ViewChild('audiofilename') _audioFilename!: ElementRef<HTMLLabelElement>;
+    @ViewChild('tabularfilename') _tabularFilename!: ElementRef<HTMLLabelElement>;
+    @ViewChild('videofilename') _videoFilename!: ElementRef<HTMLLabelElement>;
     @ViewChild('refNewProjectName') _refNewProjectName!: ElementRef<HTMLInputElement>;
     @ViewChild('jsonImportProjectFile') _jsonImportProjectFile!: ElementRef<HTMLInputElement>;
     @ViewChild('jsonImportProjectFilename') _jsonImportProjectFilename!: ElementRef<HTMLLabelElement>;
@@ -164,19 +188,21 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
         private _router: Router,
         private _dataSetService: DataSetLayoutService,
         private _spinnerService: SpinnerService,
-        private _imgLblModeService: ImageLabellingModeService,
+        private _labelModeService: LabelModeService,
         private _languageService: LanguageService,
         private _modalService: ModalService,
     ) {
-        this._imgLblModeService.imgLabelMode$
+        this._labelModeService.labelMode$
             .pipe(distinctUntilChanged())
-            .subscribe((modeVal) => (this.imgLblMode = modeVal));
+            .subscribe((modeVal) => (this.labelMode = modeVal));
 
         this._spinnerService
             .returnAsObservable()
             .pipe(takeUntil(this.unsubscribe$))
             .subscribe((loading) => (this.isLoading = loading));
 
+        this.labelModeUrl = this._labelModeService.retrieveUrlBasedOnAnnotationMode();
+        this.currentLabelModel(this.labelMode);
         this.createFormControls();
         this.renameFormControls();
         const langsArr: string[] = ['data-set-page-en', 'data-set-page-cn', 'data-set-page-ms'];
@@ -317,8 +343,22 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     };
 
     toggleModalDisplay = (shown: boolean): void => {
-        this._projectFoldername.nativeElement.innerHTML = '';
         this._labelTextFilename.nativeElement.innerHTML = '';
+        if (this.isImage) {
+            this._projectFoldername.nativeElement.innerHTML = '';
+        }
+
+        if (this.isAudio) {
+            this._audioFilename.nativeElement.innerHTML = '';
+        }
+
+        if (this.isTabular) {
+            this._tabularFilename.nativeElement.innerHTML = '';
+        }
+
+        if (this.isVideo) {
+            this._videoFilename.nativeElement.innerHTML = '';
+        }
         shown && this.form.reset();
         shown
             ? this._modalService.open(this.modalIdCreateProject)
@@ -343,8 +383,8 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
             .pipe()
             .subscribe((project) => {
                 if (project) {
-                    this.labelledImage = project.labeled_image;
-                    this.unLabelledImage = project.unlabeled_image;
+                    this.labelledData = project.labeled_data;
+                    this.unLabelledData = project.unlabeled_data;
                     this.labelStats = [];
                     project.label_per_class_in_project.forEach((labelMeta: labels_stats) => {
                         if (labelMeta.count > 0) {
@@ -392,8 +432,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     .pipe(
                         switchMap(() => importStatus$),
                         first((response) => {
-                            this.isOverlayOn =
-                                response.file_system_status === 1 || response.file_system_status === 2 ? true : false;
+                            this.isOverlayOn = response.file_system_status === 1 || response.file_system_status === 2;
                             if (
                                 response.file_system_status === 0 ||
                                 response.file_system_status === 3 ||
@@ -514,17 +553,36 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
     }
 
     startProject = (projectName: string): void => {
-        this._router.navigate([`imglabel/${this.imgLblMode}`], {
+        this._router.navigate([this.labelModeUrl], {
             state: { projectName },
         });
     };
 
     isCreateFormIncomplete() {
-        return this.inputProjectName === '' || this.projectFolderPath === '';
+        if (this.isImage) {
+            return this.inputProjectName === '' || this.projectFolderPath === '';
+        }
+
+        if (this.isAudio) {
+            return this.inputProjectName === '' || this.audioFilePath === '';
+        }
+
+        if (this.isTabular) {
+            return this.inputProjectName === '' || this.tabularFilePath === '';
+        }
+
+        if (this.isVideo) {
+            return this.inputProjectName === '' || this.videoFilePath === '';
+        }
     }
 
     createProject = (projectName: string): void => {
-        const createProj$ = this._dataSetService.createNewProject(projectName, this.labelPath, this.projectFolderPath);
+        const createProj$ = this._dataSetService.createNewProject(
+            projectName,
+            this.labelPath,
+            this.projectFolderPath,
+            this.projectFilePath,
+        );
         const uploadStatus$ = this._dataSetService.localUploadStatus(projectName);
         let numberOfReq: number = 0;
 
@@ -538,9 +596,12 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                       mergeMap(() => uploadStatus$),
                       /** @property {number} message value 4 means upload completed, value 1 means cancelled */
                       first(({ file_system_status, unsupported_image_list }) => {
-                          this.unsupportedImageList = unsupported_image_list;
-                          this.isOverlayOn = file_system_status === 1 || file_system_status === 2 ? true : false;
-                          this.isImageUploading = file_system_status === 2 ? true : false;
+                          this.isOverlayOn = file_system_status === 1 || file_system_status === 2;
+                          this.isUploading = file_system_status === 2;
+
+                          if (this.labelMode === 'bndbox' || this.labelMode === 'seg') {
+                              this.unsupportedImageList = unsupported_image_list;
+                          }
                           return file_system_status === 3;
                       }),
                   )
@@ -595,7 +656,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     .pipe(
                         switchMap(() => importProjectFolderStatus$),
                         first((response) => {
-                            this.isOverlayOn = response.window_status === 0 ? true : false;
+                            this.isOverlayOn = response.window_status === 0;
                             if (response.window_status === 1 && response.project_path !== '') {
                                 this._projectFoldername.nativeElement.innerHTML = response.project_path.replace(
                                     /^.*[\\\/]/,
@@ -629,7 +690,7 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                     .pipe(
                         switchMap(() => importLabelFileStatus$),
                         first((response) => {
-                            this.isOverlayOn = response.window_status === 0 ? true : false;
+                            this.isOverlayOn = response.window_status === 0;
                             if (response.window_status === 1 && response.label_file_path !== '') {
                                 this._labelTextFilename.nativeElement.innerHTML = response.label_file_path.replace(
                                     /^.*[\\\/]/,
@@ -647,6 +708,129 @@ export class DataSetLayoutComponent implements OnInit, OnDestroy {
                         this.showProjectList(this.projectType);
                     });
             });
+    }
+
+    importAudioFile() {
+        const importAudioFileStatus$ = this._dataSetService.importAudioFileStatus();
+        const importAudioFile$ = this._dataSetService.importAudioFile();
+        importAudioFile$
+            .pipe(
+                first(),
+                map(({ message }) => message),
+            )
+            .subscribe((message) => {
+                let windowClosed = false;
+                interval(500)
+                    .pipe(
+                        switchMap(() => importAudioFileStatus$),
+                        first((response) => {
+                            this.isOverlayOn = response.window_status === 0;
+                            if (response.window_status === 1 && response.audio_file_path !== '') {
+                                this._audioFilename.nativeElement.innerHTML = response.audio_file_path.replace(
+                                    /^.*[\\\/]/,
+                                    '',
+                                );
+                                this.audioFilePath = response.audio_file_path;
+                                this.projectFilePath = this.audioFilePath;
+                            }
+                            if (response.window_status === 1) {
+                                windowClosed = true;
+                            }
+                            return windowClosed;
+                        }),
+                    )
+                    .subscribe((response) => {
+                        this.showProjectList(this.projectType);
+                    });
+            });
+    }
+
+    importTabularFile() {
+        const importTabularFileStatus$ = this._dataSetService.importTabularFileStatus();
+        const importTabularFile$ = this._dataSetService.importTabularFile();
+        importTabularFile$
+            .pipe(
+                first(),
+                map(({ message }) => message),
+            )
+            .subscribe((message) => {
+                let windowClosed = false;
+                interval(500)
+                    .pipe(
+                        switchMap(() => importTabularFileStatus$),
+                        first((response) => {
+                            this.isOverlayOn = response.window_status === 0;
+                            if (response.window_status === 1 && response.tabular_file_path !== '') {
+                                this._tabularFilename.nativeElement.innerHTML = response.tabular_file_path.replace(
+                                    /^.*[\\\/]/,
+                                    '',
+                                );
+                                this.tabularFilePath = response.tabular_file_path;
+                                this.projectFilePath = this.tabularFilePath;
+                            }
+                            if (response.window_status === 1) {
+                                windowClosed = true;
+                            }
+                            return windowClosed;
+                        }),
+                    )
+                    .subscribe((response) => {
+                        this.showProjectList(this.projectType);
+                    });
+            });
+    }
+
+    importVideoFile() {
+        const importVideoFileStatus$ = this._dataSetService.importVideoFileStatus();
+        const importVideoFile$ = this._dataSetService.importVideoFile();
+        importVideoFile$
+            .pipe(
+                first(),
+                map(({ message }) => message),
+            )
+            .subscribe((message) => {
+                let windowClosed = false;
+                interval(500)
+                    .pipe(
+                        switchMap(() => importVideoFileStatus$),
+                        first((response) => {
+                            this.isOverlayOn = response.window_status === 0;
+                            if (response.window_status === 1 && response.video_file_path !== '') {
+                                this._videoFilename.nativeElement.innerHTML = response.video_file_path.replace(
+                                    /^.*[\\\/]/,
+                                    '',
+                                );
+                                this.videoFilePath = response.video_file_path;
+                                this.projectFilePath = this.videoFilePath;
+                            }
+                            if (response.window_status === 1) {
+                                windowClosed = true;
+                            }
+                            return windowClosed;
+                        }),
+                    )
+                    .subscribe((response) => {
+                        this.showProjectList(this.projectType);
+                    });
+            });
+    }
+
+    private currentLabelModel(labelMode: string | null) {
+        if (labelMode === 'audio') {
+            this.isAudio = true;
+        }
+
+        if (labelMode === 'tabular') {
+            this.isTabular = true;
+        }
+
+        if (labelMode === 'videobndbox' || labelMode === 'videoseg') {
+            this.isVideo = true;
+        }
+
+        if (labelMode === 'imgbndbox' || labelMode === 'imgseg') {
+            this.isImage = true;
+        }
     }
 
     renameProject = (oldProjectName: string, newProjectName: string): void => {

@@ -1,0 +1,746 @@
+@use 'shared/scss/variables' as color;
+@use 'shared/scss/scrollbar' as scrollbar;
+@use 'shared/scss/ellipsis' as ellipsis;
+@use 'shared/scss/indicator' as indicator;
+
+.videoTimelineContainer {
+    position: relative;
+    height: 100%;
+    right: 0;
+    z-index: 0;
+    width: 97.8%;
+    margin-left: 2.2vw;
+}
+
+.canvas-container {
+    height: 61.2vh;
+    width: 90vw;
+    display: flex;
+    background-color: #3c4044;
+    flex-direction: row;
+}
+
+.active-frame-container {
+    padding: 38px;
+    display: flex;
+    justify-content: center;
+}
+
+.videoTimeline {
+    display: flex;
+    font-size: 12px;
+    height: 40%;
+    bottom: 10px;
+    width: 100%;
+    background-color: (color.$greyColor);
+    position: relative;
+    margin-top: 10px;
+    justify-content: space-between;
+}
+
+.video-tbody {
+    display: flex;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    height: 66px;
+    width: 100%;
+    position: relative;
+    box-sizing: content-box;
+    border: 0.0625vw solid rgb(255, 255, 255, 0.25);
+    align-items: center;
+    flex-direction: row;
+}
+
+.video-tbody:hover {
+    overflow-x: scroll;
+    transition: top 0.5s;
+}
+
+.video-tbody-container {
+    margin-top: 5px;
+    margin-left: 2px;
+}
+
+.flex-content {
+    display: flex;
+    flex-flow: row;
+    height: 65px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    resize: horizontal;
+}
+
+.table {
+    width: 53.1vw;
+    height: 8vh;
+    table-layout: fixed;
+}
+
+.activeFrame {
+    width: 960px;
+    height: 480px;
+}
+
+.timelineCell {
+    border-radius: 4px;
+    display: inline-block;
+    width: 28px;
+    height: 20px;
+    box-sizing: border-box;
+    border: 5px solid #121212;
+    line-height: 20px;
+    font-size: 11px;
+    color: #1f2428;
+    position: relative;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.clickable:hover {
+    background-color: #293540;
+}
+
+.figure1 {
+    background: darkcyan;
+    border-width: 0;
+}
+
+.figure2 {
+    background: lightseagreen;
+    border-width: 0;
+}
+
+.cursor {
+    border: 2px solid white;
+}
+
+.active {
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    background: grey;
+}
+
+.row {
+    width: 28px;
+    padding: 0;
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.tableTiming {
+    font-size: 10px;
+    vertical-align: middle;
+    color: snow;
+    height: 28px;
+    width: 28px;
+    justify-content: flex-start;
+    text-align: center;
+}
+
+.control-layout {
+    background-color: (color.$greyColor);
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.control-container {
+    padding: 0.7vh 1vw 0 0.5vw;
+    background-color: (color.$greyColor);
+    border-bottom: 1px solid black;
+    height: 6vh;
+    width: 9.6vw;
+    display: flex;
+}
+
+.control-icon-container {
+    //border: 3px solid black;
+    padding: 0 0.4vw 0;
+    height: 4vh;
+    // width: 1vw;
+}
+
+.control-icon {
+    padding-top: 0.5vh;
+    height: 2.1vh;
+    width: 2.1vw;
+    cursor: pointer;
+}
+
+.time-container {
+    padding-top: 3px;
+    padding-right: 5vw;
+    height: 5vh;
+}
+
+.time-label {
+    font-size: 1.7vw;
+    color: #768dff;
+}
+
+.label-display {
+    width: 7.5vw;
+    color: white;
+    text-align: left;
+}
+
+.canvasstyle {
+    position: fixed;
+    z-index: 0;
+}
+
+#cross-h {
+    left: 0px;
+    width: 50%;
+    height: 1px;
+    margin-top: -1px;
+    opacity: 0.4;
+}
+
+#cross-v {
+    top: 0px;
+    height: 50%;
+    width: 1px;
+    margin-left: -1px;
+    opacity: 0.4;
+}
+
+.crosses {
+    position: fixed;
+    background-color: #dc1d46;
+    box-shadow: 0 0 5px rgb(100, 100, 100);
+    pointer-events: none;
+    visibility: hidden;
+    z-index: 100;
+}
+
+.videoTimeLineScrollBar {
+    &::-webkit-scrollbar-track {
+        background-color: #293540;
+        border-radius: 5px;
+    }
+    &::-webkit-scrollbar {
+        width: 1vw;
+    }
+    &::-webkit-scrollbar-thumb {
+        border-radius: 4px;
+        background-color: slategrey;
+    }
+}
+
+.video-player-container {
+    position: absolute;
+    display: flex;
+    width: 45vw;
+    margin: 2px 2px 2px 20px;
+    background-color: #3c4044;
+    z-index: 2;
+}
+
+.video-player-control {
+    background: grey;
+    position: relative;
+    height: 3.3vh;
+}
+
+.volume-control {
+    background: grey;
+    position: relative;
+    height: 3.3vh;
+    width: 10vw;
+}
+
+#volume {
+    background: #768dff;
+}
+
+#volume::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 3px;
+    margin: -7px 0 0 0;
+    background: #768dff;
+}
+
+#volume::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 1px;
+    margin: -5px 0 0 0;
+    background: #768dff;
+}
+
+.timer {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.7rem;
+    color: white;
+    margin-top: 0.5vh;
+    width: 8vw;
+}
+
+.timer-container {
+    height: 3.3vh;
+    width: 10vw;
+    background: grey;
+    align-items: center;
+    justify-content: center;
+    padding-left: 0.5rem;
+    vertical-align: center;
+}
+
+.canvas-video-player {
+    position: relative;
+}
+
+.video-Progress {
+    position: relative;
+    height: 3.3vh;
+    width: 100%;
+    background: rgba(149, 165, 166, 0.7);
+    cursor: pointer;
+}
+
+.video-progress-bar {
+    background: #336b87;
+    cursor: pointer;
+    height: 3.3vh;
+    position: relative;
+    width: 0;
+}
+
+.time-indicator {
+    width: 170px;
+    height: 50px;
+    position: relative;
+    background-color: #336b87;
+    text-align: center;
+    line-height: 23px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: white;
+    transform: translate(-20%, -180%);
+}
+
+.video-container {
+    position: relative;
+    margin-top: 10px;
+    justify-content: center;
+    z-index: 2;
+}
+
+.video-container-body {
+    position: relative;
+    z-index: 2;
+    background-color: #3c4044;
+}
+
+.canvas-video-container {
+    position: relative;
+    z-index: 0;
+    background-color: #3c4044;
+}
+
+.lbltypetxt {
+    width: 11vw;
+    height: 4vh;
+    color: snow;
+    font-size: 2vh;
+    border: 0.2vw solid gray;
+    background-color: black;
+    outline: none;
+    border-radius: 0.2vh;
+    border-bottom: none;
+    padding: 0;
+    text-indent: 0.4vw;
+}
+
+.availablelbl {
+    background-color: black;
+    width: 11vw;
+    height: 15vh;
+    color: snow;
+    font-size: 2vh;
+    font-weight: bold;
+    border: 0.2vw solid gray;
+    outline: none;
+    border-radius: 0.2vh;
+    border-top: 0.1vh dotted snow;
+    overflow: auto;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.lblList {
+    padding: 0 0.2vw;
+}
+
+.lblElement {
+    list-style-type: none;
+    margin: 0.3vh 0;
+    padding: 0;
+    justify-content: space-between;
+    display: flex;
+    &:hover {
+        background-color: #111;
+    }
+}
+
+.lblName {
+    margin-left: 0.2vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lblCount {
+    background-color: #222;
+    margin-right: 0.2vw;
+    padding: 0.1vh 0.2vw;
+    border-radius: 0.2vw;
+}
+
+.floatdiv {
+    position: fixed;
+    z-index: 10000;
+}
+
+.canvas-control {
+    position: relative;
+    z-index: 0;
+    height: 380px;
+    width: 800px;
+    justify-content: center;
+    background-color: #3c4044;
+}
+
+.annotation-control-container {
+    position: relative;
+    margin-top: 2px;
+}
+
+.annotation-control {
+    background: grey;
+    position: relative;
+    height: 3.5vh;
+}
+
+.annotation-info-container {
+    position: relative;
+    width: 40vw;
+    margin-top: 2px;
+}
+
+.annotation-info-control {
+    position: relative;
+    max-height: 27vh;
+    width: 100%;
+    max-width: 40vw;
+    border: 0.0625vw solid rgb(255, 255, 255, 0.25);
+    color: white;
+    display: flex;
+    justify-content: center;
+    border-radius: 5px;
+    vertical-align: center;
+}
+
+.annotation-info-icon {
+    position: relative;
+    height: 3vh;
+    width: 3vw;
+    cursor: pointer;
+    margin-top: 2px;
+}
+
+.tab-text {
+    position: relative;
+    line-height: 25px;
+    text-align: center;
+}
+
+.icon-text-container {
+    position: absolute;
+    width: 8vw;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.bottom-utility-container {
+    position: relative;
+    min-width: 2.2vw;
+    max-width: 2.2vw;
+    min-height: 40vh;
+    max-height: 40vh;
+    background: #525353;
+    border: 0.0625vw solid rgb(255, 255, 255, 0.25);
+    z-index: 1000;
+    margin-top: 2px;
+}
+
+.bottom-utility-inner-container {
+    min-height: 3vh;
+    max-height: 3vh;
+    min-width: 1.5vw;
+    max-width: 1.5vw;
+    position: relative;
+}
+
+.bottom-utility-icon-container {
+    min-height: 3vh;
+    max-height: 3vh;
+    margin: 5px 0 5px 5px;
+    cursor: pointer;
+}
+
+.bottom-utility-icon-container img {
+    width: 3vh;
+    height: 3vh;
+}
+
+.info-tab {
+    position: relative;
+    height: 0;
+    margin-top: 3.7vh;
+    overflow: hidden;
+    min-width: 40vw;
+    max-width: 40vw;
+    background: #3c4044;
+    z-index: 2;
+    transition: 0.3s ease-out;
+}
+
+.toggle-down {
+    position: relative;
+    height: 21.7vh;
+}
+
+.annotation-content-container {
+    margin-top: 5px;
+    margin-left: 10px;
+}
+
+.video-info {
+    font-size: 12px;
+}
+
+.video-info-container {
+    margin: 3px 0 3px 0;
+}
+
+.select-method {
+    text-align: center;
+    color: white;
+    width: 100px;
+    height: 20px;
+    border-radius: 5px;
+    background: #1f1f1f;
+}
+
+.select-option {
+    background-color: #1f1f1f;
+    margin: 5px;
+}
+
+.annotation-player-control {
+    position: relative;
+    border: 0.05px solid rgb(255, 255, 255, 0.5);
+}
+
+.time-line-control {
+    position: relative;
+    margin-top: 6px;
+    border: 0.05px solid rgb(255, 255, 255, 0.5);
+}
+
+.time-line-div {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.time-line-editor {
+    width: 52.9vw;
+    height: 22vh;
+    margin-top: 4px;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll;
+    border: 0.0625vw solid rgb(255, 255, 255, 0.25);
+}
+
+.time-line-editor::-webkit-scrollbar {
+    width: 0;
+}
+
+.time-line-unit {
+    position: absolute;
+    background-color: #262a2e;
+    height: 10vh;
+    width: 0;
+    justify-content: flex-start;
+    border: 0.0625vw solid rgb(255, 255, 255, 0.25);
+    margin-top: 6vh;
+}
+
+.crop-pointer {
+    cursor: row-resize;
+}
+
+.flex-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 1.5vh;
+    color: white;
+    @include ellipsis.ellipsis-styling();
+}
+
+.utility-inner-container {
+    min-height: 16vh;
+    max-height: 16vh;
+    min-width: 40vw;
+    max-width: 40vw;
+    position: absolute;
+}
+
+.scroll {
+    &::-webkit-scrollbar-track {
+        @include scrollbar.scrollbar-track(color.$blackColor);
+    }
+
+    &::-webkit-scrollbar {
+        @include scrollbar.scrollbar();
+    }
+
+    &::-webkit-scrollbar-thumb {
+        @include scrollbar.scrollbar-thumb(color.$greyColor);
+    }
+}
+
+.div-input {
+    position: relative;
+    display: flex;
+    justify-content: flex-start;
+    margin: 0.5vh 0.9vw;
+}
+
+.input {
+    border-radius: 8vw;
+    border: none;
+    outline: none;
+    padding: 0.3vw 0 0.3vw 1vw;
+    min-height: 1.5vh;
+    max-height: 1.5vh;
+    min-width: 13vw;
+    max-width: 13vw;
+    font-size: 1.3vh;
+    background: #525353;
+    color: white;
+}
+
+.label {
+    white-space: nowrap;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.delete-annotation,
+.delete-label {
+    position: absolute;
+    right: 2vw;
+}
+
+.not-exist {
+    font-size: 1.5vh;
+    color: #999;
+    position: relative;
+}
+
+.flex-center-width {
+    display: flex;
+    justify-content: center;
+    width: 90%;
+    flex-wrap: wrap;
+}
+
+.tab-height {
+    height: 85%;
+}
+
+.modal-content-container {
+    margin-left: 1.3vw;
+}
+
+.font-multiple-extract {
+    line-height: 4vh;
+    font-size: 1vw;
+}
+
+.extract-btn {
+    padding: 1vh 0.5vw 1vh 0.5vw;
+    background-color: #2d8ceb;
+    margin-top: 0.7vw;
+    margin-right: 0.7vw;
+    font-size: 2vh;
+    min-width: 7.5vw;
+    float: right;
+}
+
+.button-style {
+    padding: 1vh 1.5vw 1vh 1.5vw;
+    border-radius: 1vh;
+    border: none;
+    outline: none;
+    color: white;
+    cursor: pointer;
+    font-size: 2vh;
+}
+
+.partition-container {
+    display: flex;
+    flex-direction: row;
+    margin: 0 0 0 0;
+    font-size: 0.8rem;
+}
+
+.partition {
+    margin-top: 2px;
+    width: 9vw;
+}
+
+.partition-input {
+    border-radius: 8vw;
+    border: none;
+    outline: none;
+    padding-left: 1vw;
+    min-height: 2.5vh;
+    max-height: 2.5vh;
+    min-width: 5vw;
+    max-width: 5vw;
+    font-size: 2vh;
+    background: #525353;
+    color: white;
+}
+
+.partition-exp {
+    font-size: 11px;
+    margin: 4px 0 0 8px;
+    color: rgba(108, 122, 137, 0.8);
+}
+
+.scroll {
+    &::-webkit-scrollbar-track {
+        @include scrollbar.scrollbar-track(color.$blackColor);
+    }
+    &::-webkit-scrollbar {
+        @include scrollbar.scrollbar();
+    }
+    &::-webkit-scrollbar-thumb {
+        @include scrollbar.scrollbar-thumb(color.$greyColor);
+    }
+}

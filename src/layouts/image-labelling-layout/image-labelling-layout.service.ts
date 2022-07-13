@@ -4,17 +4,18 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { first } from 'rxjs/operators';
-import { ImageLabellingApiService } from 'components/image-labelling/image-labelling-api.service';
-import { Injectable } from '@angular/core';
 import {
-    PolyMetadata,
     BboxMetadata,
     ChangeAnnotationLabel,
     CompleteMetadata,
     EventEmitter_Action,
+    PolyMetadata,
     TabsProps,
-} from 'shared/types/image-labelling/image-labelling.model';
+} from 'shared/types/labelling-type/image-labelling.model';
+
+import { ImageLabellingApiService } from 'components/image-labelling/image-labelling-api.service';
+import { Injectable } from '@angular/core';
+import { first } from 'rxjs/operators';
 
 type CustomHistory = Omit<History, 'state'> & {
     state: { thumbnailList: (BboxMetadata & PolyMetadata)[]; labelList: string[]; projectName: string };
@@ -206,13 +207,13 @@ export class ImageLabellingLayoutService {
 
     setLocalStorageProjectProgress = (projectName: string, annotation: CompleteMetadata[]) => {
         localStorage.setItem(
-            `${projectName}_${this._imgLblApiService.imageLabellingMode}`,
+            `${projectName}_${this._imgLblApiService.annotationType}`,
             JSON.stringify({ cache: annotation }),
         );
     };
 
     getLocalStorageProjectProgress = <T extends CompleteMetadata>(projectName: string) => {
-        const result = localStorage.getItem(`${projectName}_${this._imgLblApiService.imageLabellingMode}`);
+        const result = localStorage.getItem(`${projectName}_${this._imgLblApiService.annotationType}`);
         return result ? JSON.parse(result) : null;
     };
 

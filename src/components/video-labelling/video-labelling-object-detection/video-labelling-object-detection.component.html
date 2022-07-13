@@ -1,0 +1,410 @@
+<div class="videoTimelineContainer">
+    <div class="canvas-container">
+        <div class="video-container-body">
+            <div class="video-container">
+                <video
+                    #videoPlayer
+                    width="650px"
+                    height="335px"
+                    (loadedmetadata)="onLoadVideo()"
+                    (timeupdate)="videoTimeIndicator(); currentVideoTime()"
+                >
+                    <source src="assets/video.mp4" type="video/mp4" />
+                </video>
+
+                <div class="video-player-container">
+                    <div class="video-player-control">
+                        <img
+                            *ngIf="!isPlaying"
+                            class="control-icon"
+                            src="assets/icons/Play.svg"
+                            alt="Play"
+                            (click)="videoPlayerButtonClick()"
+                        />
+                        <img
+                            *ngIf="isPlaying"
+                            class="control-icon"
+                            src="assets/icons/Pause.svg"
+                            alt="Pause"
+                            (click)="videoPlayerButtonClick()"
+                        />
+                    </div>
+
+                    <div
+                        #videoProgress
+                        class="video-Progress"
+                        (click)="videoProgressTrackClick($event)"
+                        (contextmenu)="extractFrame($event)"
+                        (mousedown)="setExtractionStartTime($event)"
+                        (mousemove)="timeRange($event)"
+                        (mouseup)="setExtractionEndTime($event)"
+                    >
+                        <div #videoProgressBar class="video-progress-bar" (contextmenu)="extractFrame($event)"></div>
+                        <div #currentTimeIndicator [ngClass]="{ 'time-indicator': showTimeIndicator }">
+                            <label class="time-indicator-label" *ngIf="showTimeIndicator"> Time range </label>
+                            <br />
+                            <label class="time-indicator-label" *ngIf="showTimeIndicator">
+                                {{ currentStartTime }} to {{ currentEndTime }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="timer-container">
+                        <div class="timer">
+                            <span #currentPlayingTime class="current-Time">00:00:00</span> /
+                            <span #videoDuration class="video-duration">00:00:00</span>
+                        </div>
+                    </div>
+                    <div class="video-player-control">
+                        <img
+                            class="control-icon"
+                            src="assets/icons/left_double_arrow.svg"
+                            alt="return to previous skipped video frame"
+                            (click)="returnToPreviousSkippedVideoFrame()"
+                        />
+                    </div>
+                    <div class="video-player-control">
+                        <img
+                            class="control-icon"
+                            src="assets/icons/previous.svg"
+                            alt="previous video frame"
+                            (click)="previousVideoFrame()"
+                        />
+                    </div>
+                    <div class="video-player-control">
+                        <img
+                            class="control-icon"
+                            src="assets/icons/next.svg"
+                            alt="next video frame"
+                            (click)="nextVideoFrame()"
+                        />
+                    </div>
+                    <div class="video-player-control">
+                        <img
+                            class="control-icon"
+                            src="assets/icons/right_double_arrow.svg"
+                            alt="skip to next fifth video frame"
+                            (click)="skipToNextFifthVideoFrame()"
+                        />
+                    </div>
+                    <div class="volume-control">
+                        <label>
+                            <input
+                                id="volume"
+                                #volume
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.1"
+                                (change)="changeVolume()"
+                            />
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-video-container">
+            <!------------------------ Label List Popup Container -------------------------->
+            <div #floatdiv class="floatdiv unclosedOut" [hidden]="!showDropdownLabelBox">
+                <!-------------------------- Label Search/ OCR Input -------------------------->
+                <form autocomplete="off" spellcheck="false" class="unclosedOut">
+                    <input
+                        #lbltypetxt
+                        type="text"
+                        class="lbltypetxt unclosedOut"
+                        [ngClass]="invalidInput ? 'invalidInput' : 'validInput'"
+                        [(ngModel)]="labelSearch"
+                        (ngModelChange)="labelTypeTextChange($event)"
+                        (keydown.enter)="validateInputLabel($event)"
+                        [ngModelOptions]="{ standalone: true }"
+                    />
+                </form>
+                <!-------------------------- Label List -------------------------->
+                <div #availablelbl class="availablelbl unclosedOut">
+                    <ul class="lblList unclosedOut">
+                        <li
+                            *ngFor="let label of labelList"
+                            class="lblElement unclosedOut"
+                            (click)="labelNameClicked(label.name)"
+                        >
+                            <span class="lblName unclosedOut">{{ label.name }}</span>
+                            <span class="lblCount unclosedOut">{{ label.count }}</span>
+                        </li>
+                        <li *ngIf="labelList.length === 0" class="unclosedOut notExist">
+                            <div class="unclosedOut">{{ 'searchLabel.labelNotExist' | translate }}</div>
+                            <div class="unclosedOut">{{ 'searchLabel.enterToAdd' | translate }}</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="canvas-control">
+                <canvas
+                    #canvasdrawing
+                    class="canvasstyle"
+                    (mouseenter)="changeCursorInCanvasStatus()"
+                    (mouseleave)="changeCursorInCanvasStatus()"
+                    [ngStyle]="{ cursor: currentCursor() }"
+                ></canvas>
+            </div>
+            <div #crossH id="cross-h" class="crosses"></div>
+            <div #crossV id="cross-v" class="crosses"></div>
+        </div>
+    </div>
+
+    <div class="videoTimeline">
+        <div class="time-line-div">
+            <table class="table">
+                <tbody
+                    class="video-tbody videoTimeLineScrollBar"
+                    #videoTimelineRef
+                    (mousewheel)="videoTimelineScroll()"
+                >
+                    <tr class="video-tbody-container">
+                        <ng-container *ngFor="let frame of thumbnailList; index as i">
+                            <td #selectFrames class="tableTiming" (select)="onSelectFrames()">
+                                <div [ngClass]="activeFrame === i ? 'active row' : null">
+                                    {{ i }}
+                                </div>
+                                <div
+                                    [ngClass]="displayFrameIndicator(i, frame.bnd_box)"
+                                    (click)="onClickVideoTimeLine(i)"
+                                ></div>
+                            </td>
+                        </ng-container>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div #videoEditorPanel class="time-line-editor" (wheel)="onScrollEditorTimeLine()">
+                <div #videoTimeEditor class="time-line-unit"></div>
+            </div>
+        </div>
+
+        <div class="annotation-control-container">
+            <div class="annotation-player-control">
+                <div class="annotation-control">
+                    <img
+                        *ngIf="!isPlayingFrame"
+                        class="control-icon"
+                        src="assets/icons/Play.svg"
+                        alt="Play"
+                        (click)="clickPlay()"
+                    />
+                    <img
+                        *ngIf="isPlayingFrame"
+                        class="control-icon"
+                        src="assets/icons/Pause.svg"
+                        alt="Pause"
+                        (click)="clickPause()"
+                    />
+                </div>
+                <div class="annotation-control">
+                    <img
+                        class="control-icon"
+                        src="assets/icons/next.svg"
+                        alt="next video frame"
+                        (click)="nextUnannotatedImage()"
+                    />
+                </div>
+                <div class="annotation-control">
+                    <img
+                        class="control-icon"
+                        src="assets/icons/previous.svg"
+                        alt="previous video frame"
+                        (click)="previousUnannotatedImage()"
+                    />
+                </div>
+            </div>
+
+            <div class="time-line-control">
+                <div class="annotation-control">
+                    <img
+                        #cropTimeLine
+                        class="control-icon"
+                        src="assets/icons/crop.svg"
+                        alt="crop time line"
+                        (click)="onClickCropTool()"
+                    />
+                </div>
+                <div class="annotation-control">
+                    <img
+                        class="control-icon"
+                        src="assets/icons/pinpoint.svg"
+                        alt="pinpoint key frame"
+                        (click)="previousUnannotatedImage()"
+                    />
+                </div>
+                <div class="annotation-control"></div>
+                <div class="annotation-control"></div>
+                <div class="annotation-control"></div>
+                <div class="annotation-control"></div>
+                <div class="annotation-control"></div>
+            </div>
+        </div>
+
+        <div class="annotation-info-container">
+            <div class="annotation-info-control">
+                <div class="icon-text-container" (click)="toggleProjectTab()">
+                    <span class="tab-text">Project</span>
+                    <img class="annotation-info-icon" src="assets/icons/folder.svg" alt="project" />
+                </div>
+
+                <div class="info-tab" [ngClass]="{ 'toggle-down': isProjectTabToggle }">
+                    <div class="annotation-content-container">
+                        <div class="video-info-container">
+                            <label class="video-info">
+                                {{ 'videoInfo.videoDuration' | translate }} {{ selectedVideoDuration }}</label
+                            >
+                        </div>
+
+                        <div class="video-info-container">
+                            <label class="video-info">
+                                {{ 'videoInfo.videoPath' | translate }} {{ selectedVideoPath }}</label
+                            >
+                        </div>
+
+                        <div class="video-info-container">
+                            <label class="video-info">
+                                {{ 'Tracking' | translate }}
+                                <select class="select-method">
+                                    <option class="select-option" value="Method1">Method1</option>
+                                    <option class="select-option" value="Method2">Method2</option>
+                                    <option class="select-option" value="Method3">Method3</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="annotation-info-control">
+                <div class="icon-text-container" (click)="toggleLabelTab()">
+                    <span class="tab-text">Label</span>
+                    <img class="annotation-info-icon" src="assets/icons/tag.svg" alt="label" />
+                </div>
+
+                <div class="info-tab" [ngClass]="{ 'toggle-down': isLabelTabToggle }">
+                    <div class="annotation-content-container">
+                        <div class="div-input">
+                            <input
+                                class="input"
+                                [ngClass]="invalidInput ? 'input-invalid' : null"
+                                type="text"
+                                [(ngModel)]="inputLabel"
+                                (ngModelChange)="inputLabelChange($event)"
+                                (keydown.enter)="validateInputLabel($event)"
+                                [placeholder]="'labellingProject.enterLabel' | translate"
+                            />
+                        </div>
+                        <!-------------------------- Label Tab Container -------------------------->
+                        <div class="utility-inner-container tab-height scroll">
+                            <div class="flex-item">
+                                <ng-container *ngFor="let label of selectedlabelList; index as i">
+                                    <div
+                                        class="flex-center-width"
+                                        [ngClass]="label === selectedLabel ? 'label-active' : null"
+                                    >
+                                        <label class="label">
+                                            <div
+                                                [ngClass]="clickAbilityToggle ? 'pointer' : null"
+                                                (click)="clickAbilityToggle ? onClickLabel(label) : null"
+                                            >
+                                                {{ label }}
+                                            </div>
+                                        </label>
+                                        <label
+                                            ><ng-container *ngIf="label === selectedLabel"
+                                                ><span
+                                                    [ngClass]="clickAbilityToggle ? 'pointer' : null"
+                                                    class="delete-label"
+                                                    (click)="onDeleteLabel(label)"
+                                                    >-</span
+                                                ></ng-container
+                                            ></label
+                                        >
+                                    </div>
+                                </ng-container>
+                                <label *ngIf="selectedlabelList.length === 0" class="not-exist">
+                                    {{ 'labellingProject.labelNotExist' | translate }}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="annotation-info-control">
+                <div class="icon-text-container" (click)="toggleAnnotationTab()">
+                    <span class="tab-text">Annotation</span>
+                    <img class="annotation-info-icon" src="assets/icons/bounding_box.svg" alt="annotation" />
+                </div>
+
+                <div class="info-tab" [ngClass]="{ 'toggle-down': isAnnotationTabToggle }">
+                    <div class="annotation-content-container">
+                        <!--                        <div *ngFor="let boundingBox of thumbnailList[0].bnd_box; index as j">-->
+                        <!--                            <label-->
+                        <!--                                class="label"-->
+                        <!--                                [attr.data-index]="j"-->
+                        <!--                                [ngClass]="j === -1 ? 'annotation-active' : null"-->
+                        <!--                                (click)="clickAbilityToggle ? onClickAnnotation(j, boundingBox) : null"-->
+                        <!--                            >-->
+                        <!--                                <div [ngClass]="clickAbilityToggle ? 'pointer' : null">-->
+                        <!--                                    {{ boundingBox.label }} : {{ boundingBox.id }}-->
+                        <!--                                </div>-->
+                        <!--                                <div-->
+                        <!--                                    [ngClass]="clickAbilityToggle ? 'pointer' : null"-->
+                        <!--                                    *ngIf="j === -1"-->
+                        <!--                                    (click)="onDeleteAnnotation()"-->
+                        <!--                                    class="delete-annotation"-->
+                        <!--                                >-->
+                        <!--                                    - -->
+                        <!--                                </div>-->
+                        <!--                            </label>-->
+                        <!--                        </div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-utility-container">
+            <div class="bottom-utility-inner-container">
+                <ng-container *ngFor="let logo of jsonSchema.logos; index as i">
+                    <div class="bottom-utility-icon-container">
+                        <img
+                            [attr.data-index]="i"
+                            [src]="logo.imgPath"
+                            [alt]="logo.alt"
+                            [title]="logo.hoverLabel | translate"
+                            (click)="logo.onClick()"
+                            [style]="logo.style"
+                        />
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>
+
+<modal
+    [id]="modalMultipleExtraction"
+    [modalBodyStyle]="multipleExtractionModalBodyStyle"
+    [modalTitle]="'multipleExtractionModal.title' | translate"
+    [scrollable]="true"
+    [zIndex]="2"
+    (_close)="onCloseMultipleExtractModal()"
+>
+    <div class="modal-content-container">
+        <p class="font-multiple-extract">
+            {{ 'multipleExtractionModal.confirmation' | translate }} from {{ currentStartTime }} to {{ currentEndTime }}
+        </p>
+        <div class="partition-container">
+            <label class="label partition">{{ 'multipleExtractionModal.partition' | translate }}</label>
+            <input #partition class="partition-input" (change)="getSelectedPartition()" />
+            <label class="partition-exp"> Exp: 10</label>
+        </div>
+
+        <button class="button-style extract-btn" (click)="onSubmitMultipleExtraction()">
+            {{ 'multipleExtractionModal.confirm' | translate }}
+        </button>
+    </div>
+</modal>

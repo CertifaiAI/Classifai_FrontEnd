@@ -4,8 +4,8 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
+import { CardFieldSchema, ChosenType } from 'shared/types/home-layout/home-layout.model';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CardFieldSchema } from 'shared/types/home-layout/home-layout.model';
 
 @Component({
     selector: 'home-card',
@@ -14,7 +14,7 @@ import { CardFieldSchema } from 'shared/types/home-layout/home-layout.model';
 })
 export class HomeCardComponent {
     @Input() _jsonSchema!: CardFieldSchema;
-    @Output() _onThumbnailClick: EventEmitter<string> = new EventEmitter();
+    @Output() _onThumbnailClick: EventEmitter<ChosenType> = new EventEmitter();
     hover!: boolean;
     hoverIndex!: number;
 
@@ -24,8 +24,8 @@ export class HomeCardComponent {
         this.hoverIndex = index;
     }
 
-    emitParentUrl(enabled: boolean, url: string): void {
-        enabled && this._onThumbnailClick.emit(url);
+    emitParentUrl(enabled: boolean, url: string, title: string): void {
+        enabled && this._onThumbnailClick.emit({ url, title });
     }
 
     hoverStyling = (index: number, isHover: boolean, hoverLabel: string, imgPath: string): object =>

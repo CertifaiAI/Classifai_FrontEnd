@@ -10,13 +10,13 @@
     </div>
 
     <div class="content-container">
-        <image-labelling-left-sidebar
+        <left-sidebar
             [_onChange]="onChangeSchema"
             [_currentUrl]="currentUrl"
             [_tabStatus]="tabStatus"
             [_clickAbilityToggleStatus]="clickAbilityToggle"
             (_clickAbilityToggle)="changeClickAbilityToggleStatus($event)"
-        ></image-labelling-left-sidebar>
+        ></left-sidebar>
 
         <ng-container *ngIf="_router.url.includes('imglabel/bndbox')">
             <image-labelling-object-detection
@@ -67,7 +67,7 @@
             (_clickAbilityToggleStatus)="changeClickAbilityToggleStatus($event)"
             (_refreshLabelColor)="refreshLabelColor()"
         ></image-labelling-project>
-        <image-labelling-right-sidebar
+        <right-sidebar
             [_onChange]="onChangeSchema"
             [_tabClosedStatus]="tabClosedStatus"
             (_onClick)="onToggleTab($event)"
@@ -75,9 +75,9 @@
             (_onReload)="onReload()"
             (_onOpenProjectStats)="toggleProjectStats()"
             (_onAddImage)="toggleAddImage()"
-        ></image-labelling-right-sidebar>
+        ></right-sidebar>
     </div>
-    <image-labelling-footer [_thumbnailInfo]="selectedMetaData" [_imgSrc]="imgSrc"></image-labelling-footer>
+    <footer [_thumbnailInfo]="selectedMetaData" [_imgSrc]="imgSrc"></footer>
 </div>
 
 <modal id="modal-save" [id]="'modal-save'" [modalBodyStyle]="saveModalBodyStyle" [scrollable]="true">
@@ -388,7 +388,7 @@
 >
     <div class="display-modal-container">
         <div class="chart-container">
-            <app-pie-chart [labelledImage]="labelledImage" [unLabelledImage]="unLabelledImage"></app-pie-chart>
+            <app-pie-chart [labelledData]="labelledImage" [unLabelledData]="unLabelledImage"></app-pie-chart>
             <app-bar-chart *ngIf="!noLabel && !noAnnotation" [labelStats]="labelStats"></app-bar-chart>
             <div style="margin: 13vh 12vw" *ngIf="noLabel">
                 <h3>No Labels</h3>

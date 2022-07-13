@@ -1,0 +1,67 @@
+<div
+    class="side-menu"
+    [ngClass]="isToggleLabelSection == false && isToggleConditionsSection == false ? 'close' : 'toggle'"
+>
+    <div class="label-section" [ngClass]="isToggleLabelSection ? 'toggle' : 'close'">
+        <div class="section-title">
+            <label>Annotation</label>
+        </div>
+        <div class="subsection-longer">
+            <div class="input-label">
+                <input class="input" type="text" placeholder="Enter Label" (change)="createLabel($event)" #inputLabel />
+            </div>
+
+            <div class="labels">
+                <label>Labels: </label>
+            </div>
+
+            <div
+                [ngClass]="
+                    isToggleLabelSection == true && isToggleConditionsSection == false
+                        ? 'selected-label-container'
+                        : 'selected-label-container-adjust'
+                "
+            >
+                <div class="selected-label" *ngFor="let label of labels; index as i">
+                    <div class="label-tag">
+                        <label class="label">{{ label.labelName }}</label>
+                    </div>
+                    <div class="button-inner-container">
+                        <div class="label-color" [style.background-color]="label.tagColor">
+                            <div class="color-palette-container">
+                                <input type="color" id="color" class="color-palette" (change)="selectColor($event)" />
+                                <label for="color" class="hidden-label" (click)="getIndex(i)">tag color</label>
+                            </div>
+                        </div>
+                        <div class="delete-label">
+                            <button class="delete-label-btn" (click)="removeLabel(label)">delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="conditional-labelling-section" [ngClass]="isToggleConditionsSection ? 'toggle' : 'close'">
+        <div class="section-title">
+            <label>Conditional Labelling </label>
+        </div>
+        <div class="subsection-longer">
+            <div class="labels">
+                <label>Selected Conditions: </label>
+                <button class="toggle-add-conditions-btn" (click)="onClickAddConditions()">Add conditions</button>
+            </div>
+            <div
+                [ngClass]="
+                    isToggleLabelSection == false && isToggleConditionsSection == true
+                        ? 'selected-label-container'
+                        : 'selected-label-container-adjust'
+                "
+            >
+                <div class="selected-label" *ngFor="let condition of conditions; index as i">
+                    <label>{{ condition }}</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

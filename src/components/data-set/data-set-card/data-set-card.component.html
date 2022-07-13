@@ -25,7 +25,7 @@
                         </div>
                         <div class="card-icon-container">
                             <div
-                                (click)="onStarred(project, project.is_starred ? false : true)"
+                                (click)="onStarred(project, !project.is_starred)"
                                 (dblclick)="onDblClickStopPropagate($event)"
                             >
                                 <img

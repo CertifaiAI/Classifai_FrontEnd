@@ -4,14 +4,18 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { CardChoiceImgLblUrlPath, CardChoiceSchema } from '../../shared/types/home-layout/home-layout.model';
+import {
+    CardChoiceImgLblUrlPath,
+    CardChoiceSchema,
+    ChosenType,
+} from '../../shared/types/home-layout/home-layout.model';
+
 import { Component } from '@angular/core';
+import { LabelModeService } from 'shared/services/label-mode-service';
+import { LanguageService } from 'shared/services/language.service';
 import { ModalBodyStyle } from 'shared/types/modal/modal.model';
 import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
-import { LanguageService } from 'shared/services/language.service';
-import { ImageLabellingModeService } from 'components/image-labelling/image-labelling-mode.service';
-import { ImageLabellingMode } from 'shared/types/image-labelling/image-labelling.model';
 
 @Component({
     selector: 'home-layout',
@@ -20,6 +24,7 @@ import { ImageLabellingMode } from 'shared/types/image-labelling/image-labelling
 })
 export class HomeLayoutComponent {
     navigateUrl = '';
+    selectedType: string = '';
     modalBodyStyle: ModalBodyStyle = {
         minHeight: '37vh',
         maxHeight: '37vh',
@@ -53,15 +58,16 @@ export class HomeLayoutComponent {
     constructor(
         private _modalService: ModalService,
         private _router: Router,
-        private _imgLblMode: ImageLabellingModeService,
+        private _labelModeService: LabelModeService,
         private _languageService: LanguageService,
     ) {
         const langsArr: string[] = ['landing-page-en', 'landing-page-cn', 'landing-page-ms'];
         this._languageService.initializeLanguage(`landing-page`, langsArr);
     }
 
-    navigate(url: string): void {
-        this.navigateUrl = url;
+    navigate(chosenType: ChosenType): void {
+        this.navigateUrl = chosenType.url;
+        this.selectedType = chosenType.title;
         this.onDisplayModal(this.modalIdImgLbl);
     }
 
@@ -72,8 +78,16 @@ export class HomeLayoutComponent {
     onCloseModal = (id: string, enabled: boolean, path?: CardChoiceImgLblUrlPath) => {
         if (enabled) {
             if (path) {
-                const chosenMode: ImageLabellingMode = path === 'boundingbox' ? 'bndbox' : 'seg';
-                this._imgLblMode.setState(chosenMode);
+                let chosenMode = '';
+                if (this.selectedType === 'image') {
+                    chosenMode = path === 'boundingbox' ? 'imgbndbox' : 'imgseg';
+                }
+
+                if (this.selectedType === 'video') {
+                    chosenMode = path === 'boundingbox' ? 'videobndbox' : 'videoseg';
+                }
+
+                this._labelModeService.setLabelMode(chosenMode);
                 this._router.navigate([this.navigateUrl]);
             }
             this._modalService.close(id);

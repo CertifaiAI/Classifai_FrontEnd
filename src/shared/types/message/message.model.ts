@@ -4,16 +4,21 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
+import { RegionProps } from '../labelling-type/audio-labelling.model';
+
 type error_code = number;
 type errormessage = string;
 type content = string[];
 type message = boolean | number;
-export type UUID = string;
 type img_src = string;
 type uuid_add_list = string[];
 type uuid_delete_list = string[];
 type uuid_list = string[];
 type project_config_path = string;
+type window_status = boolean | number;
+type path = string;
+
+export type UUID = string;
 
 export type labels_stats = {
     label: string;
@@ -66,8 +71,8 @@ export type ImportResponse = {
 export type ProjectStatsResponse = {
     message: error_code;
     project_name: string;
-    labeled_image: number;
-    unlabeled_image: number;
+    labeled_data: number;
+    unlabeled_data: number;
     label_per_class_in_project: labels_stats[];
     error_message?: string;
 };
@@ -115,4 +120,40 @@ export type MessageDeleteImg = {
 export type AddImageResponse = {
     add_image_status: number;
     add_image_message: string;
+};
+
+export type Audio = {
+    message: message;
+    window_status: window_status;
+    window_message: string;
+    audio_file_path: path;
+};
+
+export type WaveFormPeaks = {
+    message: message;
+    error_message: string;
+    wave_form_peaks: number[];
+};
+
+export type AudioRegions = {
+    message: string;
+    audio_regions: RegionProps[];
+};
+
+export type DownloadResponse = {
+    message: message;
+    error_code?: error_code;
+    error_message?: errormessage;
+};
+
+export type UpdateTabularDataResponse = {
+    message: number;
+    error_code?: error_code;
+    error_message?: errormessage;
+};
+
+export type SpecificTabularDataResponse = {
+    message: number;
+    error_message?: errormessage;
+    tabular_data: any;
 };

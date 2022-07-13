@@ -29,3 +29,8 @@ type CardChoiceFieldConfigs = Omit<CardFieldConfigs, 'logoPath' | 'logoAlt'>[] &
 export type CardChoiceSchema = {
     fields: CardChoiceFieldConfigs;
 };
+
+export type ChosenType = {
+    url: string;
+    title: string;
+};

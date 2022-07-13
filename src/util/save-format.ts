@@ -4,9 +4,9 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { cloneDeep } from 'lodash-es';
-import { Boundingbox } from 'shared/types/image-labelling/image-labelling.model';
+import { Boundingbox } from 'shared/types/labelling-type/image-labelling.model';
 import { Utils } from 'util/utils';
+import { cloneDeep } from 'lodash-es';
 
 export class YoloFormat {
     private box: Boundingbox[] = [];

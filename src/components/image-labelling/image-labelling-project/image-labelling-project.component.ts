@@ -5,6 +5,18 @@
  */
 
 import {
+    BboxMetadata,
+    Boundingbox,
+    ChangeAnnotationLabel,
+    CompleteMetadata,
+    EventEmitter_ThumbnailDetails,
+    ImgLabelProps,
+    PolyMetadata,
+    Polygons,
+    SelectedLabelProps,
+    TabsProps,
+} from 'shared/types/labelling-type/image-labelling.model';
+import {
     Component,
     ElementRef,
     EventEmitter,
@@ -17,27 +29,16 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { isEqual } from 'lodash-es';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import {
-    ImgLabelProps,
-    BboxMetadata,
-    PolyMetadata,
-    CompleteMetadata,
-    TabsProps,
-    EventEmitter_ThumbnailDetails,
-    SelectedLabelProps,
-    ChangeAnnotationLabel,
-    Boundingbox,
-    Polygons,
-} from 'shared/types/image-labelling/image-labelling.model';
+
 import { AnnotateSelectionService } from 'shared/services/annotate-selection.service';
-import { LanguageService } from 'shared/services/language.service';
-import { UndoRedoService } from 'shared/services/undo-redo.service';
 import { HTMLElementEvent } from 'shared/types/field/field.model';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
 import { LabelColorServices } from '../../../shared/services/label-color.services';
+import { LanguageService } from 'shared/services/language.service';
+import { Subject } from 'rxjs';
+import { UndoRedoService } from 'shared/services/undo-redo.service';
+import { isEqual } from 'lodash-es';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'image-labelling-project',

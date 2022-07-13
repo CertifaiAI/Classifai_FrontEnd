@@ -4,8 +4,9 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
+import { Boundingbox, CompleteMetadata, Polygons } from 'shared/types/labelling-type/image-labelling.model';
+
 import { Injectable } from '@angular/core';
-import { CompleteMetadata, Polygons, Boundingbox } from 'shared/types/image-labelling/image-labelling.model';
 import { Utils } from 'util/utils';
 
 @Injectable({

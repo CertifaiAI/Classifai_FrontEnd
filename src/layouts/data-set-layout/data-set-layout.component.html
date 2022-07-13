@@ -1,6 +1,6 @@
 <div *ngIf="isOverlayOn" class="overlay">
-    <p style="margin-top: 40vh; color: rgb(255, 255, 255, 0.9); text-align: center; font-size: 3vh">
-        {{ isImageUploading ? 'Uploading the Images. Please Wait...' : 'Selection Window was Opened' }}
+    <p style="margin-top: 40vh; color: rgba(255, 255, 255, 0.9); text-align: center; font-size: 3vh">
+        {{ isUploading ? 'Uploading the Images. Please Wait...' : 'Selection Window was Opened' }}
     </p>
 </div>
 <page-header [_onChange]="onChangeSchema"></page-header>
@@ -61,16 +61,75 @@
                     <div class="empty-container"></div>
                 </ng-template>
                 <br />
-                <div class="select-folder-container">
-                    <label class="label label-select-folder">{{ 'projectFolder' | translate }}</label>
-                    <button class="button-style choose-folder-button" type="button" (click)="selectProjectFolder()">
-                        {{ 'chooseFolder' | translate }}
-                    </button>
-                </div>
-                <div class="folder-name-container">
-                    <label class="foldername" #projectfoldername></label>
-                </div>
-                <br />
+                <ng-container *ngIf="isImage">
+                    <div class="select-folder-container">
+                        <label class="label label-select-folder">{{ 'projectFolder' | translate }}</label>
+                        <button class="button-style choose-folder-button" type="button" (click)="selectProjectFolder()">
+                            {{ 'chooseFolder' | translate }}
+                        </button>
+                    </div>
+                    <div class="folder-name-container">
+                        <label class="foldername" #projectfoldername></label>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="isAudio">
+                    <div class="select-folder-container">
+                        <label class="label label-select-folder">{{ 'Audio File: ' }}</label>
+                        <div style="padding-top: 1vh">
+                            <button
+                                class="button-file-style choose-file-button"
+                                type="button"
+                                (click)="importAudioFile()"
+                            >
+                                {{ 'chooseFile' | translate }}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="file-name-container" *ngIf="isAudio">
+                        <label class="filename" #audiofilename></label>
+                    </div>
+                    <br />
+                </ng-container>
+
+                <ng-container *ngIf="isTabular">
+                    <div class="select-folder-container">
+                        <label class="label label-select-folder">{{ 'Tabular File: ' }}</label>
+                        <div style="padding-top: 1vh">
+                            <button
+                                class="button-file-style choose-file-button"
+                                type="button"
+                                (click)="importTabularFile()"
+                            >
+                                {{ 'chooseFile' | translate }}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="file-name-container" *ngIf="isTabular">
+                        <label class="filename" #tabularfilename></label>
+                    </div>
+                    <br />
+                </ng-container>
+
+                <ng-container *ngIf="isVideo">
+                    <div class="select-folder-container">
+                        <label class="label label-select-folder">{{ 'Video File: ' }}</label>
+                        <div style="padding-top: 1vh">
+                            <button
+                                class="button-file-style choose-file-button"
+                                type="button"
+                                (click)="importVideoFile()"
+                            >
+                                {{ 'chooseFile' | translate }}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="file-name-container" *ngIf="isVideo">
+                        <label class="filename" #videofilename></label>
+                    </div>
+                    <br />
+                </ng-container>
+
                 <div class="select-file-container">
                     <label class="label-select-label">
                         {{ 'labelListFile' | translate }}<br />
@@ -246,7 +305,7 @@
 >
     <div class="display-modal-container">
         <div class="chart-container">
-            <app-pie-chart [labelledImage]="labelledImage" [unLabelledImage]="unLabelledImage"></app-pie-chart>
+            <app-pie-chart [labelledData]="labelledData" [unLabelledData]="unLabelledData"></app-pie-chart>
             <app-bar-chart *ngIf="!noLabel && !noAnnotation" [labelStats]="labelStats"></app-bar-chart>
             <div style="margin: 13vh 12vw" *ngIf="noLabel">
                 <h3>No Labels</h3>

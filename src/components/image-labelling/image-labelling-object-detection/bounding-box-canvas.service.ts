@@ -4,8 +4,6 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { Injectable } from '@angular/core';
-import { clone } from 'lodash-es';
 import {
     BboxMetadata,
     Boundingbox,
@@ -13,8 +11,11 @@ import {
     Direction,
     LabelInfo,
     xyCoordinate,
-} from 'shared/types/image-labelling/image-labelling.model';
+} from 'shared/types/labelling-type/image-labelling.model';
+
+import { Injectable } from '@angular/core';
 import { Utils } from 'util/utils';
+import { clone } from 'lodash-es';
 
 @Injectable({
     providedIn: 'any',

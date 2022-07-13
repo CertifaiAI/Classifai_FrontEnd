@@ -5,25 +5,26 @@
  */
 
 import {
+    ChangeDetectionStrategy,
     Component,
     EventEmitter,
     Input,
+    OnChanges,
     OnInit,
     Output,
-    OnChanges,
     SimpleChanges,
-    ChangeDetectionStrategy,
 } from '@angular/core';
-import { Router } from '@angular/router';
-import { SharedUndoRedoService } from 'shared/services/shared-undo-redo.service';
 import {
+    CompleteMetadata,
+    ImageLabelUrl,
     ImgLabelProps,
     TabsProps,
-    CompleteMetadata,
     ThumbnailInfoProps,
-    ImageLabelUrl,
-} from 'shared/types/image-labelling/image-labelling.model';
+} from 'shared/types/labelling-type/image-labelling.model';
+
 import { IconSchema } from 'shared/types/icon/icon.model';
+import { Router } from '@angular/router';
+import { SharedUndoRedoService } from 'shared/services/shared-undo-redo.service';
 
 @Component({
     selector: 'image-labelling-info',

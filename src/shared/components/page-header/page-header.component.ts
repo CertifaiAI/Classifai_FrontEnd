@@ -1,18 +1,29 @@
-import { TutorialService, TutorialState } from './../../services/tutorial.service';
 /**
  * @license
  * Use of this source code is governed by Apache License 2.0 that can be
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Input, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    ElementRef,
+    EventEmitter,
+    HostListener,
+    Input,
+    OnInit,
+    Output,
+} from '@angular/core';
+import { TutorialService, TutorialState } from './../../services/tutorial.service';
+
 import { IconSchema } from 'shared/types/icon/icon.model';
-import { ImgLabelProps } from 'shared/types/image-labelling/image-labelling.model';
+import { ImgLabelProps } from 'shared/types/labelling-type/image-labelling.model';
 import { ModalBodyStyle } from 'shared/types/modal/modal.model';
 import { ModalService } from '../modal/modal.service';
-import { takeUntil } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { Features, label } from '../../types/labelling-type/tabular-labelling.model';
 
 type HeaderLabelSchema = {
     name: string;
@@ -34,6 +45,10 @@ type Tutorial = {
 })
 export class PageHeaderComponent implements OnInit {
     @Input() _onChange!: ImgLabelProps;
+    @Input() labels: label[] = [];
+    @Input() features: Features[] = [];
+    @Output() selectedShortCutKeys: EventEmitter<Map<string, string>> = new EventEmitter();
+    @Output() featuresCheckedStatus: EventEmitter<Map<string, boolean>> = new EventEmitter();
     // @Output() _navigate: EventEmitter<UrlProps> = new EventEmitter();
     logoSrc: string = `assets/icons/classifai_logo_white.svg`;
     jsonSchema!: IconSchema;

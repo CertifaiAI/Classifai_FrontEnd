@@ -4,45 +4,46 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { AnnotateSelectionService } from 'shared/services/annotate-selection.service';
+import { AddImageResponse, ExportStatus, Message, labels_stats } from 'shared/types/message/message.model';
+import {
+    AddSubLabel,
+    BboxMetadata,
+    ChangeAnnotationLabel,
+    CompleteMetadata,
+    EventEmitter_Action,
+    EventEmitter_ThumbnailDetails,
+    EventEmitter_Url,
+    ImageLabelUrl,
+    ImgLabelProps,
+    LabelChoosen,
+    PolyMetadata,
+    SelectedLabelProps,
+    TabsProps,
+} from 'shared/types/labelling-type/image-labelling.model';
+import { ChartProps, ProjectSchema } from 'shared/types/dataset-layout/data-set-layout.model';
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { DataSetLayoutService } from 'layouts/data-set-layout/data-set-layout-api.service';
 import {
     ExportSaveFormatService,
     ExportSaveType,
-    SaveFormat,
     ProcessResponse,
+    SaveFormat,
 } from 'shared/services/export-save-format.service';
+import { Observable, Subject, Subscription, forkJoin, interval, throwError } from 'rxjs';
 import { first, mergeMap, takeUntil } from 'rxjs/operators';
+
+import { AnnotateSelectionService } from 'shared/services/annotate-selection.service';
+import { DataSetLayoutService } from 'layouts/data-set-layout/data-set-layout-api.service';
 import { HTMLElementEvent } from 'shared/types/field/field.model';
 import { ImageLabellingActionService } from 'components/image-labelling/image-labelling-action.service';
 import { ImageLabellingApiService } from 'components/image-labelling/image-labelling-api.service';
 import { ImageLabellingLayoutService } from 'layouts/image-labelling-layout/image-labelling-layout.service';
 import { ImageLabellingModeService } from 'components/image-labelling/image-labelling-mode.service';
+import { LabelColorServices } from '../../shared/services/label-color.services';
 import { LanguageService } from 'shared/services/language.service';
+import { ModalBodyStyle } from 'shared/types/modal/modal.model';
 import { ModalService } from 'shared/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { SpinnerService } from 'shared/components/spinner/spinner.service';
-import { forkJoin, interval, Observable, Subject, Subscription, throwError } from 'rxjs';
-import { AddImageResponse, ExportStatus, labels_stats, Message } from 'shared/types/message/message.model';
-import { ModalBodyStyle } from 'shared/types/modal/modal.model';
-import { ChartProps, ProjectSchema } from 'shared/types/dataset-layout/data-set-layout.model';
-import {
-    ImgLabelProps,
-    ImageLabelUrl,
-    CompleteMetadata,
-    TabsProps,
-    AddSubLabel,
-    LabelChoosen,
-    BboxMetadata,
-    PolyMetadata,
-    EventEmitter_Url,
-    EventEmitter_Action,
-    EventEmitter_ThumbnailDetails,
-    SelectedLabelProps,
-    ChangeAnnotationLabel,
-} from 'shared/types/image-labelling/image-labelling.model';
-import { LabelColorServices } from '../../shared/services/label-color.services';
 
 @Component({
     selector: 'image-labelling-layout',
@@ -282,18 +283,18 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             .pipe(
                 mergeMap(() => forkJoin([projMetaStatus$])),
                 first(([{ message, content }]) => {
-                    this.totalUuid = content[0].total_uuid;
+                    this.totalUuid = content.total_uuid;
                     this.projectList = {
                         isUploading: this.projectList.isUploading,
                         isFetching: this.projectList.isFetching,
                         projects: this.projectList.projects.map((project) =>
-                            project.project_name === content[0].project_name
-                                ? { ...content[0], created_date: project.created_date }
+                            project.project_name === content.project_name
+                                ? { ...content, created_date: project.created_date }
                                 : project,
                         ),
                     };
-                    const { is_loaded } = content[0];
-                    return message === 1 && !is_loaded ? true : false;
+                    const is_loaded = content.is_loaded;
+                    return message === 1 && !is_loaded;
                 }),
                 mergeMap(([{ message }]) => (!message ? [] : forkJoin([updateProjLoadStatus$, projLoadingStatus$]))),
                 mergeMap(([{ message: updateProjStatus }, { message: loadProjStatus, uuid_list, label_list }]) => {
@@ -1099,10 +1100,9 @@ export class ImageLabellingLayoutComponent implements OnInit, OnDestroy {
             .getProjectStats(this.selectedProjectName)
             .pipe()
             .subscribe((project) => {
-                console.log(project);
                 if (project) {
-                    this.labelledImage = project.labeled_image;
-                    this.unLabelledImage = project.unlabeled_image;
+                    this.labelledImage = project.labeled_data;
+                    this.unLabelledImage = project.unlabeled_data;
                     this.labelStats = [];
                     project.label_per_class_in_project.forEach((labelMeta: labels_stats) => {
                         if (labelMeta.count > 0) {

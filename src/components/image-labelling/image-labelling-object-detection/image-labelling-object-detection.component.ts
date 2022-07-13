@@ -5,46 +5,47 @@
  */
 
 import {
+    ActionState,
+    BboxMetadata,
+    Boundingbox,
+    ChangeAnnotationLabel,
+    CompleteMetadata,
+    Direction,
+    LabelInfo,
+    SelectedLabelProps,
+    TabsProps,
+    UndoState,
+} from 'shared/types/labelling-type/image-labelling.model';
+import { AnnotateActionState, AnnotateSelectionService } from 'shared/services/annotate-selection.service';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
-    OnInit,
+    ElementRef,
+    EventEmitter,
+    HostListener,
     Input,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    Output,
     SimpleChanges,
     ViewChild,
-    ElementRef,
-    HostListener,
-    ChangeDetectorRef,
-    ChangeDetectionStrategy,
-    OnChanges,
-    Output,
-    EventEmitter,
-    OnDestroy,
 } from '@angular/core';
-import { cloneDeep } from 'lodash-es';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import {
-    ActionState,
-    LabelInfo,
-    BboxMetadata,
-    TabsProps,
-    CompleteMetadata,
-    ChangeAnnotationLabel,
-    SelectedLabelProps,
-    Boundingbox,
-    UndoState,
-    Direction,
-} from 'shared/types/image-labelling/image-labelling.model';
-import { SharedUndoRedoService } from 'shared/services/shared-undo-redo.service';
 import { MouseCursorState, MousrCursorService } from 'shared/services/mouse-cursor.service';
-import { ZoomState, ZoomService, WheelDelta } from 'shared/services/zoom.service';
-import { CopyPasteService } from 'shared/services/copy-paste.service';
-import { UndoRedoService } from 'shared/services/undo-redo.service';
-import { AnnotateActionState, AnnotateSelectionService } from 'shared/services/annotate-selection.service';
-import { ShortcutKeyService } from 'shared/services/shortcut-key.service';
-import { HTMLElementEvent } from 'shared/types/field/field.model';
+import { WheelDelta, ZoomService, ZoomState } from 'shared/services/zoom.service';
+
 import { BoundingBoxCanvasService } from './bounding-box-canvas.service';
+import { CopyPasteService } from 'shared/services/copy-paste.service';
+import { HTMLElementEvent } from 'shared/types/field/field.model';
 import { ImageLabellingActionService } from '../image-labelling-action.service';
 import { LabelColorServices } from '../../../shared/services/label-color.services';
+import { SharedUndoRedoService } from 'shared/services/shared-undo-redo.service';
+import { ShortcutKeyService } from 'shared/services/shortcut-key.service';
+import { Subject } from 'rxjs';
+import { UndoRedoService } from 'shared/services/undo-redo.service';
+import { cloneDeep } from 'lodash-es';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'image-labelling-object-detection',

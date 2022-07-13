@@ -1,0 +1,402 @@
+<div class="layout-container">
+    <div>
+        <page-header></page-header>
+    </div>
+    <div class="content-container">
+        <left-sidebar
+            (_setDefaultRegionsLength)="onSetDefaultRegionLength()"
+            (_lockAllRegions)="lockAllRegions($event)"
+            (_removeAllRegions)="removeAllRegions()"
+            (_save)="saveAnnotationFile()"
+        ></left-sidebar>
+        <div class="wave-container">
+            <div class="wave-timeline" id="waveTimeline"></div>
+            <div
+                class="wave-form-container"
+                id="waveForm"
+                (mousewheel)="zoomWave($event)"
+                (click)="onClickRegion($event)"
+                (mousemove)="adjustingTempRegion($event)"
+            ></div>
+
+            <div class="floating-container" #floatingContainer *ngIf="labels.length > 0">
+                <div style="float: right">
+                    <img class="close-icon" src="assets/icons/close.svg" (click)="closeFloatingContainer()" />
+                </div>
+                <div class="labels-select-container">
+                    <div class="search-label">
+                        <input
+                            class="search-label-placeholder"
+                            type="text"
+                            placeholder="search label"
+                            (change)="searchLabel($event)"
+                        />
+                    </div>
+                    <div class="labels-selections-container">
+                        <div class="labels-selection" *ngFor="let label of floatLabels; index as i">
+                            <div class="float-label" (click)="selectLabel(i)">
+                                {{ label.name }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="wave-miniMap"
+                id="waveMiniMap"
+                (click)="onClickMiniMap($event)"
+                (mousemove)="onHoverMiniMap($event)"
+                (mouseleave)="closeMiniMapTime()"
+                (mouseenter)="toggleMiniMapTime()"
+            >
+                <div
+                    [draggable]="enableDragRegionIndicator"
+                    *ngIf="displayRegionIndicator"
+                    class="region-indicator-div"
+                    id="regionIndicator"
+                    (dragstart)="recordDragPosition($event)"
+                    (dragover)="onDragRegionIndicator($event)"
+                    (dragend)="recordDragPosition($event)"
+                ></div>
+
+                <div *ngIf="displayMiniMapTime" class="miniMap-time" id="miniMapTime"></div>
+            </div>
+
+            <div class="bottom-container">
+                <div class="regions-container">
+                    <div class="title-container">
+                        <div class="title">Regions</div>
+                    </div>
+                    <div *ngIf="regionPropsList && regionPropsList.length == 0" class="regions-inner-container">
+                        <div class="empty-regions">
+                            <span>Get started labelling on audio wave region</span>
+                        </div>
+                    </div>
+                    <div *ngIf="regionPropsList && regionPropsList.length > 0" class="regions-inner-container">
+                        <div class="region-container" *ngFor="let region of regionPropsList; index as i">
+                            <div class="region-tag">
+                                <div class="region-title">{{ 'Region ' + (i + 1) }}</div>
+                            </div>
+                            <div class="region-tag" [style.background]="region.labelColor">
+                                <div class="region-title">{{ region.labelName }}</div>
+                            </div>
+                            <div class="timer-container">
+                                <div class="region-title" [id]="'time' + region.regionId">
+                                    {{ formatTime(region.startTime) }} / {{ formatTime(region.endTime) }}
+                                </div>
+                            </div>
+                            <div class="region-control-container">
+                                <img
+                                    *ngIf="!region.isPlaying"
+                                    class="region-icon"
+                                    src="assets/icons/play.svg"
+                                    alt="Play"
+                                    (click)="playRegionAudio(region, i)"
+                                />
+                                <img
+                                    *ngIf="region.isPlaying"
+                                    class="region-icon"
+                                    src="assets/icons/pause.svg"
+                                    alt="Pause"
+                                    (click)="playRegionAudio(region, i)"
+                                />
+                                <img
+                                    *ngIf="wave.regions.list[region.regionId]"
+                                    src="assets/icons/loop.svg"
+                                    alt="loop"
+                                    (click)="loopRegionAudio(region.regionId)"
+                                    [ngClass]="
+                                        wave.regions.list[region.regionId].loop == true
+                                            ? 'region-icon-active'
+                                            : 'region-icon'
+                                    "
+                                />
+                                <img
+                                    *ngIf="!region.draggable"
+                                    class="region-icon"
+                                    src="assets/icons/lock.svg"
+                                    alt="lock"
+                                    (click)="lockRegion(region)"
+                                />
+                                <img
+                                    *ngIf="region.draggable"
+                                    class="region-icon"
+                                    src="assets/icons/lock_open.svg"
+                                    alt="Open lock"
+                                    (click)="lockRegion(region)"
+                                />
+                                <img
+                                    class="region-icon"
+                                    src="assets/icons/forward.svg"
+                                    alt="seek to"
+                                    (click)="seekToRegion(region.regionId)"
+                                />
+                                <img
+                                    class="region-icon"
+                                    src="assets/icons/length.svg"
+                                    alt="seek to"
+                                    (click)="toggleAdjustRegionLength(); getRegionId(region.regionId)"
+                                    [ngClass]="
+                                        wave.regions.list[region.regionId].resize == false
+                                            ? 'region-icon-active'
+                                            : 'region-icon'
+                                    "
+                                />
+                                <img
+                                    class="region-icon"
+                                    src="assets/icons/trash.svg"
+                                    alt="delete"
+                                    (click)="removeRegion(region.regionId)"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-container">
+                    <div class="label-container">
+                        <div class="shorter-title-container">
+                            <div class="shorter-title">Labels</div>
+                        </div>
+                        <div class="input-label">
+                            <input
+                                #inputLabel
+                                class="input-placeholder"
+                                type="text"
+                                placeholder="Enter Label"
+                                (change)="createLabel($event)"
+                                autofocus
+                            />
+                        </div>
+                        <div class="label-inner-container">
+                            <div class="selected-label" *ngFor="let label of labels; index as i">
+                                <div class="label-tag">
+                                    <label class="label">{{ label.name }}</label>
+                                </div>
+                                <div class="button-inner-container">
+                                    <div class="label-color" [style.background-color]="label.color">
+                                        <div class="color-palette-container">
+                                            <input
+                                                type="color"
+                                                id="color"
+                                                class="color-palette"
+                                                (change)="selectColor($event)"
+                                            />
+                                            <label for="color" class="hidden-label" (click)="getIndex(i)"
+                                                >tag color</label
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="delete-label">
+                                        <button class="delete-label-btn" (click)="removeLabel(label)">delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="controls-container">
+                        <div class="shorter-title-container">
+                            <div class="shorter-title title-adjust">Tools</div>
+                        </div>
+
+                        <div class="video-player-container" *ngIf="wave">
+                            <div class="video-player-inner-container">
+                                <div class="video-player-control">
+                                    <img
+                                        class="control-icon"
+                                        src="assets/icons/previous.svg"
+                                        alt="previous 5 second region"
+                                        (click)="skipToPreviousFifthSecondRegion()"
+                                    />
+                                    <img
+                                        *ngIf="!isPlaying"
+                                        class="control-icon"
+                                        src="assets/icons/play.svg"
+                                        alt="Play"
+                                        (click)="playAudio()"
+                                    />
+                                    <img
+                                        *ngIf="isPlaying"
+                                        class="control-icon"
+                                        src="assets/icons/pause.svg"
+                                        alt="Pause"
+                                        (click)="playAudio()"
+                                    />
+                                    <img
+                                        class="control-icon"
+                                        src="assets/icons/next.svg"
+                                        alt="next 5 second region"
+                                        (click)="skipToNextFifthSecondRegion()"
+                                    />
+                                </div>
+                                <div class="timer-container">
+                                    <span #currentTime>00:00:00</span> / <span #totalDuration>00:00:00</span>
+                                </div>
+                            </div>
+
+                            <div class="volume-control-container">
+                                <div class="volume-control">
+                                    <div class="volume-inner-title">
+                                        <span> Volume </span>
+                                    </div>
+                                    <div class="volume-control-inner-container">
+                                        <label>
+                                            <input
+                                                type="range"
+                                                min="0"
+                                                max="1"
+                                                step="0.1"
+                                                value="0.5"
+                                                (change)="changeAudioVolume($event)"
+                                            />
+                                        </label>
+                                        <div class="input-value">{{ audioVolume }}</div>
+                                    </div>
+                                </div>
+                                <div class="volume-control">
+                                    <div class="volume-inner-title">
+                                        <span> Playback rate </span>
+                                    </div>
+                                    <div class="volume-control-inner-container">
+                                        <label>
+                                            <input
+                                                type="range"
+                                                min="0"
+                                                max="2"
+                                                step="0.1"
+                                                value="1"
+                                                (change)="changeAudioPlayRate($event)"
+                                            />
+                                        </label>
+                                        <div class="input-value">{{ wave.getPlaybackRate() }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="video-info-container">
+                            <div>
+                                <div class="video-info">
+                                    <span> File name: {{ audioFileName }}</span>
+                                </div>
+                                <div class="video-info">
+                                    <span> Channels: {{ 2 }}</span>
+                                </div>
+                                <div class="video-info">
+                                    <span> Bits: {{ 8 }}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="video-info">
+                                    <span> Bit rate: {{ 256 }}</span>
+                                </div>
+                                <div class="video-info">
+                                    <span> Number of data point: {{ 2096 }}</span>
+                                </div>
+                                <div class="video-info">
+                                    <span> Sample rate: {{ 8000 + 'Hz' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <right-sidebar (_onOpenProjectStats)="projectStatistics()"></right-sidebar>
+    </div>
+    <footer [projectName]="projectName" [fileSize]="fileSize" [fileType]="fileType" [filePath]="filePath"></footer>
+</div>
+
+<modal
+    [id]="setRegionLengthModal"
+    [modalBodyStyle]="adjustRegionLengthBodyStyle"
+    [modalTitle]="'Set Region Length'"
+    [scrollable]="false"
+    [zIndex]="3"
+>
+    <div class="adjust-region-length-container">
+        <div class="adjust-region-length">
+            <div class="description-container">
+                <span>Input number in seconds to fix the length of region: </span>
+            </div>
+            <div class="region-length-input">
+                <input
+                    #inputRegionLength
+                    class="region-input-placeholder"
+                    type="text"
+                    placeholder="Enter region length"
+                    (change)="onInputRegionLength($event)"
+                    autofocus
+                />
+                <div class="region-length-value">
+                    <span> Region length: {{ regionLength() }}</span>
+                </div>
+            </div>
+
+            <div class="region-button-inner-container">
+                <div class="button">
+                    <button class="delete-label-btn" (click)="onSetRegionLength()">Set</button>
+                </div>
+                <div class="button">
+                    <button class="delete-label-btn" (click)="onRemoveFixedRegionLengthSettings()">Remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</modal>
+
+<modal
+    [id]="setDefaultRegionLengthModal"
+    [modalBodyStyle]="adjustRegionLengthBodyStyle"
+    [modalTitle]="'Set Default Regions Length'"
+    [scrollable]="false"
+    [zIndex]="3"
+>
+    <div class="adjust-region-length-container">
+        <div class="adjust-region-length">
+            <div class="description-container">
+                <span>Input number in seconds to set the default length of all regions: </span>
+            </div>
+            <div class="region-length-input">
+                <input
+                    #inputDefaultRegionLength
+                    class="region-input-placeholder"
+                    type="text"
+                    placeholder="Enter region length"
+                    (change)="onInputDefaultRegionLength($event)"
+                    autofocus
+                />
+                <div class="region-length-value">
+                    <span> Default Region length: {{ currentDefaultRegionLength() }}</span>
+                </div>
+            </div>
+
+            <div class="region-button-inner-container">
+                <div class="button">
+                    <button class="delete-label-btn" (click)="setDefaultRegionLength()">Set</button>
+                </div>
+                <div class="button">
+                    <button class="delete-label-btn" (click)="removeDefaultRegionLength()">Remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</modal>
+
+<modal
+    [id]="modalIdProjectStats"
+    [modalBodyStyle]="projectStatsBodyStyle"
+    [modalTitle]="'projectStats' | translate"
+    [scrollable]="false"
+>
+    <div class="display-modal-container">
+        <div class="chart-container">
+            <app-bar-chart *ngIf="!emptyLabel && !emptyAnnotation" [labelStats]="statistics"></app-bar-chart>
+            <div style="margin: 13vh 10vw" *ngIf="emptyAnnotation">
+                <h3>No Annotation</h3>
+            </div>
+        </div>
+    </div>
+</modal>

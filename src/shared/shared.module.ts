@@ -22,6 +22,7 @@ import { PageHeaderModule } from 'shared/components/page-header/page-header.modu
 import { SpinnerModule } from 'shared/components/spinner/spinner.module';
 import { UnsupportedImageModalModule } from 'shared/components/unsupported-image-modal/unsupported-image-modal.module';
 import { EmptyContainerModule } from './components/empty-container/empty-container.module';
+import { DynamicFormComponent } from './components/forms/dynamic-form/dynamic-form.component';
 
 // AoT requires an exported function for factories
 export const httpLoaderFactory = (httpClient: HttpClient) => {
@@ -33,6 +34,7 @@ export const httpLoaderFactory = (httpClient: HttpClient) => {
         FileNamePipe,
         // SanitizeSvgPipe,
         LazyLoadImgDirective,
+        DynamicFormComponent,
     ],
     imports: [
         CommonModule,

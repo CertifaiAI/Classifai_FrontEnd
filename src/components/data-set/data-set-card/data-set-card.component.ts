@@ -67,7 +67,7 @@ export class DataSetCardComponent implements OnChanges {
     };
 
     onStarred = (project: Project, starred: boolean): void => {
-        const { project_name } = project;
+        const project_name = project.project_name;
         this._jsonSchema.projects = this._jsonSchema.projects.map((proj) =>
             proj.project_name === project_name ? ((proj.is_starred = starred), proj) : proj,
         );

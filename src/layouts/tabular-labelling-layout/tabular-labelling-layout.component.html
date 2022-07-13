@@ -1,0 +1,682 @@
+<div class="layout-container">
+    <div>
+        <page-header
+            [labels]="labels"
+            [features]="features"
+            (selectedShortCutKeys)="setShortCutKeyForLabel($event)"
+            (featuresCheckedStatus)="setCheckedStatusForFeatures($event)"
+        ></page-header>
+        <tabular-labelling-info
+            [totalUuid]="totalUuid"
+            [currentIndex]="currentDataIndex"
+            [hasAnnotation]="hasAnnotation"
+            [isToggleLabelSection]="isToggleLabelSection"
+            [isToggleConditionsSection]="isToggleConditionSection"
+            (onNavigateData)="navigateToTargetData($event)"
+        >
+        </tabular-labelling-info>
+    </div>
+
+    <div class="layout">
+        <tabular-labelling-left-sidebar
+            (_toggleTabularTable)="generateSource()"
+            (_toggleLabels)="toggleLabelSection()"
+            (_toggleConditions)="toggleConditionSection()"
+            (_toggleSave)="toggleSave()"
+            (_toggleInfo)="toggleInfo()"
+        ></tabular-labelling-left-sidebar>
+        <tabular-labelling-side-menu
+            [labels]="labels"
+            [isToggleLabelSection]="isToggleLabelSection"
+            [isToggleConditionsSection]="isToggleConditionSection"
+            [conditions]="conditionList"
+            [selectedConditions]="selectedConditions"
+            (onCreateLabel)="updateLabel($event)"
+            (onDeleteLabel)="removeLabel($event)"
+            (onSelectLabelColor)="selectColor($event)"
+            (onSelectLabelIndex)="getIndex($event)"
+            (onCreateCondition)="createCondition($event)"
+            (onClick)="openAddConditionModal()"
+        ></tabular-labelling-side-menu>
+        <!--        <div class="right-side-container">-->
+        <!--        <div class="header-section">-->
+        <!--            <div class="header-part">-->
+        <!--                <div class="logo-container">-->
+        <!--                    <button class="submit">Submit</button>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--            <div class="header-part">-->
+        <!--                <div class="logo-container">-->
+        <!--                    <button class="notification">-->
+        <!--                        <img class="logo" src="assets/icons/notifications.svg" />-->
+        <!--                    </button>-->
+        <!--                    <span class="notify-number">1</span>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--            <div class="header-part">-->
+        <!--                <div class="logo-container profile">-->
+        <!--                    <button class="notification">-->
+        <!--                        <img class="logo" src="assets/icons/user.svg" />-->
+        <!--                    </button>-->
+        <!--                </div>-->
+        <!--                <div class="role">-->
+        <!--                    <label>Labeller</label>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--            </div>-->
+        <div
+            [ngClass]="
+                isToggleConditionSection == false && isToggleLabelSection == false
+                    ? 'annotation-container-adjust'
+                    : 'annotation-container'
+            "
+        >
+            <!--                        <div-->
+            <!--                            class="data-container"-->
+            <!--                            (contextmenu)="toggleContainer($event);closeContainer($event)"-->
+            <!--                            (click)="checkUsedAnnotations()"-->
+            <!--                        >-->
+            <div class="data-container">
+                <!--                design 3: floating label container-->
+                <!--                                    <div class="float-options-container" #floatContainer>-->
+                <!--                                        <div class="select-options-container">-->
+                <!--                                            <div-->
+                <!--                                                class="select-options"-->
+                <!--                                                *ngFor="let label of labels; index as i"-->
+                <!--                                                [ngClass]="annotations.includes(label) ? 'close' : 'toggle'"-->
+                <!--                                            >-->
+                <!--                                                <div-->
+                <!--                                                    class="options"-->
+                <!--                                                    [style.background-color]="label.tagColor"-->
+                <!--                                                    (click)="chooseLabel(i)"-->
+                <!--                                                >-->
+                <!--                                                    <label>{{ label.labelName }}</label>-->
+                <!--                                                </div>-->
+                <!--                                            </div>-->
+                <!--                                        </div>-->
+                <!--                                    </div>-->
+                <div class="inner-container">
+                    <div class="table-container">
+                        <div class="scroll-table" #scrollTable>
+                            <table class="data-table">
+                                <tr *ngFor="let data of retrievedData">
+                                    <th>{{ data.name }}</th>
+                                    <td>{{ data.value }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="bottom-container">
+                    <div class="bottom-session-container">
+                        <div class="selection-invalid">
+                            <div class="invalid-data short">
+                                <input
+                                    #invalid
+                                    type="checkbox"
+                                    id="invalid"
+                                    (click)="invalidateData($event.target.checked)"
+                                />
+                                <label for="invalid">Invalid</label>
+                            </div>
+                            <div class="invalid-data middle">
+                                <input #skipInvalid type="checkbox" id="skipInvalid" (click)="skipInvalidData()" />
+                                <label for="skipInvalid">Skip Invalid</label>
+                            </div>
+                            <div class="invalid-data long">
+                                <input
+                                    #showInvalidOnly
+                                    type="checkbox"
+                                    id="showInvalidOnly"
+                                    (click)="showInvalidDataOnly()"
+                                />
+                                <label for="showInvalidOnly">Show Invalid Only</label>
+                            </div>
+                        </div>
+
+                        <div class="button-container">
+                            <button
+                                class="button-style navigation-btn"
+                                (click)="this.getNextAttributesAndValue()"
+                                [ngClass]="this.currentDataIndex == this.uuidList.length - 1 ? 'disabled' : 'enabled'"
+                                [disabled]="this.currentDataIndex == this.uuidList.length - 1"
+                            >
+                                Next
+                            </button>
+
+                            <button
+                                class="button-style navigation-btn"
+                                (click)="this.getPreviousAttributesAndValue()"
+                                [ngClass]="this.currentDataIndex == 0 ? 'disabled' : 'enabled'"
+                                [disabled]="this.currentDataIndex == 0"
+                            >
+                                Back
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--        </div>-->
+        <tabular-labelling-project
+            [annotations]="annotations"
+            [tempLabels]="tempLabels"
+            (onChooseLabel)="chooseLabel($event)"
+            (onSearchLabel)="searchLabel($event)"
+            (onRemoveAnnotation)="removeAnnotation($event)"
+        ></tabular-labelling-project>
+        <tabular-labelling-right-sidebar
+            (_onToggleProjectStats)="projectStatistics()"
+        ></tabular-labelling-right-sidebar>
+    </div>
+    <tabular-labelling-footer
+        [projectName]="projectName"
+        [filePath]="filePath"
+        [fileType]="fileType"
+    ></tabular-labelling-footer>
+</div>
+
+<modal
+    [id]="modalTabularDataView"
+    [modalBodyStyle]="tabularDataViewBodyStyle"
+    [modalTitle]="'Tabular Data Table'"
+    [scrollable]="false"
+    [zIndex]="2"
+>
+    <div class="tabular-data-container">
+        <div class="tabular-data-view" *ngIf="tabularData">
+            <gui-grid
+                [virtualScroll]="true"
+                [maxHeight]="400"
+                [width]="tabularData.length > 0 ? 1100 : 1800"
+                [columns]="columns"
+                [source]="tabularDataObservable | async"
+                [rowClass]="rowClass"
+                [theme]="'dark'"
+            >
+            </gui-grid>
+            <!--                        <ag-grid-angular-->
+            <!--                            style="width: 50vw; height: 50vh;"-->
+            <!--                            class="ag-theme-alphine"-->
+            <!--                            [rowData]="tabularDataObservable | async"-->
+            <!--                            [columnDefs]="columnsDefs"-->
+            <!--                        >-->
+            <!--                        </ag-grid-angular>-->
+        </div>
+    </div>
+</modal>
+
+<!--<modal-->
+<!--    [id]="modalPlotGraph"-->
+<!--    [modalBodyStyle]="plotGraphBodyStyle"-->
+<!--    [modalTitle]="'Class Distribution'"-->
+<!--    [scrollable]="false"-->
+<!--&gt;-->
+<!--    <div class="display-modal-container">-->
+<!--        <div class="chart-container" *ngIf="annotationIndexMap.size > 0">-->
+<!--            <div class="plot-graph-container">-->
+<!--                <ngx-charts-bar-vertical-->
+<!--                    [scheme]="colorScheme"-->
+<!--                    [results]="statistics.length > 0 ? statistics : ''"-->
+<!--                    [xAxis]="true"-->
+<!--                    [yAxis]="true"-->
+<!--                    [legend]="true"-->
+<!--                    [showXAxisLabel]="true"-->
+<!--                    [showYAxisLabel]="true"-->
+<!--                    [xAxisLabel]="'Labels'"-->
+<!--                    [yAxisLabel]="'Count'"-->
+<!--                    [barPadding]="20"-->
+<!--                >-->
+<!--                </ngx-charts-bar-vertical>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="plot-graph-container" *ngIf="annotationIndexMap.size == 0">-->
+<!--            <div class="unable-generate-graph">-->
+<!--                <label>No Annotations Found</label>-->
+<!--                <br />-->
+<!--                <label>Annotate Data To View The Class Distribution</label>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</modal>-->
+
+<modal [id]="'modal-save'" [modalBodyStyle]="saveModalBodyStyle" [scrollable]="true">
+    <div class="save-format-list">
+        <div class="save-format-content">
+            <div class="filter-data">
+                <input
+                    type="checkbox"
+                    id="filterInvalid"
+                    (click)="filterInvalidDataInOutputFile($event.target.checked)"
+                />
+                <label for="filterInvalid">Filter invalid data</label>
+            </div>
+            <ng-container>
+                <button class="save-format-btn" (click)="onClickDownload('csv', filterInvalidData)">CSV</button>
+                <br />
+                <button class="save-format-btn" (click)="onClickDownload('excel', filterInvalidData)">EXCEL</button>
+                <br />
+                <button class="save-format-btn" (click)="onClickDownload('json', filterInvalidData)">JSON</button>
+                <br />
+                <button class="save-format-btn" (click)="onClickDownload('label', false)">Label</button>
+                <br />
+            </ng-container>
+        </div>
+    </div>
+</modal>
+
+<modal
+    [id]="'modal-add-labelling-conditions'"
+    [modalTitle]="'Auto-Labelling Conditions'"
+    [modalBodyStyle]="addLabellingConditionBodyStyle"
+    [scrollable]="false"
+>
+    <div class="labelling-conditions-container">
+        <div class="condition-type-container">
+            <label style="font-size: 2.3vh; margin-left: 0.3vw">Add Type of Condition : </label>
+            <button class="condition-selection-btn" (click)="toggleTypeSelection()">select types</button>
+        </div>
+
+        <div class="condition-type-list" *ngIf="isToggleConditionType">
+            <div class="condition-type" *ngFor="let type of conditionTypes">
+                <div class="condition-type-select" (click)="getConditionType(type)">
+                    <label>{{ type }}</label>
+                </div>
+            </div>
+        </div>
+        <div class="labelling-conditions-inner-container" *ngIf="selectedConditionTypes.length == 0">
+            <div class="add-conditions-alert">
+                <label>Set conditions for automated labelling</label>
+            </div>
+        </div>
+        <div class="labelling-conditions-inner-container" *ngIf="selectedConditionTypes.length != 0">
+            <div class="condition-container" *ngFor="let conditionalType of selectedConditionTypes; index as i">
+                <ng-container *ngIf="conditionalType.type == 'Threshold'">
+                    <div class="selection-container">
+                        <div class="condition-title threshold-title">
+                            <label> Threshold: </label>
+                        </div>
+                        <div class="condition-expression" *ngIf="conditionalType.isClickSet == false">
+                            <div>
+                                <label> {{ displayThresholdCondition(i) }} </label>
+                            </div>
+                        </div>
+
+                        <div class="pop-up-setting-window" *ngIf="conditionalType.isClickSet">
+                            <div class="select-container">
+                                <div class="select-inner-container">
+                                    <button
+                                        class="condition-selection-btn"
+                                        (click)="setToggleState(i, conditionalType.isToggleAttributes, 'attribute')"
+                                    >
+                                        {{ displaySelection(i, 'attribute', 'Threshold') }}
+                                    </button>
+                                </div>
+                                <div class="conditions-drop-down-container" *ngIf="conditionalType.isToggleAttributes">
+                                    <div class="conditions-drop-down" *ngFor="let attribute of attributeNames">
+                                        <div
+                                            class="select-parameter"
+                                            (click)="getConditionSettings(i, attribute, 'Threshold', 'attribute')"
+                                        >
+                                            <label>{{ attribute.toLowerCase() }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="select-container" *ngIf="conditionalType.isClickSet">
+                                <div class="select-inner-container">
+                                    <button
+                                        class="condition-selection-btn"
+                                        (click)="setToggleState(i, conditionalType.isToggleOperator, 'operator')"
+                                    >
+                                        {{ displaySelection(i, 'operator', 'Threshold') }}
+                                    </button>
+                                </div>
+
+                                <div class="conditions-drop-down-container" *ngIf="conditionalType.isToggleOperator">
+                                    <div class="conditions-drop-down" *ngFor="let operator of operatorTypes">
+                                        <div
+                                            class="select-parameter"
+                                            (click)="getConditionSettings(i, operator, 'Threshold', 'operator')"
+                                        >
+                                            <label>{{ operator }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="condition-description-container">
+                                <input
+                                    type="text"
+                                    placeholder="Enter threshold value"
+                                    value="{{ displaySelection(i, 'value', 'Threshold') }}"
+                                    class="condition-input"
+                                    (change)="
+                                        getConditionSettings(i, $event.target.value, 'Threshold', 'value');
+                                        alertWrongDataType(i, 'Threshold', $event.target.value)
+                                    "
+                                    (click)="onClickInputField(i)"
+                                    #thresholdValue
+                                />
+                            </div>
+
+                            <div class="select-container" *ngIf="conditionalType.isClickSet">
+                                <div class="select-inner-container">
+                                    <button
+                                        class="condition-selection-btn"
+                                        (click)="setToggleState(i, conditionalType.isToggleAnnotation, 'annotation')"
+                                    >
+                                        Annotation
+                                    </button>
+                                </div>
+                                <div class="conditions-drop-down-container" *ngIf="conditionalType.isToggleAnnotation">
+                                    <div
+                                        class="conditions-drop-down"
+                                        *ngFor="let annotation of tempSelectedAnnotations[i]"
+                                    >
+                                        <div
+                                            class="select-parameter"
+                                            (click)="
+                                                getConditionSettings(i, annotation.labelName, 'Threshold', 'annotation')
+                                            "
+                                            [ngClass]="annotation.isSelected == true ? 'selected-annotation' : ''"
+                                        >
+                                            <label>{{ annotation.labelName }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="select-container" *ngIf="isDateAttribute(i, 'Threshold')">
+                                <div class="select-inner-container">
+                                    <button
+                                        class="condition-selection-btn"
+                                        (click)="setToggleState(i, conditionalType.isToggleDate, 'dateFormat')"
+                                    >
+                                        {{ displaySelection(i, 'dateFormat', 'Threshold') }}
+                                    </button>
+                                </div>
+                                <div class="conditions-drop-down-container" *ngIf="conditionalType.isToggleDate">
+                                    <div class="conditions-drop-down" *ngFor="let format of dateFormat">
+                                        <div
+                                            class="select-parameter"
+                                            (click)="getConditionSettings(i, format.format, 'Threshold', 'dateFormat')"
+                                        >
+                                            <label> {{ format.format }} </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="date-format-example">
+                                    <label> {{ displayDateExample(i, 'Threshold') }} </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="conditionalType.type == 'Range'">
+                    <div class="selection-container">
+                        <div class="condition-title range-title">
+                            <label> Range: </label>
+                        </div>
+                        <div class="condition-expression" *ngIf="conditionalType.isClickSet == false">
+                            <div>
+                                <label> {{ displayRangeCondition(i) }} </label>
+                            </div>
+                        </div>
+
+                        <div class="pop-up-setting-window" *ngIf="conditionalType.isClickSet">
+                            <div class="condition-description-container">
+                                <input
+                                    type="text"
+                                    placeholder="Enter lower limit"
+                                    value="{{ displaySelection(i, 'lowerLimit', 'Range') }}"
+                                    class="condition-input"
+                                    (change)="
+                                        getConditionSettings(i, $event.target.value, 'Range', 'lowerLimit');
+                                        alertWrongDataType(i, 'Range', $event.target.value)
+                                    "
+                                    (click)="onClickInputField(i)"
+                                    #lowerLimitValue
+                                />
+                            </div>
+
+                            <div class="select-container" *ngIf="conditionalType.isClickSet">
+                                <div class="select-inner-container">
+                                    <button
+                                        class="condition-selection-btn"
+                                        (click)="
+                                            setToggleState(i, conditionalType.isToggleLowerOperator, 'lowerOperator')
+                                        "
+                                    >
+                                        {{ displaySelection(i, 'lowerOperator', 'Range') }}
+                                    </button>
+                                </div>
+
+                                <div
+                                    class="conditions-drop-down-container"
+                                    *ngIf="conditionalType.isToggleLowerOperator"
+                                >
+                                    <div class="conditions-drop-down" *ngFor="let operator of lowerOperatorTypes">
+                                        <div
+                                            class="select-parameter"
+                                            (click)="getConditionSettings(i, operator, 'Range', 'lowerOperator')"
+                                        >
+                                            <label>{{ operator }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="select-container">
+                                <div class="select-inner-container">
+                                    <button
+                                        class="condition-selection-btn"
+                                        (click)="setToggleState(i, conditionalType.isToggleAttributes, 'attribute')"
+                                    >
+                                        {{ displaySelection(i, 'attribute', 'Range') }}
+                                    </button>
+                                </div>
+                                <div class="conditions-drop-down-container" *ngIf="conditionalType.isToggleAttributes">
+                                    <div
+                                        class="conditions-drop-down"
+                                        *ngFor="let attribute of filteredStringTypeAttributeNames"
+                                    >
+                                        <div
+                                            class="select-parameter"
+                                            (click)="getConditionSettings(i, attribute, 'Range', 'attribute')"
+                                        >
+                                            <label>{{ attribute.toLowerCase() }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="select-container" *ngIf="conditionalType.isClickSet">
+                                <div class="select-inner-container">
+                                    <button
+                                        class="condition-selection-btn"
+                                        (click)="
+                                            setToggleState(i, conditionalType.isToggleUpperOperator, 'upperOperator')
+                                        "
+                                    >
+                                        {{ displaySelection(i, 'upperOperator', 'range') }}
+                                    </button>
+                                </div>
+
+                                <div
+                                    class="conditions-drop-down-container"
+                                    *ngIf="conditionalType.isToggleUpperOperator"
+                                >
+                                    <div class="conditions-drop-down" *ngFor="let operator of upperOperatorTypes">
+                                        <div
+                                            class="select-parameter"
+                                            (click)="getConditionSettings(i, operator, 'Range', 'upperOperator')"
+                                        >
+                                            <label>{{ operator }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="condition-description-container">
+                                <input
+                                    type="text"
+                                    placeholder="Enter Upper Limit"
+                                    value="{{ displaySelection(i, 'upperLimit', 'Range') }}"
+                                    class="condition-input"
+                                    (change)="
+                                        getConditionSettings(i, $event.target.value, 'Range', 'upperLimit');
+                                        alertWrongDataType(i, 'Range', $event.target.value)
+                                    "
+                                    (click)="onClickInputField(i)"
+                                    #upperLimitValue
+                                />
+                            </div>
+
+                            <div class="select-container" *ngIf="conditionalType.isClickSet">
+                                <div class="select-inner-container">
+                                    <button
+                                        class="condition-selection-btn"
+                                        (click)="setToggleState(i, conditionalType.isToggleAnnotation, 'annotation')"
+                                    >
+                                        Annotation
+                                    </button>
+                                </div>
+                                <div class="conditions-drop-down-container" *ngIf="conditionalType.isToggleAnnotation">
+                                    <div
+                                        class="conditions-drop-down"
+                                        *ngFor="let annotation of tempSelectedAnnotations[i]"
+                                    >
+                                        <div
+                                            class="select-parameter"
+                                            (click)="
+                                                getConditionSettings(i, annotation.labelName, 'Range', 'annotation')
+                                            "
+                                            [ngClass]="annotation.isSelected == true ? 'selected-annotation' : ''"
+                                        >
+                                            <label>{{ annotation.labelName }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="select-container" *ngIf="isDateAttribute(i, 'Range')">
+                                <div class="select-inner-container">
+                                    <button
+                                        class="condition-selection-btn"
+                                        (click)="setToggleState(i, conditionalType.isToggleDate, 'dateFormat')"
+                                    >
+                                        {{ displaySelection(i, 'dateFormat', 'Range') }}
+                                    </button>
+                                </div>
+                                <div class="conditions-drop-down-container" *ngIf="conditionalType.isToggleDate">
+                                    <div class="conditions-drop-down" *ngFor="let format of dateFormat">
+                                        <div
+                                            class="select-parameter"
+                                            (click)="getConditionSettings(i, format.format, 'Range', 'dateFormat')"
+                                        >
+                                            <label> {{ format.format }} </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="date-format-example">
+                                    <label> {{ displayDateExample(i, 'Range') }} </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+                <div class="btn-container">
+                    <button
+                        class="condition-selection-btn"
+                        (click)="
+                            editSelectedLabellingCondition(i, conditionalType.isClickSet, conditionalType.type);
+                            preparePreLabellingConditions(conditionalType.isClickSet)
+                        "
+                        [ngClass]="conditionalType.buttonLabel == 'edit' ? 'edit-btn-color' : 'set-btn-color'"
+                    >
+                        {{ conditionalType.buttonLabel }}
+                    </button>
+
+                    <button class="condition-selection-btn" (click)="deleteCondition(i)">delete</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-container align">
+            <div class="bottom-session-container">
+                <div class="button-container">
+                    <button class="button-style navigation-btn" (click)="onClickAutomate()">Automate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</modal>
+
+<modal
+    [id]="modalIdProjectStats"
+    [modalBodyStyle]="projectStatsBodyStyle"
+    [modalTitle]="'projectStats' | translate"
+    [scrollable]="false"
+>
+    <div class="display-modal-container">
+        <div class="chart-container">
+            <app-pie-chart [labelledData]="labeledData" [unLabelledData]="unLabeledData"></app-pie-chart>
+            <app-bar-chart *ngIf="!emptyLabel && !emptyAnnotation" [labelStats]="statistics"></app-bar-chart>
+            <div style="margin: 13vh 12vw" *ngIf="emptyLabel">
+                <h3>No Labels</h3>
+            </div>
+            <div style="margin: 13vh 10vw" *ngIf="emptyAnnotation">
+                <h3>No Annotation</h3>
+            </div>
+        </div>
+    </div>
+</modal>
+
+<modal
+    [id]="modalAlertWindow"
+    [modalBodyStyle]="alertWindowBodyStyle"
+    [modalTitle]="'Warning'"
+    [scrollable]="false"
+    [zIndex]="3"
+>
+    <div class="automate-warning-container">
+        <p class="font-warning">
+            Please ensure that the format of input values and date are correct. Otherwise it may causes errors in
+            assigning labels.
+        </p>
+        <p class="font-warning">Do you want to proceed with the current settings?</p>
+        <div class="selection-invalid">
+            <div class="invalid-data labelling-style">
+                <input #overwrite type="checkbox" id="overwrite" (click)="this.labellingSequenceMode()" />
+                <label for="overwrite">Overwrite labels based on conditions</label>
+            </div>
+            <div class="invalid-data labelling-style">
+                <input #append type="checkbox" id="append" (click)="this.labellingSequenceMode()" />
+                <label for="append">Append labels based on conditions</label>
+            </div>
+        </div>
+        <div class="alert-bottom-container">
+            <div>
+                <button class="button-style navigation-btn" (click)="onCancelAutomate()">No</button>
+                <button class="button-style navigation-btn" (click)="automateLabelling()">Yes</button>
+            </div>
+        </div>
+    </div>
+</modal>
+
+<modal [id]="modalShortcutKeyInfo" [modalBodyStyle]="infoModalBodyStyle" [scrollable]="true">
+    <div class="table-box">
+        <table class="short-cut-key-table">
+            <caption class="shortcut-key-info-header">
+                Keyboard Shortcut Information
+            </caption>
+            <tr *ngFor="let info of shortcutKeyInfo()">
+                <td innerHTML="{{ info.shortcutKey }}"></td>
+                <td innerHTML="{{ info.functionality }}"></td>
+            </tr>
+        </table>
+    </div>
+</modal>

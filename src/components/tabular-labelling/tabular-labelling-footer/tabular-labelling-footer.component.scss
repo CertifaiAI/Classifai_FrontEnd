@@ -1,0 +1,75 @@
+@use 'shared/scss/ellipsis' as ellipsis;
+@use 'shared/scss/icon' as icon;
+@use 'shared/scss/variables' as color;
+
+@mixin footer-texts($flex) {
+    font-size: 1.6vh;
+    color: white;
+    outline: none;
+    border-right: 0.05vw solid white;
+    padding: 0 1vw 0 1vw;
+}
+
+/*-------------------------------------------*\
+    Footer Container
+\*-------------------------------------------*/
+
+.footer-container {
+    position: absolute;
+    background: #525353;
+    border: 0.0625vw solid rgb(255, 255, 255, 0.25);
+    min-height: 2.3vh;
+    max-height: 2.3vh;
+    min-width: 97vw;
+    max-width: 100vw;
+    bottom: 0;
+    padding-left: 2.5vw;
+}
+
+.footer-label-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: baseline;
+    width: 80%;
+}
+
+/*-------------------------------------------*\
+    All Footer Labels
+\*-------------------------------------------*/
+
+.footer-label {
+    @include footer-texts(15%);
+    text-align: left;
+}
+
+/*-------------------------------------------*\
+    Project Name Label
+\*-------------------------------------------*/
+
+.footer-project-name {
+    @include ellipsis.ellipsis-styling();
+    max-width: 20vw;
+}
+
+/*-------------------------------------------*\
+    Image Path Label
+\*-------------------------------------------*/
+
+.footer-image-path {
+    display: flex;
+    @include footer-texts(130%);
+    @include ellipsis.ellipsis-styling();
+}
+
+.footer-path-label {
+    cursor: pointer;
+    padding: 0 0.2vw;
+    border-radius: 0.5vw;
+    &:hover {
+        background: #636363;
+    }
+    &:focus,
+    &:active {
+        background: #737474;
+    }
+}

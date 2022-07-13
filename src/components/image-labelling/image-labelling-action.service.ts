@@ -4,9 +4,9 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { Injectable } from '@angular/core';
+import { ActionState } from 'shared/types/labelling-type/image-labelling.model';
 import { BehaviorSubject } from 'rxjs';
-import { ActionState } from 'shared/types/image-labelling/image-labelling.model';
+import { Injectable } from '@angular/core';
 
 const initialValue: ActionState = {
     scroll: false,
@@ -17,7 +17,7 @@ const initialValue: ActionState = {
     isActiveModal: false,
     save: false,
     keyInfo: false,
-    crossLine: false
+    crossLine: false,
 };
 
 @Injectable({

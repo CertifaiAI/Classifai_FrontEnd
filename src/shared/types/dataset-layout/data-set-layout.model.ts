@@ -31,6 +31,9 @@ export type Labels = {
     window_status: window_status;
     window_message: string;
     label_file_path: path;
+    audio_file_path: path;
+    tabular_file_path: path;
+    video_file_path: path;
 };
 
 export type ProjectStatus = {
@@ -43,6 +46,7 @@ export type ProjectStatus = {
 export type Project = {
     project_name: string;
     project_path: string;
+    project_file_path: string;
     is_loaded: boolean;
     is_starred: boolean;
     is_new: boolean;
@@ -101,4 +105,42 @@ export type ImageList = {
     window_message: string;
     img_path_list: string[];
     img_directory_list: string[];
+};
+
+export type VideoProject = Project & {
+    video_length: number;
+    video_file_path: string;
+    video_duration: string;
+    is_video_frames_extraction_completed: boolean;
+    extracted_frame_index: number;
+    frames_per_second: number;
+};
+
+export type Videos = {
+    message: message;
+    window_status: window_status;
+    window_message: string;
+    video_file_path: path;
+    extraction_partition: number;
+};
+
+export type SingleExtractionInfo = {
+    video_file_path: path;
+    current_time: number;
+};
+
+export type MultipleExtractionInfo = {
+    video_file_path: path;
+    extraction_start_time: number;
+    extraction_end_time: number;
+    extraction_partition: number;
+};
+
+export type VideoFramesExtractionStatus = {
+    message: message;
+    video_frames_extraction_status: number;
+    video_frames_extraction_message: string;
+    current_time_stamp: number;
+    is_video_frames_extraction_completed: boolean;
+    extracted_frame_index: number;
 };

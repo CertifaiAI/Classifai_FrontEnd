@@ -4,24 +4,43 @@
  * found in the LICENSE file at https://github.com/CertifaiAI/Classifai_FrontEnd/blob/main/LICENSE
  */
 
-import { NgModule } from '@angular/core';
 import { LoadChildren, RouterModule, Routes } from '@angular/router';
-import { PageNotFoundComponent } from 'components/page-not-found/page-not-found.component';
+
 import { HomeLayoutComponent } from 'layouts/home-layout/home-layout.component';
+import { NgModule } from '@angular/core';
+import { PageNotFoundComponent } from 'components/page-not-found/page-not-found.component';
 
 const imgLabellingLayout: LoadChildren = () =>
     import('layouts/image-labelling-layout/image-labelling-layout.module').then(
         ({ ImageLabellingLayoutModule }) => ImageLabellingLayoutModule,
     );
 
+const audioLabellingLayout: LoadChildren = () =>
+    import('layouts/audio-labelling-layout/audio-labelling-layout.module').then(
+        ({ AudioLabellingLayoutModule }) => AudioLabellingLayoutModule,
+    );
+
+const tabularLabellingLayout: LoadChildren = () =>
+    import('layouts/tabular-labelling-layout/tabular-labelling-layout.module').then(
+        ({ TabularLabellingLayoutModule }) => TabularLabellingLayoutModule,
+    );
+
+const videoLabellingLayout: LoadChildren = () =>
+    import('layouts/video-labelling-layout/video-labelling-layout.module').then(
+        ({ VideoLabellingLayoutModule }) => VideoLabellingLayoutModule,
+    );
+
+const dataSetLayout: LoadChildren = () =>
+    import('layouts/data-set-layout/data-set-layout.module').then(({ DataSetLayoutModule }) => DataSetLayoutModule);
+
 const routes: Routes = [
-    { path: '', component: HomeLayoutComponent },
+    {
+        path: '',
+        component: HomeLayoutComponent,
+    },
     {
         path: 'dataset',
-        loadChildren: () =>
-            import('layouts/data-set-layout/data-set-layout.module').then(
-                ({ DataSetLayoutModule }) => DataSetLayoutModule,
-            ),
+        loadChildren: dataSetLayout,
     },
     {
         path: 'imglabel/bndbox',
@@ -31,7 +50,26 @@ const routes: Routes = [
         path: 'imglabel/seg',
         loadChildren: imgLabellingLayout,
     },
-    { path: '**', component: PageNotFoundComponent },
+    {
+        path: 'videolabel/videobndbox',
+        loadChildren: videoLabellingLayout,
+    },
+    {
+        path: 'videolabel/videoseg',
+        loadChildren: videoLabellingLayout,
+    },
+    {
+        path: 'audio',
+        loadChildren: audioLabellingLayout,
+    },
+    {
+        path: 'tabular',
+        loadChildren: tabularLabellingLayout,
+    },
+    {
+        path: '**',
+        component: PageNotFoundComponent,
+    },
 ];
 
 @NgModule({
