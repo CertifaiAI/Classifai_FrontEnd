@@ -90,7 +90,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     private selectedSize: string = this.sizeOptions[0];
     columns: Array<GuiColumn> = [];
     tableWidth: number = 0;
-    filteredColumns: string[] = ['UUID', 'PROJECT_NAME', 'FILENAME', 'LABEL'];
+    filteredColumns: string[] = ['uuid', 'project_id', 'project_name', 'file_path', 'label'];
     source: Array<any[]> = [];
     loading: boolean = true;
     labels: label[] = [];
@@ -110,7 +110,6 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     form: FormGroup;
     defaultChecked: boolean = true;
     graphType: string[] = ['Line Chart', 'Bar Chart', 'Pie Chart'];
-    excludeKeys: string[] = ['UUID', 'PROJECT_NAME', 'FILENAME', 'LABEL'];
     operatorTypes: string[] = [
         'more than',
         'more than or equal to',
@@ -304,10 +303,10 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                     const labelProperties: label[] = [];
                     this.tabularData = response.tabular_data;
 
-                    if (this.tabularData.LABEL === null) {
+                    if (this.tabularData.label === null) {
                         this.annotationIndexMap.set(this.currentDataIndex, null);
                     } else {
-                        const labelList = JSON.parse(this.tabularData.LABEL);
+                        const labelList = JSON.parse(this.tabularData.label);
                         labelProperties.push(...labelList);
                         this.annotationIndexMap.set(this.currentDataIndex, labelProperties);
                     }
@@ -326,7 +325,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                         this.tempLabels = this.labels;
                         this.isAnnotation(this.annotations);
                     }
-                    this.getFileInfo(this.tabularData.FILENAME);
+                    this.getFileInfo(this.tabularData.file_path);
                     this.updateInvalidCheckBox();
                 },
             );
@@ -421,7 +420,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     generateColumnsArray(tabularData: any) {
         for (const [key, value] of Object.entries(tabularData)) {
-            if (!this.excludeKeys.includes(key)) {
+            if (!this.filteredColumns.includes(key)) {
                 const type = this.checkTypeOfValue(value);
                 switch (type) {
                     case 'number':
@@ -490,7 +489,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         this.removedSelectedFeatures = [];
 
         for (const [key, value] of Object.entries(data)) {
-            if (!this.excludeKeys.includes(key)) {
+            if (!this.filteredColumns.includes(key)) {
                 this.retrievedData.push({
                     name: key,
                     value: String(value),
@@ -700,8 +699,8 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         this.tabularLabellingLayoutService.getSpecificData(projectName, uuid).subscribe(
             (response) => {
                 this.tabularData = response.tabular_data;
-                if (this.tabularData.LABEL !== null) {
-                    this.annotations = JSON.parse(this.tabularData.LABEL);
+                if (this.tabularData.label !== null) {
+                    this.annotations = JSON.parse(this.tabularData.label);
                     this.updateTempLabels();
                     this.isAnnotation(this.annotations);
                 } else {
@@ -734,7 +733,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     updateAnnotation() {
         this.tabularLabellingLayoutService
-            .updateTabularDataLabel(this.projectName, this.tabularData.UUID, this.annotations)
+            .updateTabularDataLabel(this.projectName, this.tabularData.uuid, this.annotations)
             .subscribe((response) => {
                 if (response.error_code === 0) {
                     console.error(response.error_message);

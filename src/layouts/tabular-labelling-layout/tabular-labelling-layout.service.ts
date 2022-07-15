@@ -41,7 +41,7 @@ export class TabularLabellingLayoutService {
             `${this.hostPort}v2/tabular/projects/${projectName}/updatedata`,
             {
                 uuid: UUID,
-                tabular_label: JSON.stringify(annotation),
+                label: JSON.stringify(annotation),
             },
         );
     };
