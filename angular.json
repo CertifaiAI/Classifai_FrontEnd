@@ -29,7 +29,7 @@
                             "includePaths": ["src/styles"]
                         },
                         "scripts": [],
-                        "allowedCommonJsDependencies": ["file-saver", "uuid", "jszip"]
+                        "allowedCommonJsDependencies": ["file-saver", "uuid", "jszip", "clone-deep"]
                     },
                     "configurations": {
                         "production": {

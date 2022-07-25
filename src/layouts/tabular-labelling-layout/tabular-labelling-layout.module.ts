@@ -9,11 +9,10 @@ import { BarChartModule } from '../../shared/components/charts/bar-chart/bar-cha
 import { PieChartModule } from '../../shared/components/charts/pie-chart/pie-chart.module';
 import { TabularLabellingLayoutComponent } from './tabular-labelling-layout.component';
 import { TabularLabellingLayoutRoutingModule } from './tabular-labelling-layout-routing.module';
-import { GuiGridModule } from '@generic-ui/ngx-grid';
-import { FabricSelectModule } from '@generic-ui/fabric';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { TabularLabellingModule } from '../../components/tabular-labelling/tabular-labelling.module';
+import { AgGridModule } from 'ag-grid-angular';
 
 @NgModule({
     imports: [
@@ -26,12 +25,11 @@ import { TabularLabellingModule } from '../../components/tabular-labelling/tabul
         BarChartModule,
         PieChartModule,
         TabularLabellingLayoutRoutingModule,
-        GuiGridModule,
-        FabricSelectModule,
         FormsModule,
         ReactiveFormsModule,
         NgxChartsModule,
         TabularLabellingModule,
+        AgGridModule,
     ],
     declarations: [TabularLabellingLayoutComponent],
 })

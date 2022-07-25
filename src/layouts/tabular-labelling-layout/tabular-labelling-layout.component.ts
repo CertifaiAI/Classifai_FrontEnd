@@ -11,7 +11,6 @@ import {
 } from '@angular/core';
 import { Data, Features, label, RemovedFeature } from '../../shared/types/labelling-type/tabular-labelling.model';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { GuiColumn, GuiDataType, GuiRowClass } from '@generic-ui/ngx-grid';
 import { forkJoin, Observable, Subject, Subscription } from 'rxjs';
 import { first, mergeMap, takeUntil } from 'rxjs/operators';
 import { ChartProps } from '../../shared/types/dataset-layout/data-set-layout.model';
@@ -23,8 +22,9 @@ import { ModalService } from '../../shared/components/modal/modal.service';
 import { Router } from '@angular/router';
 import { TabularLabellingLayoutService } from './tabular-labelling-layout.service';
 import { labels_stats } from '../../shared/types/message/message.model';
-import { ColDef } from '@ag-grid-community/core';
 import { LabelModeService } from '../../shared/services/label-mode-service';
+import { ColDef } from 'ag-grid-community';
+import * as fileSaver from 'file-saver';
 
 type conditionSet = {
     type: string;
@@ -81,14 +81,13 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     private subject: Subject<any> = new Subject<any>();
     private subscription!: Subscription;
     projectName: string = '';
-    projectFolder: string = '';
+    projectFolderPath: string = '';
     tabularData!: any;
     tabularDataObservable: Observable<any[]> = new Observable<any[]>();
-    headersTypeMap: Map<string, GuiDataType> = new Map<string, GuiDataType>();
+    headersTypeMap: Map<string, DataType> = new Map<string, DataType>();
     attributeTypeMap: Map<string, DataType> = new Map<string, DataType>();
     private sizeOptions: Array<string> = ['5 000', '25 000', '50 000', '100 000', '200 000', '1 000000'];
     private selectedSize: string = this.sizeOptions[0];
-    columns: Array<GuiColumn> = [];
     tableWidth: number = 0;
     filteredColumns: string[] = ['uuid', 'project_id', 'project_name', 'file_path', 'label'];
     source: Array<any[]> = [];
@@ -181,9 +180,6 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     colorScheme = {
         domain: ['#659DBD', '#379683', '#8EE4AF', '#E7717D', '#F13C20', '#FF652F', '#376E6F'],
     };
-    rowClass: GuiRowClass = {
-        class: 'tabular-row',
-    };
     plotGraphBodyStyle: ModalBodyStyle = {
         height: '73vh',
         width: '60vw',
@@ -268,7 +264,6 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     ngOnInit(): void {
         this.projectName = this.tabularLabellingLayoutService.getRouteState(history).projectName;
-        this.projectFolder = this.tabularLabellingLayoutService.getRouteState(history).projectFolder;
         this.initProject(this.projectName);
         this.getAllTabularData();
     }
@@ -286,6 +281,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 mergeMap(() => forkJoin([projectMetaStatus$])),
                 first(([{ message, content }]) => {
                     const is_loaded = content.is_loaded;
+                    this.projectFolderPath = content.project_path;
                     return message === 1 && !is_loaded;
                 }),
                 mergeMap(([{ message }]) =>
@@ -381,7 +377,8 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
 
     isTallyWithSelectedDateFormat = (value: any, selectedDateFormat: string): boolean => {
         const dayMonthYearRegex = /^([0]?[1-9]|[1|2][0-9]|[3][0|1])[./-]([0]?[1-9]|[1][0-2])[./-]([0-9]{4}|[0-9]{2})$/g;
-        const monthDayYearRegex = /^([0]?[1-9]|[1|2][0-9])[./-]([0]?[1-9]|[1|2][0-9]|[3][0|1])[./-]([0-9]{4}|[0-9]{2})$/g;
+        const monthDayYearRegex =
+            /^([0]?[1-9]|[1|2][0-9])[./-]([0]?[1-9]|[1|2][0-9]|[3][0|1])[./-]([0-9]{4}|[0-9]{2})$/g;
         const yearMonthDayRegex = /^\d{4}[./-](0?[1-9]|1[012])[./-](0?[1-9]|[12][0-9]|3[01])$/g;
         let isTally: boolean = false;
 
@@ -424,15 +421,15 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 const type = this.checkTypeOfValue(value);
                 switch (type) {
                     case 'number':
-                        this.headersTypeMap.set(key, GuiDataType.NUMBER);
+                        this.headersTypeMap.set(key, DataType.NUMBER);
                         this.attributeTypeMap.set(key, DataType.NUMBER);
                         break;
                     case 'string':
-                        this.headersTypeMap.set(key, GuiDataType.STRING);
+                        this.headersTypeMap.set(key, DataType.STRING);
                         this.attributeTypeMap.set(key, DataType.STRING);
                         break;
                     case 'date':
-                        this.headersTypeMap.set(key, GuiDataType.STRING);
+                        this.headersTypeMap.set(key, DataType.STRING);
                         this.attributeTypeMap.set(key, DataType.DATE);
                         break;
                 }
@@ -442,12 +439,6 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         for (const [key, value] of this.headersTypeMap) {
             this.features.push({ featureName: key, checked: true });
             if (!this.filteredColumns.includes(key)) {
-                this.columns.push({
-                    header: key,
-                    type: value,
-                    field: key,
-                });
-
                 this.columnsDefs.push({
                     headerName: key,
                     field: key,
@@ -854,8 +845,8 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                             event.preventDefault();
                         }
                     });
-                    this.showInvalidOnlyCheckBox.nativeElement.checked = !this.showInvalidOnlyCheckBox.nativeElement
-                        .checked;
+                    this.showInvalidOnlyCheckBox.nativeElement.checked =
+                        !this.showInvalidOnlyCheckBox.nativeElement.checked;
                     this.showInvalidDataOnly();
                     break;
                 case altKey && 't':
@@ -978,7 +969,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         this.tabularLabellingLayoutService.downloadFile(this.projectName, format, filterInvalidData).subscribe(
             (res) => {
                 if (res.message === 1) {
-                    alert(this.projectName + '.' + format + ' is generated in project folder ' + this.projectFolder);
+                    alert(
+                        this.projectName + '.' + format + ' is generated in project folder ' + this.projectFolderPath,
+                    );
                 } else if (res.message === 0) {
                     alert(res.error_message);
                 }
@@ -990,6 +983,22 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
                 this.modalService.close(this.modalIdSave);
             },
         );
+    };
+
+    onDownloadLabel = () => {
+        const content = this.labels
+            .map((ele) => ele.labelName)
+            .reduce((prev, curr, i) => {
+                prev += curr;
+                if (i !== prev.length) {
+                    return prev + '\n';
+                }
+                return prev;
+            }, '');
+
+        const fileName = `${this.projectName}_label.txt`;
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        fileSaver.saveAs(blob, fileName);
     };
 
     createCondition(event: any) {

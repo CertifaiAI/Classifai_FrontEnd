@@ -185,23 +185,23 @@
 >
     <div class="tabular-data-container">
         <div class="tabular-data-view" *ngIf="tabularData">
-            <gui-grid
-                [virtualScroll]="true"
-                [maxHeight]="400"
-                [width]="tabularData.length > 0 ? 1100 : 1800"
-                [columns]="columns"
-                [source]="tabularDataObservable | async"
-                [rowClass]="rowClass"
-                [theme]="'dark'"
+            <!--            <gui-grid-->
+            <!--                [virtualScroll]="true"-->
+            <!--                [maxHeight]="400"-->
+            <!--                [width]="tabularData.length > 0 ? 1100 : 1800"-->
+            <!--                [columns]="columns"-->
+            <!--                [source]="tabularDataObservable | async"-->
+            <!--                [rowClass]="rowClass"-->
+            <!--                [theme]="'dark'"-->
+            <!--            >-->
+            <!--            </gui-grid>-->
+            <ag-grid-angular
+                style="width: 50vw; height: 50vh"
+                class="ag-theme-alphine"
+                [rowData]="tabularDataObservable | async"
+                [columnDefs]="columnsDefs"
             >
-            </gui-grid>
-            <!--                        <ag-grid-angular-->
-            <!--                            style="width: 50vw; height: 50vh;"-->
-            <!--                            class="ag-theme-alphine"-->
-            <!--                            [rowData]="tabularDataObservable | async"-->
-            <!--                            [columnDefs]="columnsDefs"-->
-            <!--                        >-->
-            <!--                        </ag-grid-angular>-->
+            </ag-grid-angular>
         </div>
     </div>
 </modal>
@@ -254,11 +254,9 @@
             <ng-container>
                 <button class="save-format-btn" (click)="onClickDownload('csv', filterInvalidData)">CSV</button>
                 <br />
-                <button class="save-format-btn" (click)="onClickDownload('excel', filterInvalidData)">EXCEL</button>
-                <br />
                 <button class="save-format-btn" (click)="onClickDownload('json', filterInvalidData)">JSON</button>
                 <br />
-                <button class="save-format-btn" (click)="onClickDownload('label', false)">Label</button>
+                <button class="save-format-btn" (click)="onDownloadLabel()">Label</button>
                 <br />
             </ng-container>
         </div>
