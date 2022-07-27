@@ -157,3 +157,10 @@ export type SpecificTabularDataResponse = {
     error_message?: errormessage;
     tabular_data: any;
 };
+
+export type AllTabularDataResponse = {
+    message: number;
+    error_message?: errormessage;
+    error_code?: error_code;
+    content: string[];
+};

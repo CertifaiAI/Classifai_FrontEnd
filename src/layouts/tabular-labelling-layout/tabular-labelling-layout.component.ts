@@ -1,17 +1,7 @@
-import {
-    ChangeDetectorRef,
-    Component,
-    ElementRef,
-    HostListener,
-    OnChanges,
-    OnDestroy,
-    OnInit,
-    SimpleChanges,
-    ViewChild,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Data, Features, label, RemovedFeature } from '../../shared/types/labelling-type/tabular-labelling.model';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { forkJoin, Observable, Subject, Subscription } from 'rxjs';
+import { forkJoin, from, Observable, Subject, Subscription } from 'rxjs';
 import { first, mergeMap, takeUntil } from 'rxjs/operators';
 import { ChartProps } from '../../shared/types/dataset-layout/data-set-layout.model';
 import { DataSetLayoutService } from '../data-set-layout/data-set-layout-api.service';
@@ -77,13 +67,12 @@ type dateFormat = {
     templateUrl: './tabular-labelling-layout.component.html',
     styleUrls: ['./tabular-labelling-layout.component.scss'],
 })
-export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnChanges {
+export class TabularLabellingLayoutComponent implements OnInit, OnDestroy {
     private subject: Subject<any> = new Subject<any>();
     private subscription!: Subscription;
     projectName: string = '';
     projectFolderPath: string = '';
     tabularData!: any;
-    tabularDataObservable: Observable<any[]> = new Observable<any[]>();
     headersTypeMap: Map<string, DataType> = new Map<string, DataType>();
     attributeTypeMap: Map<string, DataType> = new Map<string, DataType>();
     private sizeOptions: Array<string> = ['5 000', '25 000', '50 000', '100 000', '200 000', '1 000000'];
@@ -166,8 +155,12 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     checkIsInvalid = false;
     tempInvalidArray: label[] = [];
     labellingSequenceChoice: string = 'append';
+    rowData!: Observable<any[]>;
     columnsDefs: ColDef[] = [];
-    rowData!: Observable<any>;
+    defaultColDef: ColDef = {
+        sortable: true,
+        filter: true,
+    };
     dayMonthYearRegex = /^([0]?[1-9]|[1|2][0-9]|[3][0|1])[./-]([0]?[1-9]|[1][0-2])[./-]([0-9]{4}|[0-9]{2})$/g;
     yearMonthDayRegex = /^\d{4}[./-](0?[1-9]|1[012])[./-](0?[1-9]|[12][0-9]|3[01])$/g;
     readonly modalPlotGraph = 'modal-plot-graph';
@@ -177,15 +170,6 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     readonly modalAddLabellingConditions = 'modal-add-labelling-conditions';
     readonly modalAlertWindow = 'modal-alert-window';
     readonly modalShortcutKeyInfo = 'modal-shortcut-key-info';
-    colorScheme = {
-        domain: ['#659DBD', '#379683', '#8EE4AF', '#E7717D', '#F13C20', '#FF652F', '#376E6F'],
-    };
-    plotGraphBodyStyle: ModalBodyStyle = {
-        height: '73vh',
-        width: '60vw',
-        margin: '5vw 5vh',
-        overflowY: 'none',
-    };
     tabularDataViewBodyStyle: ModalBodyStyle = {
         maxHeight: '85vh',
         minWidth: '80vw',
@@ -265,10 +249,7 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
     ngOnInit(): void {
         this.projectName = this.tabularLabellingLayoutService.getRouteState(history).projectName;
         this.initProject(this.projectName);
-        this.getAllTabularData();
     }
-
-    ngOnChanges(changes: SimpleChanges) {}
 
     initProject(projectName: string) {
         const projectMetaStatus$ = this._dataSetService.checkProjectStatus(projectName);
@@ -335,28 +316,34 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         }
     }
 
+    onOpenTabularTable() {
+        this.getAllTabularData();
+        this.modalService.open(this.modalTabularDataView);
+    }
+
     getAllTabularData() {
         let allData: any[] = [];
         this.tabularLabellingLayoutService.getAllTabularData(this.projectName).subscribe(
             (response) => {
-                allData = response;
+                if (response.message === 1) {
+                    allData = response.content;
+                }
             },
             (err) => console.error(err),
             () => {
-                const filteredKeys = Object.keys(allData[0]).filter((ele) => !this.filteredColumns.includes(ele));
                 const data = allData.filter((ele) => {
                     const keys = Object.keys(ele);
                     for (const key of keys) {
-                        if (!filteredKeys.includes(key)) {
+                        if (this.filteredColumns.includes(key)) {
                             delete ele[key];
                         }
                     }
                     return ele;
                 });
-                this.tabularDataObservable = new Observable<any[]>((observer) => {
-                    setTimeout(() => {
-                        observer.next(data);
-                    }, 500);
+                console.log(data);
+                console.log(this.columnsDefs);
+                this.rowData = new Observable<any[]>((ele) => {
+                    ele.next(data);
                 });
             },
         );
@@ -439,40 +426,9 @@ export class TabularLabellingLayoutComponent implements OnInit, OnDestroy, OnCha
         for (const [key, value] of this.headersTypeMap) {
             this.features.push({ featureName: key, checked: true });
             if (!this.filteredColumns.includes(key)) {
-                this.columnsDefs.push({
-                    headerName: key,
-                    field: key,
-                });
+                this.columnsDefs.push({ headerName: key, field: key });
             }
         }
-    }
-
-    // sizeSelected(selectedSize: string): void {
-    //     this.generateSource(selectedSize);
-    // }
-
-    // createSourceObservable() {
-    // if (this.tabularData.length == 0) {
-    //     alert('Empty Data');
-    //     return;
-    // }
-    //     this.generateSource(this.selectedSize);
-    // }
-
-    generateSource(): void {
-        // const size = Number(selectedSize.split(' ').join(''));
-
-        // this.tabularDataObservable.pipe(takeUntil(this.unsubscribe$)).subscribe(
-        //     (response) => {
-        //         this.source.push(response);
-        //     },
-        //     (error) => {
-        //         console.error(error);
-        //     },
-        //     () => {
-        this.modalService.open(this.modalTabularDataView);
-        //     },
-        // );
     }
 
     getAttributesAndValue(data: any) {

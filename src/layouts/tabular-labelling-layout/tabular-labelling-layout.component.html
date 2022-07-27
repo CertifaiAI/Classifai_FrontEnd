@@ -19,7 +19,7 @@
 
     <div class="layout">
         <tabular-labelling-left-sidebar
-            (_toggleTabularTable)="generateSource()"
+            (_toggleTabularTable)="onOpenTabularTable()"
             (_toggleLabels)="toggleLabelSection()"
             (_toggleConditions)="toggleConditionSection()"
             (_toggleSave)="toggleSave()"
@@ -183,62 +183,19 @@
     [scrollable]="false"
     [zIndex]="2"
 >
-    <div class="tabular-data-container">
-        <div class="tabular-data-view" *ngIf="tabularData">
-            <!--            <gui-grid-->
-            <!--                [virtualScroll]="true"-->
-            <!--                [maxHeight]="400"-->
-            <!--                [width]="tabularData.length > 0 ? 1100 : 1800"-->
-            <!--                [columns]="columns"-->
-            <!--                [source]="tabularDataObservable | async"-->
-            <!--                [rowClass]="rowClass"-->
-            <!--                [theme]="'dark'"-->
-            <!--            >-->
-            <!--            </gui-grid>-->
+    <div class="tabular-data-container" *ngIf="rowData">
+        <div class="tabular-data-view">
             <ag-grid-angular
-                style="width: 50vw; height: 50vh"
-                class="ag-theme-alphine"
-                [rowData]="tabularDataObservable | async"
+                style="width: 100%; height: 60vh"
+                class="ag-theme-balham-dark"
+                [rowData]="rowData | async"
                 [columnDefs]="columnsDefs"
+                [pagination]="true"
             >
             </ag-grid-angular>
         </div>
     </div>
 </modal>
-
-<!--<modal-->
-<!--    [id]="modalPlotGraph"-->
-<!--    [modalBodyStyle]="plotGraphBodyStyle"-->
-<!--    [modalTitle]="'Class Distribution'"-->
-<!--    [scrollable]="false"-->
-<!--&gt;-->
-<!--    <div class="display-modal-container">-->
-<!--        <div class="chart-container" *ngIf="annotationIndexMap.size > 0">-->
-<!--            <div class="plot-graph-container">-->
-<!--                <ngx-charts-bar-vertical-->
-<!--                    [scheme]="colorScheme"-->
-<!--                    [results]="statistics.length > 0 ? statistics : ''"-->
-<!--                    [xAxis]="true"-->
-<!--                    [yAxis]="true"-->
-<!--                    [legend]="true"-->
-<!--                    [showXAxisLabel]="true"-->
-<!--                    [showYAxisLabel]="true"-->
-<!--                    [xAxisLabel]="'Labels'"-->
-<!--                    [yAxisLabel]="'Count'"-->
-<!--                    [barPadding]="20"-->
-<!--                >-->
-<!--                </ngx-charts-bar-vertical>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="plot-graph-container" *ngIf="annotationIndexMap.size == 0">-->
-<!--            <div class="unable-generate-graph">-->
-<!--                <label>No Annotations Found</label>-->
-<!--                <br />-->
-<!--                <label>Annotate Data To View The Class Distribution</label>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</modal>-->
 
 <modal [id]="'modal-save'" [modalBodyStyle]="saveModalBodyStyle" [scrollable]="true">
     <div class="save-format-list">

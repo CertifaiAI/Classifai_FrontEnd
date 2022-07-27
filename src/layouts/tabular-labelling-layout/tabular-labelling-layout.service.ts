@@ -1,4 +1,5 @@
 import {
+    AllTabularDataResponse,
     DownloadResponse,
     Message,
     SpecificTabularDataResponse,
@@ -28,8 +29,8 @@ export class TabularLabellingLayoutService {
         return { ...state };
     }
 
-    getAllTabularData(projectName: string): Observable<any[]> {
-        return this.http.get<any[]>(`${this.hostPort}v2/tabular/projects/${projectName}/alldata`);
+    getAllTabularData(projectName: string): Observable<AllTabularDataResponse> {
+        return this.http.get<AllTabularDataResponse>(`${this.hostPort}v2/tabular/projects/${projectName}/alldata`);
     }
 
     updateTabularDataLabel = (

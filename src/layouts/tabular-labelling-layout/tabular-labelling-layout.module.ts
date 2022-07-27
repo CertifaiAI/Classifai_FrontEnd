@@ -29,7 +29,7 @@ import { AgGridModule } from 'ag-grid-angular';
         ReactiveFormsModule,
         NgxChartsModule,
         TabularLabellingModule,
-        AgGridModule,
+        AgGridModule.withComponents([]),
     ],
     declarations: [TabularLabellingLayoutComponent],
 })
